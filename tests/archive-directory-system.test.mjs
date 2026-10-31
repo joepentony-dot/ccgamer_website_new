@@ -508,3 +508,63 @@ test("developer detail generator and all 47 published pages retain accurate head
     assert.match(runtime, /visible === 1 \? " game shown" : " games shown"/,
         "live C64/Amiga and title filtering must update singular and plural count labels");
 });
+
+
+test("music composer dynamic HTML escapes editable credits", () => {
+    const source = read("js/music-composer-pages.js");
+    const between = (start, end) => {
+        const from = source.indexOf(start);
+        const to = source.indexOf(end, from + start.length);
+        assert.ok(from >= 0 && to > from, "composer source section exists: " + start);
+        return source.slice(from, to);
+    };
+
+    // Execute the actual runtime markup functions, rather than testing a
+    // separately implemented encoder that could diverge from production.
+    const snippets = [
+        between("  function escapeComposerMarkup(", "\n  function getCanonicalComposerName("),
+        between("  function cardMarkup(", "\n  function renderHubAccordion("),
+        between("  function renderHubAccordion(", "\n  async function renderHubCards(")
+    ];
+    const search = { value: "", addEventListener() {} };
+    const accordion = { innerHTML: "", querySelectorAll: () => [] };
+    const document = {
+        getElementById(id) {
+            return id === "composer-discovery-search" ? search : accordion;
+        }
+    };
+    const runtime = vm.runInNewContext(snippets.join("\n") +
+        "\n({ escapeComposerMarkup, cardMarkup, renderHubAccordion })", {
+        document,
+        window: { CCGMusicHubOmega: { refreshAccordion() {} } },
+        getComposerUrl: (composer) => "/music/" + composer.slug + "/",
+        getPlatformLabel: () => "C64",
+        composerSortLetter: () => "R",
+        normaliseName: (value) => String(value || "").toLowerCase()
+    });
+
+    const injectedName = 'Rogue"><img src=x onerror=alert(1)>&';
+    const composer = { name: injectedName, slug: "rogue", aliases: [] };
+    const stats = new Map([["rogue", { games: [{}] }]]);
+    const card = runtime.cardMarkup(composer, "/resources/images/composers/rogue.webp", stats, false);
+    runtime.renderHubAccordion([composer], stats);
+
+    for (const html of [card, accordion.innerHTML]) {
+        assert.doesNotMatch(html, /<img src=x onerror=alert\(1\)>/,
+            "catalogue credit must not become an executable HTML element");
+        assert.match(html, /Rogue&quot;&gt;&lt;img src=x onerror=alert\(1\)&gt;&amp;/,
+            "quotes, tags and ampersands must be encoded in dynamic markup");
+    }
+    assert.match(card, /alt="Rogue&quot;&gt;&lt;img/,
+        "composer image alt attribute must not be broken by a quoted name");
+    assert.equal(runtime.escapeComposerMarkup("Chris Hülsbeck"), "Chris Hülsbeck",
+        "normal accented names remain unchanged");
+    assert.equal(runtime.escapeComposerMarkup("Tom & Jerry's"), "Tom &amp; Jerry&#39;s");
+
+    assert.doesNotMatch(source, /\$\{composer\.(?:name|bio|born|birthplace)\}/,
+        "no raw composer credit is interpolated into a template");
+    assert.match(source, /const safeName = requestedName \? escapeComposerMarkup\(requestedName\)/,
+        "unknown composer search terms must also be encoded");
+    assert.match(source, /\$\{escapeComposerMarkup\(displayMeta\)\}/,
+        "dynamic track metadata is encoded");
+});
