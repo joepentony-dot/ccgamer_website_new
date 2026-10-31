@@ -1,3 +1,7 @@
+## 31 October 2026 — category mobile LCP follow-up (BRANCH ONLY)
+
+- Fresh main `189b07de44ba26c5695fa84a7d3f479e4ec7da53`; Pages 41160741131, live navigation 41160927852, 24/24 site-wide Lighthouse 41160741115 successful. New single active category performance branch `fix/category-hero-lcp-priority-20261031` prioritises 15 above-fold genre banners through `scripts/upgrade-category-pages.js`, preserves artwork/card lazy loading and extends `tests/category-omega.test.mjs`. Not qualified/merged/live; full evidence in `docs/ai-work/lighthouse-sitewide.md`. Publishing #2963, Amazon #2957 and Dungeon #2958 remain parked on their respective non-waived gates. **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED.** Commercial Windows release HOLD.
+
 ## 31 October 2026 — Site-wide mobile game-video poster transfer, existing single-writer queue
 
 - Latest main checked at `4730c38813e98cbfd68f12580344632765479f1c` after copyright notice #2905 guarded merge `5f42bc75e086822a40b1329b5baf08abc8331990`; Pages run `41159078522` and live navigation run `41159245938` succeeded, but actual right-click/browser copyright acceptance remains unverified. #2959 free Ask CCG is already merged; do not revive.

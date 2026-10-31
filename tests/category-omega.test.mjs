@@ -99,3 +99,17 @@ test('music keeps its established short URL while signalling C64 and Amiga stron
   assert.match(music, /"name": "C64 & Amiga Music Hub"/);
   assert.doesNotMatch(generator, /music\/index\.html/);
 });
+
+// Regression: first-viewport artwork is not part of the below-fold lazy-card policy.
+test('all 15 genre banners are eager/high-priority while game cards remain intact', () => {
+  const files = ["action-adventure-games.html","adventure-games.html","arcade-games.html","casino-games.html","fighting-games.html","horror-games.html","miscellaneous.html","platform-games.html","puzzle-games.html","quiz-games.html","racing-games.html","role-playing-games.html","shooting-games.html","sports-games.html","strategy-games.html"];
+  for (const file of files) {
+    const html = fs.readFileSync(`games/genres/${file}`, 'utf8');
+    const banners = html.match(/<img\b[^>]*\bclass=["'][^"']*\bccg-genre-hero__img\b[^"']*["'][^>]*>/gi) || [];
+    assert.equal(banners.length, 1, `${file}: one genre banner`);
+    assert.match(banners[0], /\bloading="eager"/i);
+    assert.match(banners[0], /\bfetchpriority="high"/i);
+    assert.match(html, /\bccg-game-card\b/, `${file}: game cards preserved`);
+  }
+  assert.match(generator, /function prioritiseAboveFoldGenreBanner\(/);
+});

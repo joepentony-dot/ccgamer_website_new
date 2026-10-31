@@ -125,6 +125,14 @@ function canonicalFromHtml(html, fallback) {
   return match?.[1] || fallback;
 }
 
+// Preserve the above-fold genre artwork; only its fetch timing is changed.
+function prioritiseAboveFoldGenreBanner(html) {
+  return html.replace(/<img\b[^>]*\bclass=["'][^"']*\bccg-genre-hero__img\b[^"']*["'][^>]*>/gi, (tag) => {
+    const withoutOldHints = tag.replace(/\s(?:loading|fetchpriority)\s*=\s*(?:"[^"]*"|'[^']*')/gi, "");
+    return withoutOldHints.replace(/(\s*\/?>)$/, (closing) => ` loading="eager" fetchpriority="high"${closing}`);
+  });
+}
+
 function upgradeFile(relativePath, tuple, kind) {
   const filePath = path.join(ROOT, relativePath);
   if (!fs.existsSync(filePath)) throw new Error(`Missing category page: ${relativePath}`);
@@ -151,6 +159,7 @@ function upgradeFile(relativePath, tuple, kind) {
   html = replaceClassElement(html, "h1", "ccg-genre-hero__title", h1);
   html = replaceClassElement(html, "p", "ccg-genre-hero__tagline", tagline);
   html = replaceFirstIntro(html, description);
+  if (kind === "genre") html = prioritiseAboveFoldGenreBanner(html);
 
   if (html === before) return false;
   if (!CHECK_ONLY) fs.writeFileSync(filePath, html, "utf8");

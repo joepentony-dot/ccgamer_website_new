@@ -1,3 +1,9 @@
+## 31 October 2026 — genre banner image priority (BRANCH ONLY)
+
+- Completed site-wide Lighthouse 41160741115: 1306 routes x 2, 0 errors; mobile median 71, P75 LCP 6612 ms. Genre mobile median 47, P75 LCP 8933 ms, P75 CLS 0.402. Raw role-playing genre attributed ~0.048 CLS to its above-fold banner; dominant genre CLS is caused by webfont swaps and is NOT fixed here.
+- Sole new active performance workstream `fix/category-hero-lcp-priority-20261031` changes only first-viewport genre image loading hints via the authoritative category generator, 15 corresponding HTML pages and Category Omega tests. Negative controls: all 15 lacked explicit eager/high hints; candidate changes exactly one banner tag per page and is idempotent. No card loading, artwork, URLs, intro or styling changed. Require exact-head CI and real mobile/desktop performance/CLS acceptance before merge; do not infer a score gain.
+- Generated publishing #2963 remains parked on its non-waived Codex receipt release gate, Amazon #2957 on account confirmation and Dungeon #2958 on high-risk/Windows acceptance. **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED.** Commercial Windows release HOLD.
+
 # Site-wide Lighthouse programme
 
 ## 31 October 2026 — canonical game-video poster duplicate transfer (BRANCH ONLY)
