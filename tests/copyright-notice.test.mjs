@@ -31,26 +31,38 @@ function target(type, options = {}) {
 function run(pathname = '/home.html', page = 'home') {
   const handlers = new Map();
   const appended = [];
+  const timers = [];
+  const cleared = new Set();
   const window = {
     location: { pathname },
-    setTimeout: () => 17,
-    clearTimeout: () => {}
+    setTimeout: (fn, delay) => {
+      const id = timers.length + 1;
+      timers.push({ id, fn, delay });
+      return id;
+    },
+    clearTimeout: (id) => { cleared.add(id); }
   };
   const document = {
+    activeElement: null,
     documentElement: { getAttribute: () => page },
     body: { appendChild: (node) => appended.push(node) },
     addEventListener: (name, fn) => handlers.set(name, fn),
     createElement: (tag) => ({
       tag,
       children: [],
+      listeners: new Map(),
       appendChild(child) { this.children.push(child); },
+      contains(node) {
+        if (!node) return false;
+        return this === node || this.children.some((child) => child === node || child.contains?.(node));
+      },
       setAttribute() {},
-      addEventListener() {},
+      addEventListener(name, fn) { this.listeners.set(name, fn); },
       remove() { this.removed = true; }
     })
   };
   vm.runInNewContext(script, { window, document });
-  return { handlers, appended, window };
+  return { handlers, appended, window, timers, cleared, document };
 }
 
 function dispatch(handlers, name, item) {
@@ -96,6 +108,44 @@ test('opt-in protected text triggers notice but linked images are still draggabl
   assert.equal(dispatch(site.handlers, 'contextmenu', target('protected-text')), true);
   assert.equal(dispatch(site.handlers, 'dragstart', target('image', { link: true })), false);
   assert.equal(dispatch(site.handlers, 'dragstart', target('image')), true);
+});
+
+test('keyboard focus pauses notice expiry until focus leaves its controls', () => {
+  const site = run();
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('image')), true);
+  const toast = site.appended[0];
+  const originalTimer = site.timers.at(-1);
+  assert.equal(originalTimer.delay, 4500);
+  site.document.activeElement = toast.children[2].children[0];
+  toast.listeners.get('focusin')();
+  assert.ok(site.cleared.has(originalTimer.id));
+  originalTimer.fn(); // Even an already queued callback must not remove focused content.
+  assert.equal(toast.removed, undefined);
+  site.document.activeElement = null;
+  toast.listeners.get('focusout')();
+  const settleTimer = site.timers.at(-1);
+  assert.equal(settleTimer.delay, 0);
+  settleTimer.fn();
+  const resumedTimer = site.timers.at(-1);
+  assert.equal(resumedTimer.delay, 4500);
+  resumedTimer.fn();
+  assert.equal(toast.removed, true);
+});
+
+test('pointer hover pauses expiry and leaving resumes it', () => {
+  const site = run();
+  dispatch(site.handlers, 'contextmenu', target('image'));
+  const toast = site.appended[0];
+  const originalTimer = site.timers.at(-1);
+  toast.listeners.get('mouseenter')();
+  assert.ok(site.cleared.has(originalTimer.id));
+  originalTimer.fn();
+  assert.equal(toast.removed, undefined);
+  toast.listeners.get('mouseleave')();
+  const resumedTimer = site.timers.at(-1);
+  assert.equal(resumedTimer.delay, 4500);
+  resumedTimer.fn();
+  assert.equal(toast.removed, true);
 });
 
 test('emulator and arcade, admin and intro surfaces have no listeners', () => {
