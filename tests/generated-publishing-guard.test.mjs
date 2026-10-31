@@ -144,4 +144,7 @@ test("authoritative publisher checks staged patch equivalence before creating a 
   assert.ok(dedupSource.includes('if (base !== main) return "";'));
   assert.ok(dedupSource.includes('live.head?.sha !== sha'));
   assert.ok(dedupSource.includes('live.head?.repo?.full_name !== repo'));
+  assert.ok(dedupSource.includes('const stagedPatch = run("git", ["diff"'));
+  assert.ok(dedupSource.includes('return run("git", ["diff"'));
+  assert.ok(!dedupSource.includes('trimEnd()'));
 });
