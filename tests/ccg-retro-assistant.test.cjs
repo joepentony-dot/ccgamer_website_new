@@ -36,17 +36,16 @@ assert.notEqual(matchingGames(pages,'C64 platformers',5,0)[0].slug,matchingGames
 console.log('CCG Retro Assistant: archive filters, genre synonyms, safe follow-ups and bounded pagination passed');
 
 
-/* Home-only bootstrap is independent from the approved CLS whitelist. */
+/* Owner-requested retirement: no Ask CCG launcher may load from the homepage. */
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const randomizer = fs.readFileSync(path.join(root, 'js/ccg-archive-pulse-randomizer.js'), 'utf8');
 const home = fs.readFileSync(path.join(root, 'home.html'), 'utf8');
 assert.match(randomizer, /data-ccg-page/);
-assert.match(randomizer, /\/js\/ccg-retro-assistant\.js/);
-assert.match(randomizer, /data-ai-enabled/);
+assert.doesNotMatch(randomizer, /ccg-retro-assistant\.js|data-ccg-retro-assistant|data-ai-enabled/);
 assert.doesNotMatch(home, /ccg-retro-assistant\.js/);
-console.log('CCG Retro Assistant: home-only lazy bootstrap / protected homepage guard passed');
+console.log('Ask CCG removed: homepage and Archive Pulse have no chat bootstrap');
 
 /* Ground at least one query in the real, unchanged canonical catalogue. */
 const catalogue = JSON.parse(fs.readFileSync(path.join(root, 'games/games.json'), 'utf8'));
