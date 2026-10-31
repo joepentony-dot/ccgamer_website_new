@@ -151,6 +151,12 @@ jobs:
           node --check js/music-composer-pages.js
           node --check scripts/audit-scroll-reachability.js
 
+      - name: Verify selective copyright notice preserves linked artwork controls
+        run: |
+          node --check js/ccg-copyright-notice.js
+          node --check js/analytics.js
+          node --test tests/copyright-notice.test.mjs
+
       - name: Run global header reflow regression guard
         run: node --test tests/global-header-reflow.test.mjs
 
