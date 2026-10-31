@@ -71,3 +71,102 @@ jobs:
 
       - name: Check whitespace
         run: git diff --check
+
+  # Compare the exact PR HTML against its current base in real Chromium/Lighthouse.
+  # This is a bounded pre-merge non-regression check, not a claim of speed uplift.
+  lighthouse-genre-comparison:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact base
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: baseline
+
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pinned Lighthouse for measured comparison
+        run: |
+          mkdir -p /tmp/ccg-lighthouse
+          cd /tmp/ccg-lighthouse
+          npm install --no-save --no-package-lock --ignore-scripts lighthouse@12.8.2
+
+      - name: Run mobile and desktop Lighthouse against both revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python3 -m http.server 8123 --bind 127.0.0.1 --directory baseline > /tmp/ccg-lh-baseline.log 2>&1 &
+          BASE_SERVER=$!
+          python3 -m http.server 8124 --bind 127.0.0.1 --directory candidate > /tmp/ccg-lh-candidate.log 2>&1 &
+          CANDIDATE_SERVER=$!
+          trap 'kill "$BASE_SERVER" "$CANDIDATE_SERVER" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://127.0.0.1:8123/games/genres/role-playing-games.html && curl -fsS -o /dev/null http://127.0.0.1:8124/games/genres/role-playing-games.html; then break; fi
+            sleep 1
+          done
+          for mode in mobile desktop; do
+            for version in baseline candidate; do
+              port=8123
+              if [ "$version" = candidate ]; then port=8124; fi
+              for repetition in 1 2; do
+                options=()
+                if [ "$mode" = desktop ]; then options+=(--preset=desktop); fi
+                node /tmp/ccg-lighthouse/node_modules/lighthouse/cli/index.js "http://127.0.0.1:$port/games/genres/role-playing-games.html" \
+                  --only-categories=performance --output=json \
+                  --output-path="reports/${version}-${mode}-${repetition}.json" \
+                  --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+                  --quiet "${options[@]}"
+              done
+            done
+          done
+
+      - name: Compare measured LCP and CLS with lab-variance tolerance
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const median = values => values.sort((a,b) => a-b)[Math.floor(values.length / 2)];
+          const metrics = (version, mode) => {
+            const runs = [1,2].map(i => JSON.parse(fs.readFileSync(`reports/${version}-${mode}-${i}.json`, 'utf8')));
+            return {
+              lcp: median(runs.map(r => r.audits['largest-contentful-paint']?.numericValue)),
+              cls: median(runs.map(r => r.audits['cumulative-layout-shift']?.numericValue))
+            };
+          };
+          let failure = false;
+          const summary = [];
+          for (const mode of ['mobile','desktop']) {
+            const before = metrics('baseline', mode), after = metrics('candidate', mode);
+            for (const value of [before.lcp,before.cls,after.lcp,after.cls]) {
+              if (!Number.isFinite(value)) throw Error(`Missing Lighthouse metric for ${mode}`);
+            }
+            const lcpCeiling = before.lcp * 1.15 + 250;
+            const clsCeiling = before.cls + 0.03;
+            const passed = after.lcp <= lcpCeiling && after.cls <= clsCeiling;
+            summary.push({mode, baseline: before, candidate: after, lcpCeiling, clsCeiling, passed});
+            if (!passed) failure = true;
+          }
+          fs.writeFileSync('reports/summary.json', JSON.stringify(summary, null, 2));
+          console.log(JSON.stringify(summary, null, 2));
+          if (failure) throw Error('Genre Lighthouse regression exceeds bounded lab-variance tolerance');
+          NODE
+
+      - name: Preserve exact-head Lighthouse comparison evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: genre-lighthouse-comparison
+          path: reports/
+          if-no-files-found: warn
