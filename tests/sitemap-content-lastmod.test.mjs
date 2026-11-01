@@ -155,3 +155,60 @@ test("final sitemap pass preserves SEO opportunity metadata without composer syn
   assert.ok(initial.invoked.includes("apply-seo-growth-repair-v4.js"),
     "initial sitemap pass must retain the SEO growth repair");
 });
+
+test("SEO final staging ignores temporary HTML rewrites but dates staged HTML", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "ccg-sitemap-staged-"));
+  const oldMode = process.env.CCG_SITEMAP_LASTMOD_STAGED_ONLY;
+  try {
+    run(root, ["init", "-q"]);
+    run(root, ["config", "user.name", "CCG Test"]);
+    run(root, ["config", "user.email", "ccg-test@example.invalid"]);
+    const page = path.join(root, "retro.html");
+    const newPage = path.join(root, "new-retro.html");
+    fs.writeFileSync(page, "<p>Published retro page</p>\\n");
+    run(root, ["add", "retro.html"]);
+    const oldDate = "2024-05-10T11:00:00Z";
+    run(root, ["commit", "-qm", "Published retro page"], {
+      GIT_AUTHOR_DATE: oldDate, GIT_COMMITTER_DATE: oldDate,
+    });
+
+    const today = () => "2026-11-01";
+    process.env.CCG_SITEMAP_LASTMOD_STAGED_ONLY = "1";
+    assert.equal(getContentLastmod(root, page, today), "2024-05-10");
+
+    fs.writeFileSync(page, "<p>Temporary generation change</p>\\n");
+    assert.equal(getContentLastmod(root, page, today), "2024-05-10",
+      "unstaged preview differences must not advance sitemap lastmod");
+
+    run(root, ["add", "retro.html"]);
+    assert.equal(getContentLastmod(root, page, today), "2026-11-01",
+      "outgoing staged HTML must receive its publication date");
+
+    fs.writeFileSync(page, "<p>Another unstaged preview change</p>\\n");
+    assert.equal(getContentLastmod(root, page, today), "2026-11-01",
+      "unstaged differences cannot hide a real staged change");
+
+    run(root, ["reset", "-q", "HEAD", "--", "retro.html"]);
+    assert.equal(getContentLastmod(root, page, today), "2024-05-10",
+      "discarded staged HTML must restore the historical date");
+
+    fs.writeFileSync(newPage, "<p>New published page</p>\\n");
+    run(root, ["add", "new-retro.html"]);
+    assert.equal(getContentLastmod(root, newPage, today), "2026-11-01",
+      "new staged pages have a current publication date");
+  } finally {
+    if (oldMode === undefined) delete process.env.CCG_SITEMAP_LASTMOD_STAGED_ONLY;
+    else process.env.CCG_SITEMAP_LASTMOD_STAGED_ONLY = oldMode;
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("SEO stages the final sitemap after staging generated HTML and before PR deduplication", () => {
+  const workflow = fs.readFileSync(new URL("../.github/workflows/seo.yml", import.meta.url), "utf8");
+  const stage = workflow.indexOf("git add sitemap.xml sitemap-*.xml data/video-metadata.json");
+  const finalPass = workflow.indexOf("CCG_SITEMAP_LASTMOD_STAGED_ONLY=1 node scripts/generate-sitemaps.js --final-pass");
+  const restage = workflow.indexOf("git add sitemap.xml sitemap-*.xml", stage + 1);
+  const dedup = workflow.indexOf("scripts/deduplicate-generated-publishing.mjs --seo");
+  assert.ok(stage >= 0 && finalPass > stage && restage > finalPass && dedup > restage,
+    "final lastmod must reflect the staged outgoing HTML before generated-PR deduplication");
+});
