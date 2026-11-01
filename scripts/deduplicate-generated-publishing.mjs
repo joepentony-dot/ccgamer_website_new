@@ -137,12 +137,17 @@ export function findExistingPrFromCheckout(repo, options = {}) {
     throw new Error("Main changed before reconciliation; abort.");
   }
   const mergeSha = buildStaleGeneratedMergeCommit(main, sha, stagedPatch);
-  if (check().head?.sha !== sha ||
+  const beforePush = check();
+  if (beforePush.state !== "open" || beforePush.draft !== true ||
+      beforePush.head?.sha !== sha || beforePush.head?.ref !== pr.headRefName ||
+      beforePush.head?.repo?.full_name !== repo || beforePush.base?.ref !== "main" ||
       JSON.parse(gh(["api", "repos/" + repo + "/git/ref/heads/main"])).object?.sha !== main) {
     throw new Error("Generated PR or main changed before fast-forward push; abort.");
   }
   git(["push", "origin", mergeSha + ":refs/heads/" + pr.headRefName]);
-  if (check().head?.sha !== mergeSha) {
+  const afterPush = check();
+  if (afterPush.state !== "open" || afterPush.head?.sha !== mergeSha ||
+      afterPush.head?.ref !== pr.headRefName || afterPush.head?.repo?.full_name !== repo) {
     throw new Error("Generated PR head was not confirmed after fast-forward; stop publication.");
   }
   console.error("::notice::[publishing-dedup] Reconciled identical DRAFT PR #" +
