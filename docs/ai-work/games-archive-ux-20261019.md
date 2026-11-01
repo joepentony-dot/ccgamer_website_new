@@ -1,3 +1,9 @@
+## 1 November 2026 — Games Archive release-year free-text search (BRANCH ONLY)
+
+- Fresh protected main at diagnosis `6078b4a82231ac7bec829478b08c66ecbd9da71a`. Live Games Archive advertises searching by release year, but `getGameSearchData()` omitted `game.year`; source-executed `1986` returned 0 matches despite 81 actual 1986 games in the 666-record search dataset.
+- Bounded fix adds year to existing normalised search fields; source-executed preflight returns exactly 81 matches for 1986 and 90 for 1987, retains Ace of Aces title and combined `1986 ace` search, and rejects the wrong year. Existing archive-directory test gains real-catalogue regression; cache v216→v217. Preserve dropdown year filter, fuzzy search, Omega design, games.json, links, ratings, emulator, backend and intro.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head CI, browser/performance safeguards, fresh-main reconciliation, guarded expected-head squash merge, Pages deployment and desktop/mobile live search acceptance. Generated publishing, Amazon, Dungeon Windows and genre CLS holds are independent.
+
 # Omega Games Archive decluttering — 19 October 2026
 
 ## Owner intent

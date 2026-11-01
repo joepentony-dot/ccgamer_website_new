@@ -1,3 +1,7 @@
+## 1 November 2026 — Games Archive release-year search (BRANCH ONLY)
+
+- New bounded source candidate `fix/games-archive-year-query-20261101` based on main `6078b4a82231ac7bec829478b08c66ecbd9da71a`: fix advertised free-text year search in `js/games-library.js` (0→81 matches for 1986, 0→90 for 1987), add actual-catalogue regression in existing archive-directory tests, advance public cache v216→v217. No catalogue or visual changes. Await exact-head CI, guarded merge, Pages and live desktop/mobile acceptance; all existing holds remain.
+
 ## 1 November 2026 — External Link Health disabled-Issues reporting defect (BRANCH ONLY)
 
 - Exact production main `a416d3e50549223e40f1dab3ef047d53be1be076`; scheduled External Link Health run 41301529771 completed its 2,538-link read-only audit and uploaded the 30-day artifact, but its reporting step failed HTTP 410 because GitHub Issues is disabled. The report flags four repeated-404 Google Drive PDF references in games/games.json; these are review candidates, not permission to remove or rewrite links. 742 blocked and 478 transient results are not confirmed broken.
