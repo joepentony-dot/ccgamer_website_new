@@ -212,12 +212,12 @@ async function openHome(sessionId, width) {
 }
 
 
-async function assertSingleGameExploreNormalFlow(sessionId, width) {
+async function assertSingleGameExploreNormalFlow(sessionId, width, slug) {
   // The owner-approved Explore menu belongs between the hero and Video Archive.
   // Exercise the actual game page, not a synthetic DOM or source-only assertion.
   await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
   await webdriver("POST", `/session/${sessionId}/url`, {
-    url: `${auditBaseUrl()}/games/fire-ant/?ccg-explore-flow-audit=${Date.now()}`
+    url: `${auditBaseUrl()}/games/${slug}/?ccg-explore-flow-audit=${Date.now()}`
   });
   await waitUntil(sessionId, `(
     function () {
@@ -225,7 +225,7 @@ async function assertSingleGameExploreNormalFlow(sessionId, width) {
       return nav && !nav.hidden && nav.querySelector('a[href="#game-video-section"]')
         && document.getElementById('game-video-section');
     }
-  )()`, `visible Fire Ant Explore section menu at ${width}px`, 20000);
+  )()`, `visible ${slug} Explore section menu at ${width}px`, 20000);
 
   const initial = await execute(sessionId, `return (function () {
     const nav = document.querySelector('[data-game-section-nav]');
@@ -242,7 +242,7 @@ async function assertSingleGameExploreNormalFlow(sessionId, width) {
   })();`);
   if (initial.position !== "static" || !initial.afterHero || !initial.beforeVideo ||
       !initial.visible || !initial.videoLink) {
-    throw new Error(`Single-game Explore menu placement failed at ${width}px: ${JSON.stringify(initial)}`);
+    throw new Error(`Single-game ${slug} Explore menu placement failed at ${width}px: ${JSON.stringify(initial)}`);
   }
 
   // A normal-flow menu moves out of the viewport as the visitor scrolls.
@@ -259,7 +259,7 @@ async function assertSingleGameExploreNormalFlow(sessionId, width) {
     };
   })();`);
   if (scrolled.scrollY < 100 || scrolled.bottom >= -10 || scrolled.position !== "static") {
-    throw new Error(`Single-game Explore menu followed scrolling at ${width}px: ${JSON.stringify(scrolled)}`);
+    throw new Error(`Single-game ${slug} Explore menu followed scrolling at ${width}px: ${JSON.stringify(scrolled)}`);
   }
 
   const restored = await execute(sessionId, `return (function () {
@@ -269,7 +269,7 @@ async function assertSingleGameExploreNormalFlow(sessionId, width) {
     return { scrollY: window.scrollY, top: rect.top, bottom: rect.bottom };
   })();`);
   if (restored.scrollY > 1 || restored.bottom <= 0 || restored.top < 0) {
-    throw new Error(`Single-game Explore menu did not return to its original position at ${width}px: ${JSON.stringify(restored)}`);
+    throw new Error(`Single-game ${slug} Explore menu did not return to its original position at ${width}px: ${JSON.stringify(restored)}`);
   }
 }
 
@@ -757,7 +757,9 @@ async function main() {
     for (const width of [1440, 390]) await assertRetroSpecialsBrowser(sessionId, width);
 
     // Confirm the owner-requested single-game Explore menu scrolls away normally.
-    for (const width of [1440, 390]) await assertSingleGameExploreNormalFlow(sessionId, width);
+    for (const slug of ["fire-ant", "alien-breed"]) {
+      for (const width of [1440, 390]) await assertSingleGameExploreNormalFlow(sessionId, width, slug);
+    }
 
     // Desktop regression: check the actual Fourthwall link with real pointer hit-testing.
     for (const width of [1440, 1920]) {
@@ -863,7 +865,7 @@ async function main() {
     console.log("- Music Hub search ignores track-count badges, resolves historical aliases, announces no results and restores all composers at desktop/mobile widths");
     console.log("- Games Archive year, title and combined queries, wrong-year rejection and reset pass at desktop/mobile widths");
     console.log("- Retro Specials dynamic cards, safe thumbnail dimensions, one-shot image fallback and search pass at desktop/mobile widths");
-    console.log("- Single-game Explore menu stays in document flow above Video Archive and scrolls away at desktop/mobile widths");
+    console.log("- C64 Fire Ant and Amiga Alien Breed Explore menus stay above Video Archive and scroll away at desktop/mobile widths");
   } finally {
     if (sessionId) {
       try { await webdriver("DELETE", `/session/${sessionId}`); } catch (error) {}
