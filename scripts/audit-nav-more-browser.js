@@ -101,6 +101,8 @@ async function verifyLiveReleaseAssets() {
 
   const assets = [
     ["/service-worker.js", "service-worker.js"],
+    // The retired Ask CCG bootstrap must not reappear in the deployed Home script.
+    ["/js/ccg-archive-pulse-randomizer.js", "js/ccg-archive-pulse-randomizer.js"],
     ["/js/ccg-nav-fit.js", "js/ccg-nav-fit.js"],
     ["/resources/css/ccg-nav-fit.css", "resources/css/ccg-nav-fit.css"],
     ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"]
@@ -202,6 +204,39 @@ async function openHome(sessionId, width) {
     "document.querySelector('[data-ccg-more-toggle]') && !document.querySelector('[data-ccg-more-toggle]').disabled",
     `enabled More toggle at ${width}px`
   );
+}
+
+async function assertRetiredAskCCGAbsent(sessionId, width, visit) {
+  // Use the real browser, not a source-only grep. Revisit within the same
+  // Chrome profile to cover a returning session and its service-worker state.
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 900 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/home.html?ccg-assistant-retirement-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, "document.readyState !== 'loading' && Boolean(document.body)",
+    `Home DOM for retired assistant at ${width}px (${visit})`, 12000);
+  // The old launcher was attached on DOM readiness by a deferred Home script.
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  const evidence = await execute(sessionId, `
+    return (function () {
+      const retired = /(?:ccg-retro-assistant\\.js|ccg-retro-assistant\\.css)(?:[?#]|$)/i;
+      return {
+        viewport: window.innerWidth,
+        launcher: Boolean(document.querySelector('#ccg-retro-assistant, .ccg-ra__trigger, #ccg-ra-panel')),
+        bootstrapFlag: Boolean(window.__ccgRetroAssistantLoaded),
+        scripts: Array.from(document.scripts).filter((script) =>
+          retired.test(script.src || '') || script.hasAttribute('data-ccg-retro-assistant')).map((script) => script.src),
+        styles: Array.from(document.querySelectorAll('link[href]')).filter((link) =>
+          retired.test(link.href || '')).map((link) => link.href),
+        fetched: performance.getEntriesByType('resource').filter((entry) =>
+          retired.test(entry.name || '')).map((entry) => entry.name)
+      };
+    })();
+  `);
+  if (evidence.launcher || evidence.bootstrapFlag || evidence.scripts.length ||
+      evidence.styles.length || evidence.fetched.length) {
+    throw new Error(`Retired Ask CCG reappeared at ${width}px (${visit}): ${JSON.stringify(evidence)}`);
+  }
 }
 
 async function openMoreWithRealClick(sessionId, width) {
@@ -406,6 +441,13 @@ async function main() {
     });
     sessionId = session.sessionId;
 
+    // A fresh and a repeat visit in one browser profile must both stay free
+    // of the retired Ask CCG launcher on desktop and mobile-sized viewports.
+    for (const width of [1440, 390]) {
+      await assertRetiredAskCCGAbsent(sessionId, width, "first visit");
+      await assertRetiredAskCCGAbsent(sessionId, width, "return visit");
+    }
+
     // Desktop regression: check the actual Fourthwall link with real pointer hit-testing.
     for (const width of [1440, 1920]) {
       await openHome(sessionId, width);
@@ -506,6 +548,7 @@ async function main() {
     console.log("- Emulation, Music and Publishers are reachable from More on the Install destination at both widths");
     console.log("- Destination pages retain the canonical shared header");
     console.log("- Legacy text-social fallback is not visible");
+    console.log("- Retired Ask CCG launcher, scripts and resource requests are absent on first and return desktop/mobile visits");
   } finally {
     if (sessionId) {
       try { await webdriver("DELETE", `/session/${sessionId}`); } catch (error) {}
