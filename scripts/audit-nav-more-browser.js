@@ -344,9 +344,9 @@ async function assertGamesArchiveYearSearch(sessionId, width) {
   const cases = [
     { query: "1986", expected: countYear(1986) },
     { query: "1987", expected: countYear(1987) },
-    { query: "ace of aces", expected: 1 },
-    { query: "1986 ace", expected: 1 },
-    { query: "1987 ace", expected: 0 },
+    { query: "1942", expected: 1 },
+    { query: "1986 1942", expected: 1 },
+    { query: "1987 1942", expected: 0 },
     { query: "", expected: catalogue.length }
   ];
   for (const testCase of cases) {
