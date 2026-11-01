@@ -320,6 +320,9 @@ async function assertGamesArchiveYearSearch(sessionId, width) {
   await webdriver("POST", `/session/${sessionId}/url`, {
     url: `${auditBaseUrl()}/games/index.html?ccg-year-search-audit=${Date.now()}`
   });
+  // The archive intentionally defers catalogue hydration until genuine user intent.
+  // A real pointer click on search must start it before we assert results.
+  await clickElement(sessionId, "#gamesSearchInput");
   await waitUntil(sessionId, `(function () {
     const input = document.getElementById('gamesSearchInput');
     const total = document.getElementById('gamesTotalCount');
