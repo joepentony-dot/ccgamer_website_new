@@ -1,3 +1,7 @@
+## 1 November 2026 — generated PR stale-identical recurrence correction (BRANCH ONLY)
+
+- Confirmed existing generated SEO #2979 was closed after replacement #2981 despite identical full sitemap patch; the deduplication script excluded stale branches. Single ACTIVE source candidate `fix/generated-publishing-stale-pr-fast-forward-20261101` safely reconciles exact-patch matching open DRAFT generated branches onto current main with a non-force two-parent fast-forward commit, revalidates PR/main before write, and preserves all independent release gates. Focused temporary-Git regression added; remote exact-head qualification and guarded merge PENDING. No public HTML, catalogue, intro, emulator, Dungeon, cache or backend changed. #2981, Amazon #2957, Dungeon #2958 and CLS #2964 remain parked on their established holds.
+
 ## 1 November 2026 — SEO sitemap lastmod staged-publication correction (BRANCH ONLY)
 
 - Protected main at source creation `f4c488549c6306ce2ef343b27fedea42eaf6fde1` includes the guarded SEO draft-only safeguard #2977 and the earlier misleading #2976 sitemap-only merge. Existing open owner-blocked Amazon #2957, Dungeon #2958 and genre #2964 remain parked; no other active source PR was found.
