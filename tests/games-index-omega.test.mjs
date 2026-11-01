@@ -177,13 +177,13 @@ test('dynamic Games Archive cards encode editable catalogue data without changin
     querySelectorAll() { return []; }
   };
   const library = new Function('window', 'document',
-    runtime + '\\nreturn { renderGameCardMarkup, renderGameCardShell, resolveGameUrl, buildAccordion };'
+    runtime + '\nreturn { renderGameCardMarkup, renderGameCardShell, resolveGameUrl, buildAccordion };'
   )({ matchMedia: () => ({ matches: false }), innerWidth: 1440 }, fakeDocument);
 
   const poisoned = {
     id: 'safe-game',
     slug: 'javascript:alert(1)',
-    title: 'Demo <svg onload=alert(1)> " & \\'',
+    title: "Demo <svg onload=alert(1)> \" & '",
     thumbnail: 'art.png" onerror="alert(1)',
     year: '1987"><img src=x onerror=alert(1)>',
     system: 'C64</div><script>alert(1)</script>'
@@ -192,9 +192,9 @@ test('dynamic Games Archive cards encode editable catalogue data without changin
     key: 'slug:" onmouseover="alert(1)',
     rendered: true
   });
-  assert.match(markup, /href="safe-game\\/"/);
-  assert.match(markup, /&lt;svg onload=alert\\(1\\)&gt;/);
-  assert.match(markup, /&lt;script&gt;alert\\(1\\)&lt;\\/script&gt;/);
+  assert.match(markup, /href="safe-game\/"/);
+  assert.match(markup, /&lt;svg onload=alert\(1\)&gt;/);
+  assert.match(markup, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   assert.match(markup, /&quot;/);
   assert.match(markup, /&#39;/);
   assert.doesNotMatch(markup, /<svg|<script|onerror="alert|onmouseover="alert/);
@@ -209,7 +209,7 @@ test('dynamic Games Archive cards encode editable catalogue data without changin
     title: "Accolade's Comics", thumbnail: 'accolades-comics.webp',
     year: 1987, system: 'C64'
   });
-  assert.match(ordinary, /href="accolades-comics\\/"/);
+  assert.match(ordinary, /href="accolades-comics\/"/);
   assert.match(ordinary, /Accolade&#39;s Comics/);
   assert.equal(library.resolveGameUrl({ slug: 'smash-t-5' }), 'smash-tv/');
 
