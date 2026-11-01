@@ -137,7 +137,7 @@ function ccgBuildRetroSpecialCard(item, index = 0) {
     <article class="ccg-card ccg-game-card genre-card ccg-game-card--retro-event" data-members-only="${membersOnly}">
       <a class="ccg-game-card__link" href="${ccgEscapeHtml(pageUrl)}" aria-label="Open ${ccgEscapeHtml(title + accessLabel)}">
         <div class="ccg-game-card__media ccg-game-card__thumb">
-          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(`${title} – Retro Specials video thumbnail${accessLabel}`)}" loading="${loading}" decoding="async"${fetchPriority} width="480" height="270" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${ccgEscapeHtml(thumbFallback)}';" />
+          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(`${title} – Retro Specials video thumbnail${accessLabel}`)}" loading="${loading}" decoding="async"${fetchPriority} width="480" height="270" referrerpolicy="no-referrer" data-ccg-retro-fallback="${ccgEscapeHtml(thumbFallback)}" />
           <span class="ccg-collection-badge ccg-collection-badge--event" aria-hidden="true">Retro special</span>
           ${membersSash}
         </div>
@@ -150,6 +150,23 @@ function ccgBuildRetroSpecialCard(item, index = 0) {
       </a>
     </article>
   `;
+}
+
+function ccgHandleRetroSpecialThumbnailError(event) {
+  const image = event.target;
+  if (!image || image.tagName !== 'IMG' || !image.hasAttribute('data-ccg-retro-fallback')) return;
+  const fallback = image.getAttribute('data-ccg-retro-fallback');
+  // Remove before replacing the source so a failed fallback cannot loop.
+  image.removeAttribute('data-ccg-retro-fallback');
+  if (fallback && image.src !== fallback) image.src = fallback;
+}
+
+let ccgRetroSpecialThumbnailFallbackBound = false;
+function ccgBindRetroSpecialThumbnailFallback() {
+  if (ccgRetroSpecialThumbnailFallbackBound) return;
+  ccgRetroSpecialThumbnailFallbackBound = true;
+  // Image error events do not bubble; capture also handles cards rebuilt by search.
+  document.addEventListener('error', ccgHandleRetroSpecialThumbnailError, true);
 }
 
 function ccgRetroSpecialsDateValue(item) {
@@ -552,6 +569,7 @@ async function ccgRunCollection() {
     ccgBuildRetroSpecialsDiscoveryShell();
     ccgUpdateRetroSpecialsIntro();
     ccgBindRetroSpecialsDiscovery();
+    ccgBindRetroSpecialThumbnailFallback();
     ccgInjectRetroSpecialStructuredData(items);
     ccgRenderRetroSpecialsDiscovery();
 

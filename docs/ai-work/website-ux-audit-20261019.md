@@ -1,3 +1,9 @@
+## 1 November 2026 — Retro Specials thumbnail fallback injection guard (BRANCH ONLY)
+
+- Reproduced an executable inline image-error handler from editable Retro Specials metadata: the adversarial YouTube ID `x'-alert(1)-'` survived URL encoding and HTML-entity decoding inside the old `onerror` JavaScript; a source-executed negative control invoked the injected alert. This is a latent data-to-code risk, not evidence that the current published dataset was malicious.
+- Bounded source correction replaces only the dynamically generated card's inline handler with an HTML-encoded fallback data attribute and a single capture-phase image-error listener, registered before rendering and limited to one retry. Preserve thumbnail dimensions, high-priority first image, members badges, search/re-render, static fallbacks and existing routes. Add four source-executed regressions in the existing thumbnail test, run them in Site Safety, and advance public code cache v217→v218. No catalogue, generated pages, intro, Omega CSS, emulator, accounts or Dungeon files changed.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head Site Safety, cache, Lighthouse and applicable native CI; reconcile fresh main, guarded expected-head squash merge and verify live Retro Specials thumbnails and search on desktop/mobile. Existing owner-controlled holds remain independent.
+
 ## 1 November 2026 — publisher count grammar and accessible announcements (BRANCH ONLY)
 
 - Main `cdfa1c9ab7a8bffc38774abb76d81a22fbcc8d1c`. Existing publisher generator outputs `1 games shown` for one-credit pages; shared publisher runtime updates numbers without singular nouns, including index `1 publishers found`. Lucasfilm Games contains three entries including a single Amiga title, an actual one-result filter case.
