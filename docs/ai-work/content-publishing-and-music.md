@@ -1,3 +1,8 @@
+## 1 November 2026 — generated branch confirmation consistency fix (BRANCH ONLY)
+
+- Confirmed post-merge SEO Automation run **41281701712** failed in `Commit generated SEO artifacts` after a successful non-force push updated the existing #2981 generated branch from `20753f271` to `af69ad2c2`. Immediate GitHub PR REST read lagged behind the Git ref and falsely reported that the head was not confirmed. Subsequent independent REST/ref reads both showed `af69ad2c2`; no duplicate PR was opened and no sitemap was merged.
+- One bounded source follow-up `fix/generated-dedup-remote-confirmation-20261101` verifies the actual remote Git branch via `git ls-remote` after push, with five bounded checks and fail-closed mismatches; it does not trust eventually consistent PR metadata. Adds real local bare-remote fast-forward regression and negative ref/sha cases to the existing suite. Preserve current #2981 draft, all owner approval/CI gates, main protection, public site and catalogue. **BRANCH ONLY; new-head CI/merge/deployment pending.**
+
 ## 1 November 2026 — stale identical generated-output PR reuse (BRANCH ONLY)
 
 - Source-level recurrence confirmed: closed #2979 and current #2981 contained byte-identical sitemap output, but the prior deduplication guard deliberately ignored #2979 once main advanced. A fresh generated PR was created instead of safely refreshing the existing draft. No native approval, release or public sitemap claim is inferred from this.

@@ -75,6 +75,14 @@ export function buildStaleGeneratedMergeCommit(main, oldHead, stagedPatch, exec 
   return mergeSha;
 }
 
+export function remoteBranchMatches(output, branch, expectedSha) {
+  if (typeof output !== "string" || typeof branch !== "string" ||
+      !/^[a-f0-9]{40}$/.test(expectedSha || "")) return false;
+  const parts = output.trim().split(/\s+/);
+  return parts.length === 2 && parts[0] === expectedSha &&
+    parts[1] === "refs/heads/" + branch;
+}
+
 export function findExistingPrFromCheckout(repo, options = {}) {
   if (!/^[^/]+\/[^/]+$/.test(repo || "")) {
     throw new Error("Expected GITHUB_REPOSITORY owner/name.");
@@ -145,10 +153,20 @@ export function findExistingPrFromCheckout(repo, options = {}) {
     throw new Error("Generated PR or main changed before fast-forward push; abort.");
   }
   git(["push", "origin", mergeSha + ":refs/heads/" + pr.headRefName]);
-  const afterPush = check();
-  if (afterPush.state !== "open" || afterPush.head?.sha !== mergeSha ||
-      afterPush.head?.ref !== pr.headRefName || afterPush.head?.repo?.full_name !== repo) {
-    throw new Error("Generated PR head was not confirmed after fast-forward; stop publication.");
+  // GitHub's PR REST view may lag behind an acknowledged Git push. Verify
+  // the actual remote Git branch, not an eventually consistent PR snapshot.
+  // A changed or missing remote ref still fails closed without a new PR.
+  let confirmed = false;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const remote = git(["ls-remote", "--heads", "origin", pr.headRefName]);
+    if (remoteBranchMatches(remote, pr.headRefName, mergeSha)) {
+      confirmed = true;
+      break;
+    }
+    if (attempt < 4) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+  }
+  if (!confirmed) {
+    throw new Error("Generated PR remote branch was not confirmed after fast-forward; stop publication.");
   }
   console.error("::notice::[publishing-dedup] Reconciled identical DRAFT PR #" +
     pr.number + " onto current main by non-force fast-forward; fresh exact-head qualification remains required.");

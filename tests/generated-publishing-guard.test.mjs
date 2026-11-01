@@ -8,7 +8,7 @@ import {
   REQUIRED_VALIDATION_WORKFLOWS, executedRunPassed,
   codeReviewPassed, currentPullIsSafe
 } from "../scripts/qualify-generated-publishing.mjs";
-import { findEquivalentGeneratedPr, buildStaleGeneratedMergeCommit, SEO_GENERATED_BRANCH, SEO_GENERATED_TITLE } from "../scripts/deduplicate-generated-publishing.mjs";
+import { findEquivalentGeneratedPr, buildStaleGeneratedMergeCommit, remoteBranchMatches, SEO_GENERATED_BRANCH, SEO_GENERATED_TITLE } from "../scripts/deduplicate-generated-publishing.mjs";
 
 const SHA = "a".repeat(40);
 const goodRun = {id:44, head_sha:SHA, event:"workflow_dispatch", status:"completed", conclusion:"success"};
@@ -235,5 +235,50 @@ test("stale identical generated PR can be reconciled without rewriting history o
     assert.equal(git(["rev-parse", "main"]), main);
   } finally {
     fs.rmSync(dir, {recursive:true, force:true});
+  }
+});
+
+
+test("remote branch confirmation uses actual Git ref, not a lagging PR REST snapshot", () => {
+  const dir = fs.mkdtempSync(join(tmpdir(), "ccg-dedup-remote-"));
+  const bare = fs.mkdtempSync(join(tmpdir(), "ccg-dedup-bare-"));
+  const gitRaw = args => execFileSync("git", ["-C", dir, ...args], {encoding:"utf8"});
+  const git = args => gitRaw(args).trim();
+  try {
+    execFileSync("git", ["init", "--bare", bare], {encoding:"utf8"});
+    git(["init", "-b", "main"]);
+    git(["config", "user.name", "CCG Fixture"]);
+    git(["config", "user.email", "fixture@example.invalid"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "old\n");
+    git(["add", "."]);
+    git(["commit", "-m", "baseline"]);
+    const base = git(["rev-parse", "HEAD"]);
+    git(["checkout", "-b", "automation/seo-456-1"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "new\n");
+    git(["add", "."]);
+    git(["commit", "-m", "generated"]);
+    const oldHead = git(["rev-parse", "HEAD"]);
+    git(["checkout", "main"]);
+    fs.writeFileSync(join(dir, "other.txt"), "main advanced\n");
+    git(["add", "."]);
+    git(["commit", "-m", "new main"]);
+    const main = git(["rev-parse", "HEAD"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "new\n");
+    git(["add", "sitemap-pages.xml"]);
+    const staged = gitRaw(["diff", "--cached", "--no-color", "--no-ext-diff", "--binary", "--full-index"]);
+    assert.notEqual(base, main);
+    const reconciled = buildStaleGeneratedMergeCommit(main, oldHead, staged, gitRaw);
+    git(["remote", "add", "origin", bare]);
+    git(["push", "origin", oldHead + ":refs/heads/automation/seo-456-1"]);
+    git(["push", "origin", reconciled + ":refs/heads/automation/seo-456-1"]);
+    const actual = gitRaw(["ls-remote", "--heads", "origin", "automation/seo-456-1"]);
+    assert.equal(remoteBranchMatches(actual, "automation/seo-456-1", reconciled), true);
+    assert.equal(remoteBranchMatches(actual, "automation/seo-456-1", oldHead), false);
+    assert.equal(remoteBranchMatches(actual, "automation/seo-999-1", reconciled), false);
+    assert.equal(remoteBranchMatches("", "automation/seo-456-1", reconciled), false);
+    assert.equal(remoteBranchMatches(actual + actual, "automation/seo-456-1", reconciled), false);
+  } finally {
+    fs.rmSync(dir, {recursive:true, force:true});
+    fs.rmSync(bare, {recursive:true, force:true});
   }
 });
