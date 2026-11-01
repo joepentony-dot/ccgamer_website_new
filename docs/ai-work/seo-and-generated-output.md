@@ -1,3 +1,8 @@
+## 1 November 2026 — External Link Health partial-artifact fail-closed guard (BRANCH ONLY)
+
+- Existing merged #2993 enumerates both hidden report paths, but `actions/upload-artifact@v4` with `if-no-files-found: error` fails only if **no paths match**, not when exactly one report is absent. The previous source assertion overstated this safeguard. No post-merge non-PR audit has yet proved artifact retention.
+- Bounded follow-up checks each JSON/Markdown report is nonempty and JSON parses **before** upload, with source-executed missing/empty/malformed fixtures in the existing External Link Health test suite. Preserve audit schedule, report classification, Issues-disabled 410 behaviour, artifact name/retention, catalogue and public website. Draft branch requires exact-head CI, guarded release and a real scheduled/manual audit demonstrating both retained files; no claim of LIVE acceptance.
+
 ## 1 November 2026 — External Link Health missing report artifact (BRANCH ONLY)
 
 - Fresh main `bbae915176857518acfc702432ce6e64beb57461`; the post-#2990 run `41301882411` was a PR validation only: its audit job was skipped, so it did **not** verify actual report upload. The prior real audit `41301529771` logged `No files were found with the provided path: .health/. No artifacts will be uploaded.` despite generating JSON/Markdown and successfully reading them in the issue-report step. `actions/upload-artifact@v4` excludes dot-prefixed directories unless explicitly opted in. GitHub's run artifact listing confirms zero artifacts.
