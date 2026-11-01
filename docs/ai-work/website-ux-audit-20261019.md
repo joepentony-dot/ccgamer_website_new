@@ -1,3 +1,9 @@
+## 1 November 2026 — Music Hub composer search feedback (BRANCH ONLY)
+
+- Existing Music Hub UX backlog: static composer search indexed trailing track-count badges as names (source-executed negative control: “32” matched Rob Hubbard), and unmatched queries hid all A–Z groups without feedback.
+- ONE bounded candidate `fix/music-hub-search-feedback-20261101` based on `9620db664aa4662204eaec020e1ccd6ff33b0c90`: change only `js/music-composer-utils.js`, existing `tests/archive-directory-system.test.mjs`, service-worker code cache v213→v214 and this checkpoint. Preserve the generated 276-composer archive, existing aliases, portraits, Omega styling, routes and protected systems. Eight source-executed V8 checks passed pre-write.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head Node/Chromium/Site Safety/SEO/cache CI, current-main reconciliation, guarded merge, Pages deployment and real desktop/mobile acceptance. SEO #2979, Amazon #2957 and Dungeon #2958 remain parked on their independent holds.
+
 ## 31 October 2026 — Composer dynamic HTML encoding (BRANCH ONLY)
 
 - A source-executed negative control showed that a catalogue composer credit containing a quoted HTML element was inserted unescaped into both a generated featured card's image alt attribute and visible heading; the same unescaped interpolation existed in the composer search accordion, profile and related links. Static generator output already escaped catalogue names; this is a dynamic runtime inconsistency.
