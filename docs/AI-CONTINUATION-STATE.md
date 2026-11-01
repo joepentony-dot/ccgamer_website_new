@@ -1,3 +1,7 @@
+## 1 November 2026 — Music Hub live-browser search acceptance guard (BRANCH ONLY)
+
+- Current main at source creation `8597035458c29b7be08bc8cd0fff882bcd0f920e` includes merged #2983 and Music Hub #2980. Existing Live Public Navigation browser coverage did not exercise the newly corrected composer search. Sole new independent verification candidate extends `scripts/audit-nav-more-browser.js` to test `32`, `Hubbard`, historical `David Dunn`/Julie Dunn, unmatched search and clearing at desktop/mobile widths, and compare live composer JS against release source. JS syntax preflight passed; exact-head ChromeDriver CI, guarded merge and production Pages/live checks are pending. No public-site runtime changes. Generated SEO #2981 remains DRAFT with native `action_required` CI hold; Amazon and Dungeon retain owner acceptance holds.
+
 ## 1 November 2026 — generated PR post-push remote confirmation correction (BRANCH ONLY)
 
 - #2982 safely merged source at `3d3f7a3efef31219bbec498425ceeacfb0e3383e` after six exact-head workflows and seven check runs passed. Production SEO run 41281701712 exposed an eventual-consistency false failure: branch #2981 was successfully fast-forwarded to `af69ad2c2` but its immediate PR API read returned stale data. Single ACTIVE source correction `fix/generated-dedup-remote-confirmation-20261101` confirms the Git remote ref with bounded retries and a real bare-repo regression. No generated sitemap merged; #2981 remains DRAFT with native Actions approval hold. Full exact-head CI, guarded merge and Pages/live evidence pending.

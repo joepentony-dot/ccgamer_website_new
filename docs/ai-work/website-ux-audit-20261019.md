@@ -1,3 +1,9 @@
+## 1 November 2026 — Music Hub production search acceptance guard (BRANCH ONLY)
+
+- Merged Music Hub search correction #2980 and its Pages deployment were successful, but actual interactive desktop/mobile composer-name search acceptance remained unverified. The existing Live Public Navigation workflow already runs a real ChromeDriver browser after Pages deployment; it did not exercise Music Hub search or compare its shipped composer utility with the repository.
+- ONE bounded browser-verification candidate adds a live/local Music Hub interaction audit at 1440px and 390px to `scripts/audit-nav-more-browser.js`: reject track-count-only query `32`, find Rob Hubbard, resolve historical David Dunn to Julie Dunn, show an unmatched-search message, and restore the full composer directory after clearing. Compare live `js/music-composer-utils.js` bytes with the exact repository release. Existing Ask CCG retirement and navigation tests are preserved.
+- Browser script syntax was checked before branch creation. **BRANCH ONLY / REAL CHROMIUM CI, GUARDED MERGE AND LIVE VERIFICATION PENDING.** No public HTML, JS runtime, CSS, service-worker cache, catalogue, emulator, Dungeon, Amazon or generated sitemap changed. Native generated SEO #2981 Actions approval, Amazon #2957 account verification and Dungeon #2958 Windows acceptance remain independent holds.
+
 ## 1 November 2026 — Music Hub composer search feedback (BRANCH ONLY)
 
 - Existing Music Hub UX backlog: static composer search indexed trailing track-count badges as names (source-executed negative control: “32” matched Rob Hubbard), and unmatched queries hid all A–Z groups without feedback.
