@@ -49,7 +49,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: external-link-health
-          path: .health/
+          # The report directory is dot-prefixed: v4 excludes it by default.
+          # Explicit paths prevent unrelated hidden files entering the artifact.
+          path: |
+            .health/external-link-health.json
+            .health/external-link-health.md
+          include-hidden-files: true
+          if-no-files-found: error
           retention-days: 30
       - name: Update confirmed-broken-link issue
         uses: actions/github-script@v7
