@@ -382,6 +382,32 @@ test("Games Archive combines title search with the selected release year", () =>
     assert.match(page, /id="gamesYearSelect"/);
 });
 
+test("Games Archive free-text search finds actual release years alongside titles", () => {
+    const source = read("js/games-library.js");
+    const games = JSON.parse(read("games/games-search.json"));
+    const library = new Function("window", "document",
+        source + "\nreturn { getSearchQueryData, matchesSearchQuery };"
+    )({ matchMedia: () => ({ matches: false }), innerWidth: 1440 }, { addEventListener() {} });
+    const find = (term) => games.filter(game =>
+        library.matchesSearchQuery(game, library.getSearchQueryData(term)));
+
+    for (const year of [1986, 1987]) {
+        const expected = games.filter(game => Number(game.year) === year).map(game => game.slug).sort();
+        const actual = find(String(year)).map(game => game.slug).sort();
+        assert.ok(expected.length > 0, "source catalogue contains " + year + " games");
+        assert.deepEqual(actual, expected, "free-text year search returns the actual " + year + " catalogue");
+    }
+
+    const ace = games.find(game => game.slug === "ace-of-aces");
+    assert.ok(ace && Number(ace.year) === 1986, "fixture is an actual 1986 game");
+    assert.ok(find("ace of aces").some(game => game.slug === ace.slug),
+        "existing title search still works");
+    assert.ok(find("1986 ace").some(game => game.slug === ace.slug),
+        "year and title tokens can be combined");
+    assert.equal(library.matchesSearchQuery(ace, library.getSearchQueryData("1987")), false,
+        "a game does not match the wrong release year");
+});
+
 test("Games Archive clear control preserves keyboard workflow and active filters", () => {
     const source = read("js/games-library.js");
     const page = read("games/index.html");

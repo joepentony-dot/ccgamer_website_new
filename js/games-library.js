@@ -1248,6 +1248,7 @@ function getGameSearchData(game) {
         String(game.sorttitle || ""),
         String(game.id || ""),
         String(game.slug || ""),
+        String(game.year || ""),
         ...publisherValues.map((value) => String(value || "")),
         ...genreValues.map((value) => String(value || "")),
         ...musicValues.map((value) => String(value || "")),
