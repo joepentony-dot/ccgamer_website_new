@@ -124,7 +124,10 @@ const zzapWorkflow = read(".github/workflows/zzap64-review-links-refresh.yml");
 requireText(zzapWorkflow, '"data/zzap64-awards/**"', "Zzap review refresh does not trigger when award-year source data changes.");
 requireText(zzapWorkflow, "node scripts/audit-zzap64-awards.js", "Zzap review refresh no longer audits award data.");
 requireText(zzapWorkflow, "node scripts/audit-game-badges.js", "Zzap review refresh no longer validates game award badges.");
-requireText(zzapWorkflow, "gh pr merge", "Zzap review refresh does not merge generated review-data output.");
+forbidText(zzapWorkflow, "gh pr merge", "Zzap review refresh can still merge generated data before exact-head checks.");
+requireText(zzapWorkflow, "node scripts/deduplicate-generated-publishing.mjs --zzap", "Zzap review refresh does not deduplicate identical generated PRs.");
+requireText(zzapWorkflow, "--draft", "Zzap review refresh does not stage generated review data as a draft PR.");
+requireText(zzapWorkflow, "Verify refreshed review PR remains draft", "Zzap review refresh no longer verifies the draft-only release hold.");
 
 const deploy = read(".github/workflows/deploy-github-pages-omega-stable.yml");
 requirePattern(deploy, /^\s{2}push:\s*$/m, "GitHub Pages deployment no longer runs on main pushes.");
