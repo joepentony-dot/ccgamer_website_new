@@ -82,6 +82,7 @@ jobs:
           node --check js/ccg-music-config.js
           node --check js/ccg-legacy-url-consolidation.js
           node --check js/ccg-global-search.js
+          node --check js/retro-specials-loader.js
           node --check js/games-library.js
           node --check js/ccg-global.js
           node --check js/ccg-search-ranking.js
@@ -176,7 +177,7 @@ jobs:
         run: node tests/ccg-retro-assistant.test.cjs
 
       - name: Run archive directory system regression guard
-        run: node --test tests/archive-directory-system.test.mjs
+        run: node --test tests/archive-directory-system.test.mjs tests/retro-video-thumbnail-dimensions.test.js
 
       - name: Verify fuzzy C64 and Amiga website searches
         run: node --test tests/ccg-website-fuzzy-search.test.mjs
