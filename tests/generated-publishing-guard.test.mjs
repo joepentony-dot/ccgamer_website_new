@@ -5,7 +5,7 @@ import {
   REQUIRED_VALIDATION_WORKFLOWS, executedRunPassed,
   codeReviewPassed, currentPullIsSafe
 } from "../scripts/qualify-generated-publishing.mjs";
-import { findEquivalentGeneratedPr } from "../scripts/deduplicate-generated-publishing.mjs";
+import { findEquivalentGeneratedPr, SEO_GENERATED_BRANCH, SEO_GENERATED_TITLE } from "../scripts/deduplicate-generated-publishing.mjs";
 
 const SHA = "a".repeat(40);
 const goodRun = {id:44, head_sha:SHA, event:"workflow_dispatch", status:"completed", conclusion:"success"};
@@ -147,4 +147,40 @@ test("authoritative publisher checks staged patch equivalence before creating a 
   assert.ok(dedupSource.includes('const stagedPatch = run("git", ["diff"'));
   assert.ok(dedupSource.includes('return run("git", ["diff"'));
   assert.ok(!dedupSource.includes('trimEnd()'));
+});
+
+test("SEO generated output reuses only byte-identical fresh same-repository draft PRs", () => {
+  const patch = "diff --git a/sitemap-pages.xml b/sitemap-pages.xml\\n-old\\n+new\\n";
+  const make = (number, extras = {}) => ({
+    number, title: SEO_GENERATED_TITLE,
+    headRefName: "automation/seo-" + number + "-1",
+    headRepositoryOwner: {login:"joepentony-dot"},
+    baseRefName:"main", ...extras
+  });
+  const options = {branchPattern:SEO_GENERATED_BRANCH, title:SEO_GENERATED_TITLE};
+  assert.equal(findEquivalentGeneratedPr([make(4001)], patch, () => patch,
+    "joepentony-dot", options)?.number, 4001);
+  assert.equal(findEquivalentGeneratedPr([make(4001)], patch, () => patch + "different lastmod",
+    "joepentony-dot", options), null);
+  assert.equal(findEquivalentGeneratedPr([
+    make(4002, {headRefName:"automation/games-publishing-4002-1"}),
+    make(4003, {title:"Publish generated game archive output"}),
+    make(4004, {headRepositoryOwner:{login:"another-owner"}})
+  ], patch, () => patch, "joepentony-dot", options), null);
+  assert.equal(findEquivalentGeneratedPr([make(4001)], patch, () => patch,
+    "joepentony-dot"), null);
+});
+
+test("SEO automation never merges generated output before independent exact-head qualification", () => {
+  const workflow = fs.readFileSync(".github/workflows/seo.yml", "utf8");
+  const audit = fs.readFileSync("scripts/audit-publishing-automation.js", "utf8");
+  const dedup = workflow.indexOf("node scripts/deduplicate-generated-publishing.mjs --seo");
+  const branch = workflow.indexOf('OUTPUT_BRANCH="automation/seo-');
+  const create = workflow.indexOf("gh pr create");
+  assert.ok(dedup > 0 && branch > dedup && create > branch);
+  assert.match(workflow, /--draft/);
+  assert.match(workflow, /Created DRAFT generated SEO PR/);
+  assert.doesNotMatch(workflow, /gh pr merge/);
+  assert.match(audit, /forbidText\(seoWorkflow, "gh pr merge"/);
+  assert.match(audit, /node scripts\/deduplicate-generated-publishing\.mjs --seo/);
 });
