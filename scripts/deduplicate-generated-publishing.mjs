@@ -14,6 +14,8 @@ export const GENERATED_BRANCH = /^automation\/games-publishing-\d+-\d+$/;
 export const GENERATED_TITLE = "Publish generated game archive output";
 export const SEO_GENERATED_BRANCH = /^automation\/seo-\d+-\d+$/;
 export const SEO_GENERATED_TITLE = "Auto-update generated SEO and video pages";
+export const ZZAP_GENERATED_BRANCH = /^automation\/zzap64-review-refresh-\d+-\d+$/;
+export const ZZAP_GENERATED_TITLE = "Refresh Zzap64 all-game review data";
 
 export function findEquivalentGeneratedPr(pulls, stagedPatch, patchForPr, owner, options = {}) {
   const branchPattern = options.branchPattern || GENERATED_BRANCH;
@@ -90,10 +92,15 @@ export function findExistingPrFromCheckout(repo, options = {}) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const seoMode = process.argv.slice(2).includes("--seo");
-    const options = seoMode
+    const modes = process.argv.slice(2);
+    if (modes.includes("--seo") && modes.includes("--zzap")) {
+      throw new Error("Choose only one generated-output deduplication mode.");
+    }
+    const options = modes.includes("--seo")
       ? {branchPattern: SEO_GENERATED_BRANCH, title: SEO_GENERATED_TITLE}
-      : {};
+      : modes.includes("--zzap")
+        ? {branchPattern: ZZAP_GENERATED_BRANCH, title: ZZAP_GENERATED_TITLE}
+        : {};
     const match = findExistingPrFromCheckout(process.env.GITHUB_REPOSITORY, options);
     if (match) process.stdout.write(String(match.number) + "\n");
   } catch (error) {
