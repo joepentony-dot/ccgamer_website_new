@@ -103,6 +103,7 @@ async function verifyLiveReleaseAssets() {
     ["/service-worker.js", "service-worker.js"],
     // The retired Ask CCG bootstrap must not reappear in the deployed Home script.
     ["/js/ccg-archive-pulse-randomizer.js", "js/ccg-archive-pulse-randomizer.js"],
+    ["/js/music-composer-utils.js", "js/music-composer-utils.js"],
     ["/js/ccg-nav-fit.js", "js/ccg-nav-fit.js"],
     ["/resources/css/ccg-nav-fit.css", "resources/css/ccg-nav-fit.css"],
     ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"]
@@ -236,6 +237,73 @@ async function assertRetiredAskCCGAbsent(sessionId, width, visit) {
   if (evidence.launcher || evidence.bootstrapFlag || evidence.scripts.length ||
       evidence.styles.length || evidence.fetched.length) {
     throw new Error(`Retired Ask CCG reappeared at ${width}px (${visit}): ${JSON.stringify(evidence)}`);
+  }
+}
+
+async function assertMusicHubSearch(sessionId, width) {
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/music/?ccg-music-search-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, `(function () {
+    const accordion = document.getElementById('composer-discovery-accordion');
+    const input = document.getElementById('composer-discovery-search');
+    return accordion?.dataset.ccgOmegaAccordionBound === 'true'
+      && input?.dataset.ccgOmegaSearchBound === 'true'
+      && accordion.querySelectorAll('.ccg-composer-chip').length > 0;
+  })()`, `Music Hub search initialisation at ${width}px`, 20000);
+
+  const snapshot = `(function () {
+    const accordion = document.getElementById('composer-discovery-accordion');
+    const input = document.getElementById('composer-discovery-search');
+    const groups = Array.from(accordion.querySelectorAll('.composer-accordion__group'));
+    const chips = groups.flatMap((group) =>
+      Array.from(group.querySelectorAll('.ccg-composer-chip')).map((chip) => ({
+        visible: !group.hidden && !chip.hidden,
+        name: Array.from(chip.childNodes)
+          .filter((node) => node.nodeType === Node.TEXT_NODE)
+          .map((node) => node.textContent || '').join(' ').trim()
+      }))
+    );
+    return {
+      query: input.value,
+      total: chips.length,
+      visible: chips.filter((chip) => chip.visible).map((chip) => chip.name),
+      empty: Boolean(accordion.querySelector('[data-ccg-composer-search-empty="true"]'))
+    };
+  })()`;
+  const cases = [
+    { query: "32", empty: true, zero: true },
+    { query: "Hubbard", empty: false, name: "Rob Hubbard" },
+    { query: "David Dunn", empty: false, name: "Julie Dunn" },
+    { query: "ccg-no-such-composer-2026", empty: true, zero: true },
+    { query: "", empty: false, all: true }
+  ];
+  for (const testCase of cases) {
+    await execute(sessionId, `
+      const input = document.getElementById('composer-discovery-search');
+      input.value = ${JSON.stringify(testCase.query)};
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    `);
+    const expectation = testCase.zero
+      ? "state.visible.length === 0"
+      : testCase.all
+        ? "state.total > 0 && state.visible.length === state.total"
+        : `state.visible.includes(${JSON.stringify(testCase.name)})`;
+    await waitUntil(sessionId, `(function () {
+      const state = ${snapshot};
+      return state.query === ${JSON.stringify(testCase.query)}
+        && state.empty === ${testCase.empty}
+        && ${expectation};
+    })()`, `Music Hub search ${JSON.stringify(testCase.query)} at ${width}px`, 12000);
+    const state = await execute(sessionId, `return ${snapshot};`);
+    if (state.query !== testCase.query || state.empty !== testCase.empty ||
+        (testCase.zero && state.visible.length !== 0) ||
+        (testCase.all && (state.total === 0 || state.visible.length !== state.total)) ||
+        (testCase.name && !state.visible.includes(testCase.name))) {
+      throw new Error(`Music Hub search mismatch at ${width}px: ${JSON.stringify({ testCase, state })}`);
+    }
   }
 }
 
@@ -448,6 +516,11 @@ async function main() {
       await assertRetiredAskCCGAbsent(sessionId, width, "return visit");
     }
 
+    // Test actual composer-name search and no-results feedback on both viewport sizes.
+    for (const width of [1440, 390]) {
+      await assertMusicHubSearch(sessionId, width);
+    }
+
     // Desktop regression: check the actual Fourthwall link with real pointer hit-testing.
     for (const width of [1440, 1920]) {
       await openHome(sessionId, width);
@@ -549,6 +622,7 @@ async function main() {
     console.log("- Destination pages retain the canonical shared header");
     console.log("- Legacy text-social fallback is not visible");
     console.log("- Retired Ask CCG launcher, scripts and resource requests are absent on first and return desktop/mobile visits");
+    console.log("- Music Hub search ignores track-count badges, resolves historical aliases, announces no results and restores all composers at desktop/mobile widths");
   } finally {
     if (sessionId) {
       try { await webdriver("DELETE", `/session/${sessionId}`); } catch (error) {}
