@@ -120,10 +120,21 @@ jobs:
       - name: Commit refreshed review data
         id: review_output
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add data/lemon-cache data/zzap64-review-links.json data/zzap64-game-reviews
           if git diff --cached --quiet; then
             echo "Zzap review data already current."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Do not open duplicate generated review PRs. Only reuse a
+          # byte-identical complete patch on a same-repo current-main branch.
+          DUPLICATE_PR=$(node scripts/deduplicate-generated-publishing.mjs --zzap)
+          if [ -n "$DUPLICATE_PR" ]; then
+            echo "[zzap] Identical review output already pending in PR #$DUPLICATE_PR."
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -138,7 +149,7 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "branch=$OUTPUT_BRANCH" >> "$GITHUB_OUTPUT"
 
-      - name: Open and merge refreshed review data pull request
+      - name: Open draft refreshed review data pull request (no automatic merge)
         if: steps.review_output.outputs.changed == 'true'
         shell: bash
         env:
@@ -149,19 +160,24 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --base main \
             --head "$OUTPUT_BRANCH" \
+            --draft \
             --title "Refresh Zzap64 all-game review data" \
-            --body "Automated verified Zzap64 review-link, re-review and compact game-review output from workflow run ${GITHUB_RUN_ID}. Resolver checks, review enrichment, chunk validation, award audits and badge audits all passed before this PR was created.")
+            --body "Generated Zzap64 review links, re-reviews and compact review data from run ${GITHUB_RUN_ID}. Generation checks passed, but this PR is NOT qualified for merge. Leave DRAFT until exact-head executed CI, any required review, fresh-main reconciliation and guarded owner-authorised release.")
 
-          echo "Created refreshed-review PR: $PR_URL"
-          gh pr merge "$PR_URL" \
-            --repo "$GITHUB_REPOSITORY" \
-            --squash \
-            --delete-branch
+          echo "Created DRAFT refreshed-review PR: $PR_URL"
+          echo "::notice::[zzap] Review output is staged only; the single website release coordinator owns guarded qualification and merge."
 
-      - name: Verify refreshed data reached main
-        if: always()
+      - name: Verify refreshed review PR remains draft
+        if: steps.review_output.outputs.changed == 'true'
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTPUT_BRANCH: ${{ steps.review_output.outputs.branch }}
         run: |
-          git fetch origin main
-          echo "Current main: $(git rev-parse origin/main)"
-          git diff --exit-code origin/main -- data/lemon-cache data/zzap64-review-links.json data/zzap64-game-reviews
+          PR_STATE=$(gh pr view "$OUTPUT_BRANCH" --repo "$GITHUB_REPOSITORY" \
+            --json isDraft,state,baseRefName --jq '.isDraft and .state == "OPEN" and .baseRefName == "main"')
+          if [ "$PR_STATE" != "true" ]; then
+            echo "::error::Refreshed review output was not staged as an open DRAFT PR on main."
+            exit 1
+          fi
+          echo "[zzap] Draft review PR verified. No main merge was attempted."
