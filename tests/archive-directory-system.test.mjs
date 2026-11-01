@@ -568,3 +568,87 @@ test("music composer dynamic HTML escapes editable credits", () => {
     assert.match(source, /\$\{escapeComposerMarkup\(displayMeta\)\}/,
         "dynamic track metadata is encoded");
 });
+
+test("Music Hub composer search ignores track badges and explains empty results", () => {
+    const source = read("js/music-composer-utils.js");
+    const section = (start, end) => {
+        const a = source.indexOf(start);
+        const b = source.indexOf(end, a + start.length);
+        assert.ok(a >= 0 && b > a, "source function exists: " + start);
+        return source.slice(a, b);
+    };
+    class FakeElement {
+        constructor() { this.dataset = {}; this.hidden = false; this.textContent = ""; this.parent = null; }
+        remove() { if (this.parent) this.parent.empty = null; }
+    }
+    class FakeAnchor extends FakeElement {
+        constructor(name, count, href) {
+            super();
+            this.href = href;
+            this.textContent = name + count;
+            this.childNodes = [{ textContent: name }, { textContent: String(count) }];
+            this.countBadge = this.childNodes[1];
+        }
+        getAttribute() { return this.href; }
+        querySelector() { return this.countBadge; }
+    }
+    class FakeInput extends FakeElement { constructor() { super(); this.value = ""; } }
+    class FakeGroup extends FakeElement {
+        constructor(chips) {
+            super();
+            this.chips = chips;
+            this.dataset.ccgUserOpen = "false";
+            this.count = { dataset: { ccgTotalCount: String(chips.length) }, textContent: String(chips.length) };
+        }
+        querySelectorAll() { return this.chips; }
+        querySelector() { return this.count; }
+    }
+    class FakeAccordion extends FakeElement {
+        constructor(groups) { super(); this.groups = groups; this.empty = null; }
+        querySelectorAll() { return this.groups; }
+        querySelector() { return this.empty; }
+        appendChild(node) { node.parent = this; this.empty = node; }
+    }
+    const runtime = vm.runInNewContext(
+        section("  function getMusicHubChipSearchText(", "\n  function applyMusicHubAccordionSearch(") +
+        section("  function applyMusicHubAccordionSearch(", "\n  function bindMusicHubAccordion(") +
+        "\n({ getMusicHubChipSearchText, applyMusicHubAccordionSearch })", {
+            Element: FakeElement,
+            HTMLAnchorElement: FakeAnchor,
+            HTMLInputElement: FakeInput,
+            document: { createElement: () => new FakeElement() },
+            normalizeComposerName: (value) => String(value || "").toLowerCase().trim(),
+            prepareMusicHubAccordionGroup: () => {},
+            setMusicHubAccordionState: (group, open) => { group.open = Boolean(open); }
+        }
+    );
+    const rob = new FakeAnchor("Rob Hubbard", "32", "/music/rob-hubbard/");
+    const julie = new FakeAnchor("Julie Dunn", "6", "/music/david-dunn/");
+    const group = new FakeGroup([rob, julie]);
+    const accordion = new FakeAccordion([group]);
+    const search = new FakeInput();
+    assert.equal(runtime.getMusicHubChipSearchText(rob), "rob hubbard");
+    assert.match(runtime.getMusicHubChipSearchText(julie), /david dunn/);
+    search.value = "32";
+    runtime.applyMusicHubAccordionSearch(accordion, search);
+    assert.equal(group.hidden, true, "track-count-only query has no composer matches");
+    assert.equal(accordion.empty?.textContent, "No composers match this search.");
+    assert.equal(group.count.textContent, "0");
+    search.value = "Hubbard";
+    runtime.applyMusicHubAccordionSearch(accordion, search);
+    assert.equal(rob.hidden, false);
+    assert.equal(julie.hidden, true);
+    assert.equal(group.open, true);
+    assert.equal(accordion.empty, null);
+    search.value = "David Dunn";
+    runtime.applyMusicHubAccordionSearch(accordion, search);
+    assert.equal(julie.hidden, false, "historic alias still matches");
+    search.value = "";
+    runtime.applyMusicHubAccordionSearch(accordion, search);
+    assert.equal(rob.hidden, false);
+    assert.equal(julie.hidden, false);
+    assert.equal(group.count.textContent, "2");
+    assert.equal(accordion.empty, null);
+    assert.ok(read("resources/css/music-hub-omega.css").includes(".composer-accordion__empty {"));
+    assert.ok(read("music/index.html").includes('aria-live="polite"'));
+});

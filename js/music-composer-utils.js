@@ -146,7 +146,13 @@ function compareComposerNames(a, b) {
 
     const href = chip instanceof HTMLAnchorElement ? String(chip.getAttribute("href") || "") : "";
     const aliases = href.endsWith("/music/david-dunn/") ? " David Dunn Julie Dunn" : "";
-    const value = normalizeComposerName(`${chip.textContent || ""}${aliases}`);
+    // The trailing track-count badge is not part of a composer's name.
+    const countBadge = chip.querySelector(":scope > span");
+    const displayName = Array.from(chip.childNodes)
+      .filter((node) => node !== countBadge)
+      .map((node) => node.textContent || "")
+      .join(" ");
+    const value = normalizeComposerName(`${displayName}${aliases}`);
     chip.dataset.ccgSearch = value;
     return value;
   }
@@ -154,6 +160,7 @@ function compareComposerNames(a, b) {
   function applyMusicHubAccordionSearch(accordion, searchInput) {
     if (!(accordion instanceof Element) || !(searchInput instanceof HTMLInputElement)) return;
     const query = normalizeComposerName(searchInput.value);
+    let totalMatches = 0;
 
     accordion.querySelectorAll(".composer-accordion__group").forEach((group) => {
       prepareMusicHubAccordionGroup(group);
@@ -171,6 +178,7 @@ function compareComposerNames(a, b) {
         count.textContent = query ? String(matches) : (count.dataset.ccgTotalCount || String(chips.length));
       }
 
+      totalMatches += matches;
       group.hidden = Boolean(query && matches === 0);
       if (query && matches > 0) {
         setMusicHubAccordionState(group, true, false);
@@ -178,6 +186,21 @@ function compareComposerNames(a, b) {
         setMusicHubAccordionState(group, group.dataset.ccgUserOpen === "true", false);
       }
     });
+
+    // The static A-Z directory otherwise disappears without an explanation
+    // when a visitor searches for a name that is not in the archive.
+    const existingEmpty = accordion.querySelector('[data-ccg-composer-search-empty="true"]');
+    if (query && totalMatches === 0) {
+      if (!existingEmpty) {
+        const empty = document.createElement("p");
+        empty.className = "composer-accordion__empty";
+        empty.dataset.ccgComposerSearchEmpty = "true";
+        empty.textContent = "No composers match this search.";
+        accordion.appendChild(empty);
+      }
+    } else {
+      existingEmpty?.remove();
+    }
   }
 
   function bindMusicHubAccordion() {
