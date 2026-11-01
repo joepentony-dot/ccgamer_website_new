@@ -1,3 +1,9 @@
+## 1 November 2026 — stale identical generated-output PR reuse (BRANCH ONLY)
+
+- Source-level recurrence confirmed: closed #2979 and current #2981 contained byte-identical sitemap output, but the prior deduplication guard deliberately ignored #2979 once main advanced. A fresh generated PR was created instead of safely refreshing the existing draft. No native approval, release or public sitemap claim is inferred from this.
+- Single ACTIVE bounded candidate `fix/generated-publishing-stale-pr-fast-forward-20261101`: when a same-repository open generated DRAFT PR has an exact complete binary patch match but stale main ancestry, build a two-parent commit with the staged current-main tree, verify exact patch parity and both ancestors, then update only that same generated PR branch by an ordinary non-force fast-forward. Recheck PR identity, head and main before push; abort on races, non-draft PRs, mismatches or denied writes. Preserve existing generated merge/review/CI gates, all public assets, game catalogue, Omega and Dungeon. Add real temporary-Git fixture to existing generated-publishing guard suite and ensure publishing-integrity CI triggers for this script. No automatic main merge, branch deletion or release qualification bypass.
+- **BRANCH ONLY / NOT TESTED BY REMOTE CI / NOT MERGED / NOT DEPLOYED.** Require focused Node regression, exact-head publishing integrity, SEO, Site Safety and applicable full matrix, fresh main, guarded merge and Pages/live verification. Generated #2981 stays parked on native Actions approval; no attempt to bypass it.
+
 ## 31 October 2026 — exact-patch generated publishing PR deduplication (BRANCH ONLY)
 
 - Generated output #2967 is blocked solely on the repository's independent Codex receipt after eight completed exact-head validation workflows. Its existing review request is pending; do not create a replacement PR merely to repeat the same generated patch.
