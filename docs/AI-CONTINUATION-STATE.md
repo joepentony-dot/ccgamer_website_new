@@ -1,3 +1,7 @@
+## 1 November 2026 — generated PR post-push remote confirmation correction (BRANCH ONLY)
+
+- #2982 safely merged source at `3d3f7a3efef31219bbec498425ceeacfb0e3383e` after six exact-head workflows and seven check runs passed. Production SEO run 41281701712 exposed an eventual-consistency false failure: branch #2981 was successfully fast-forwarded to `af69ad2c2` but its immediate PR API read returned stale data. Single ACTIVE source correction `fix/generated-dedup-remote-confirmation-20261101` confirms the Git remote ref with bounded retries and a real bare-repo regression. No generated sitemap merged; #2981 remains DRAFT with native Actions approval hold. Full exact-head CI, guarded merge and Pages/live evidence pending.
+
 ## 1 November 2026 — generated PR stale-identical recurrence correction (BRANCH ONLY)
 
 - Confirmed existing generated SEO #2979 was closed after replacement #2981 despite identical full sitemap patch; the deduplication script excluded stale branches. Single ACTIVE source candidate `fix/generated-publishing-stale-pr-fast-forward-20261101` safely reconciles exact-patch matching open DRAFT generated branches onto current main with a non-force two-parent fast-forward commit, revalidates PR/main before write, and preserves all independent release gates. Focused temporary-Git regression added; remote exact-head qualification and guarded merge PENDING. No public HTML, catalogue, intro, emulator, Dungeon, cache or backend changed. #2981, Amazon #2957, Dungeon #2958 and CLS #2964 remain parked on their established holds.
