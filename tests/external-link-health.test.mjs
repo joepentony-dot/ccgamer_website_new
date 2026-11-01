@@ -36,3 +36,88 @@ test('CCG internal URLs are excluded from the external monitor', () => {
   assert.match(script, /SITE_HOSTS/);
   assert.match(script, /isInternalUrl/);
 });
+
+const workflow = fs.readFileSync('.github/workflows/external-link-health.yml', 'utf8');
+
+function makeIssueReporter() {
+  const marker = '          script: |\n';
+  const start = workflow.indexOf(marker);
+  assert.ok(start >= 0, 'the existing issue reporting step must remain');
+  const body = workflow.slice(start + marker.length).split('\n')
+    .map((line) => line.startsWith('            ') ? line.slice(12) : line).join('\n');
+  return new Function('require', 'github', 'context', 'core', `return (async () => {\n${body}\n})();`);
+}
+
+function reporterFixture({ broken = 4, existing = [], issueError = null } = {}) {
+  const warnings = [];
+  const summaries = [];
+  const updates = [];
+  const notices = [];
+  const requireMock = () => ({
+    readFileSync(file) {
+      return file.endsWith('.json')
+        ? JSON.stringify({ summary: { confirmedBroken: broken } })
+        : '# Link health report\\n\\nConfirmed broken: ' + broken;
+    },
+  });
+  const github = {
+    paginate: async () => existing,
+    rest: {
+      issues: {
+        listForRepo() {},
+        async create(data) {
+          if (issueError) throw issueError;
+          updates.push({ operation: 'create', data });
+        },
+        async update(data) {
+          if (issueError) throw issueError;
+          updates.push({ operation: 'update', data });
+        },
+      },
+    },
+  };
+  const core = {
+    summary: {
+      addRaw(value) { summaries.push(value); return this; },
+      async write() {},
+    },
+    warning(value) { warnings.push(value); },
+    notice(value) { notices.push(value); },
+  };
+  return {
+    run: () => makeIssueReporter()(requireMock, github, { repo: { owner: 'owner', repo: 'repo' } }, core),
+    warnings, summaries, updates, notices,
+  };
+}
+
+test('disabled GitHub Issues (410) preserves artifact, summary and broken-link warning without failing the audit', async () => {
+  const fixture = reporterFixture({ issueError: Object.assign(new Error('Issues disabled'), { status: 410 }) });
+  await assert.doesNotReject(fixture.run());
+  assert.equal(fixture.summaries.length, 1);
+  assert.match(fixture.summaries[0], /Confirmed broken: 4/);
+  assert.ok(fixture.warnings.some((warning) => /disabled.*410/.test(warning)));
+  assert.ok(fixture.warnings.some((warning) => /4 confirmed broken/.test(warning)));
+  assert.match(workflow, /Upload detailed health artifact/);
+});
+
+test('unexpected GitHub Issues failures remain visible as failures', async () => {
+  const fixture = reporterFixture({ issueError: Object.assign(new Error('Permission denied'), { status: 403 }) });
+  await assert.rejects(fixture.run(), { status: 403 });
+  assert.equal(fixture.summaries.length, 1);
+});
+
+test('enabled GitHub Issues still receives confirmed broken links and healthy closeouts', async () => {
+  const broken = reporterFixture({ existing: [] });
+  await broken.run();
+  assert.equal(broken.updates[0]?.operation, 'create');
+  assert.ok(broken.warnings.some((warning) => /4 confirmed broken/.test(warning)));
+
+  const healthy = reporterFixture({
+    broken: 0,
+    existing: [{ number: 42, state: 'open', title: '[Automated] External link health' }],
+  });
+  await healthy.run();
+  assert.equal(healthy.updates[0]?.operation, 'update');
+  assert.equal(healthy.updates[0]?.data?.state, 'closed');
+  assert.equal(healthy.updates[0]?.data?.issue_number, 42);
+});
