@@ -48,6 +48,33 @@ function run(command, args) {
 function git(args) { return run("git", args).trim(); }
 function gh(args) { return run("gh", args).trim(); }
 
+// Construct an ordinary fast-forward commit on the existing generated PR.
+// Its tree is exactly the staged current-main output, and both old PR head
+// and current main are parents. This never rewrites branch history or merges
+// unqualified output into main.
+export function buildStaleGeneratedMergeCommit(main, oldHead, stagedPatch, exec = args => run("git", args)) {
+  const shaPattern = /^[a-f0-9]{40}$/;
+  if (!shaPattern.test(main) || !shaPattern.test(oldHead) ||
+      typeof stagedPatch !== "string" || !stagedPatch.includes("diff --git ")) {
+    throw new Error("Invalid generated-output reconciliation inputs.");
+  }
+  const tree = exec(["write-tree"]).trim();
+  if (!shaPattern.test(tree)) throw new Error("Could not write staged generated-output tree.");
+  const mergeSha = exec(["-c", "user.name=github-actions[bot]",
+    "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com",
+    "commit-tree", tree, "-p", oldHead, "-p", main,
+    "-m", "Reconcile identical generated output with current main"]).trim();
+  if (!shaPattern.test(mergeSha)) throw new Error("Could not create reconciliation commit.");
+  exec(["merge-base", "--is-ancestor", oldHead, mergeSha]);
+  exec(["merge-base", "--is-ancestor", main, mergeSha]);
+  const effectivePatch = exec(["diff", "--no-color", "--no-ext-diff",
+    "--binary", "--full-index", main, mergeSha]);
+  if (effectivePatch !== stagedPatch) {
+    throw new Error("Reconciled tree differs from exact staged generated output.");
+  }
+  return mergeSha;
+}
+
 export function findExistingPrFromCheckout(repo, options = {}) {
   if (!/^[^/]+\/[^/]+$/.test(repo || "")) {
     throw new Error("Expected GITHUB_REPOSITORY owner/name.");
@@ -55,37 +82,72 @@ export function findExistingPrFromCheckout(repo, options = {}) {
   const owner = repo.split("/")[0];
   const stagedPatch = run("git", ["diff", "--cached", "--no-color", "--no-ext-diff", "--binary", "--full-index"]);
   if (!stagedPatch.includes("diff --git ")) return null;
+  const main = git(["rev-parse", "HEAD"]);
+  const remoteMain = JSON.parse(gh(["api", "repos/" + repo + "/git/ref/heads/main"])).object?.sha;
+  if (remoteMain !== main) {
+    throw new Error("Main moved since generated output was staged; rerun on fresh main.");
+  }
 
   const pulls = JSON.parse(gh(["pr", "list", "--repo", repo,
     "--state", "open", "--limit", "200", "--json",
     "number,title,headRefName,headRepositoryOwner,baseRefName"]));
-
-  return findEquivalentGeneratedPr(pulls, stagedPatch, pr => {
+  const staleMatches = [];
+  const freshMatch = findEquivalentGeneratedPr(pulls, stagedPatch, pr => {
     const ref = "refs/remotes/origin/" + pr.headRefName;
     let sha;
     try {
       sha = git(["rev-parse", "--verify", ref + "^{commit}"]);
     } catch {
-      // Checkout normally fetches all refs; recover only this verified,
-      // same-repository generated branch when it is not in the clone.
       git(["fetch", "--no-tags", "--quiet", "origin",
         "refs/heads/" + pr.headRefName + ":" + ref]);
       sha = git(["rev-parse", "--verify", ref + "^{commit}"]);
     }
-    // Do not trust a checkout's remote-tracking ref if the open PR head
-    // has moved or the PR was closed since the listing was retrieved.
     const live = JSON.parse(gh(["api", "repos/" + repo + "/pulls/" + pr.number]));
     if (live.state !== "open" || live.head?.sha !== sha ||
         live.head?.ref !== pr.headRefName ||
         live.head?.repo?.full_name !== repo ||
         live.base?.ref !== "main") return "";
-    const main = git(["rev-parse", "HEAD"]);
     const base = git(["merge-base", main, sha]);
-    // Never suppress a fresh candidate in favour of an older PR that
-    // cannot pass the repository's current-main ancestry release guard.
-    if (base !== main) return "";
-    return run("git", ["diff", "--no-color", "--no-ext-diff", "--binary", "--full-index", base, sha]);
+    const patch = run("git", ["diff", "--no-color", "--no-ext-diff",
+      "--binary", "--full-index", base, sha]);
+    if (base === main) return patch;
+    if (patch === stagedPatch) {
+      if (live.draft !== true) {
+        throw new Error("Matching stale generated PR #" + pr.number +
+          " is not draft; owner must reconcile it before new publication.");
+      }
+      staleMatches.push({pr, sha});
+    }
+    return "";
   }, owner, options);
+  if (freshMatch) return freshMatch;
+  if (staleMatches.length === 0) return null;
+
+  // Reuse the newest byte-identical DRAFT PR instead of opening a duplicate.
+  // Never force-push or merge; a changed PR head or moved main aborts.
+  const {pr, sha} = staleMatches[0];
+  const check = () => JSON.parse(gh(["api", "repos/" + repo + "/pulls/" + pr.number]));
+  const before = check();
+  if (before.state !== "open" || before.draft !== true ||
+      before.head?.sha !== sha || before.head?.ref !== pr.headRefName ||
+      before.head?.repo?.full_name !== repo || before.base?.ref !== "main") {
+    throw new Error("Generated PR changed before reconciliation; abort.");
+  }
+  if (JSON.parse(gh(["api", "repos/" + repo + "/git/ref/heads/main"])).object?.sha !== main) {
+    throw new Error("Main changed before reconciliation; abort.");
+  }
+  const mergeSha = buildStaleGeneratedMergeCommit(main, sha, stagedPatch);
+  if (check().head?.sha !== sha ||
+      JSON.parse(gh(["api", "repos/" + repo + "/git/ref/heads/main"])).object?.sha !== main) {
+    throw new Error("Generated PR or main changed before fast-forward push; abort.");
+  }
+  git(["push", "origin", mergeSha + ":refs/heads/" + pr.headRefName]);
+  if (check().head?.sha !== mergeSha) {
+    throw new Error("Generated PR head was not confirmed after fast-forward; stop publication.");
+  }
+  console.error("::notice::[publishing-dedup] Reconciled identical DRAFT PR #" +
+    pr.number + " onto current main by non-force fast-forward; fresh exact-head qualification remains required.");
+  return pr;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

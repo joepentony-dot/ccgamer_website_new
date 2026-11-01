@@ -1,11 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   REQUIRED_VALIDATION_WORKFLOWS, executedRunPassed,
   codeReviewPassed, currentPullIsSafe
 } from "../scripts/qualify-generated-publishing.mjs";
-import { findEquivalentGeneratedPr, SEO_GENERATED_BRANCH, SEO_GENERATED_TITLE } from "../scripts/deduplicate-generated-publishing.mjs";
+import { findEquivalentGeneratedPr, buildStaleGeneratedMergeCommit, SEO_GENERATED_BRANCH, SEO_GENERATED_TITLE } from "../scripts/deduplicate-generated-publishing.mjs";
 
 const SHA = "a".repeat(40);
 const goodRun = {id:44, head_sha:SHA, event:"workflow_dispatch", status:"completed", conclusion:"success"};
@@ -141,7 +144,11 @@ test("authoritative publisher checks staged patch equivalence before creating a 
   assert.ok(workflow.includes('GH_TOKEN: ${{ github.token }}'));
   assert.ok(workflow.includes('node scripts/qualify-generated-publishing.mjs'));
   const dedupSource = fs.readFileSync("scripts/deduplicate-generated-publishing.mjs", "utf8");
-  assert.ok(dedupSource.includes('if (base !== main) return "";'));
+  assert.ok(dedupSource.includes("if (base === main) return patch;"));
+  assert.ok(dedupSource.includes("if (patch === stagedPatch)"));
+  assert.ok(dedupSource.includes("buildStaleGeneratedMergeCommit(main, sha, stagedPatch)"));
+  assert.ok(dedupSource.includes('git(["push", "origin", mergeSha + ":refs/heads/" + pr.headRefName])'));
+  assert.doesNotMatch(dedupSource, /git\(\["push", "--force"/);
   assert.ok(dedupSource.includes('live.head?.sha !== sha'));
   assert.ok(dedupSource.includes('live.head?.repo?.full_name !== repo'));
   assert.ok(dedupSource.includes('const stagedPatch = run("git", ["diff"'));
@@ -183,4 +190,50 @@ test("SEO automation never merges generated output before independent exact-head
   assert.doesNotMatch(workflow, /gh pr merge/);
   assert.match(audit, /forbidText\(seoWorkflow, "gh pr merge"/);
   assert.match(audit, /node scripts\/deduplicate-generated-publishing\.mjs --seo/);
+});
+
+
+test("stale identical generated PR can be reconciled without rewriting history or changing output", () => {
+  const dir = fs.mkdtempSync(join(tmpdir(), "ccg-generated-dedup-"));
+  const gitRaw = args => execFileSync("git", ["-C", dir, ...args], {encoding:"utf8"});
+  const git = args => gitRaw(args).trim();
+  try {
+    git(["init", "-b", "main"]);
+    git(["config", "user.name", "CCG Fixture"]);
+    git(["config", "user.email", "fixture@example.invalid"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "old\n");
+    git(["add", "."]);
+    git(["commit", "-m", "baseline"]);
+    const oldMain = git(["rev-parse", "HEAD"]);
+
+    git(["checkout", "-b", "automation/seo-123-1"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "new\n");
+    git(["add", "."]);
+    git(["commit", "-m", "generated sitemap"]);
+    const oldHead = git(["rev-parse", "HEAD"]);
+
+    git(["checkout", "main"]);
+    fs.writeFileSync(join(dir, "unrelated.txt"), "newer main content\n");
+    git(["add", "."]);
+    git(["commit", "-m", "unrelated main update"]);
+    const main = git(["rev-parse", "HEAD"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "new\n");
+    git(["add", "sitemap-pages.xml"]);
+    const flags = ["--no-color", "--no-ext-diff", "--binary", "--full-index"];
+    const stagedPatch = gitRaw(["diff", "--cached", ...flags]);
+    assert.equal(gitRaw(["diff", ...flags, oldMain, oldHead]), stagedPatch);
+
+    const mergeSha = buildStaleGeneratedMergeCommit(main, oldHead, stagedPatch, gitRaw);
+    assert.equal(gitRaw(["diff", ...flags, main, mergeSha]), stagedPatch);
+    assert.equal(git(["merge-base", main, mergeSha]), main);
+    assert.equal(git(["rev-parse", "automation/seo-123-1"]), oldHead,
+      "helper must not move the PR ref itself");
+    const parents = git(["rev-list", "--parents", "-n", "1", mergeSha]).split(" ");
+    assert.deepEqual(parents, [mergeSha, oldHead, main]);
+    assert.throws(() => buildStaleGeneratedMergeCommit(main, oldHead,
+      stagedPatch + "different sitemap", gitRaw), /differs from exact staged/);
+    assert.equal(git(["rev-parse", "main"]), main);
+  } finally {
+    fs.rmSync(dir, {recursive:true, force:true});
+  }
 });
