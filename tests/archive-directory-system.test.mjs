@@ -7,6 +7,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { collectRoles } = require("../scripts/mark-rerelease-publishers.js");
+const { publisherIndexCountSuffix, publisherGameCountSuffix } = require("../js/publisher-pages.js");
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -83,12 +84,30 @@ test("publisher index shows focused search first and keeps complete directory av
     assert.match(js, /directory\?\.addEventListener\("toggle"/);
     assert.match(js, /if \(normalize\(search\?\.value\)\) event\.preventDefault\(\)/);
     assert.match(js, /query \? renderSearchResults\(query\) : renderDirectory\(\)/);
-    assert.match(js, /" publishers found"/);
-    assert.match(js, /" publishers available"/);
+    assert.match(js, /publisherIndexCountSuffix\(visible, Boolean\(query\)\)/);
+    assert.match(js, /prepareLiveCount\(count\)/);
 
     assert.match(css, /\.ccg-publisher-directory-disclosure__summary:focus-visible/);
     assert.match(css, /\.ccg-publisher-directory-disclosure\[open\]/);
     assert.doesNotMatch(css, /#publisherGrid\s*\{[^}]*display:\s*none/s, "the static directory is not hidden with CSS");
+});
+
+test("publisher search and game counts use singular labels and announce updates", () => {
+    assert.equal(publisherIndexCountSuffix(0, false), " publishers available");
+    assert.equal(publisherIndexCountSuffix(1, false), " publisher available");
+    assert.equal(publisherIndexCountSuffix(1, true), " publisher found");
+    assert.equal(publisherIndexCountSuffix(2, true), " publishers found");
+    assert.equal(publisherGameCountSuffix(0), " games shown");
+    assert.equal(publisherGameCountSuffix(1), " game shown");
+    assert.equal(publisherGameCountSuffix(2), " games shown");
+    const runtime = read("js/publisher-pages.js");
+    const generator = read("scripts/generate-publisher-pages.js");
+    assert.match(runtime, /publisherGameCountSuffix\(visible\)/);
+    assert.match(runtime, /container\.setAttribute\("role", "status"\)/);
+    assert.match(runtime, /container\.setAttribute\("aria-live", "polite"\)/);
+    assert.match(runtime, /container\.setAttribute\("aria-atomic", "true"\)/);
+    assert.match(generator, /group\.count === 1 \? "game" : "games"/);
+    assert.equal((generator.match(/role="status" aria-live="polite" aria-atomic="true"/g) || []).length, 2);
 });
 
 test("publisher rendered audit follows generated directory totals, not fixed catalogue numbers", () => {
