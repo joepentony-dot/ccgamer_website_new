@@ -1,3 +1,8 @@
+## 1 November 2026 — Retro Specials deployed-browser acceptance #2997 (DRAFT)
+
+- Fresh main `6b3cd58f88cf8bc5fc604ca5cda964d1ae8f6b3d` includes the guarded, deployed thumbnail security fix #2995; its existing live navigation audit passed but did not exercise Retro Specials cards, image fallback or search. New sole bounded acceptance PR #2997 (`fix/retro-specials-live-browser-acceptance-20261101`) adds real ChromeDriver desktop/mobile (1440/390) Retro Specials checks to the existing live browser script and release-byte comparison of `js/retro-specials-loader.js`. The existing UX workstream records exact scope. No public runtime or cache changes.
+- Syntax preflight passed; exact-head GitHub ChromeDriver and other applicable Actions were started, not yet qualified at creation. **DRAFT / NO MERGE / NO NEW DEPLOYMENT / LIVE ACCEPTANCE PENDING.** Require successful exact-head CI, fresh-main reconciliation, guarded merge, Pages and production-domain browser pass. Existing Amazon, Dungeon Windows, generated SEO and CLS holds remain unchanged.
+
 ## 1 November 2026 — Retro Specials thumbnail fallback injection guard (BRANCH ONLY)
 
 - Reproduced an executable inline image-error handler from editable Retro Specials metadata: the adversarial YouTube ID `x'-alert(1)-'` survived URL encoding and HTML-entity decoding inside the old `onerror` JavaScript; a source-executed negative control invoked the injected alert. This is a latent data-to-code risk, not evidence that the current published dataset was malicious.
