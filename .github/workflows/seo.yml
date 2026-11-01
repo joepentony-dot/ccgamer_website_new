@@ -233,6 +233,8 @@ jobs:
         id: seo_output
         if: github.event_name != 'pull_request' && steps.publish_scope.outputs.authoritative_game_publish != 'true'
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           echo "[seo] Checking generated SEO diffs..."
           git config user.name "seo-bot"
@@ -253,6 +255,16 @@ jobs:
             exit 0
           fi
 
+          # Only reuse a same-repository, fresh-main generated SEO PR whose
+          # entire staged binary patch is byte-identical. Different output
+          # must not be silently discarded or mistaken for an approved PR.
+          DUPLICATE_PR=$(node scripts/deduplicate-generated-publishing.mjs --seo)
+          if [ -n "$DUPLICATE_PR" ]; then
+            echo "[seo] Exact generated SEO patch is already pending in PR #$DUPLICATE_PR."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           OUTPUT_BRANCH="automation/seo-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -b "$OUTPUT_BRANCH"
           git commit -m "Auto-update generated SEO and video pages"
@@ -261,7 +273,7 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "branch=$OUTPUT_BRANCH" >> "$GITHUB_OUTPUT"
 
-      - name: Open and merge generated SEO pull request
+      - name: Open draft generated SEO pull request (no automatic merge)
         if: github.event_name != 'pull_request' && steps.publish_scope.outputs.authoritative_game_publish != 'true' && steps.seo_output.outputs.changed == 'true'
         shell: bash
         env:
@@ -272,11 +284,9 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --base main \
             --head "$OUTPUT_BRANCH" \
+            --draft \
             --title "Auto-update generated SEO and video pages" \
-            --body "Automated SEO/video output from SEO Automation run ${GITHUB_RUN_ID}. YouTube metadata sync, video-page generation, video-library generation, sitemap validation and SEO validation all passed before this PR was created.")
+            --body "Automated SEO/video output from SEO Automation run ${GITHUB_RUN_ID}. Generation checks passed before PR creation, but the exact-head PR is NOT qualified for merge. Leave DRAFT until executed independent CI, any required review, fresh-main reconciliation and guarded owner-authorised release.")
 
-          echo "Created generated SEO PR: $PR_URL"
-          gh pr merge "$PR_URL" \
-            --repo "$GITHUB_REPOSITORY" \
-            --squash \
-            --delete-branch
+          echo "Created DRAFT generated SEO PR: $PR_URL"
+          echo "::notice::[seo] Generated SEO output is staged only. The single website release coordinator must independently qualify and guard any future merge."

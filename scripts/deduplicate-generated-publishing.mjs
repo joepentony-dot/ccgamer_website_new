@@ -12,15 +12,19 @@ import { fileURLToPath } from "node:url";
 
 export const GENERATED_BRANCH = /^automation\/games-publishing-\d+-\d+$/;
 export const GENERATED_TITLE = "Publish generated game archive output";
+export const SEO_GENERATED_BRANCH = /^automation\/seo-\d+-\d+$/;
+export const SEO_GENERATED_TITLE = "Auto-update generated SEO and video pages";
 
-export function findEquivalentGeneratedPr(pulls, stagedPatch, patchForPr, owner) {
+export function findEquivalentGeneratedPr(pulls, stagedPatch, patchForPr, owner, options = {}) {
+  const branchPattern = options.branchPattern || GENERATED_BRANCH;
+  const title = options.title || GENERATED_TITLE;
   if (!Array.isArray(pulls) || typeof stagedPatch !== "string" ||
       !stagedPatch.includes("diff --git ") ||
       typeof patchForPr !== "function" || !owner) return null;
 
   const candidates = pulls.filter(pr =>
-    pr.title === GENERATED_TITLE &&
-    GENERATED_BRANCH.test(pr.headRefName || "") &&
+    pr.title === title &&
+    branchPattern.test(pr.headRefName || "") &&
     pr.headRepositoryOwner?.login === owner &&
     pr.baseRefName === "main" &&
     Number.isSafeInteger(pr.number) && pr.number > 0
@@ -44,7 +48,7 @@ function run(command, args) {
 function git(args) { return run("git", args).trim(); }
 function gh(args) { return run("gh", args).trim(); }
 
-export function findExistingPrFromCheckout(repo) {
+export function findExistingPrFromCheckout(repo, options = {}) {
   if (!/^[^/]+\/[^/]+$/.test(repo || "")) {
     throw new Error("Expected GITHUB_REPOSITORY owner/name.");
   }
@@ -81,12 +85,16 @@ export function findExistingPrFromCheckout(repo) {
     // cannot pass the repository's current-main ancestry release guard.
     if (base !== main) return "";
     return run("git", ["diff", "--no-color", "--no-ext-diff", "--binary", "--full-index", base, sha]);
-  }, owner);
+  }, owner, options);
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const match = findExistingPrFromCheckout(process.env.GITHUB_REPOSITORY);
+    const seoMode = process.argv.slice(2).includes("--seo");
+    const options = seoMode
+      ? {branchPattern: SEO_GENERATED_BRANCH, title: SEO_GENERATED_TITLE}
+      : {};
+    const match = findExistingPrFromCheckout(process.env.GITHUB_REPOSITORY, options);
     if (match) process.stdout.write(String(match.number) + "\n");
   } catch (error) {
     console.error("::error::[publishing-dedup] " + error.message);
