@@ -249,6 +249,13 @@ jobs:
             games/genres/index.html \
             games/collections/index.html
 
+          # Reconcile lastmod against the exact HTML staged for publication.
+          # Earlier generation can temporarily rewrite HTML that is not part
+          # of the eventual commit; it must not fabricate page freshness.
+          CCG_SITEMAP_LASTMOD_STAGED_ONLY=1 node scripts/generate-sitemaps.js --final-pass
+          git add sitemap.xml sitemap-*.xml
+          git diff --cached --check
+
           if git diff --cached --quiet; then
             echo "Generated SEO output is already current."
             echo "changed=false" >> "$GITHUB_OUTPUT"
