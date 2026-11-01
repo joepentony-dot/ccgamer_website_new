@@ -45,6 +45,13 @@ jobs:
             --json .health/external-link-health.json \
             --markdown .health/external-link-health.md \
             --concurrency 6
+      - name: Verify both external-link reports
+        # upload-artifact's if-no-files-found only fails when ZERO paths match.
+        # Check each file independently to reject a partial/empty report bundle.
+        run: |
+          test -s .health/external-link-health.json
+          test -s .health/external-link-health.md
+          node -e 'JSON.parse(require("node:fs").readFileSync(".health/external-link-health.json", "utf8"))'
       - name: Upload detailed health artifact
         uses: actions/upload-artifact@v4
         with:

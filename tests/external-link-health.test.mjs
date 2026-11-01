@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
 const script = fs.readFileSync('scripts/audit-external-links.js', 'utf8');
@@ -122,7 +125,7 @@ test('enabled GitHub Issues still receives confirmed broken links and healthy cl
   assert.equal(healthy.updates[0]?.data?.issue_number, 42);
 });
 
-test('External Link Health artifact includes both reports from the hidden directory and fails if missing', () => {
+test('External Link Health upload enumerates both hidden-directory reports', () => {
   const uploadStep = workflow.split('      - name: Upload detailed health artifact\n')[1]
     ?.split('      - name: Update confirmed-broken-link issue\n')[0] || '';
   assert.match(uploadStep, /uses: actions\/upload-artifact@v4/);
@@ -132,4 +135,41 @@ test('External Link Health artifact includes both reports from the hidden direct
   assert.doesNotMatch(uploadStep, /^\s+path: \.health\/\s*$/m);
   assert.match(workflow, /--json \.health\/external-link-health\.json/);
   assert.match(workflow, /--markdown \.health\/external-link-health\.md/);
+});
+
+test('audit refuses partial, empty or malformed report artifacts before upload', () => {
+  const verifyStep = workflow.split('      - name: Verify both external-link reports\n')[1]
+    ?.split('      - name: Upload detailed health artifact\n')[0] || '';
+  const block = verifyStep.split('        run: |\n')[1] || '';
+  const commands = block.split('\n').filter((line) => line.startsWith('          '))
+    .map((line) => line.slice(10)).join('\n');
+  assert.match(commands, /test -s \.health\/external-link-health\.json/);
+  assert.match(commands, /test -s \.health\/external-link-health\.md/);
+  assert.match(commands, /JSON\.parse/);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccg-external-link-artifact-'));
+  const folder = path.join(root, '.health');
+  const json = path.join(folder, 'external-link-health.json');
+  const markdown = path.join(folder, 'external-link-health.md');
+  const validJson = JSON.stringify({ summary: { confirmedBroken: 0 } });
+  const run = () => spawnSync('bash', ['-e', '-c', commands], { cwd: root, encoding: 'utf8' });
+  try {
+    fs.mkdirSync(folder);
+    fs.writeFileSync(json, validJson);
+    fs.writeFileSync(markdown, '# External link health\n');
+    assert.equal(run().status, 0, 'both valid reports pass');
+    fs.unlinkSync(markdown);
+    assert.notEqual(run().status, 0, 'missing Markdown must fail');
+    fs.writeFileSync(markdown, '# External link health\n');
+    fs.unlinkSync(json);
+    assert.notEqual(run().status, 0, 'missing JSON must fail');
+    fs.writeFileSync(json, '');
+    assert.notEqual(run().status, 0, 'empty JSON must fail');
+    fs.writeFileSync(json, '{malformed');
+    assert.notEqual(run().status, 0, 'malformed JSON must fail');
+    fs.writeFileSync(json, validJson);
+    fs.writeFileSync(markdown, '');
+    assert.notEqual(run().status, 0, 'empty Markdown must fail');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });
