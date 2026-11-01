@@ -138,14 +138,14 @@ test('External Link Health upload enumerates both hidden-directory reports', () 
 });
 
 test('audit refuses partial, empty or malformed report artifacts before upload', () => {
-  const verifyStep = workflow.split('      - name: Verify both external-link reports\\n')[1]
-    ?.split('      - name: Upload detailed health artifact\\n')[0] || '';
-  const block = verifyStep.split('        run: |\\n')[1] || '';
-  const commands = block.split('\\n').filter((line) => line.startsWith('          '))
-    .map((line) => line.slice(10)).join('\\n');
-  assert.match(commands, /test -s \\.health\\/external-link-health\\.json/);
-  assert.match(commands, /test -s \\.health\\/external-link-health\\.md/);
-  assert.match(commands, /JSON\\.parse/);
+  const verifyStep = workflow.split('      - name: Verify both external-link reports\n')[1]
+    ?.split('      - name: Upload detailed health artifact\n')[0] || '';
+  const block = verifyStep.split('        run: |\n')[1] || '';
+  const commands = block.split('\n').filter((line) => line.startsWith('          '))
+    .map((line) => line.slice(10)).join('\n');
+  assert.match(commands, /test -s \.health\/external-link-health\.json/);
+  assert.match(commands, /test -s \.health\/external-link-health\.md/);
+  assert.match(commands, /JSON\.parse/);
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccg-external-link-artifact-'));
   const folder = path.join(root, '.health');
   const json = path.join(folder, 'external-link-health.json');
@@ -155,11 +155,11 @@ test('audit refuses partial, empty or malformed report artifacts before upload',
   try {
     fs.mkdirSync(folder);
     fs.writeFileSync(json, validJson);
-    fs.writeFileSync(markdown, '# External link health\\n');
+    fs.writeFileSync(markdown, '# External link health\n');
     assert.equal(run().status, 0, 'both valid reports pass');
     fs.unlinkSync(markdown);
     assert.notEqual(run().status, 0, 'missing Markdown must fail');
-    fs.writeFileSync(markdown, '# External link health\\n');
+    fs.writeFileSync(markdown, '# External link health\n');
     fs.unlinkSync(json);
     assert.notEqual(run().status, 0, 'missing JSON must fail');
     fs.writeFileSync(json, '');
