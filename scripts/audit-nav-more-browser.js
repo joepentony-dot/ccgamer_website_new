@@ -104,6 +104,7 @@ async function verifyLiveReleaseAssets() {
     // The retired Ask CCG bootstrap must not reappear in the deployed Home script.
     ["/js/ccg-archive-pulse-randomizer.js", "js/ccg-archive-pulse-randomizer.js"],
     ["/js/music-composer-utils.js", "js/music-composer-utils.js"],
+    ["/js/games-library.js", "js/games-library.js"],
     ["/js/ccg-nav-fit.js", "js/ccg-nav-fit.js"],
     ["/resources/css/ccg-nav-fit.css", "resources/css/ccg-nav-fit.css"],
     ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"]
@@ -303,6 +304,82 @@ async function assertMusicHubSearch(sessionId, width) {
         (testCase.all && (state.total === 0 || state.visible.length !== state.total)) ||
         (testCase.name && !state.visible.includes(testCase.name))) {
       throw new Error(`Music Hub search mismatch at ${width}px: ${JSON.stringify({ testCase, state })}`);
+    }
+  }
+}
+
+
+async function assertGamesArchiveYearSearch(sessionId, width) {
+  // Exercise the deployed archive UI; expected counts use the actual catalogue.
+  const catalogue = JSON.parse(fs.readFileSync(path.join(ROOT, "games/games-search.json"), "utf8"));
+  const countYear = (year) => catalogue.filter((game) => Number(game.year) === year).length;
+  if (catalogue.length < 600 || !countYear(1986) || !countYear(1987)) {
+    throw new Error("Games Archive search fixture is incomplete.");
+  }
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/games/index.html?ccg-year-search-audit=${Date.now()}`
+  });
+  // The archive intentionally defers catalogue hydration until genuine user intent.
+  // A real pointer click on search must start it before we assert results.
+  await clickElement(sessionId, "#gamesSearchInput");
+  await waitUntil(sessionId, `(function () {
+    const input = document.getElementById('gamesSearchInput');
+    const total = document.getElementById('gamesTotalCount');
+    const result = document.getElementById('gamesResultsCount');
+    return window.CCG_GAMES_LIBRARY_READY === true
+      && input?.dataset.ccgBound === 'true'
+      && total?.textContent.trim() === result?.textContent.trim()
+      && Number(total?.textContent.replace(/,/g, '')) > 600;
+  })()`, `Games Archive initialisation at ${width}px`, 25000);
+
+  await execute(sessionId, `
+    document.querySelector('[data-system-filter="all"]').click();
+    const year = document.getElementById('gamesYearSelect');
+    year.value = 'all';
+    year.dispatchEvent(new Event('change', { bubbles: true }));
+    return true;
+  `);
+
+  const cases = [
+    { query: "1986", expected: countYear(1986) },
+    { query: "1987", expected: countYear(1987) },
+    { query: "1942", expected: 1 },
+    { query: "1986 1942", expected: 1 },
+    { query: "1987 1942", expected: 0 },
+    { query: "", expected: catalogue.length }
+  ];
+  for (const testCase of cases) {
+    await execute(sessionId, `
+      const input = document.getElementById('gamesSearchInput');
+      input.value = ${JSON.stringify(testCase.query)};
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    `);
+    await waitUntil(sessionId, `(function () {
+      const input = document.getElementById('gamesSearchInput');
+      const results = document.getElementById('gamesResultsCount');
+      const empty = document.getElementById('gamesEmptyState');
+      return input?.value === ${JSON.stringify(testCase.query)}
+        && Number(results?.textContent.replace(/,/g, '')) === ${testCase.expected}
+        && empty?.hidden === ${testCase.expected !== 0};
+    })()`, `year query ${JSON.stringify(testCase.query)} at ${width}px`, 15000);
+    const actual = await execute(sessionId, `
+      return {
+        query: document.getElementById('gamesSearchInput').value,
+        results: Number(document.getElementById('gamesResultsCount').textContent.replace(/,/g, '')),
+        total: Number(document.getElementById('gamesTotalCount').textContent.replace(/,/g, '')),
+        emptyHidden: document.getElementById('gamesEmptyState').hidden,
+        system: document.querySelector('[data-system-filter="all"]').getAttribute('aria-pressed'),
+        year: document.getElementById('gamesYearSelect').value,
+        focus: document.getElementById('gamesFocusPanel').textContent.trim()
+      };
+    `);
+    if (actual.query !== testCase.query || actual.results !== testCase.expected ||
+        actual.total !== catalogue.length || actual.emptyHidden !== (testCase.expected !== 0) ||
+        actual.system !== "true" || actual.year !== "all" ||
+        (testCase.query && !actual.focus.includes(testCase.query.toUpperCase()))) {
+      throw new Error(`Games Archive search mismatch at ${width}px: ${JSON.stringify({ testCase, actual })}`);
     }
   }
 }
@@ -521,6 +598,9 @@ async function main() {
       await assertMusicHubSearch(sessionId, width);
     }
 
+    // Confirm real Games Archive year queries on desktop and mobile.
+    for (const width of [1440, 390]) await assertGamesArchiveYearSearch(sessionId, width);
+
     // Desktop regression: check the actual Fourthwall link with real pointer hit-testing.
     for (const width of [1440, 1920]) {
       await openHome(sessionId, width);
@@ -623,6 +703,7 @@ async function main() {
     console.log("- Legacy text-social fallback is not visible");
     console.log("- Retired Ask CCG launcher, scripts and resource requests are absent on first and return desktop/mobile visits");
     console.log("- Music Hub search ignores track-count badges, resolves historical aliases, announces no results and restores all composers at desktop/mobile widths");
+    console.log("- Games Archive year, title and combined queries, wrong-year rejection and reset pass at desktop/mobile widths");
   } finally {
     if (sessionId) {
       try { await webdriver("DELETE", `/session/${sessionId}`); } catch (error) {}

@@ -1,3 +1,8 @@
+## 1 November 2026 — Games Archive year-search browser acceptance (BRANCH ONLY)
+
+- Main `5ecbd95256c788d1eae43f4a5f7ae48f124193de` includes merged #2991 and a successful Pages deployment, but the existing live navigation browser audit did not exercise year search. This candidate tests the real Games Archive input, result counts, empty state, 1986/1987, title/year combinations and cleared search at 1440px/390px, with expected counts from the actual catalogue. It compares deployed `js/games-library.js` against the exact release.
+- Only the existing browser audit and continuation records change; no runtime, cache, catalogue, Omega intro, CSS, ratings, emulator or Dungeon changes. **DRAFT / NOT QUALIFIED / NOT MERGED / NOT LIVE** until exact-head native CI, guarded merge, Pages and production-domain browser acceptance. Owner-controlled holds remain separate.
+
 ## 1 November 2026 — Games Archive release-year search (BRANCH ONLY)
 
 - New bounded source candidate `fix/games-archive-year-query-20261101` based on main `6078b4a82231ac7bec829478b08c66ecbd9da71a`: fix advertised free-text year search in `js/games-library.js` (0→81 matches for 1986, 0→90 for 1987), add actual-catalogue regression in existing archive-directory tests, advance public cache v216→v217. No catalogue or visual changes. Await exact-head CI, guarded merge, Pages and live desktop/mobile acceptance; all existing holds remain.
