@@ -46,6 +46,10 @@ test("video-library cards right-size normal YouTube thumbnails without changing 
     "https://img.ytimg.com/vi/USTUwD_eH2c/mqdefault.jpg?foo=1"
   );
   assert.equal(
+    youtubeThumbnailCardUrl("https://img.youtube.com/vi/USTUwD_eH2c/maxresdefault.jpg"),
+    "https://img.youtube.com/vi/USTUwD_eH2c/mqdefault.jpg"
+  );
+  assert.equal(
     youtubeThumbnailCardUrl("/resources/images/custom-video-card.webp"),
     "/resources/images/custom-video-card.webp"
   );
