@@ -1,3 +1,8 @@
+## 1 November 2026 — External Link Health disabled-Issues reporting defect (BRANCH ONLY)
+
+- Exact production main `a416d3e50549223e40f1dab3ef047d53be1be076`; scheduled External Link Health run 41301529771 completed its 2,538-link read-only audit and uploaded the 30-day artifact, but its reporting step failed HTTP 410 because GitHub Issues is disabled. The report flags four repeated-404 Google Drive PDF references in games/games.json; these are review candidates, not permission to remove or rewrite links. 742 blocked and 478 transient results are not confirmed broken.
+- Single bounded workflow correction: always publish the markdown report to the job summary, keep the existing artifact and normal issue update/create/close behaviour where available, handle **only** Issues-disabled HTTP 410 as an explicit warning while preserving the broken-link warning, and propagate all other API failures. Add source-executed 410/403/normal issue-path regressions to the existing external-link test. No public site, catalogue, cache, Omega intro, Dungeon or data changes. **BRANCH ONLY / CI AND MERGE PENDING**; native exact-head checks and guarded release still apply.
+
 ## 1 November 2026 — Games Archive dynamic card HTML encoding (BRANCH ONLY)
 
 - Fresh main `f76d6ba98dd9ac188f35339ff6b4eb2713d6e56d`. The Games Archive's separate dynamic card renderer inserted editable title, year, system, thumbnail, route and cache key values into `innerHTML` without encoding; the older shared genre/collection card builder was already protected, but this path was not. Source-executed adversarial metadata produced literal HTML/event attributes before the fix; all 666 current catalogue slugs use safe canonical characters.
