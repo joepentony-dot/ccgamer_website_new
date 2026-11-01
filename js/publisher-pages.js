@@ -28,6 +28,23 @@
         return String(value || "").trim().toLowerCase();
     }
 
+    function publisherIndexCountSuffix(count, hasSearch) {
+        const noun = count === 1 ? "publisher" : "publishers";
+        return hasSearch ? ` ${noun} found` : ` ${noun} available`;
+    }
+
+    function publisherGameCountSuffix(count) {
+        return count === 1 ? " game shown" : " games shown";
+    }
+
+    function prepareLiveCount(count) {
+        const container = count?.parentElement;
+        if (!container) return;
+        container.setAttribute("role", "status");
+        container.setAttribute("aria-live", "polite");
+        container.setAttribute("aria-atomic", "true");
+    }
+
     function parsePublisherCounts(source) {
         const datasetC64 = Number(source?.c64Count);
         const datasetAmiga = Number(source?.amigaCount);
@@ -181,6 +198,7 @@
 
         const search = document.getElementById("publisherSearchInput");
         const count = document.getElementById("publisherVisibleCount");
+        prepareLiveCount(count);
         const empty = document.getElementById("publisherEmptyState");
         const archiveCards = Array.from(grid.querySelectorAll("[data-publisher-card]"));
         const featuredHeading = document.getElementById("featured-publishers-title");
@@ -308,7 +326,7 @@
             updateSearchPriority(query);
             if (count) count.textContent = String(visible);
             if (count?.parentElement?.lastChild?.nodeType === 3) {
-                count.parentElement.lastChild.nodeValue = query ? " publishers found" : " publishers available";
+                count.parentElement.lastChild.nodeValue = publisherIndexCountSuffix(visible, Boolean(query));
             }
             if (empty) empty.hidden = visible !== 0;
         }
@@ -324,6 +342,7 @@
 
         const search = document.getElementById("publisherGameSearchInput");
         const count = document.getElementById("publisherGameVisibleCount");
+        prepareLiveCount(count);
         const empty = document.getElementById("publisherGameEmptyState");
         const cards = Array.from(grid.querySelectorAll("[data-publisher-game]"));
         const buttons = Array.from(document.querySelectorAll("[data-publisher-game-system]"));
@@ -348,6 +367,9 @@
             });
 
             if (count) count.textContent = String(visible);
+            if (count?.parentElement?.lastChild?.nodeType === 3) {
+                count.parentElement.lastChild.nodeValue = publisherGameCountSuffix(visible);
+            }
             if (empty) empty.hidden = visible !== 0;
             setPressed(buttons, system, "data-publisher-game-system");
         }
@@ -373,7 +395,9 @@
         module.exports = {
             normalize,
             parsePublisherCounts,
-            publisherDataMatches
+            publisherDataMatches,
+            publisherIndexCountSuffix,
+            publisherGameCountSuffix
         };
     }
 
