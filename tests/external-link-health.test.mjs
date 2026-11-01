@@ -123,13 +123,13 @@ test('enabled GitHub Issues still receives confirmed broken links and healthy cl
 });
 
 test('External Link Health artifact includes both reports from the hidden directory and fails if missing', () => {
-  const uploadStep = workflow.split('      - name: Upload detailed health artifact\\n')[1]
-    ?.split('      - name: Update confirmed-broken-link issue\\n')[0] || '';
-  assert.match(uploadStep, /uses: actions\\/upload-artifact@v4/);
-  assert.match(uploadStep, /path: \\|\\n\\s+\\.health\\/external-link-health\\.json\\n\\s+\\.health\\/external-link-health\\.md/);
+  const uploadStep = workflow.split('      - name: Upload detailed health artifact\n')[1]
+    ?.split('      - name: Update confirmed-broken-link issue\n')[0] || '';
+  assert.match(uploadStep, /uses: actions\/upload-artifact@v4/);
+  assert.match(uploadStep, /path: \|\n\s+\.health\/external-link-health\.json\n\s+\.health\/external-link-health\.md/);
   assert.match(uploadStep, /include-hidden-files: true/);
   assert.match(uploadStep, /if-no-files-found: error/);
-  assert.doesNotMatch(uploadStep, /^\\s+path: \\.health\\/\\s*$/m);
-  assert.match(workflow, /--json \\.health\\/external-link-health\\.json/);
-  assert.match(workflow, /--markdown \\.health\\/external-link-health\\.md/);
+  assert.doesNotMatch(uploadStep, /^\s+path: \.health\/\s*$/m);
+  assert.match(workflow, /--json \.health\/external-link-health\.json/);
+  assert.match(workflow, /--markdown \.health\/external-link-health\.md/);
 });
