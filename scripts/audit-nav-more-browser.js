@@ -105,6 +105,7 @@ async function verifyLiveReleaseAssets() {
     ["/js/ccg-archive-pulse-randomizer.js", "js/ccg-archive-pulse-randomizer.js"],
     ["/js/music-composer-utils.js", "js/music-composer-utils.js"],
     ["/js/games-library.js", "js/games-library.js"],
+    ["/js/retro-specials-loader.js", "js/retro-specials-loader.js"],
     ["/js/ccg-nav-fit.js", "js/ccg-nav-fit.js"],
     ["/resources/css/ccg-nav-fit.css", "resources/css/ccg-nav-fit.css"],
     ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"]
@@ -384,6 +385,93 @@ async function assertGamesArchiveYearSearch(sessionId, width) {
   }
 }
 
+async function assertRetroSpecialsBrowser(sessionId, width) {
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/games/collections/retro-specials.html?ccg-retro-thumbnail-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, `(function () {
+    const grid = document.getElementById('genreGamesGrid');
+    const search = document.getElementById('ccgRetroSpecialsSearch');
+    const latest = document.getElementById('ccgRetroSpecialsLatestGrid');
+    return grid?.dataset.collectionState === 'ready'
+      && grid.querySelectorAll('.ccg-game-card').length > 0
+      && latest?.querySelectorAll('.ccg-game-card').length > 0
+      && search && document.getElementById('ccgRetroSpecialsStatus');
+  })()`, `Retro Specials dynamic cards at ${width}px`, 20000);
+
+  const baseline = await execute(sessionId, `return (function () {
+    const grid = document.getElementById('genreGamesGrid');
+    const latest = document.getElementById('ccgRetroSpecialsLatestGrid');
+    const images = Array.from(document.querySelectorAll(
+      '#genreGamesGrid .ccg-game-card img, #ccgRetroSpecialsLatestGrid .ccg-game-card img'
+    ));
+    const input = document.getElementById('ccgRetroSpecialsSearch');
+    const rect = input.getBoundingClientRect();
+    return {
+      viewport: innerWidth,
+      gridCount: grid.querySelectorAll('.ccg-game-card').length,
+      latestCount: latest.querySelectorAll('.ccg-game-card').length,
+      imageCount: images.length,
+      inlineHandlers: images.filter((img) => img.hasAttribute('onerror')).length,
+      badDimensions: images.filter((img) => img.getAttribute('width') !== '480'
+        || img.getAttribute('height') !== '270').length,
+      searchVisible: rect.width > 1 && rect.height > 1
+        && getComputedStyle(input).visibility !== 'hidden'
+    };
+  })();`);
+  if (baseline.gridCount < 1 || baseline.latestCount < 1 || baseline.imageCount < 2
+      || baseline.inlineHandlers !== 0 || baseline.badDimensions !== 0 || !baseline.searchVisible) {
+    throw new Error(`Retro Specials dynamic thumbnail contract failed at ${width}px: ${JSON.stringify(baseline)}`);
+  }
+
+  // Exercise the real capture-phase error handler without relying on whether
+  // third-party YouTube thumbnails are reachable from the CI runner.
+  const fallback = await execute(sessionId, `return (function () {
+    const original = document.querySelector('#genreGamesGrid .ccg-game-card img');
+    const probe = original.cloneNode(false);
+    const expected = 'https://img.youtube.com/vi/ccg-browser-probe/mqdefault.jpg';
+    probe.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    probe.setAttribute('data-ccg-retro-fallback', expected);
+    original.parentElement.appendChild(probe);
+    probe.dispatchEvent(new Event('error'));
+    const first = { src: probe.src, pending: probe.hasAttribute('data-ccg-retro-fallback') };
+    probe.dispatchEvent(new Event('error'));
+    const second = { src: probe.src, pending: probe.hasAttribute('data-ccg-retro-fallback') };
+    probe.remove();
+    return { expected, first, second };
+  })();`);
+  if (fallback.first.src !== fallback.expected || fallback.first.pending
+      || fallback.second.src !== fallback.expected || fallback.second.pending) {
+    throw new Error(`Retro Specials one-shot thumbnail fallback failed at ${width}px: ${JSON.stringify(fallback)}`);
+  }
+
+  for (const testCase of [
+    { query: 'Zzap!64', found: true },
+    { query: 'ccg-retro-unmatched-query-2026', found: false },
+    { query: '', found: true, reset: true }
+  ]) {
+    await execute(sessionId, `
+      const input = document.getElementById('ccgRetroSpecialsSearch');
+      input.value = ${JSON.stringify(testCase.query)};
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    `);
+    await waitUntil(sessionId, `(function () {
+      const grid = document.getElementById('genreGamesGrid');
+      const status = document.getElementById('ccgRetroSpecialsStatus');
+      const latest = document.getElementById('ccgRetroSpecialsLatest');
+      const count = grid.querySelectorAll('.ccg-game-card').length;
+      const empty = Boolean(grid.querySelector('.ccg-retro-empty'));
+      return document.getElementById('ccgRetroSpecialsSearch').value === ${JSON.stringify(testCase.query)}
+        && ${testCase.found} === (count > 0)
+        && ${testCase.found} !== empty
+        && ${testCase.reset ? "!latest.hidden && latest.querySelectorAll('.ccg-game-card').length > 0" : "latest.hidden"}
+        && status.textContent.includes(${JSON.stringify(testCase.reset ? "more specials in the archive" : "found")});
+    })()`, `Retro Specials search ${JSON.stringify(testCase.query)} at ${width}px`, 12000);
+  }
+}
+
 async function openMoreWithRealClick(sessionId, width) {
   await clickElement(sessionId, "[data-ccg-more-toggle]");
   await waitUntil(
@@ -601,6 +689,9 @@ async function main() {
     // Confirm real Games Archive year queries on desktop and mobile.
     for (const width of [1440, 390]) await assertGamesArchiveYearSearch(sessionId, width);
 
+    // Verify the released Retro Specials dynamic thumbnails, one-shot fallback and search.
+    for (const width of [1440, 390]) await assertRetroSpecialsBrowser(sessionId, width);
+
     // Desktop regression: check the actual Fourthwall link with real pointer hit-testing.
     for (const width of [1440, 1920]) {
       await openHome(sessionId, width);
@@ -704,6 +795,7 @@ async function main() {
     console.log("- Retired Ask CCG launcher, scripts and resource requests are absent on first and return desktop/mobile visits");
     console.log("- Music Hub search ignores track-count badges, resolves historical aliases, announces no results and restores all composers at desktop/mobile widths");
     console.log("- Games Archive year, title and combined queries, wrong-year rejection and reset pass at desktop/mobile widths");
+    console.log("- Retro Specials dynamic cards, safe thumbnail dimensions, one-shot image fallback and search pass at desktop/mobile widths");
   } finally {
     if (sessionId) {
       try { await webdriver("DELETE", `/session/${sessionId}`); } catch (error) {}

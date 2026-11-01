@@ -1,3 +1,9 @@
+## 1 November 2026 — Retro Specials deployed-browser acceptance (BRANCH ONLY)
+
+- After security fix #2995 merged at `6b3cd58f88cf8bc5fc604ca5cda964d1ae8f6b3d` and Pages/live navigation succeeded, the existing live browser workflow did **not** exercise Retro Specials thumbnail fallback or search. Public static HTML retrieval alone is not a desktop/mobile interaction test.
+- Bounded verification-only change to `scripts/audit-nav-more-browser.js`: compare deployed `js/retro-specials-loader.js` against release bytes, open actual Retro Specials in ChromeDriver at 1440px and 390px, check hydrated latest/archive cards, intrinsic 480×270 dimensions and no inline error handlers, simulate a failed image to verify one-shot capture-phase fallback, and test Zzap!64 search, no-results and reset. Existing Ask CCG retirement, Games Archive, Music Hub, navigation and merchandise checks remain intact. Source JavaScript syntax preflight passed.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE ACCEPTED.** Require actual GitHub ChromeDriver PR execution, current-main reconciliation, guarded merge and post-deployment production-domain browser execution. No runtime, catalogue, Omega styling, service worker, generated pages, accounts or Dungeon code changed. Other owner-controlled release holds remain separate.
+
 ## 1 November 2026 — Retro Specials thumbnail fallback injection guard (BRANCH ONLY)
 
 - Reproduced an executable inline image-error handler from editable Retro Specials metadata: the adversarial YouTube ID `x'-alert(1)-'` survived URL encoding and HTML-entity decoding inside the old `onerror` JavaScript; a source-executed negative control invoked the injected alert. This is a latent data-to-code risk, not evidence that the current published dataset was malicious.
