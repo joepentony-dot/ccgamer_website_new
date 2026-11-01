@@ -1,3 +1,9 @@
+## 1 November 2026 — Games Archive dynamic card HTML encoding (BRANCH ONLY)
+
+- Fresh main `f76d6ba98dd9ac188f35339ff6b4eb2713d6e56d`. The Games Archive's separate dynamic card renderer inserted editable title, year, system, thumbnail, route and cache key values into `innerHTML` without encoding; the older shared genre/collection card builder was already protected, but this path was not. Source-executed adversarial metadata produced literal HTML/event attributes before the fix; all 666 current catalogue slugs use safe canonical characters.
+- Bounded candidate `fix/games-library-dynamic-card-encoding-20261101`: encode dynamic card text/attributes and accordion letter markup, reject unsafe slug schemes while preserving canonical slug/Smash TV alias and existing card structure, add focused source-executed regression to the existing Games Index Omega tests, advance only public-code cache v215→v216. No catalogue, intro, CSS, rating logic, thumbnails, emulator, backend or Dungeon files changed.
+- **DRAFT / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE** pending exact-head Actions, fresh-main reconciliation, guarded merge and live desktop/mobile Games Archive acceptance. SEO #2981, generated #2987, Amazon #2957, Dungeon #2958 and genre CLS #2964 retain independent release holds.
+
 ## 1 November 2026 — publisher generated-output release safety and trigger isolation (BRANCH ONLY)
 
 - Fresh main `53478e28e273d3548a65d3d7baabc934658184a7`. Publisher archive automation previously attempted to push generated files directly to main before falling back to a PR, and its push trigger shared 11 exact path patterns with Reliable Games Publishing. Same-head generated PR #2986 contained 207 file patches identical to 207 in #2987; #2987 additionally has four Retro Specials/sitemap files. #2986 closed unmerged; #2987 remains unqualified with 14 PR workflows reporting `action_required`.

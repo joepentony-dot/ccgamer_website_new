@@ -167,3 +167,54 @@ test('More remains available for pinned and responsive overflow links', () => {
   assert.match(navFitCss, /\.ccg-nav--has-overflow \.ccg-nav__more/);
   assert.match(navFitCss, /display: inline-flex !important/);
 });
+test('dynamic Games Archive cards encode editable catalogue data without changing valid links', () => {
+  const runtime = fs.readFileSync('js/games-library.js', 'utf8');
+  const sections = [];
+  const fakeDocument = {
+    addEventListener() {},
+    getElementById(id) { return id === 'gamesAccordion' ? { appendChild(node) { sections.push(node); } } : null; },
+    createElement() { return { dataset: {}, className: '', innerHTML: '' }; },
+    querySelectorAll() { return []; }
+  };
+  const library = new Function('window', 'document',
+    runtime + '\\nreturn { renderGameCardMarkup, renderGameCardShell, resolveGameUrl, buildAccordion };'
+  )({ matchMedia: () => ({ matches: false }), innerWidth: 1440 }, fakeDocument);
+
+  const poisoned = {
+    id: 'safe-game',
+    slug: 'javascript:alert(1)',
+    title: 'Demo <svg onload=alert(1)> " & \\'',
+    thumbnail: 'art.png" onerror="alert(1)',
+    year: '1987"><img src=x onerror=alert(1)>',
+    system: 'C64</div><script>alert(1)</script>'
+  };
+  const markup = library.renderGameCardMarkup(poisoned, {
+    key: 'slug:" onmouseover="alert(1)',
+    rendered: true
+  });
+  assert.match(markup, /href="safe-game\\/"/);
+  assert.match(markup, /&lt;svg onload=alert\\(1\\)&gt;/);
+  assert.match(markup, /&lt;script&gt;alert\\(1\\)&lt;\\/script&gt;/);
+  assert.match(markup, /&quot;/);
+  assert.match(markup, /&#39;/);
+  assert.doesNotMatch(markup, /<svg|<script|onerror="alert|onmouseover="alert/);
+  assert.equal((markup.match(/class="ccg-game-card__actions"/g) || []).length, 1);
+
+  const shell = library.renderGameCardShell('slug:"><svg onload=alert(1)>');
+  assert.match(shell, /data-game-key="slug:&quot;&gt;&lt;svg/);
+  assert.doesNotMatch(shell, /<svg/);
+
+  const ordinary = library.renderGameCardMarkup({
+    id: 'accolades-comics', slug: 'accolades-comics',
+    title: "Accolade's Comics", thumbnail: 'accolades-comics.webp',
+    year: 1987, system: 'C64'
+  });
+  assert.match(ordinary, /href="accolades-comics\\/"/);
+  assert.match(ordinary, /Accolade&#39;s Comics/);
+  assert.equal(library.resolveGameUrl({ slug: 'smash-t-5' }), 'smash-tv/');
+
+  library.buildAccordion({ '<': [poisoned] });
+  assert.equal(sections.length, 1);
+  assert.match(sections[0].innerHTML, /data-letter="&lt;"/);
+  assert.doesNotMatch(sections[0].innerHTML, /<svg|<script|onerror="alert/);
+});
