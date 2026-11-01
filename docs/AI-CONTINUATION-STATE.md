@@ -1,3 +1,9 @@
+## 1 November 2026 — publisher count grammar and accessible announcements (BRANCH ONLY)
+
+- Main `cdfa1c9ab7a8bffc38774abb76d81a22fbcc8d1c`. Existing publisher generator outputs `1 games shown` for one-credit pages; shared publisher runtime updates numbers without singular nouns, including index `1 publishers found`. Lucasfilm Games contains three entries including a single Amiga title, an actual one-result filter case.
+- Bounded generator and shared runtime correction: 0/1/many labels, polite live count announcements, seven source-executed count regressions in existing archive-directory tests; public cache v214→v215. No generated HTML, games.json, Omega intro, ratings, emulator, Dungeon or CSS changed. JS-enabled existing pages gain correct labels; no-JS single-game pages await authoritative publisher regeneration.
+- **DRAFT / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head CI, guarded merge, Pages deployment and desktop/mobile acceptance. SEO #2981 Actions approval, Amazon #2957 owner attribution, Dungeon #2958 Windows and genre #2964 measured CLS holds remain separate.
+
 ## 1 November 2026 — Music Hub live-browser search acceptance guard (BRANCH ONLY)
 
 - Current main at source creation `8597035458c29b7be08bc8cd0fff882bcd0f920e` includes merged #2983 and Music Hub #2980. Existing Live Public Navigation browser coverage did not exercise the newly corrected composer search. Sole new independent verification candidate extends `scripts/audit-nav-more-browser.js` to test `32`, `Hubbard`, historical `David Dunn`/Julie Dunn, unmatched search and clearing at desktop/mobile widths, and compare live composer JS against release source. JS syntax preflight passed; exact-head ChromeDriver CI, guarded merge and production Pages/live checks are pending. No public-site runtime changes. Generated SEO #2981 remains DRAFT with native `action_required` CI hold; Amazon and Dungeon retain owner acceptance holds.
