@@ -1,3 +1,10 @@
+## 3 November 2026 — controlled genre-hero first-paint stabilisation experiment (BRANCH ONLY)
+
+- Owner supplied a desktop CrUX grouped CLS 1.03 across 88 mixed game/retro/emulator URLs; that is historical field evidence and not attributable to the genre hero alone.
+- Actual failed #2964 Lighthouse artifact 13033243940: desktop role-playing baseline CLS 0.214 versus candidate 0.742. The hero element contributes 0.163 baseline and another 0.530 candidate; separate Roboto font loading contributes ~0.049. This attribution does not prove the triggering event.
+- A bounded source experiment on this same draft PR pre-renders the existing Role-Playing Omega kicker and hero styling class in authoritative generated HTML, so the existing idempotent runtime no longer adds that hero flex child after first paint. It preserves title, style, text and game cards. It changes only the representative role-playing page, owning generator, and source regression, without touching shared runtime, CSS, other genres, intro, games.json or accounts.
+- **UNQUALIFIED** until the real exact-head Chrome/Lighthouse mobile+desktop comparison, Category Omega source tests, normal CI, fresh-main reconciliation and review pass. Do not merge based on synthetic tests or file-source assertions alone. If the controlled result does not improve desktop CLS, reject this experiment and follow the recorded shift attribution instead.
+
 ## 31 October 2026 — genre banner font-contention correction (BRANCH ONLY)
 
 - PR #2964 exact-head Lighthouse comparison run 41172597475 failed: mobile LCP 20.33s → 17.42s, CLS 0.099 → 0.751; desktop CLS 0.238 → 1.132. Raw eight-report artifact 13032165757 attributes major candidate shifts to late Roboto font swaps (genre hero and decorative Amiga layer). The first high-priority banner candidate is **NOT QUALIFIED**. Do not weaken the browser gate.
