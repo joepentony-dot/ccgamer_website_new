@@ -100,27 +100,22 @@ test('music keeps its established short URL while signalling C64 and Amiga stron
   assert.doesNotMatch(generator, /music\/index\.html/);
 });
 
-// Regression: first-viewport artwork is not part of the below-fold lazy-card policy.
-test('all 15 genre banners load eagerly without high-priority font contention', () => {
+// Guard the original Omega banners: speculative image priority hints were
+// measured as regressive, so the generator must not reinstate them.
+test('all 15 genre banners retain their baseline first-paint markup', () => {
   const files = ["action-adventure-games.html","adventure-games.html","arcade-games.html","casino-games.html","fighting-games.html","horror-games.html","miscellaneous.html","platform-games.html","puzzle-games.html","quiz-games.html","racing-games.html","role-playing-games.html","shooting-games.html","sports-games.html","strategy-games.html"];
   for (const file of files) {
-    const html = fs.readFileSync(`games/genres/${file}`, 'utf8');
+    const html = fs.readFileSync('games/genres/' + file, 'utf8');
     const banners = html.match(/<img\b[^>]*\bclass=["'][^"']*\bccg-genre-hero__img\b[^"']*["'][^>]*>/gi) || [];
-    assert.equal(banners.length, 1, `${file}: one genre banner`);
-    if (file === "role-playing-games.html") {
-      // One controlled browser-comparison route retains its original first-paint HTML.
-      assert.doesNotMatch(banners[0], /\b(?:loading|fetchpriority)=/i);
-      assert.doesNotMatch(html, /<link rel="preconnect" href="https:\/\/fonts\.(?:googleapis|gstatic)\.com"/i);
-    } else {
-      assert.match(banners[0], /\bloading="eager"/i);
-      assert.match(banners[0], /\bfetchpriority="auto"/i);
-      assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">/g) || []).length, 1, file + ": one Google CSS preconnect");
-      assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/g) || []).length, 1, file + ": one font-file preconnect");
-    }
-    assert.match(html, /\bccg-game-card\b/, `${file}: game cards preserved`);
+    assert.equal(banners.length, 1, file + ': retain the original genre banner');
+    assert.doesNotMatch(banners[0], /\b(?:loading|fetchpriority)=/i, file + ': no unqualified banner priority');
+    const expectedFontPreconnects = file === 'arcade-games.html' ? 1 : 0;
+    assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">/g) || []).length, expectedFontPreconnects, file + ': preserve existing Google CSS preconnect count');
+    assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/g) || []).length, expectedFontPreconnects, file + ': preserve existing Google font preconnect count');
+    assert.match(html, /\bccg-game-card\b/, file + ': retain the catalogue cards');
   }
-  assert.match(generator, /function prioritiseAboveFoldGenreBanner\(/);
-  assert.match(generator, /function ensureGenreFontPreconnect\(/);
+  assert.doesNotMatch(generator, /function prioritiseAboveFoldGenreBanner\(/);
+  assert.doesNotMatch(generator, /function ensureGenreFontPreconnect\(/);
 });
 
 test('Amiga decoration cannot occupy document flow before its deferred visual stylesheet loads', () => {
