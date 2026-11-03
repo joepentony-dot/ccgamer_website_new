@@ -149,29 +149,6 @@ function prioritiseAboveFoldGenreBanner(html) {
   });
 }
 
-
-/* First-paint geometry experiment: pre-render the existing Omega kicker and
-   hero class so runtime enhancement does not insert a flex child above the
-   heading after the page has already painted. The role-playing page is the
-   isolated Lighthouse comparison target; expand only if it passes. */
-function stabiliseRolePlayingHeroFirstPaint(html, subject) {
-  let heroFound = false;
-  html = html.replace(/<section\s+class="([^"]*\bccg-genre-hero\b[^"]*)"/i, (tag, classes) => {
-    heroFound = true;
-    return classes.split(/\s+/).includes("ccg-category-omega__hero")
-      ? tag
-      : tag.replace('class="' + classes + '"', 'class="' + classes + ' ccg-category-omega__hero"');
-  });
-  if (!heroFound) throw new Error("Role-playing genre hero is missing");
-  const inner = '<div class="ccg-genre-hero__inner">';
-  if (!html.includes(inner)) throw new Error("Role-playing hero inner is missing");
-  if (!html.includes('class="ccg-category-omega__kicker"')) {
-    const kicker = '<p class="ccg-category-omega__kicker">C64 &amp; Amiga ' + escapeHtml(subject) + ' archive</p>';
-    html = html.replace(inner, inner + '\n\n                    ' + kicker);
-  }
-  return html;
-}
-
 function upgradeFile(relativePath, tuple, kind) {
   const filePath = path.join(ROOT, relativePath);
   if (!fs.existsSync(filePath)) throw new Error(`Missing category page: ${relativePath}`);
@@ -198,7 +175,6 @@ function upgradeFile(relativePath, tuple, kind) {
   html = replaceClassElement(html, "h1", "ccg-genre-hero__title", h1);
   html = replaceClassElement(html, "p", "ccg-genre-hero__tagline", tagline);
   html = replaceFirstIntro(html, description);
-  if (relativePath === "games/genres/role-playing-games.html") html = stabiliseRolePlayingHeroFirstPaint(html, subject);
   if (kind === "genre") {
     html = ensureGenreFontPreconnect(html);
     html = prioritiseAboveFoldGenreBanner(html);
