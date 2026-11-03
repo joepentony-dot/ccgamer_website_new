@@ -175,7 +175,9 @@ function upgradeFile(relativePath, tuple, kind) {
   html = replaceClassElement(html, "h1", "ccg-genre-hero__title", h1);
   html = replaceClassElement(html, "p", "ccg-genre-hero__tagline", tagline);
   html = replaceFirstIntro(html, description);
-  if (kind === "genre") {
+  // Temporarily isolate the measured RPG Lighthouse page from the unqualified
+  // banner/font preconnect experiment. Recheck real CLS before applying sitewide.
+  if (kind === "genre" && relativePath !== "games/genres/role-playing-games.html") {
     html = ensureGenreFontPreconnect(html);
     html = prioritiseAboveFoldGenreBanner(html);
   }
