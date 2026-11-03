@@ -127,3 +127,17 @@ test('role-playing Omega hero reserves its kicker and presentation geometry befo
   assert.match(generator, /stabiliseRolePlayingHeroFirstPaint\(html, subject\)/);
   assert.match(runtime, /querySelector\("\.ccg-category-omega__kicker"\)/, 'runtime retains its existing idempotent fallback');
 });
+
+
+test('Amiga decoration cannot occupy document flow before its deferred visual stylesheet loads', () => {
+  const modeCss = fs.readFileSync('resources/css/ccg-mode.css', 'utf8');
+  const amigaCss = fs.readFileSync('resources/css/ccg-amiga-mode.css', 'utf8');
+  const modeEngine = fs.readFileSync('js/ccg-mode-engine.js', 'utf8');
+  const initial = modeCss.match(/\.ccg-amiga-chrome\s*\{([^}]+)\}/);
+  assert.ok(initial, 'blocking mode CSS includes first-paint Amiga chrome geometry');
+  for (const property of ['position: fixed', 'inset: 0', 'pointer-events: none', 'opacity: 0', 'visibility: hidden']) {
+    assert.ok(initial[1].includes(property), 'first-paint geometry reserves ' + property);
+  }
+  assert.match(modeEngine, /ensureAmigaStyles\(\);\s*ensureAmigaChrome\(\);/, 'mode engine still owns the deferred visual layer');
+  assert.match(amigaCss, /html\[data-ccg-mode="amiga"\]\s+\.ccg-amiga-chrome/, 'full Amiga visuals retain final mode ownership');
+});
