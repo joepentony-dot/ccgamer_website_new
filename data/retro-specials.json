@@ -797,5 +797,41 @@
     ],
     "deferYouTubePlayer": true,
     "disableAutoFeaturedGames": true
+  },
+  {
+    "id": "50-arcade-games-can-you-identify-them",
+    "slug": "50-arcade-games-can-you-identify-them",
+    "type": "retro-specials",
+    "title": "Think You Know Arcade Games? Name These 50 Classics!",
+    "youtubeId": "cNv9J-MhMA0",
+    "thumbnail": "https://img.youtube.com/vi/cNv9J-MhMA0/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 26,
+    "summary": "Can you recognise 50 arcade games from just ten seconds of gameplay? Five rounds of coin-op classics, difficult favourites and a bonus soundtrack challenge.",
+    "description": "Fifty classic arcade games from the 1980s and early 1990s, spread across five themed rounds. You get ten seconds of gameplay to identify each game before the answer appears, with a point for each correct answer. The rounds cover arcade favourites, shoot-'em-ups, beat 'em ups, monsters and magic, and iconic arcade machines. There is also a bonus challenge: can you recognise the arcade music playing during the question sequences? Share your score out of fifty and the tunes you spotted.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Arcade Games Quiz – Can You Name 50 Classics? | 80s & 90s | Cheeky Commodore Gamer",
+      "description": "Test your arcade knowledge with 50 classic 1980s and 1990s coin-op games to identify from ten-second gameplay clips across five rounds."
+    },
+    "created_at": "2026-11-03T00:00:00.000Z",
+    "tags": [
+      "Arcade",
+      "retro gaming quiz",
+      "name that game",
+      "50 games",
+      "1980s arcade games",
+      "1990s arcade games"
+    ],
+    "platforms": [
+      "Arcade"
+    ],
+    "relatedSlugs": [
+      "50-commodore-64-games-can-you-identify-them",
+      "50-amiga-games-can-you-identify-them",
+      "50-zx-spectrum-games-can-you-identify-them"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true
   }
 ]
