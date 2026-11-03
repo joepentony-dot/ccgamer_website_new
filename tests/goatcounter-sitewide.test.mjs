@@ -462,3 +462,5 @@ test("separate hourly-session counter does not replace or double-count the recov
   assert.match(sourceForMetrics(), /HISTORICAL_ARCHIVE_HITS = 14793/);
   function sourceForMetrics() { return runtime; }
 });
+// Include generated retro collection counters in the existing GoatCounter CI suite.
+import './retro-collection-goatcounter.test.mjs';

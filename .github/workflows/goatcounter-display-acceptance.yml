@@ -65,6 +65,8 @@ jobs:
     steps:
       - name: Checkout proposed website scripts
         uses: actions/checkout@v4
+      - name: Validate retro collection feature-visit counters
+        run: node --test tests/retro-collection-goatcounter.test.mjs
       - name: Python 3.12
         uses: actions/setup-python@v5
         with:
