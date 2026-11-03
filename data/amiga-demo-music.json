@@ -8,196 +8,196 @@
     "thumbnail": "https://img.youtube.com/vi/USTUwD_eH2c/hqdefault.jpg",
     "membersOnly": false,
     "order": 0,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting State of the Art.",
-    "description": "State of the Art is a standout 1990 Amiga demoscene music showcase associated with Scene Group. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "Spaceballs' 1992 Amiga demo won The Party with filmed dancers turned into vector animation.",
+    "description": "Spaceballs released State of the Art at The Party in December 1992, winning the Amiga demo competition. Filmed dancers were converted into vector animation, with music credited to Travolta and loader music by Vinnie. The production became a memorable example of the Amiga demoscene's combination of programming, graphics and sound.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "State of the Art – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "State of the Art is a standout 1990 Amiga demoscene music showcase associated with Scene Group. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "State of the Art (1992) – Spaceballs | Amiga Demo",
+      "description": "Spaceballs' State of the Art won The Party's 1992 Amiga demo contest, combining vectorised dancers with music by Travolta. Explore the original production."
     },
-    "composer": "Unknown",
-    "demo_group": "Scene Group",
-    "year": 1990,
+    "composer": "Travolta and Vinnie",
+    "demo_group": "Spaceballs",
+    "year": 1992,
     "format": "MOD"
   },
   {
     "id": "9-fingers-spaceballs",
     "slug": "9-fingers-spaceballs",
     "type": "amiga-demo-music",
-    "title": "9 Fingers Spaceballs",
+    "title": "9 Fingers",
     "youtubeId": "FZFH-LjJA9A",
     "thumbnail": "https://img.youtube.com/vi/FZFH-LjJA9A/hqdefault.jpg",
     "membersOnly": false,
     "order": 1,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting 9 Fingers Spaceballs.",
-    "description": "9 Fingers Spaceballs is a standout 1990 Amiga demoscene music showcase associated with Spaceballs. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "Spaceballs followed State of the Art with this two-disk Amiga dance demo at The Party 1993.",
+    "description": "Spaceballs followed State of the Art with 9 Fingers in December 1993. The two-disk Amiga demo returned to filmed dancers and electronic music, finishing fourth in the demo competition at The Party 1993. Credits include music by Travolta and Vinnie, with graphics and code contributed by members of Spaceballs.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "9 Fingers Spaceballs – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "9 Fingers Spaceballs is a standout 1990 Amiga demoscene music showcase associated with Spaceballs. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "9 Fingers (1993) – Spaceballs | Amiga Demo",
+      "description": "Watch 9 Fingers by Spaceballs, the two-disk Amiga dance demo released at The Party 1993, featuring filmed dancers and music by Travolta and Vinnie."
     },
     "demo_group": "Spaceballs",
-    "year": 1990,
-    "composer": "Scene musicians"
+    "year": 1993,
+    "composer": "Travolta and Vinnie"
   },
   {
     "id": "jesus-on-es",
     "slug": "jesus-on-es",
     "type": "amiga-demo-music",
-    "title": "Jesus On E's",
+    "title": "Jesus on E's",
     "youtubeId": "GCA3bzDopD0",
     "thumbnail": "https://img.youtube.com/vi/GCA3bzDopD0/hqdefault.jpg",
     "membersOnly": false,
     "order": 2,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting Jesus On E's.",
-    "description": "Jesus On E's is a standout 1990 Amiga demoscene music showcase associated with Melon Dezign. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "LSD's two-disk 1992 Amiga rave demo, presented at Digital Symposium with music by Echo.",
+    "description": "LSD presented Jesus on E's at Digital Symposium 1992. This two-disk Amiga production runs through an extended sequence of rave-inspired visuals and tracks composed by Echo. Its length and music-led presentation made it an unusually substantial release for the 1992 demoscene.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "Jesus On E's – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "Jesus On E's is a standout 1990 Amiga demoscene music showcase associated with Melon Dezign. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "Jesus on E's (1992) – LSD | Amiga Demo",
+      "description": "Jesus on E's is LSD's two-disk Amiga rave demo from Digital Symposium 1992, featuring an extended soundtrack composed by Echo. Explore its history."
     },
-    "demo_group": "Melon Dezign",
-    "year": 1990,
-    "composer": "Scene musicians"
+    "demo_group": "LSD",
+    "year": 1992,
+    "composer": "Echo"
   },
   {
     "id": "cryonics-neverwhere",
     "slug": "cryonics-neverwhere",
     "type": "amiga-demo-music",
-    "title": "Cryonics - Neverwhere",
+    "title": "Neverwhere",
     "youtubeId": "4lf0PoX4ppk",
     "thumbnail": "https://img.youtube.com/vi/4lf0PoX4ppk/hqdefault.jpg",
     "membersOnly": false,
     "order": 3,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting Cryonics - Neverwhere.",
-    "description": "Cryonics - Neverwhere is a standout 1990 Amiga demoscene music showcase associated with Crionics. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "Crionics won the Bounty Party 1990 demo competition with Neverwhere.",
+    "description": "Crionics released Neverwhere at Bounty Party 1990, where it took first place in the Amiga demo competition. The production combines code and graphics from the group with music credited to Tronic and S.L.L, reflecting the multi-part megademo approach popular in the early Amiga scene.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "Cryonics - Neverwhere – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "Cryonics - Neverwhere is a standout 1990 Amiga demoscene music showcase associated with Crionics. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "Neverwhere (1990) – Crionics | Amiga Demo",
+      "description": "Neverwhere by Crionics won the Amiga demo competition at Bounty Party 1990, with music by Tronic and S.L.L. Discover this early demoscene release."
     },
     "demo_group": "Crionics",
     "year": 1990,
-    "composer": "Scene musicians"
+    "composer": "Tronic and S.L.L"
   },
   {
     "id": "odyssey-alzatraz",
     "slug": "odyssey-alzatraz",
     "type": "amiga-demo-music",
-    "title": "Odyssey - Alzatraz",
+    "title": "Odyssey",
     "youtubeId": "6DjP8iVOYUI",
     "thumbnail": "https://img.youtube.com/vi/6DjP8iVOYUI/hqdefault.jpg",
     "membersOnly": false,
     "order": 4,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting Odyssey - Alzatraz.",
-    "description": "Odyssey - Alzatraz is a standout 1990 Amiga demoscene music showcase associated with Alcatraz. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "Alcatraz's five-disk-side Odyssey won the Amiga demo competition at The Party 1991.",
+    "description": "Alcatraz's Odyssey won the Amiga demo competition at The Party 1991. Its five-disk-side presentation follows a sequence of science-fiction settings and story-driven scenes, accompanied by music credited to Greg. Odyssey beat Hardwired into second place at the same event and remains associated with the ambitious trackmo format of the period.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "Odyssey - Alzatraz – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "Odyssey - Alzatraz is a standout 1990 Amiga demoscene music showcase associated with Alcatraz. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "Odyssey (1991) – Alcatraz | Amiga Demo",
+      "description": "Alcatraz's Odyssey won The Party 1991 Amiga demo competition. Explore its five-disk-side science-fiction presentation and music by Greg."
     },
     "demo_group": "Alcatraz",
-    "year": 1990,
-    "composer": "Scene musicians"
+    "year": 1991,
+    "composer": "Greg"
   },
   {
     "id": "enigma-phenomena",
     "slug": "enigma-phenomena",
     "type": "amiga-demo-music",
-    "title": "Enigma - Phenomena",
+    "title": "Enigma",
     "youtubeId": "vODFmmYOWQs",
     "thumbnail": "https://img.youtube.com/vi/vODFmmYOWQs/hqdefault.jpg",
     "membersOnly": false,
     "order": 5,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting Enigma - Phenomena.",
-    "description": "Enigma - Phenomena is a standout 1990 Amiga demoscene music showcase associated with Phenomena. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "Phenomena's Enigma won the Anarchy Easter Conference 1991 Amiga demo competition.",
+    "description": "Phenomena's Enigma won the Amiga demo competition at Anarchy Easter Conference 1991. The release includes ray-traced animation and music by Firefox and Tip, alongside graphics and code from other members of the group. Enigma remains a notable early example of the Amiga's graphics and sound working together in a demo.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "Enigma - Phenomena – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "Enigma - Phenomena is a standout 1990 Amiga demoscene music showcase associated with Phenomena. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "Enigma (1991) – Phenomena | Amiga Demo",
+      "description": "Enigma by Phenomena won Anarchy Easter Conference 1991's Amiga demo contest, featuring ray-traced animation and music by Firefox and Tip."
     },
     "demo_group": "Phenomena",
-    "year": 1990,
-    "composer": "Scene musicians"
+    "year": 1991,
+    "composer": "Firefox and Tip"
   },
   {
     "id": "crionics-hardwired",
     "slug": "crionics-hardwired",
     "type": "amiga-demo-music",
-    "title": "Crionics - Hardwired",
+    "title": "Hardwired",
     "youtubeId": "CNUCOvjxd3o",
     "thumbnail": "https://img.youtube.com/vi/CNUCOvjxd3o/hqdefault.jpg",
     "membersOnly": false,
     "order": 6,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting Crionics - Hardwired.",
-    "description": "Crionics - Hardwired is a standout 1990 Amiga demoscene music showcase associated with Crionics. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "Crionics and The Silents placed second at The Party 1991 with this two-disk Amiga demo.",
+    "description": "Hardwired was a joint release by Crionics and The Silents at The Party 1991, finishing second behind Alcatraz's Odyssey. This two-disk Amiga production features 3D vector effects and music by Jesper Kyd, with programming and artwork contributed by members of both groups.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "Crionics - Hardwired – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "Crionics - Hardwired is a standout 1990 Amiga demoscene music showcase associated with Crionics. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "Hardwired (1991) – Crionics & The Silents | Amiga Demo",
+      "description": "Hardwired by Crionics and The Silents finished second at The Party 1991. Watch the two-disk Amiga demo with 3D effects and music by Jesper Kyd."
     },
-    "demo_group": "Crionics",
-    "year": 1990,
-    "composer": "Scene musicians"
+    "demo_group": "Crionics and The Silents",
+    "year": 1991,
+    "composer": "Jesper Kyd"
   },
   {
     "id": "sounds-of-silents",
     "slug": "sounds-of-silents",
     "type": "amiga-demo-music",
-    "title": "Sounds of Silents",
+    "title": "Sound of Silents",
     "youtubeId": "rng9n0SNeDg",
     "thumbnail": "https://img.youtube.com/vi/rng9n0SNeDg/hqdefault.jpg",
     "membersOnly": false,
     "order": 7,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting Sounds of Silents.",
-    "description": "Sounds of Silents is a standout 1990 Amiga demoscene music showcase associated with Silents. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "A 1990 Amiga musicdisk by The Silents, featuring compositions by Jesper Kyd.",
+    "description": "The Silents released the Amiga musicdisk Sound of Silents at Bounty Party 1990. Its soundtrack features work by Jesper Kyd, including pieces titled Apocalypse, Next Decade and Highlands. Rather than concentrating on a single visual effect, the musicdisk gives the group's compositions their own showcase.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "Sounds of Silents – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "Sounds of Silents is a standout 1990 Amiga demoscene music showcase associated with Silents. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "Sound of Silents (1990) – The Silents | Amiga Musicdisk",
+      "description": "Sound of Silents is The Silents' 1990 Amiga musicdisk featuring music by Jesper Kyd, including Apocalypse and Next Decade."
     },
-    "demo_group": "Silents",
+    "demo_group": "The Silents",
     "year": 1990,
-    "composer": "Scene musicians"
+    "composer": "Jesper Kyd"
   },
   {
     "id": "desert-dream-kefrens",
     "slug": "desert-dream-kefrens",
     "type": "amiga-demo-music",
-    "title": "Desert Dream - Kefrens",
+    "title": "Desert Dream",
     "youtubeId": "HMESDOVj5UM",
     "thumbnail": "https://img.youtube.com/vi/HMESDOVj5UM/hqdefault.jpg",
     "membersOnly": false,
     "order": 8,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting Desert Dream - Kefrens.",
-    "description": "Desert Dream - Kefrens is a standout 1990 Amiga demoscene music showcase associated with Kefrens. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "Kefrens won The Gathering 1993 with this two-disk Amiga demo and music by Laxity.",
+    "description": "Kefrens won The Gathering 1993 Amiga demo competition with Desert Dream. Spread across two disk sides, the production brings together 3D scenes, dot landscapes and tunnel effects, with several soundtrack pieces by Laxity. Its mixture of visual techniques and music helped make it a defining 1993 release for the group.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "Desert Dream - Kefrens – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "Desert Dream - Kefrens is a standout 1990 Amiga demoscene music showcase associated with Kefrens. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "Desert Dream (1993) – Kefrens | Amiga Demo",
+      "description": "Kefrens' Desert Dream won The Gathering 1993 Amiga demo competition, combining 3D effects and dot landscapes with music by Laxity."
     },
     "demo_group": "Kefrens",
-    "year": 1990,
-    "composer": "Scene musicians"
+    "year": 1993,
+    "composer": "Laxity"
   },
   {
     "id": "red-sector-folow-me",
     "slug": "red-sector-folow-me",
     "type": "amiga-demo-music",
-    "title": "Red Sector - Folow Me",
+    "title": "Follow Me",
     "youtubeId": "7z-yzAKP94I",
     "thumbnail": "https://img.youtube.com/vi/7z-yzAKP94I/hqdefault.jpg",
     "membersOnly": false,
     "order": 9,
-    "summary": "A classic Commodore Amiga demoscene music feature highlighting Red Sector - Folow Me.",
-    "description": "Red Sector - Folow Me is a standout 1990 Amiga demoscene music showcase associated with Red Sector. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "summary": "Red Sector Inc.'s 1989 Amiga demo features a soundtrack by Romeo Knight.",
+    "description": "Red Sector Inc. released Follow Me in December 1989. The Amiga demo includes coding by Delta and Dr. Beat, graphics by Dark and music by Romeo Knight. It also appeared in early demoscene charts, placing fifth in the EuroChart Top Ten published in March 1990.",
     "collection": "amiga-demo-music",
     "seo": {
-      "title": "Red Sector - Folow Me – Amiga Demo Scene | Cheeky Commodore Gamer",
-      "description": "Red Sector - Folow Me is a standout 1990 Amiga demoscene music showcase associated with Red Sector. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
+      "title": "Follow Me (1989) – Red Sector Inc. | Amiga Demo",
+      "description": "Follow Me is a 1989 Amiga demo by Red Sector Inc., with code by Delta and Dr. Beat and music by Romeo Knight. Explore its early scene history."
     },
-    "demo_group": "Red Sector",
-    "year": 1990,
-    "composer": "Scene musicians"
+    "demo_group": "Red Sector Inc.",
+    "year": 1989,
+    "composer": "Romeo Knight"
   }
 ]
