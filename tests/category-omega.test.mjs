@@ -107,10 +107,16 @@ test('all 15 genre banners load eagerly without high-priority font contention', 
     const html = fs.readFileSync(`games/genres/${file}`, 'utf8');
     const banners = html.match(/<img\b[^>]*\bclass=["'][^"']*\bccg-genre-hero__img\b[^"']*["'][^>]*>/gi) || [];
     assert.equal(banners.length, 1, `${file}: one genre banner`);
-    assert.match(banners[0], /\bloading="eager"/i);
-    assert.match(banners[0], /\bfetchpriority="auto"/i);
-    assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">/g) || []).length, 1, file + ": one Google CSS preconnect");
-    assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/g) || []).length, 1, file + ": one font-file preconnect");
+    if (file === "role-playing-games.html") {
+      // One controlled browser-comparison route retains its original first-paint HTML.
+      assert.doesNotMatch(banners[0], /\b(?:loading|fetchpriority)=/i);
+      assert.doesNotMatch(html, /<link rel="preconnect" href="https:\/\/fonts\.(?:googleapis|gstatic)\.com"/i);
+    } else {
+      assert.match(banners[0], /\bloading="eager"/i);
+      assert.match(banners[0], /\bfetchpriority="auto"/i);
+      assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">/g) || []).length, 1, file + ": one Google CSS preconnect");
+      assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/g) || []).length, 1, file + ": one font-file preconnect");
+    }
     assert.match(html, /\bccg-game-card\b/, `${file}: game cards preserved`);
   }
   assert.match(generator, /function prioritiseAboveFoldGenreBanner\(/);
