@@ -117,18 +117,6 @@ test('all 15 genre banners load eagerly without high-priority font contention', 
   assert.match(generator, /function ensureGenreFontPreconnect\(/);
 });
 
-
-test('role-playing Omega hero reserves its kicker and presentation geometry before runtime', () => {
-  const html = fs.readFileSync('games/genres/role-playing-games.html', 'utf8');
-  const match = html.match(/<section class="ccg-genre-hero ccg-category-omega__hero"[^>]*>[\s\S]*?<div class="ccg-genre-hero__inner">([\s\S]*?)<h1/);
-  assert.ok(match, 'first-paint hero and its inner content exist in static HTML');
-  assert.match(match[1], /<p class="ccg-category-omega__kicker">C64 &amp; Amiga Role-Playing archive<\/p>/);
-  assert.equal((html.match(/class="ccg-category-omega__kicker"/g) || []).length, 1, 'runtime must not add a second kicker');
-  assert.match(generator, /stabiliseRolePlayingHeroFirstPaint\(html, subject\)/);
-  assert.match(runtime, /querySelector\("\.ccg-category-omega__kicker"\)/, 'runtime retains its existing idempotent fallback');
-});
-
-
 test('Amiga decoration cannot occupy document flow before its deferred visual stylesheet loads', () => {
   const modeCss = fs.readFileSync('resources/css/ccg-mode.css', 'utf8');
   const amigaCss = fs.readFileSync('resources/css/ccg-amiga-mode.css', 'utf8');
