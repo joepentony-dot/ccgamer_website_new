@@ -1,3 +1,9 @@
+## 3 November 2026 — first-paint Amiga layer fallback from exact-head Lighthouse evidence (BRANCH ONLY)
+
+- New head #2964 run 41563455699 FAILED strict comparison: desktop baseline median CLS 0.2495 versus candidate 1.0734; mobile baseline 0.5005 versus candidate 0.5357. One candidate desktop repetition scored 0.117, the other scored 1.0734 because an entire full-page `.ccg-amiga-chrome` layer contributed exactly 1.000 CLS after web-font loading. Mobile candidate font swap moves `.ccg-genre-hero__inner` with score ~0.430. The first-paint static-kicker experiment has NOT qualified and the wider 88-URL CrUX issue is not yet resolved.
+- The existing `js/ccg-mode-engine.js` appends `.ccg-amiga-chrome` immediately after requesting the asynchronous `ccg-amiga-mode.css` stylesheet; without first-paint positioning this decorative element can briefly occupy document flow. Controlled correction on SAME DRAFT PR: add only baseline fixed/inset/hidden non-interactive overlay geometry to the existing blocking `resources/css/ccg-mode.css`, preserving the later Amiga stylesheet's final presentation. Add focused source guard to the existing category regression suite. Keep service worker exactly aligned with current main except for monotonic public-code cache v219→v220; do not revert other main changes.
+- **NOT RELEASE-QUALIFIED.** Require new exact-head Category Omega mobile+desktop real Lighthouse, Site Safety, public cache check, applicable required CI, fresh-main reconciliation, visual acceptance, and no CLS/LCP/wheel regression. Never waive the numeric guard or merge solely from source tests.
+
 ## 3 November 2026 — controlled genre-hero first-paint stabilisation experiment (BRANCH ONLY)
 
 - Owner supplied a desktop CrUX grouped CLS 1.03 across 88 mixed game/retro/emulator URLs; that is historical field evidence and not attributable to the genre hero alone.
