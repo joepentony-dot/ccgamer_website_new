@@ -39,3 +39,22 @@
 - Existing MP3 is retained and primed only on user hover/focus. Each user click now also triggers a short Web Audio mechanical tick inside the same activation; this remains audible if the MP3 playback fails or is delayed. Muted device/browser audio cannot be overridden. No audio autoplay or extra external dependencies.
 - Added source-executed test coverage for exact smaller geometry, focus isolation and click-triggered audio including a rejecting MP3 playback promise; advance public code cache v222→v223.
 - **NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE** until actual exact-head validation, guarded release, independent live appearance/sound checks on desktop/mobile, and Lighthouse smoke acceptance. Never claim owner acceptance from a passing CSS/JS contract alone.
+
+## 4 November 2026 — button volume and live shared counting (owner request)
+
+- Owner requests both existing press sounds reduced by 60% to 40% of prior amplitude and a persistent global press counter that grows naturally from four digits to five, six and beyond.
+- #3014 source 50ff2b96f7c2a024825dabe364ac2438f006838e is squash-merged on main 0092f6c11ea44ca4280e9c95a6dae1e3d7af75d7; post-merge Pages and live navigation succeeded. Do not amend the merged PR.
+- The existing Supabase project has the public.ccg_do_not_press_totals table plus ccg_do_not_press_count() and ccg_do_not_press_increment(). Read-only SQL verified live total 0, RLS enabled, anon table SELECT and UPDATE revoked, and anon EXECUTE on those fixed RPCs. No new database schema/service/secret key or paid usage needed.
+- Active branch fix/do-not-press-volume-shared-counter-20261104 starts from main 0092f6c. Home button JS calls only those fixed anonymous RPCs with existing public config, reads once near viewport and increments on click. Database results are authoritative; late responses cannot decrease the total and missing backend does not fabricate presses.
+- Display retains four-digit zero padding but grows to 5, 6 or more digits as the global count increases; page-local CSS uses min-width and max-content. MP3 playback volume is 0.4 (prior 1), Web Audio mechanical peak gain 0.064 (prior 0.16).
+- Button source-executed tests cover volume, near-viewport lazy read, count RPC target/headers, 4-to-5-to-6-digit progression, out-of-order requests and outage behaviour. Public code cache v223 to v224.
+- The public anonymous increment RPC can be called repeatedly by automated clients. The display is an entertainment metric, not fraud-proof unique visitors; any needed abuse protection must be implemented through a separately reviewed server-side gate.
+- BRANCH ONLY: exact-head validation, release review, guarded merge, Pages and deployed-browser acceptance pending. No Omega intro, shared CSS, catalogue, member/account schema or other repository workstream changed.
+
+## 4 November 2026 — requested ice-cream heading and blocked live counter
+
+- User reports the published counter remains at 0000: confirmed live main 0092f6c predates draft #3016 (the only branch containing counter RPCs), so production cannot yet increment. This is an undeployed feature, not evidence of a deployed RPC failure.
+- On the SAME #3016 branch update only the reviewed homepage component heading to PRESS FOR ICE-CREAM!, replace obsolete placeholder accessibility text with Total button presses, and tighten homepage-only heading typography to retain compact sizing.
+- Preserve the original red two-frame sprite, 40% audio volumes, authenticated-by-public-anon Supabase RPC design, atomic server global count, increasing digits, four-digit zero padding and rollback-safe stale response protection. No main, intro, global CSS, generated output or backend modifications.
+- The homepage CLS acceptance guard uses a verified git-blob SHA-1 allowlist; append the SHA of the exact whitespace-normalised revised static button block and preserve the two prior approved hashes. Update existing homepage tests to assert the revised exact text, accessibility label and sizing.
+- New exact-head CI, full Pages deployment, visual/live button and counter acceptance mandatory; do not report merged or live until verified.

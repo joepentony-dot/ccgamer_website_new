@@ -40,7 +40,7 @@ function stripApprovedHomeCls(html) {
     '<script src="/js/ccg-archive-pulse-randomizer.js"></script>',
     '<!-- Settled shared layout is a first-paint dependency. -->'
   ]) output = output.replace(tag, '');
-  // The owner-approved DO NOT PRESS section is an exact, reviewed static block.
+  // The owner-approved homepage ice-cream button is an exact, reviewed static block.
   // Remove only its precise markup and two explicit dependencies before comparing
   // all remaining homepage content against the unchanged origin/main baseline.
   const button = output.match(/<!-- Self-contained CCG sound button\. Reserve geometry in HTML; no layout injection\. -->\s*<section class="ccg-dnp" data-ccg-do-not-press[\s\S]*?<\/section>/)?.[0];
@@ -48,7 +48,7 @@ function stripApprovedHomeCls(html) {
     const normalized = compact(button);
     const gitBlobInput = 'blob ' + Buffer.byteLength(normalized, 'utf8') + '\0' + normalized;
     const actualHash = createHash('sha1').update(gitBlobInput).digest('hex');
-    if (!['800521c8e936ad24c5d71b22ba408ca6a78205bf', '7711b04cce848e61bef05e5139a6ba7579880f8e'].includes(actualHash)) {
+    if (!['800521c8e936ad24c5d71b22ba408ca6a78205bf', '7711b04cce848e61bef05e5139a6ba7579880f8e', '8a4d26319fd87af8e9f1153dccaeaaf8b5469904'].includes(actualHash)) {
       throw Error('Unapproved homepage sound-button markup');
     }
     output = output.replace(button, '');

@@ -24,8 +24,8 @@ html[data-ccg-page="home"] .ccg-dnp {
 html[data-ccg-page="home"] .ccg-dnp__title {
     margin: 0;
     color: #fff;
-    font: 900 clamp(1.12rem, 3.6vw, 1.35rem)/1.1 system-ui, sans-serif;
-    letter-spacing: .085em;
+    font: 900 clamp(0.98rem, 3vw, 1.14rem)/1.1 system-ui, sans-serif;
+    letter-spacing: .045em;
     text-align: center;
     text-shadow: 0 0 15px rgba(255, 59, 83, .27);
 }
@@ -97,7 +97,10 @@ html[data-ccg-page="home"] .ccg-dnp__button:focus-visible {
 }
 html[data-ccg-page="home"] .ccg-dnp__counter-number {
     display: block;
-    width: 5.6ch;
+    min-width: 5.6ch;
+    width: max-content;
+    max-width: 100%;
+    white-space: nowrap;
     margin: 0;
     padding: 3px 7px;
     border: 1px solid rgba(114, 215, 255, .42);
