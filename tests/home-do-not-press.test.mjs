@@ -77,6 +77,7 @@ test('compact panel preserves the isolated two-frame hit area without a blue squ
   assert.match(css, /\.ccg-dnp__button::before,[\s\S]*?\.ccg-dnp__button::after\s*\{[\s\S]*?content:\s*none !important/);
   assert.match(css, /\.ccg-dnp__button:focus\s*\{[^}]*outline:\s*0 !important/s);
   assert.match(css, /\.ccg-dnp__button:focus-visible\s*\{[^}]*box-shadow:\s*0 0 0 3px rgba\(255, 255, 255, \.9\)/s);
+  assert.match(css, /\.ccg-dnp__button:hover,[\s\S]*?\.ccg-dnp__button:active,[\s\S]*?\.ccg-dnp__button:focus\s*\{[^}]*transform:\s*translate\(-50%, -50%\) !important/s);
   assert.doesNotMatch(css, /outline:\s*3px solid var\(--ccg-dnp-neon\)/);
   assert.doesNotMatch(css, /animation:\s*(?:pulse|flash|strobe)/i);
 });
