@@ -92,7 +92,7 @@ test('compact panel preserves the isolated two-frame hit area without a blue squ
   assert.doesNotMatch(css, /animation:\s*(?:pulse|flash|strobe)/i);
 });
 
-test('each real click produces an independent audible press tick and attempts the MP3 sample', () => {
+test('failed MP3 playback triggers one quiet fallback click per completed press', async () => {
   let ticks = 0, played = 0, primed = 0;
   const listeners = Object.create(null);
   class AudioContextMock {
@@ -128,12 +128,70 @@ test('each real click produces an independent audible press tick and attempts th
   listeners.focus();
   assert.equal(primed,1);
   listeners.click();
+  await Promise.resolve();
   listeners.click();
+  await Promise.resolve();
   assert.equal(ticks,2);
   assert.equal(played,2);
   assert.equal(sound.muted,false);
   assert.equal(sound.volume,0.4);
   assert.equal(sound.currentTime,0);
+});
+
+test('successful MP3 playback has no overlapping mechanical click', async () => {
+  const listeners = Object.create(null);
+  let ticks = 0, plays = 0;
+  const button = {addEventListener(name,fn){listeners[name] = fn;}};
+  const sound = {currentTime:9, pause(){}, play(){plays++; return Promise.resolve();}};
+  const total = {textContent:'0000',setAttribute(){}};
+  const section = {
+    querySelector(q){return q === '[data-ccg-dnp-button]' ? button
+      : q === '[data-ccg-dnp-sound]' ? sound
+      : q === '[data-ccg-dnp-total]' ? total : null;},
+    classList:{add(){},remove(){}}
+  };
+  class AudioContextMock {
+    constructor(){this.state = 'running';this.currentTime = 0;this.destination = {};}
+    createOscillator(){return {frequency:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){},start(){ticks++;},stop(){}};}
+    createGain(){return {gain:{setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}};}
+  }
+  const win={AudioContext:AudioContextMock,setTimeout(){return 1;},clearTimeout(){}};
+  vm.runInNewContext(js,{document:{querySelector(q){return q === '[data-ccg-do-not-press]' ? section : null;}},window:win});
+  listeners.click();
+  await Promise.resolve();
+  assert.equal(plays,1);
+  assert.equal(ticks,0,'no second sound should be layered over the MP3');
+  assert.equal(sound.volume,0.4);
+});
+
+test('an obsolete rejected sound attempt cannot add a tick to the latest successful press', async () => {
+  const listeners = Object.create(null);
+  let rejectFirst, ticks = 0, plays = 0;
+  const button = {addEventListener(name,fn){listeners[name]=fn;}};
+  const sound = {currentTime:0,pause(){},play(){
+    plays++;
+    return plays===1 ? new Promise((resolve,reject)=>{rejectFirst=reject;}) : Promise.resolve();
+  }};
+  const total = {textContent:'0000',setAttribute(){}};
+  const section = {
+    querySelector(q){return q === '[data-ccg-dnp-button]' ? button
+      : q === '[data-ccg-dnp-sound]' ? sound
+      : q === '[data-ccg-dnp-total]' ? total : null;},
+    classList:{add(){},remove(){}}
+  };
+  class AudioContextMock {
+    constructor(){this.state='running';this.currentTime=0;this.destination={};}
+    createOscillator(){return {frequency:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){},start(){ticks++;},stop(){}};}
+    createGain(){return {gain:{setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}};}
+  }
+  const win={AudioContext:AudioContextMock,setTimeout(){return 1;},clearTimeout(){}};
+  vm.runInNewContext(js,{document:{querySelector(q){return q === '[data-ccg-do-not-press]' ? section : null;}},window:win});
+  listeners.click();
+  listeners.click();
+  rejectFirst(new Error('Old attempt aborted by new press'));
+  await Promise.resolve();
+  assert.equal(plays,2);
+  assert.equal(ticks,0);
 });
 
 test('a cold media seek error cannot suppress the actual MP3 play attempt', () => {

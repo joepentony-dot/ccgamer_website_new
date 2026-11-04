@@ -14,6 +14,7 @@
   var keyboardDown = false;
   var soundPrimed = false;
   var pressAudioContext = null;
+  var latestSoundPress = 0;
   var lastCount = null;
   var countInitialised = false;
 
@@ -200,7 +201,9 @@
   button.addEventListener('click', function () {
     press();
     if (!pointerDown && !keyboardDown) releaseSoon();
-    playMechanicalClick();
+    // The original MP3 is the only primary sound. An extra synthesized tick
+    // playing alongside it made the combined press sound unexpectedly loud.
+    var soundPress = ++latestSoundPress;
     incrementCounter();
     try {
       sound.muted = false;
@@ -213,10 +216,12 @@
     try {
       var playback = sound.play();
       if (playback && typeof playback.catch === 'function') playback.catch(function () {
-        // The mechanical click already played; retain the silent visual UI.
+        // Only the newest failed play attempt may produce a fallback click.
+        // Aborted earlier play requests must not overlap newer MP3 playback.
+        if (soundPress === latestSoundPress) playMechanicalClick();
       });
     } catch (_blockedAudio) {
-      // A blocked or unavailable sample must not create a page-wide error.
+      if (soundPress === latestSoundPress) playMechanicalClick();
     }
   });
 })();
