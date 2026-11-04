@@ -94,3 +94,78 @@ test("retro video enrichment restores verified JSON-LD after template regenerati
   const membersOnly = enhancePage(source, { ...context, videoIndexable: false });
   assert.doesNotMatch(membersOnly, /"@type": "VideoObject"/, "Members-only metadata must not be exposed");
 });
+
+
+test("real staged retro regeneration validates all ten demo pages and is repeatable", () => {
+  const { execFileSync } = require("node:child_process");
+  const os = require("node:os");
+  const root = path.resolve(__dirname, "..");
+  const stage = fs.mkdtempSync(path.join(os.tmpdir(), "ccg-retro-pages-staging-"));
+  const sourcePaths = [
+    "data/retro-specials.json",
+    "data/retro-events.json",
+    "data/amiga-demo-music.json",
+    "data/video-metadata.json",
+    "admin/templates/retro-video-template.html"
+  ];
+
+  const execute = (script, args = [], environment = {}) => execFileSync(
+    process.execPath,
+    [path.join(root, "scripts", script), ...args],
+    {
+      cwd: root,
+      env: { ...process.env, ...environment },
+      encoding: "utf8",
+      timeout: 60000,
+      maxBuffer: 4 * 1024 * 1024
+    }
+  );
+
+  try {
+    for (const sourcePath of sourcePaths) {
+      const destination = path.join(stage, sourcePath);
+      fs.mkdirSync(path.dirname(destination), { recursive: true });
+      fs.copyFileSync(path.join(root, sourcePath), destination);
+    }
+
+    const demos = JSON.parse(fs.readFileSync(path.join(stage, "data/amiga-demo-music.json"), "utf8"));
+    const records = JSON.parse(fs.readFileSync(path.join(stage, "data/video-metadata.json"), "utf8")).videos || {};
+    assert.equal(demos.length, 10, "All ten original Amiga demo routes must be retained");
+
+    const rebuildAndValidate = () => {
+      execute("generate-retro-pages.js", ["--root", stage]);
+      execute("generate-retro-video-seo.js", [], { CCG_REPO_ROOT: stage });
+      execute("validate-retro-video-seo.js", [], { CCG_REPO_ROOT: stage });
+
+      const pages = new Map();
+      const sitemap = fs.readFileSync(path.join(stage, "sitemap-retro-videos.xml"), "utf8");
+      for (const demo of demos) {
+        const url = "https://www.cheekycommodoregamer.co.uk/amiga-demo-music/" + demo.slug + "/";
+        const htmlPath = path.join(stage, "amiga-demo-music", demo.slug, "index.html");
+        assert.ok(fs.existsSync(htmlPath), demo.slug + " must exist in staged output");
+        const html = fs.readFileSync(htmlPath, "utf8");
+        assert.ok(html.includes('<link rel="canonical" href="' + url + '"'), demo.slug + " must retain its canonical");
+        assert.ok(html.includes("https://www.youtube-nocookie.com/embed/" + demo.youtubeId), demo.slug + " must retain its video");
+        const videoObjects = (html.match(/"@type": "VideoObject"/g) || []).length;
+        const record = records[demo.youtubeId] || {};
+        const verified = record.verifiedBy === "youtube-data-api-v3" &&
+          /^\d{4}-\d{2}-\d{2}/.test(String(record.uploadDate || ""));
+        assert.equal(videoObjects, verified && !demo.membersOnly ? 1 : 0,
+          demo.slug + " must have exactly one VideoObject only for verified public metadata");
+        assert.equal(sitemap.includes("<loc>" + url + "</loc>"), !demo.membersOnly,
+          demo.slug + " must have the correct sitemap inclusion");
+        pages.set(demo.slug, html);
+      }
+      return { pages, sitemap };
+    };
+
+    const first = rebuildAndValidate();
+    const second = rebuildAndValidate();
+    assert.equal(second.sitemap, first.sitemap, "Repeat generation must preserve the video sitemap byte-for-byte");
+    for (const [slug, html] of first.pages) {
+      assert.equal(second.pages.get(slug), html, slug + " must regenerate identically");
+    }
+  } finally {
+    fs.rmSync(stage, { recursive: true, force: true });
+  }
+});
