@@ -110,8 +110,12 @@
     try {
       sound.muted = false;
       sound.volume = 1;
-      sound.pause();
-      sound.currentTime = 0;
+    } catch (_audioSettings) {}
+    try { sound.pause(); } catch (_pauseFailed) {}
+    // On a cold mobile media element currentTime can throw before metadata is
+    // available. A reset failure must never suppress the first real play().
+    try { sound.currentTime = 0; } catch (_seekFailed) {}
+    try {
       var playback = sound.play();
       if (playback && typeof playback.catch === 'function') playback.catch(function () {
         // The mechanical click already played; retain the silent visual UI.
