@@ -70,3 +70,56 @@ test('pointer and keyboard presses toggle the two frames, and clicks replay the 
   listeners.blur();
   assert(!classes.has('is-pressed'));
 });
+
+test('compact panel preserves the isolated two-frame hit area without a blue square', () => {
+  assert.match(css, /width:\s*min\(316px, calc\(100% - 28px\)\)/);
+  assert.match(css, /min-height:\s*252px/);
+  assert.match(css, /\.ccg-dnp__button::before,[\s\S]*?\.ccg-dnp__button::after\s*\{[\s\S]*?content:\s*none !important/);
+  assert.match(css, /\.ccg-dnp__button:focus\s*\{[^}]*outline:\s*0 !important/s);
+  assert.match(css, /\.ccg-dnp__button:focus-visible\s*\{[^}]*box-shadow:\s*0 0 0 3px rgba\(255, 255, 255, \.9\)/s);
+  assert.doesNotMatch(css, /outline:\s*3px solid var\(--ccg-dnp-neon\)/);
+  assert.doesNotMatch(css, /animation:\s*(?:pulse|flash|strobe)/i);
+});
+
+test('each real click produces an independent audible press tick and attempts the MP3 sample', () => {
+  let ticks = 0, played = 0, primed = 0;
+  const listeners = Object.create(null);
+  class AudioContextMock {
+    constructor() { this.state = 'running'; this.currentTime = 0; this.destination = {}; }
+    createOscillator() {
+      return {
+        frequency: {setValueAtTime(){}, exponentialRampToValueAtTime(){}},
+        connect(){}, start(){ticks++;}, stop(){}
+      };
+    }
+    createGain() {
+      return {gain: {setValueAtTime(){}, linearRampToValueAtTime(){}, exponentialRampToValueAtTime(){}},connect(){}};
+    }
+  }
+  const button = {addEventListener(name, fn){listeners[name] = fn;}};
+  const sound = {
+    currentTime: 40, muted: true, volume: 0,
+    load(){primed++;}, pause(){},
+    play(){played++; return Promise.reject(new Error('MP3 unavailable')); }
+  };
+  const section = {
+    querySelector(q){return q === '[data-ccg-dnp-button]' ? button : q === '[data-ccg-dnp-sound]' ? sound : null;},
+    classList:{add(){},remove(){}}
+  };
+  const context = {document:{querySelector(q){return q === '[data-ccg-do-not-press]' ? section : null;}},window:{
+    AudioContext: AudioContextMock, setTimeout(){return 1;}, clearTimeout(){}
+  }};
+  vm.runInNewContext(js,context);
+  assert.equal(ticks,0);
+  assert.equal(played,0);
+  listeners.pointerenter();
+  listeners.focus();
+  assert.equal(primed,1);
+  listeners.click();
+  listeners.click();
+  assert.equal(ticks,2);
+  assert.equal(played,2);
+  assert.equal(sound.muted,false);
+  assert.equal(sound.volume,1);
+  assert.equal(sound.currentTime,0);
+});
