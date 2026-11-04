@@ -19,3 +19,7 @@
 - New isolated `home.html` section immediately before the existing signature line, with its own `ccg-do-not-press.css` and page-only deferred `ccg-do-not-press.js`. Uses the user's red button art, self-hosted compressed copy of the supplied Ice Cream MP3, intrinsic media dimensions, lazy image, no upfront audio preload and CSS press action with reduced-motion handling.
 - Shared presses use atomic Supabase RPCs in `supabase/ccg-do-not-press-counter.sql` and show a neutral placeholder on outage; do not display a browser-local total as global truth. Table access is revoked, with two fixed no-argument functions exposed for public count and increment. Counter is anonymous and not bot-proof; monitor abuse before broad promotion.
 - **BRANCH ONLY / NOT MERGED / NOT LIVE**. Database migration is staged but not applied until qualified release. Native CI, desktop/mobile/reduced-motion browser acceptance, fresh-main reconciliation and public counter acceptance required.
+
+## 4 November 2026 — Phase 4D sitemap gate follow-up (DRAFT)
+
+- Final prior PR #3011 source SHA `433d542ff7f61fedc4b107611c55a7918a88ce6d`: 40+ checked jobs, all pass except Phase 4D. The failed job attributes its mismatch only to the recently published indexable Arcade 50 quiz route omitted from the older exact sitemap allowlist. One audited URL exception plus source canonical and robots assertions are added without weakening unrelated sitemap checks; replay full exact-head CI before any merge.
