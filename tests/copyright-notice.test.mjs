@@ -87,20 +87,20 @@ test('artwork right-click is intercepted and the rights-aware CCG notice appears
   assert.equal(toast.children[2].children[0].href, '/copyright.html');
 });
 
-test('ordinary text and interactive areas retain standard browser right-click', () => {
+test('public text, links and interactive elements suppress the native context menu', () => {
   const site = run();
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('text')), false);
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { interactive: true })), false);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('text')), true);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { interactive: true })), true);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('text', { link: true })), true);
+  assert.equal(site.appended.length, 1); // Artwork retains the notice.
   assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { excluded: true })), false);
-  assert.equal(site.appended.length, 0);
 });
 
-test('linked artwork and protected content retain the native browser context menu', () => {
+test('linked artwork and protected content suppress the native menu and show a notice', () => {
   const site = run();
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { link: true })), false);
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('protected-text', { link: true })), false);
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('image')), true);
-  assert.equal(site.appended.length, 1);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { link: true })), true);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('protected-text', { link: true })), true);
+  assert.equal(site.appended.length, 2);
 });
 
 test('opt-in protected text triggers notice but linked images are still draggable', () => {
@@ -148,16 +148,19 @@ test('pointer hover pauses expiry and leaving resumes it', () => {
   assert.equal(toast.removed, true);
 });
 
-test('emulator and arcade, admin and intro surfaces have no listeners', () => {
+test('public emulator/arcade pages intercept menus; admin/auth/intro remain exempt', () => {
   for (const [pathname, page] of [
     ['/emulator/c64/', 'emulator'],
-    ['/arcade/lost-sizzler/', 'arcade'],
+    ['/arcade/lost-sizzler/', 'arcade']
+  ]) {
+    assert.equal(run(pathname, page).handlers.size, 2, pathname);
+  }
+  for (const [pathname, page] of [
     ['/admin/', 'admin'],
     ['/auth/login.html', 'auth'],
     ['/', 'intro']
   ]) {
-    const site = run(pathname, page);
-    assert.equal(site.handlers.size, 0, pathname);
+    assert.equal(run(pathname, page).handlers.size, 0, pathname);
   }
 });
 
