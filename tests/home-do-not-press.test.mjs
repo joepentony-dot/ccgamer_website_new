@@ -11,9 +11,12 @@ const home = read('home.html');
 const css = read('resources/css/ccg-do-not-press.css');
 const js = read('js/ccg-do-not-press.js');
 
-test('the homepage renders only DO NOT PRESS, the two-frame actuator and neon 0000', () => {
+test('the homepage renders PRESS FOR ICE-CREAM!, the two-frame actuator and neon 0000', () => {
   assert.equal((home.match(/data-ccg-do-not-press/g) || []).length, 1);
-  assert.match(home, /id="ccg-dnp-title">DO NOT PRESS<\/h2>/);
+  assert.match(home, /id="ccg-dnp-title">PRESS FOR ICE-CREAM!<\/h2>/);
+  assert.doesNotMatch(home, /id="ccg-dnp-title">DO NOT PRESS<\/h2>/);
+  assert.match(home, /aria-label="Total button presses"/);
+  assert.doesNotMatch(home, /Counter preview; not yet connected to the new backend/);
   assert.match(home, /class="ccg-dnp__sprite" data-ccg-dnp-sprite/);
   assert.match(home, /data-ccg-dnp-button[^>]*aria-label="Press the centre of the red button"/s);
   assert.match(home, /data-ccg-dnp-total[^>]*>0000<\/output>/s);
@@ -38,6 +41,7 @@ test('the counter begins at 0000 but reads and increments an atomic server total
   assert.doesNotMatch(js, /localStorage|sessionStorage|service_role/);
   assert.match(css, /min-width:\s*5\.6ch/);
   assert.match(css, /width:\s*max-content/);
+  assert.match(css, /font:\s*900 clamp\(0\.98rem, 3vw, 1\.14rem\)/);
   assert.match(css, /--ccg-dnp-neon:\s*#72d7ff/);
 });
 test('transparent sprite is present and fits the first paint budget', () => {

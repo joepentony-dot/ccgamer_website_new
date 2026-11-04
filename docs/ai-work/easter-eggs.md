@@ -50,3 +50,11 @@
 - Button source-executed tests cover volume, near-viewport lazy read, count RPC target/headers, 4-to-5-to-6-digit progression, out-of-order requests and outage behaviour. Public code cache v223 to v224.
 - The public anonymous increment RPC can be called repeatedly by automated clients. The display is an entertainment metric, not fraud-proof unique visitors; any needed abuse protection must be implemented through a separately reviewed server-side gate.
 - BRANCH ONLY: exact-head validation, release review, guarded merge, Pages and deployed-browser acceptance pending. No Omega intro, shared CSS, catalogue, member/account schema or other repository workstream changed.
+
+## 4 November 2026 — requested ice-cream heading and blocked live counter
+
+- User reports the published counter remains at 0000: confirmed live main 0092f6c predates draft #3016 (the only branch containing counter RPCs), so production cannot yet increment. This is an undeployed feature, not evidence of a deployed RPC failure.
+- On the SAME #3016 branch update only the reviewed homepage component heading to PRESS FOR ICE-CREAM!, replace obsolete placeholder accessibility text with Total button presses, and tighten homepage-only heading typography to retain compact sizing.
+- Preserve the original red two-frame sprite, 40% audio volumes, authenticated-by-public-anon Supabase RPC design, atomic server global count, increasing digits, four-digit zero padding and rollback-safe stale response protection. No main, intro, global CSS, generated output or backend modifications.
+- The homepage CLS acceptance guard uses a verified git-blob SHA-1 allowlist; append the SHA of the exact whitespace-normalised revised static button block and preserve the two prior approved hashes. Update existing homepage tests to assert the revised exact text, accessibility label and sizing.
+- New exact-head CI, full Pages deployment, visual/live button and counter acceptance mandatory; do not report merged or live until verified.
