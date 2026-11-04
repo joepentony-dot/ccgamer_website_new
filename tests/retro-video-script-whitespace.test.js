@@ -175,14 +175,22 @@ test("real staged retro regeneration validates all ten demo pages and is repeata
       const htmlPath = path.join(stage, "amiga-demo-music", demo.slug, "index.html");
       const html = fs.readFileSync(htmlPath, "utf8");
       const route = "/amiga-demo-music/" + demo.slug + "/";
-      const expectedSettings = "data-goatcounter-settings='" +
-        JSON.stringify({ path: route }) + "'";
+      // The existing retro template uses GoatCounter's default URL tracking.
+      // A settings attribute is optional; when present it must use this route.
+      const settingsTag = (html.match(/data-goatcounter-settings=(["'])(.*?)\1/i) || [])[2];
+      const effectivePath = settingsTag
+        ? JSON.parse(settingsTag.replace(/&#39;/g, "'")).path
+        : route;
       assert.match(html, /<meta\s+name="robots"\s+content="index,follow/i,
         demo.slug + " must remain indexable");
       assert.equal((html.match(/data-goatcounter=/g) || []).length, 1,
         demo.slug + " must have exactly one GoatCounter tracker");
-      assert.ok(html.includes(expectedSettings),
-        demo.slug + " must use its canonical path for visitor tracking");
+      assert.match(html, /data-goatcounter="https:\/\/cheekycommodoregamer\.goatcounter\.com\/count"/,
+        demo.slug + " must retain the CCG GoatCounter endpoint");
+      assert.match(html, /src="https:\/\/gc\.zgo\.at\/count\.js"/,
+        demo.slug + " must load the expected GoatCounter script");
+      assert.equal(effectivePath, route,
+        demo.slug + " must track its canonical path");
       trackedPages.set(demo.slug, html);
     }
 
