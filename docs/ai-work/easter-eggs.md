@@ -23,3 +23,10 @@
 ## 4 November 2026 — Phase 4D sitemap gate follow-up (DRAFT)
 
 - Final prior PR #3011 source SHA `433d542ff7f61fedc4b107611c55a7918a88ce6d`: 40+ checked jobs, all pass except Phase 4D. The failed job attributes its mismatch only to the recently published indexable Arcade 50 quiz route omitted from the older exact sitemap allowlist. One audited URL exception plus source canonical and robots assertions are added without weakening unrelated sitemap checks; replay full exact-head CI before any merge.
+
+## 4 November 2026 — exact two-frame artwork upgrade (NEW PR, pending validation)
+
+- Owner rejected prior white-background button artwork and extraneous copy/status messages. Two supplied 1254x1254 red button poses were background-isolated via red-region contour masks, then resampled in identical registration and combined into a transparent 832x416 WebP sprite (up left, pressed down right).
+- Home shows only 'DO NOT PRESS', a static two-state button and a four-digit cyan neon 0000 placeholder. The preview deliberately does not claim a live or shared total; preserve the already deployed Supabase press counter for the planned new-backend integration without making misleading calls from the interim UI.
+- Only a 60%-diameter circular HTML button centred on the dome is interactive; the outer red ring is a pointer-transparent background. Pointer and keyboard controls swap sprite frames, with the existing first-party sound triggered only by activation. No animated geometry, overlay, scrolling mutation or non-homepage styling.
+- Source scope restricted to home.html, existing dnp CSS/JS/tests, homepage strict-hash guard, its negative regression, service-worker cache version and this checkpoint. Never edit index.html or intro stack, games.json, emulator, admin, member data or existing Supabase tables. Exact-head CI, independent review and deployment checks required before LIVE claims. **NOT YET MERGED**.

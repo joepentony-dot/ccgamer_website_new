@@ -170,7 +170,7 @@ test('approved CLS additions cannot exempt unrelated homepage content or executa
   assert(isApprovedHomeClsChange(baseline, home));
   assert(!isApprovedHomeClsChange(baseline, home.replace('Find Your Way Around CCG', 'Unreviewed redesign')));
   assert(!isApprovedHomeClsChange(baseline, home.replace('Fresh Game Pick', 'Unreviewed pick')));
-  assert(!isApprovedHomeClsChange(baseline, home.replace('Seriously. Leave it alone.', 'Unreviewed sound-button edit')));
+  assert(!isApprovedHomeClsChange(baseline, home.replace('0000</output>', '9999</output>')));
   assert(!isApprovedHomeClsChange(baseline, home.replace('/resources/audio/easter-eggs/ccg-ice-cream-speedbal.mp3', '/external.mp3')));
   assert(!isApprovedHomeClsChange(baseline, home.replace('ccg-do-not-press.css', 'unreviewed.css')));
   assert(!isApprovedHomeClsChange(baseline, home.replace('data-ccg-first-paint-mode="true">', 'data-ccg-first-paint-mode="true">alert(1);')));
