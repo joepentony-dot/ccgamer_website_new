@@ -191,11 +191,22 @@
     <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/50-amiga-games-can-you-identify-them/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/kc86gnQh7ww/maxresdefault.jpg</video:thumbnail_loc>
-      <video:title>Think You Know the Commodore Amiga? Try This 50-Game Quiz!</video:title>
+      <video:title>50 Classic &amp; Forgotten Amiga Games – Test Your 16-Bit Memory!</video:title>
       <video:description>Test your Commodore Amiga knowledge in this 50-game identification quiz. Watch short gameplay clips and see how many classic Amiga games you can recognise.</video:description>
       <video:player_loc>https://www.youtube.com/embed/kc86gnQh7ww</video:player_loc>
       <video:duration>1406</video:duration>
       <video:publication_date>2026-10-28T17:56:54Z</video:publication_date>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/50-arcade-games-can-you-identify-them/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/cNv9J-MhMA0/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Think You Know Arcade Games? Name These 50 Classics! | 80s &amp; 90s Quiz</video:title>
+      <video:description>Test your arcade knowledge with 50 classic 1980s and 1990s coin-op games to identify from ten-second gameplay clips across five rounds.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/cNv9J-MhMA0</video:player_loc>
+      <video:duration>1391</video:duration>
+      <video:publication_date>2026-11-03T18:30:00Z</video:publication_date>
     </video:video>
   </url>
   <url>
@@ -246,7 +257,7 @@
     <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/arcade-club-bury/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/6PmRNlqIdFY/maxresdefault.jpg</video:thumbnail_loc>
-      <video:title>Inside Europe’s LARGEST Free-Play Arcade… This Place Is Unreal</video:title>
+      <video:title>Inside Europe’s LARGEST Free-Play Arcade… Arcade Club Bury - This Place Is Unreal</video:title>
       <video:description>Tour Arcade Club Bury in Greater Manchester in this Retro Special, exploring one of Europe’s largest free-play arcade venues and its retro machines.</video:description>
       <video:player_loc>https://www.youtube.com/embed/6PmRNlqIdFY</video:player_loc>
       <video:duration>969</video:duration>
