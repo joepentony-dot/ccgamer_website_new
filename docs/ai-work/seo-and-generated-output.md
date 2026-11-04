@@ -1,3 +1,9 @@
+## 4 November 2026 — Phase 4D real Arcade 50 quiz sitemap baseline correction (#3011, DRAFT)
+
+- Exact-head Phase 4D run `41781755653` rejects one specific new URL, `/retro-specials/50-arcade-games-can-you-identify-them/`, after its authoritative sitemap generator publishes the new user-approved quiz watch route. Main had the self-canonical, indexable `retro-specials/50-arcade-games-can-you-identify-them/index.html` but the older Phase 4D allowlist included only the previous Amiga and ZX Spectrum quizzes.
+- Add only this exact URL to the reviewed foreign-sitemap additions, and validate that the source page exists, has exactly one matching canonical URL, is indexable, and appears uniquely in the regenerated sitemap. Do not broaden the allowlist or change sitemap generation, historical dates, game catalogue or existing SEO pages.
+- Re-run the original deterministic Phase 4D workflow; this is a release blocker, not permission to bypass the gate. **BRANCH ONLY / NOT MERGED / NOT LIVE** until exact-head validation and reviewed guarded release.
+
 ## 1 November 2026 — External Link Health partial-artifact fail-closed guard (BRANCH ONLY)
 
 - Existing merged #2993 enumerates both hidden report paths, but `actions/upload-artifact@v4` with `if-no-files-found: error` fails only if **no paths match**, not when exactly one report is absent. The previous source assertion overstated this safeguard. No post-merge non-PR audit has yet proved artifact retention.
