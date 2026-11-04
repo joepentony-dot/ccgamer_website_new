@@ -1,4 +1,32 @@
 (function () {
+  // Music hub and composer profiles do not use the normal analytics bootstrap.
+  // Bind the browser-menu guard at once; load the existing rights-aware notice
+  // separately without changing page flow or composer layout.
+  try {
+    if (typeof window !== 'undefined' && typeof document !== 'undefined' &&
+        /^\\/music\\//.test(String(window.location && window.location.pathname || '')) &&
+        typeof document.addEventListener === 'function') {
+      document.addEventListener('contextmenu', function (event) {
+        if (!event.target || !event.target.closest ||
+            !event.target.closest('[data-ccg-allow-contextmenu]')) {
+          event.preventDefault();
+        }
+      }, { capture: true });
+      if (document.head && typeof document.createElement === 'function') {
+        var noticeCss = document.createElement('link');
+        noticeCss.rel = 'stylesheet';
+        noticeCss.href = '/resources/css/ccg-copyright-notice.css';
+        document.head.appendChild(noticeCss);
+        var noticeJs = document.createElement('script');
+        noticeJs.src = '/js/ccg-copyright-notice.js';
+        noticeJs.async = true;
+        document.head.appendChild(noticeJs);
+      }
+    }
+  } catch (_copyrightError) {
+    // Composer content must remain available if optional protection cannot load.
+  }
+
   const PROFILE_DATA = {
     "allister-brimble": { name: "Allister Brimble", slug: "allister-brimble", bio: "Allister Brimble is a British game composer known for work on home computers and 16-bit platforms, including projects on Commodore systems and beyond." },
     "barry-leitch": { name: "Barry Leitch", slug: "barry-leitch", bio: "Barry Leitch is a game composer associated with Amiga-era releases and later soundtrack work across multiple platforms." },

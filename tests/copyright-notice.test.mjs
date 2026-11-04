@@ -178,3 +178,14 @@ test('shared bootstrap preserves separate JS and CSS ownership', () => {
   assert.match(bootstrap, /function initDomFeatures\(\) \{\s*loadCopyrightNotice\(\)/);
   assert.match(styles, /\.ccg-copyright-toast\s*\{\s*box-sizing: border-box;\s*position: fixed;/);
 });
+
+test('non-analytics quiz, emulator and arcade hub surfaces load the existing context notice', () => {
+  for (const file of ["quiz/quiz.html","quiz/pack-6.html","emulator/c64/index.html","emulator/c64/legal.html","arcade/index.html","arcade/quest/index.html"]) {
+    const html = readFileSync(path.join(root, file), 'utf8');
+    assert.match(html, /<link rel="stylesheet" href="\/resources\/css\/ccg-copyright-notice\.css"/, file);
+    assert.match(html, /<script src="\/js\/ccg-copyright-notice\.js" defer><\/script>/, file);
+  }
+  const music = readFileSync(path.join(root, 'js/music-composer-pages.js'), 'utf8');
+  assert.match(music, /\/js\/ccg-copyright-notice\.js/);
+  assert.match(music, /addEventListener\('contextmenu'/);
+});
