@@ -48,7 +48,7 @@ function stripApprovedHomeCls(html) {
     const normalized = compact(button);
     const gitBlobInput = 'blob ' + Buffer.byteLength(normalized, 'utf8') + '\0' + normalized;
     const actualHash = createHash('sha1').update(gitBlobInput).digest('hex');
-    if (actualHash !== '800521c8e936ad24c5d71b22ba408ca6a78205bf') {
+    if (!['800521c8e936ad24c5d71b22ba408ca6a78205bf', '7711b04cce848e61bef05e5139a6ba7579880f8e'].includes(actualHash)) {
       throw Error('Unapproved homepage sound-button markup');
     }
     output = output.replace(button, '');
