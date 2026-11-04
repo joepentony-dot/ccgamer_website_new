@@ -123,3 +123,28 @@ test('each real click produces an independent audible press tick and attempts th
   assert.equal(sound.volume,1);
   assert.equal(sound.currentTime,0);
 });
+
+test('a cold media seek error cannot suppress the actual MP3 play attempt', () => {
+  const listeners = Object.create(null);
+  let attempts = 0;
+  const sound = {
+    pause(){},
+    play(){attempts++; return Promise.resolve();}
+  };
+  Object.defineProperty(sound, 'currentTime', {
+    get(){return 0;},
+    set(){throw new Error('Media metadata not loaded');}
+  });
+  const button = {addEventListener(name, fn){listeners[name] = fn;}};
+  const section = {
+    querySelector(q){return q === '[data-ccg-dnp-button]' ? button : q === '[data-ccg-dnp-sound]' ? sound : null;},
+    classList:{add(){},remove(){}}
+  };
+  const context = {
+    document:{querySelector(q){return q === '[data-ccg-do-not-press]' ? section : null;}},
+    window:{setTimeout(){return 1;},clearTimeout(){}}
+  };
+  vm.runInNewContext(js, context);
+  listeners.click();
+  assert.equal(attempts, 1);
+});
