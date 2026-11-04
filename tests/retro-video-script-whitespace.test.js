@@ -165,6 +165,38 @@ test("real staged retro regeneration validates all ten demo pages and is repeata
     for (const [slug, html] of first.pages) {
       assert.equal(second.pages.get(slug), html, slug + " must regenerate identically");
     }
+
+    // Pages deploys GoatCounter after the final retro/SEO generation pass.
+    // Test the actual staged watch pages rather than only generic fixtures.
+    execute("ensure-goatcounter-coverage.js", ["--root", stage]);
+    execute("ensure-goatcounter-coverage.js", ["--root", stage, "--check"]);
+    const trackedPages = new Map();
+    for (const demo of demos) {
+      const htmlPath = path.join(stage, "amiga-demo-music", demo.slug, "index.html");
+      const html = fs.readFileSync(htmlPath, "utf8");
+      const route = "/amiga-demo-music/" + demo.slug + "/";
+      const expectedSettings = "data-goatcounter-settings='" +
+        JSON.stringify({ path: route }) + "'";
+      assert.match(html, /<meta\s+name="robots"\s+content="index,follow/i,
+        demo.slug + " must remain indexable");
+      assert.equal((html.match(/data-goatcounter=/g) || []).length, 1,
+        demo.slug + " must have exactly one GoatCounter tracker");
+      assert.ok(html.includes(expectedSettings),
+        demo.slug + " must use its canonical path for visitor tracking");
+      trackedPages.set(demo.slug, html);
+    }
+
+    // Re-running the deployment postprocessor must not alter content,
+    // video schema, canonicals or tracking on the ten watch pages.
+    execute("ensure-goatcounter-coverage.js", ["--root", stage]);
+    execute("ensure-goatcounter-coverage.js", ["--root", stage, "--check"]);
+    for (const [slug, html] of trackedPages) {
+      assert.equal(
+        fs.readFileSync(path.join(stage, "amiga-demo-music", slug, "index.html"), "utf8"),
+        html,
+        slug + " tracking and schema must be byte-identical on repeated postprocessing"
+      );
+    }
   } finally {
     fs.rmSync(stage, { recursive: true, force: true });
   }
