@@ -32,6 +32,7 @@ test('counter uses server RPCs and never displays a made-up local counter', () =
   assert.match(js, /ccg_do_not_press_count/);
   assert.match(js, /ccg_do_not_press_increment/);
   assert.match(js, /Number\.isSafeInteger/);
+  assert.match(js, /displayedTotal/);
   assert.match(js, /pending = pending\.catch/);
   assert.doesNotMatch(js, /localStorage|sessionStorage|Math\.random/);
   assert.match(sql, /ENABLE ROW LEVEL SECURITY/);

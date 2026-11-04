@@ -15,11 +15,15 @@
   var anonKey = String(window.CCG_SUPABASE_ANON_KEY || '');
   var api = root ? root + '/rest/v1/rpc/' : '';
   var lastPress = 0;
+  var displayedTotal = -1;
   var pressTimer = null;
   var pending = Promise.resolve();
 
   function showNumber(value) {
     if (!Number.isSafeInteger(value) || value < 0) throw new Error('Invalid press total');
+    // Keep the public number monotonic if the startup read completes late.
+    if (value < displayedTotal) return;
+    displayedTotal = value;
     count.textContent = value.toLocaleString('en-GB');
   }
 

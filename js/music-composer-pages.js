@@ -4,7 +4,7 @@
   // separately without changing page flow or composer layout.
   try {
     if (typeof window !== 'undefined' && typeof document !== 'undefined' &&
-        /^\\/music\\//.test(String(window.location && window.location.pathname || '')) &&
+        String(window.location && window.location.pathname || '').indexOf('/music/') === 0 &&
         typeof document.addEventListener === 'function') {
       document.addEventListener('contextmenu', function (event) {
         if (!event.target || !event.target.closest ||
