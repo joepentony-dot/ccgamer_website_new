@@ -70,6 +70,16 @@ html[data-ccg-page="home"] .ccg-dnp__button {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
+html[data-ccg-page="home"] .ccg-dnp__button,
+html[data-ccg-page="home"] .ccg-dnp__button:hover,
+html[data-ccg-page="home"] .ccg-dnp__button:active,
+html[data-ccg-page="home"] .ccg-dnp__button:focus {
+    /* Shared button transitions must never displace this absolute centre hit area. */
+    transform: translate(-50%, -50%) !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    filter: none !important;
+}
 html[data-ccg-page="home"] .ccg-dnp__button::before,
 html[data-ccg-page="home"] .ccg-dnp__button::after {
     /* Prevent shared button decorations or hover effects covering the red artwork. */
