@@ -40,6 +40,29 @@ function stripApprovedHomeCls(html) {
     '<script src="/js/ccg-archive-pulse-randomizer.js"></script>',
     '<!-- Settled shared layout is a first-paint dependency. -->'
   ]) output = output.replace(tag, '');
+  // The owner-approved DO NOT PRESS section is an exact, reviewed static block.
+  // Remove only its precise markup and two explicit dependencies before comparing
+  // all remaining homepage content against the unchanged origin/main baseline.
+  const button = output.match(/<!-- Self-contained CCG sound button\. Reserve geometry in HTML; no layout injection\. -->\s*<section class="ccg-dnp" data-ccg-do-not-press[\s\S]*?<\/section>/)?.[0];
+  if (button) {
+    const normalized = compact(button);
+    const gitBlobInput = 'blob ' + Buffer.byteLength(normalized, 'utf8') + '\0' + normalized;
+    const actualHash = createHash('sha1').update(gitBlobInput).digest('hex');
+    if (actualHash !== '800521c8e936ad24c5d71b22ba408ca6a78205bf') {
+      throw Error('Unapproved homepage sound-button markup');
+    }
+    output = output.replace(button, '');
+  }
+  for (const tag of [
+    '<link rel="stylesheet" href="/resources/css/ccg-do-not-press.css" />',
+    '<script src="/js/ccg-do-not-press.js" defer></script>'
+  ]) {
+    const count = output.split(tag).length - 1;
+    if (count !== (button ? 1 : 0)) {
+      throw Error('Incomplete or unapproved homepage sound-button dependencies');
+    }
+    if (button) output = output.replace(tag, '');
+  }
   return output;
 }
 function isApprovedHomeClsChange(before, after) {
