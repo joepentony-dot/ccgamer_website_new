@@ -97,7 +97,10 @@ html[data-ccg-page="home"] .ccg-dnp__button:focus-visible {
 }
 html[data-ccg-page="home"] .ccg-dnp__counter-number {
     display: block;
-    width: 5.6ch;
+    min-width: 5.6ch;
+    width: max-content;
+    max-width: 100%;
+    white-space: nowrap;
     margin: 0;
     padding: 3px 7px;
     border: 1px solid rgba(114, 215, 255, .42);
