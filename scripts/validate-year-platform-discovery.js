@@ -59,7 +59,9 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         `${SITE_ORIGIN}/retro-specials/50-amiga-games-can-you-identify-them/`,
         `${SITE_ORIGIN}/retro-specials/50-zx-spectrum-games-can-you-identify-them/`,
         // Owner-published Arcade 50 quiz: real indexable, self-canonical watch page.
-        `${SITE_ORIGIN}/retro-specials/50-arcade-games-can-you-identify-them/`
+        `${SITE_ORIGIN}/retro-specials/50-arcade-games-can-you-identify-them/`,
+        // Owner-authorised C64 vs Amiga 100-game watch page; exact self-canonical route only.
+        `${SITE_ORIGIN}/retro-specials/c64-vs-amiga-100-games-compared/`
     ])]
 ]);
 const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
