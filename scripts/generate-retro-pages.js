@@ -199,8 +199,8 @@ function buildPlayAlongGuide(entry, pagePrefix) {
       offsets.some((offset, i) => i > 0 && offset <= offsets[i - 1])) {
     throw new Error('C64 vs Amiga showdown chapter timings are invalid');
   }
-  const games = chapters.filter((chapter) => /^#\d{1,3}\s+[–-]\s/.test(chapter.title));
-  const scoreboards = chapters.filter((chapter) => /^Scoreboard\s+[–-]\s/.test(chapter.title));
+  const games = chapters.filter((chapter) => /^#\d{1,3}\s+[–—-]\s/.test(chapter.title));
+  const scoreboards = chapters.filter((chapter) => /^Scoreboard\s+[–—-]\s/.test(chapter.title));
   if (games.length !== 100 || scoreboards.length !== 9) {
     throw new Error('C64 vs Amiga showdown needs 100 game chapters and nine scoreboards');
   }
@@ -216,7 +216,7 @@ function buildPlayAlongGuide(entry, pagePrefix) {
   let current = [];
   chapters.slice(1, -1).forEach((chapter) => {
     current.push(chapter);
-    if (/^Scoreboard\s+[–-]\s/.test(chapter.title)) {
+    if (/^Scoreboard\s+[–—-]\s/.test(chapter.title)) {
       blocks.push(current);
       current = [];
     }
