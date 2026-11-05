@@ -33,10 +33,10 @@ test('generated showdown guide is complete, navigable and safely escaped', () =>
   assert.equal((html.match(/<details\b/g) || []).length, 10);
   assert.ok(html.includes('data-video-chapter="30"'));
   assert.ok(html.includes('data-video-chapter="3120"'));
-  assert.ok(html.includes('C64 vs Amiga'));
+  assert.ok(html.includes('Can you guess the higher reader rating?'));
   assert.ok(!html.includes('<script>'));
   const altered = structuredClone(entry);
-  altered.chapters[1].title = '<img src=x onerror=alert(1)>';
+  altered.playAlong.instructions = '<img src=x onerror=alert(1)>';
   const safe = buildPlayAlongGuide(altered, '/retro-specials/');
   assert.ok(!safe.includes('<img src=x'));
   assert.ok(safe.includes('&lt;img'));
