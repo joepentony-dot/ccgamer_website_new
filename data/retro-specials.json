@@ -872,6 +872,483 @@
       "c64-vs-zx-spectrum"
     ],
     "deferYouTubePlayer": true,
-    "disableAutoFeaturedGames": true
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "Introduction — How to play"
+      },
+      {
+        "time": "00:30",
+        "title": "#100 – Crazy Cars"
+      },
+      {
+        "time": "01:00",
+        "title": "#99 – Buggy Boy"
+      },
+      {
+        "time": "01:30",
+        "title": "#98 – Days of Thunder"
+      },
+      {
+        "time": "02:00",
+        "title": "#97 – James Pond 2: Codename RoboCod"
+      },
+      {
+        "time": "02:30",
+        "title": "#96 – Last Ninja 2"
+      },
+      {
+        "time": "03:00",
+        "title": "#95 – Lotus Esprit Turbo Challenge"
+      },
+      {
+        "time": "03:30",
+        "title": "#94 – Spy vs Spy"
+      },
+      {
+        "time": "04:00",
+        "title": "#93 – 1943: The Battle of Midway"
+      },
+      {
+        "time": "04:30",
+        "title": "#92 – Strider"
+      },
+      {
+        "time": "05:00",
+        "title": "#91 – A.M.C.: Astro Marine Corps"
+      },
+      {
+        "time": "05:30",
+        "title": "Scoreboard — 10 games"
+      },
+      {
+        "time": "05:40",
+        "title": "#90 – Ghosts ’n Goblins"
+      },
+      {
+        "time": "06:10",
+        "title": "#89 – Indiana Jones and the Last Crusade: The Action Game"
+      },
+      {
+        "time": "06:40",
+        "title": "#88 – Pac-Mania"
+      },
+      {
+        "time": "07:10",
+        "title": "#87 – Ferrari Formula One"
+      },
+      {
+        "time": "07:40",
+        "title": "#86 – Wings of Fury"
+      },
+      {
+        "time": "08:10",
+        "title": "#85 – Action Fighter"
+      },
+      {
+        "time": "08:40",
+        "title": "#84 – Ballistix"
+      },
+      {
+        "time": "09:10",
+        "title": "#83 – Dark Castle"
+      },
+      {
+        "time": "09:40",
+        "title": "#82 – Space Crusade"
+      },
+      {
+        "time": "10:10",
+        "title": "#81 – Feud"
+      },
+      {
+        "time": "10:40",
+        "title": "Scoreboard — 20 games"
+      },
+      {
+        "time": "10:50",
+        "title": "#80 – Dan Dare III"
+      },
+      {
+        "time": "11:20",
+        "title": "#79 – Midnight Resistance"
+      },
+      {
+        "time": "11:50",
+        "title": "#78 – Chuckie Egg"
+      },
+      {
+        "time": "12:20",
+        "title": "#77 – Blasteroids"
+      },
+      {
+        "time": "12:50",
+        "title": "#76 – Final Assault"
+      },
+      {
+        "time": "13:20",
+        "title": "#75 – Bubble Ghost"
+      },
+      {
+        "time": "13:50",
+        "title": "#74 – Gettysburg"
+      },
+      {
+        "time": "14:20",
+        "title": "#73 – Zynaps"
+      },
+      {
+        "time": "14:50",
+        "title": "#72 – The Blues Brothers"
+      },
+      {
+        "time": "15:20",
+        "title": "#71 – Blades of Steel"
+      },
+      {
+        "time": "15:50",
+        "title": "Scoreboard — 30 games"
+      },
+      {
+        "time": "16:00",
+        "title": "#70 – 007: Licence to Kill"
+      },
+      {
+        "time": "16:30",
+        "title": "#69 – Silent Service"
+      },
+      {
+        "time": "17:00",
+        "title": "#68 – Arcticfox"
+      },
+      {
+        "time": "17:30",
+        "title": "#67 – Silkworm"
+      },
+      {
+        "time": "18:00",
+        "title": "#66 – Stormlord"
+      },
+      {
+        "time": "18:30",
+        "title": "#65 – 4th & Inches"
+      },
+      {
+        "time": "19:00",
+        "title": "#64 – Batman: The Caped Crusader"
+      },
+      {
+        "time": "19:30",
+        "title": "#63 – Alien Syndrome"
+      },
+      {
+        "time": "20:00",
+        "title": "#62 – Captain Blood"
+      },
+      {
+        "time": "20:30",
+        "title": "#61 – Into the Eagle’s Nest"
+      },
+      {
+        "time": "21:00",
+        "title": "Scoreboard — 40 games"
+      },
+      {
+        "time": "21:10",
+        "title": "#60 – Operation Wolf"
+      },
+      {
+        "time": "21:40",
+        "title": "#59 – Jack Nicklaus’ Greatest 18 Holes"
+      },
+      {
+        "time": "22:10",
+        "title": "#58 – HeroQuest"
+      },
+      {
+        "time": "22:40",
+        "title": "#57 – Ikari Warriors"
+      },
+      {
+        "time": "23:10",
+        "title": "#56 – Jet"
+      },
+      {
+        "time": "23:40",
+        "title": "#55 – Crack Down"
+      },
+      {
+        "time": "24:10",
+        "title": "#54 – Blood Money"
+      },
+      {
+        "time": "24:40",
+        "title": "#53 – Donald Duck’s Playground"
+      },
+      {
+        "time": "25:10",
+        "title": "#52 – Cabal"
+      },
+      {
+        "time": "25:40",
+        "title": "#51 – Carrier Command"
+      },
+      {
+        "time": "26:10",
+        "title": "Scoreboard — 50 games"
+      },
+      {
+        "time": "26:20",
+        "title": "#50 – Blockout"
+      },
+      {
+        "time": "26:50",
+        "title": "#49 – Double Dragon II"
+      },
+      {
+        "time": "27:20",
+        "title": "#48 – Nebulus"
+      },
+      {
+        "time": "27:50",
+        "title": "#47 – Gauntlet II"
+      },
+      {
+        "time": "28:20",
+        "title": "#46 – Kick Off 2"
+      },
+      {
+        "time": "28:50",
+        "title": "#45 – The Games: Summer Edition"
+      },
+      {
+        "time": "29:20",
+        "title": "#44 – Wizball"
+      },
+      {
+        "time": "29:50",
+        "title": "#43 – Fiendish Freddy’s Big Top O’ Fun"
+      },
+      {
+        "time": "30:20",
+        "title": "#42 – Supremacy"
+      },
+      {
+        "time": "30:50",
+        "title": "#41 – The Duel: Test Drive II"
+      },
+      {
+        "time": "31:20",
+        "title": "Scoreboard — 60 games"
+      },
+      {
+        "time": "31:30",
+        "title": "#40 – Castle Master"
+      },
+      {
+        "time": "32:00",
+        "title": "#39 – Impossible Mission II"
+      },
+      {
+        "time": "32:30",
+        "title": "#38 – E-Motion"
+      },
+      {
+        "time": "33:00",
+        "title": "#37 – Battle Chess"
+      },
+      {
+        "time": "33:30",
+        "title": "#36 – Fantasy World Dizzy"
+      },
+      {
+        "time": "34:00",
+        "title": "#35 – SimCity"
+      },
+      {
+        "time": "34:30",
+        "title": "#34 – Ivan ‘Ironman’ Stewart’s Super Off Road"
+      },
+      {
+        "time": "35:00",
+        "title": "#33 – R-Type"
+      },
+      {
+        "time": "35:30",
+        "title": "#32 – Barbarian"
+      },
+      {
+        "time": "36:00",
+        "title": "#31 – Chip’s Challenge"
+      },
+      {
+        "time": "36:30",
+        "title": "Scoreboard — 70 games"
+      },
+      {
+        "time": "36:40",
+        "title": "#30 – Battletech"
+      },
+      {
+        "time": "37:10",
+        "title": "#29 – The New Zealand Story"
+      },
+      {
+        "time": "37:40",
+        "title": "#28 – Arkanoid"
+      },
+      {
+        "time": "38:10",
+        "title": "#27 – Rick Dangerous"
+      },
+      {
+        "time": "38:40",
+        "title": "#26 – California Games"
+      },
+      {
+        "time": "39:10",
+        "title": "#25 – The Chessmaster 2000"
+      },
+      {
+        "time": "39:40",
+        "title": "#24 – Myth"
+      },
+      {
+        "time": "40:10",
+        "title": "#23 – Gateway to the Savage Frontier"
+      },
+      {
+        "time": "40:40",
+        "title": "#22 – The Great Giana Sisters"
+      },
+      {
+        "time": "41:10",
+        "title": "#21 – North & South"
+      },
+      {
+        "time": "41:40",
+        "title": "Scoreboard — 80 games"
+      },
+      {
+        "time": "41:50",
+        "title": "#20 – Death Knights of Krynn"
+      },
+      {
+        "time": "42:20",
+        "title": "#19 – Exile"
+      },
+      {
+        "time": "42:50",
+        "title": "#18 – The Bard’s Tale III"
+      },
+      {
+        "time": "43:20",
+        "title": "#17 – Rainbow Islands"
+      },
+      {
+        "time": "43:50",
+        "title": "#16 – Elvira"
+      },
+      {
+        "time": "44:20",
+        "title": "#15 – Curse of the Azure Bonds"
+      },
+      {
+        "time": "44:50",
+        "title": "#14 – Rodland"
+      },
+      {
+        "time": "45:20",
+        "title": "#13 – Speedball 2"
+      },
+      {
+        "time": "45:50",
+        "title": "#12 – Archon"
+      },
+      {
+        "time": "46:20",
+        "title": "#11 – Stunt Car Racer"
+      },
+      {
+        "time": "46:50",
+        "title": "Scoreboard — 90 games"
+      },
+      {
+        "time": "47:00",
+        "title": "#10 – Defender of the Crown"
+      },
+      {
+        "time": "47:30",
+        "title": "#9 – Lemmings"
+      },
+      {
+        "time": "48:00",
+        "title": "#8 – Elite"
+      },
+      {
+        "time": "48:30",
+        "title": "#7 – Bubble Bobble"
+      },
+      {
+        "time": "49:00",
+        "title": "#6 – Laser Squad"
+      },
+      {
+        "time": "49:30",
+        "title": "#5 – IK+"
+      },
+      {
+        "time": "50:00",
+        "title": "#4 – Zak McKracken"
+      },
+      {
+        "time": "50:30",
+        "title": "#3 – Maniac Mansion"
+      },
+      {
+        "time": "51:00",
+        "title": "#2 – Turrican II: The Final Fight"
+      },
+      {
+        "time": "51:30",
+        "title": "#1 – Pirates!"
+      },
+      {
+        "time": "52:00",
+        "title": "Final scoreboard — 100 games"
+      }
+    ],
+    "playAlong": {
+      "kind": "c64-vs-amiga-lemon-reader-rating",
+      "title": "Play along: 100 C64 vs Amiga predictions",
+      "subtitle": "One point for each correct guess",
+      "instructions": "For each game, choose Commodore 64, Amiga or draw before the winner is revealed. These are separate reader averages from Lemon64 and Lemon Amiga, not a direct head-to-head rating. Keep your own score out of 100 and share it in the YouTube comments.",
+      "timing": "Each 30-second round shows C64 gameplay for 7.5 seconds, Amiga gameplay for 7.5 seconds, both versions side by side for 12 seconds, then the winner and ratings for three seconds. A machine scoreboard appears every ten games.",
+      "editorialTitle": "C64 vs Amiga: 100 classic games, 100 comparisons",
+      "editorialParagraphs": [
+        "This showcase revisits Commodore 64 and Commodore Amiga editions of familiar games, from Crazy Cars and Spy vs Spy through R-Type, Bubble Bobble and Turrican II to Pirates!. See how each title appeared on two generations of Commodore hardware, then find out which edition received the higher community rating.",
+        "The higher-rated version earns one machine point, while equal scores count as a draw. Lemon community scores are snapshots recorded during production and may change as new votes arrive. They do not settle which computer or conversion is objectively better.",
+        "For more Commodore comparisons, countdowns and reviews, follow the related links or browse the game archive."
+      ],
+      "editorialLinks": [
+        {
+          "title": "50 Essential Commodore 64 Games",
+          "url": "/retro-specials/50-essential-commodore-64-games/"
+        },
+        {
+          "title": "50 Essential Amiga Games",
+          "url": "/retro-specials/50-essential-amiga-games/"
+        },
+        {
+          "title": "C64 vs ZX Spectrum Comparison",
+          "url": "/retro-specials/c64-vs-zx-spectrum/"
+        },
+        {
+          "title": "Browse the Games Archive",
+          "url": "/games/"
+        }
+      ]
+    }
   }
 ]
