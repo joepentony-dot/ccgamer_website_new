@@ -156,24 +156,38 @@ jobs:
             const mid = Math.floor(ordered.length / 2);
             return ordered.length % 2 ? ordered[mid] : (ordered[mid - 1] + ordered[mid]) / 2;
           };
-          const metrics = (version, mode) => {
-            const runs = [1,2,3,4].map(i => JSON.parse(fs.readFileSync(`reports/${version}-${mode}-${i}.json`, 'utf8')));
+          const samples = (version, mode) => [1,2,3,4].map(i => {
+            const report = JSON.parse(fs.readFileSync(`reports/${version}-${mode}-${i}.json`, 'utf8'));
             return {
-              lcp: median(runs.map(r => r.audits['largest-contentful-paint']?.numericValue)),
-              cls: median(runs.map(r => r.audits['cumulative-layout-shift']?.numericValue))
+              lcp: report.audits['largest-contentful-paint']?.numericValue,
+              cls: report.audits['cumulative-layout-shift']?.numericValue
             };
-          };
+          });
           let failure = false;
           const summary = [];
           for (const mode of ['mobile','desktop']) {
-            const before = metrics('baseline', mode), after = metrics('candidate', mode);
-            for (const value of [before.lcp,before.cls,after.lcp,after.cls]) {
-              if (!Number.isFinite(value)) throw Error(`Missing Lighthouse metric for ${mode}`);
+            const baseRuns = samples('baseline', mode);
+            const candidateRuns = samples('candidate', mode);
+            for (const sample of [...baseRuns, ...candidateRuns]) {
+              if (!Number.isFinite(sample.lcp) || !Number.isFinite(sample.cls)) {
+                throw Error(`Missing Lighthouse metric for ${mode}`);
+              }
             }
-            const lcpCeiling = before.lcp * 1.15 + 250;
-            const clsCeiling = before.cls + 0.03;
-            const passed = after.lcp <= lcpCeiling && after.cls <= clsCeiling;
-            summary.push({mode, baseline: before, candidate: after, lcpCeiling, clsCeiling, passed});
+            const before = {lcp: median(baseRuns.map(r => r.lcp)), cls: median(baseRuns.map(r => r.cls))};
+            const after = {lcp: median(candidateRuns.map(r => r.lcp)), cls: median(candidateRuns.map(r => r.cls))};
+            // Keep original LCP and CLS allowances, but take the median of matched
+            // candidate-minus-baseline run deltas to control high same-page variance.
+            const pairedDelta = {
+              lcp: median(baseRuns.map((sample, i) => candidateRuns[i].lcp - sample.lcp)),
+              cls: median(baseRuns.map((sample, i) => candidateRuns[i].cls - sample.cls))
+            };
+            const lcpAllowance = before.lcp * 0.15 + 250;
+            const clsAllowance = 0.03;
+            const lcpCeiling = before.lcp + lcpAllowance;
+            const clsCeiling = before.cls + clsAllowance;
+            const passed = pairedDelta.lcp <= lcpAllowance && pairedDelta.cls <= clsAllowance;
+            summary.push({mode, baseline: before, candidate: after, pairedDelta,
+              lcpCeiling, clsCeiling, lcpAllowance, clsAllowance, passed});
             if (!passed) failure = true;
           }
           fs.writeFileSync('reports/summary.json', JSON.stringify(summary, null, 2));
