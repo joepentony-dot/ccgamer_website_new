@@ -12,6 +12,8 @@ on:
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
       - "tests/category-omega.test.mjs"
+      - "scripts/generate-retro-pages.js"
+      - "tests/retro-showdown-generator.test.mjs"
       - ".github/workflows/category-omega-validation.yml"
       - ".github/workflows/games-publishing.yml"
       - ".github/workflows/phase-6b-reliable-games-publishing.yml"
@@ -26,6 +28,8 @@ on:
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
       - "tests/category-omega.test.mjs"
+      - "scripts/generate-retro-pages.js"
+      - "tests/retro-showdown-generator.test.mjs"
       - ".github/workflows/category-omega-validation.yml"
       - ".github/workflows/games-publishing.yml"
       - ".github/workflows/phase-6b-reliable-games-publishing.yml"
@@ -58,6 +62,9 @@ jobs:
 
       - name: Run Category Omega regression tests
         run: node --test tests/category-omega.test.mjs
+
+      - name: Guard source-generated C64 vs Amiga showdown chapters
+        run: node --test tests/retro-showdown-generator.test.mjs
 
       - name: Confirm generator touches only category HTML
         shell: bash
