@@ -834,5 +834,44 @@
     ],
     "deferYouTubePlayer": true,
     "disableAutoFeaturedGames": true
+  },
+  {
+    "id": "c64-vs-amiga-100-games-compared",
+    "slug": "c64-vs-amiga-100-games-compared",
+    "type": "retro-specials",
+    "title": "C64 vs Amiga: 100 Games Compared – Can You Guess the Winner?",
+    "youtubeId": "ygPOtslHRfk",
+    "thumbnail": "https://img.youtube.com/vi/ygPOtslHRfk/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 27,
+    "summary": "100 C64 vs Amiga game comparisons. Guess which version earned the higher Lemon reader rating, keep score and see which machine wins.",
+    "description": "One hundred games that appeared on both the Commodore 64 and Amiga, shown in 30-second comparisons. Watch 7.5 seconds of C64 gameplay, then 7.5 seconds of Amiga gameplay, compare the two versions side by side and predict which received the higher separate reader average on Lemon64 or Lemon Amiga. The results appear during the final three seconds. Give yourself one point for each correct C64, Amiga or draw prediction and compare your own score out of 100. Machine standings update after every ten games. These are not direct head-to-head review scores: each community rated its version independently, and reader averages can change over time.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "C64 vs Amiga: 100 Games Compared – Can You Guess the Winner? | Cheeky Commodore Gamer",
+      "description": "Compare 100 classic Commodore 64 and Amiga games side by side, predict each Lemon reader-rating winner, and follow the scoreboard in this retro showdown."
+    },
+    "created_at": "2026-11-06T00:00:00.000Z",
+    "tags": [
+      "C64 vs Amiga",
+      "Commodore 64",
+      "Commodore Amiga",
+      "100 games",
+      "Lemon64",
+      "Lemon Amiga",
+      "retro gaming",
+      "play-along challenge"
+    ],
+    "platforms": [
+      "Commodore 64",
+      "Amiga"
+    ],
+    "relatedSlugs": [
+      "50-essential-commodore-64-games",
+      "50-essential-amiga-games",
+      "c64-vs-zx-spectrum"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true
   }
 ]
