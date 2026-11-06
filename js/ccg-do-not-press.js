@@ -168,6 +168,12 @@
     }
   }
 
+  // The homepage button navigates; the dedicated page retains the sound.
+  if (window.location && window.location.pathname === '/home.html' &&
+      typeof button.setAttribute === 'function') {
+    button.setAttribute('aria-label', 'Open the Speedball 2 Ice Cream button page');
+  }
+
   button.addEventListener('pointerenter', primeSound);
   button.addEventListener('focus', primeSound);
 
@@ -199,6 +205,10 @@
   });
   button.addEventListener('blur', cancelPress);
   button.addEventListener('click', function () {
+    if (window.location && window.location.pathname === '/home.html') {
+      window.location.assign('/ice-cream/');
+      return;
+    }
     press();
     if (!pointerDown && !keyboardDown) releaseSoon();
     // The original MP3 is the only primary sound. An extra synthesized tick
