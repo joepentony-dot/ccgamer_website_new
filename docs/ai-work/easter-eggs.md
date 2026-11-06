@@ -1,3 +1,10 @@
+## 6 November 2026 — Speedball 2-only link to the Ice Cream button (branch)
+
+- Owner requested a link to the existing `/ice-cream/` button **only** on the canonical Speedball 2: Brutal Deluxe page. Branch `feature/speedball-2-ice-cream-game-link-20261106` starts from fresh main `628cb167842414dbc1ebac15748ed3cce6b6c782`.
+- Add one accessible first-party CTA in the existing hero Share action bar and implement the exact-slug-only injection in the authoritative canonical page generator to survive future rebuilds.
+- The separate landing-page button, sound, global counter, homepage, other games, Omega CSS/JS, service worker, catalogue and intro are untouched. Extend the existing Site Safety Ice Cream test for static HTML, generator parity and negative unrelated-game coverage. No new network requests, images, scripts, or CSS.
+- **STAGED ONLY:** source check and full exact-head GitHub CI, review, guarded merge, Pages deployment and production browser acceptance are pending.
+
 ## 6 November 2026 — factual Speedball 2 history and CCG artwork (pending review)
 
 - Owner requested SEO-focused rewriting of a cited Speedball 2 historical passage and the already-generated CCG neon Speedball 2 poster on the established `/ice-cream/` page. Separate feature branch `feature/speedball-ice-cream-facts-art-20261106` starts from merged `main` `3c0e3e4867cf9058937a642839cfe848ddc84ec1`. Do not restart PR #3024.
