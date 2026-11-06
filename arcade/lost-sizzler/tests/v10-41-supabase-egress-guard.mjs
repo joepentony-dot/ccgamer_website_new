@@ -13,17 +13,19 @@ const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 const supabaseClientSource=read('js/ccg-supabase-client.js');
 class ContractCustomEvent{constructor(type,init={}){this.type=type;this.detail=init.detail}}
 function supabaseHarness({webdriver,userAgent,storage,requests}){
+  const windowListeners=new Map(),documentListeners=new Map();
+  const documentState={readyState:'loading',addEventListener(name,listener){if(!documentListeners.has(name))documentListeners.set(name,[]);documentListeners.get(name).push(listener)},querySelector(){return null}};
   const windowState={
     CCG_SUPABASE_URL:'https://lcslgxpgmttaexsorxik.supabase.co',
     CCG_SUPABASE_ANON_KEY:'test-anon-key',
     CCG_SUPABASE_STORAGE_KEY:'ccg-test-auth',
     location:{protocol:'http:',hostname:'127.0.0.1',search:'',hash:''},
     localStorage:storage,
-    addEventListener(){},
-    dispatchEvent(){},
+    addEventListener(name,listener){if(!windowListeners.has(name))windowListeners.set(name,[]);windowListeners.get(name).push(listener)},
+    dispatchEvent(event){for(const listener of windowListeners.get(event.type)||[])listener(event);return true},
+    fireDOMContentLoaded(){documentState.readyState='interactive';for(const listener of documentListeners.get('DOMContentLoaded')||[])listener(new ContractCustomEvent('DOMContentLoaded'));documentListeners.delete('DOMContentLoaded')},
     setTimeout(){}
   };
-  const documentState={readyState:'loading',addEventListener(){},querySelector(){return null}};
   vm.runInNewContext(supabaseClientSource,{
     window:windowState,document:documentState,
     navigator:{webdriver,userAgent},
@@ -40,6 +42,17 @@ const automatedWindow=supabaseHarness({webdriver:true,userAgent:'HeadlessChrome/
 const automatedReadiness=await automatedWindow.ccgSupabase.checkCommunityReadiness();
 assert(automatedReadiness.ready===false&&automatedReadiness.reason==='automated_test','Automated browser must explicitly skip community backend readiness requests.');
 assert(automatedWindow.ccgSupabase.remoteBackendAllowed()===false,'Automated browser must expose a closed remote-backend policy.');
+let automatedAuthReadyEvents=0;
+const automatedAuthReadyTasks=[];
+automatedWindow.addEventListener('ccg:auth-ready',()=>{
+  automatedAuthReadyEvents++;
+  automatedAuthReadyTasks.push(automatedWindow.ccgSupabase.waitForSessionReady());
+});
+automatedWindow.fireDOMContentLoaded();
+const automatedAuthContext=await automatedWindow.ccgSupabase.waitForSessionReady();
+await Promise.all(automatedAuthReadyTasks);
+assert(automatedAuthReadyEvents===1,'Automated auth readiness must dispatch once when save-sync listeners request the session.');
+assert(automatedAuthContext.remoteBackendSkipped===true,'Automated save sync must receive a local-only anonymous auth context.');
 assert(await automatedWindow.ccgSupabase.waitForAuth()===null,'Automated browser auth bootstrap must resolve without a remote session.');
 let automatedClientError=null;
 try{await automatedWindow.ccgSupabase.getClient()}catch(error){automatedClientError=error}
