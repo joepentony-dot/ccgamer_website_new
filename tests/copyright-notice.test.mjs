@@ -87,20 +87,20 @@ test('artwork right-click is intercepted and the rights-aware CCG notice appears
   assert.equal(toast.children[2].children[0].href, '/copyright.html');
 });
 
-test('ordinary text and interactive areas retain standard browser right-click', () => {
+test('public text, links and interactive elements suppress the native context menu', () => {
   const site = run();
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('text')), false);
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { interactive: true })), false);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('text')), true);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { interactive: true })), true);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('text', { link: true })), true);
+  assert.equal(site.appended.length, 1); // Artwork retains the notice.
   assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { excluded: true })), false);
-  assert.equal(site.appended.length, 0);
 });
 
-test('linked artwork and protected content retain the native browser context menu', () => {
+test('linked artwork and protected content suppress the native menu and show a notice', () => {
   const site = run();
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { link: true })), false);
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('protected-text', { link: true })), false);
-  assert.equal(dispatch(site.handlers, 'contextmenu', target('image')), true);
-  assert.equal(site.appended.length, 1);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { link: true })), true);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('protected-text', { link: true })), true);
+  assert.equal(site.appended.length, 2);
 });
 
 test('opt-in protected text triggers notice but linked images are still draggable', () => {
@@ -148,16 +148,19 @@ test('pointer hover pauses expiry and leaving resumes it', () => {
   assert.equal(toast.removed, true);
 });
 
-test('emulator and arcade, admin and intro surfaces have no listeners', () => {
+test('public emulator/arcade pages intercept menus; admin/auth/intro remain exempt', () => {
   for (const [pathname, page] of [
     ['/emulator/c64/', 'emulator'],
-    ['/arcade/lost-sizzler/', 'arcade'],
+    ['/arcade/lost-sizzler/', 'arcade']
+  ]) {
+    assert.equal(run(pathname, page).handlers.size, 2, pathname);
+  }
+  for (const [pathname, page] of [
     ['/admin/', 'admin'],
     ['/auth/login.html', 'auth'],
     ['/', 'intro']
   ]) {
-    const site = run(pathname, page);
-    assert.equal(site.handlers.size, 0, pathname);
+    assert.equal(run(pathname, page).handlers.size, 0, pathname);
   }
 });
 
@@ -174,4 +177,15 @@ test('shared bootstrap preserves separate JS and CSS ownership', () => {
   assert.match(bootstrap, /\/resources\/css\/ccg-copyright-notice\.css/);
   assert.match(bootstrap, /function initDomFeatures\(\) \{\s*loadCopyrightNotice\(\)/);
   assert.match(styles, /\.ccg-copyright-toast\s*\{\s*box-sizing: border-box;\s*position: fixed;/);
+});
+
+test('non-analytics quiz, emulator and arcade hub surfaces load the existing context notice', () => {
+  for (const file of ["quiz/quiz.html","quiz/pack-6.html","emulator/c64/index.html","emulator/c64/legal.html","arcade/index.html","arcade/quest/index.html"]) {
+    const html = readFileSync(path.join(root, file), 'utf8');
+    assert.match(html, /<link rel="stylesheet" href="\/resources\/css\/ccg-copyright-notice\.css"/, file);
+    assert.match(html, /<script src="\/js\/ccg-copyright-notice\.js" defer><\/script>/, file);
+  }
+  const music = readFileSync(path.join(root, 'js/music-composer-pages.js'), 'utf8');
+  assert.match(music, /\/js\/ccg-copyright-notice\.js/);
+  assert.match(music, /addEventListener\('contextmenu'/);
 });

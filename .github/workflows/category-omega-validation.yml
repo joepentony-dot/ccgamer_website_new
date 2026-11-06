@@ -12,6 +12,8 @@ on:
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
       - "tests/category-omega.test.mjs"
+      - "scripts/generate-retro-pages.js"
+      - "tests/retro-showdown-generator.test.mjs"
       - ".github/workflows/category-omega-validation.yml"
       - ".github/workflows/games-publishing.yml"
       - ".github/workflows/phase-6b-reliable-games-publishing.yml"
@@ -26,6 +28,8 @@ on:
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
       - "tests/category-omega.test.mjs"
+      - "scripts/generate-retro-pages.js"
+      - "tests/retro-showdown-generator.test.mjs"
       - ".github/workflows/category-omega-validation.yml"
       - ".github/workflows/games-publishing.yml"
       - ".github/workflows/phase-6b-reliable-games-publishing.yml"
@@ -58,6 +62,9 @@ jobs:
 
       - name: Run Category Omega regression tests
         run: node --test tests/category-omega.test.mjs
+
+      - name: Guard source-generated C64 vs Amiga showdown chapters
+        run: node --test tests/retro-showdown-generator.test.mjs
 
       - name: Confirm generator touches only category HTML
         shell: bash
@@ -115,11 +122,18 @@ jobs:
             if curl -fsS -o /dev/null http://127.0.0.1:8123/games/genres/role-playing-games.html && curl -fsS -o /dev/null http://127.0.0.1:8124/games/genres/role-playing-games.html; then break; fi
             sleep 1
           done
+          # Balance runner warm-up/order: each revision runs first and second
+          # equally often. Keep the exact original LCP/CLS acceptance ceilings.
           for mode in mobile desktop; do
-            for version in baseline candidate; do
-              port=8123
-              if [ "$version" = candidate ]; then port=8124; fi
-              for repetition in 1 2; do
+            for repetition in 1 2 3 4; do
+              if (( repetition % 2 == 1 )); then
+                versions=(baseline candidate)
+              else
+                versions=(candidate baseline)
+              fi
+              for version in "${versions[@]}"; do
+                port=8123
+                if [ "$version" = candidate ]; then port=8124; fi
                 options=()
                 if [ "$mode" = desktop ]; then options+=(--preset=desktop); fi
                 node /tmp/ccg-lighthouse/node_modules/lighthouse/cli/index.js "http://127.0.0.1:$port/games/genres/role-playing-games.html" \
@@ -137,25 +151,43 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const median = values => values.sort((a,b) => a-b)[Math.floor(values.length / 2)];
-          const metrics = (version, mode) => {
-            const runs = [1,2].map(i => JSON.parse(fs.readFileSync(`reports/${version}-${mode}-${i}.json`, 'utf8')));
-            return {
-              lcp: median(runs.map(r => r.audits['largest-contentful-paint']?.numericValue)),
-              cls: median(runs.map(r => r.audits['cumulative-layout-shift']?.numericValue))
-            };
+          const median = values => {
+            const ordered = [...values].sort((a, b) => a - b);
+            const mid = Math.floor(ordered.length / 2);
+            return ordered.length % 2 ? ordered[mid] : (ordered[mid - 1] + ordered[mid]) / 2;
           };
+          const samples = (version, mode) => [1,2,3,4].map(i => {
+            const report = JSON.parse(fs.readFileSync(`reports/${version}-${mode}-${i}.json`, 'utf8'));
+            return {
+              lcp: report.audits['largest-contentful-paint']?.numericValue,
+              cls: report.audits['cumulative-layout-shift']?.numericValue
+            };
+          });
           let failure = false;
           const summary = [];
           for (const mode of ['mobile','desktop']) {
-            const before = metrics('baseline', mode), after = metrics('candidate', mode);
-            for (const value of [before.lcp,before.cls,after.lcp,after.cls]) {
-              if (!Number.isFinite(value)) throw Error(`Missing Lighthouse metric for ${mode}`);
+            const baseRuns = samples('baseline', mode);
+            const candidateRuns = samples('candidate', mode);
+            for (const sample of [...baseRuns, ...candidateRuns]) {
+              if (!Number.isFinite(sample.lcp) || !Number.isFinite(sample.cls)) {
+                throw Error(`Missing Lighthouse metric for ${mode}`);
+              }
             }
-            const lcpCeiling = before.lcp * 1.15 + 250;
-            const clsCeiling = before.cls + 0.03;
-            const passed = after.lcp <= lcpCeiling && after.cls <= clsCeiling;
-            summary.push({mode, baseline: before, candidate: after, lcpCeiling, clsCeiling, passed});
+            const before = {lcp: median(baseRuns.map(r => r.lcp)), cls: median(baseRuns.map(r => r.cls))};
+            const after = {lcp: median(candidateRuns.map(r => r.lcp)), cls: median(candidateRuns.map(r => r.cls))};
+            // Keep original LCP and CLS allowances, but take the median of matched
+            // candidate-minus-baseline run deltas to control high same-page variance.
+            const pairedDelta = {
+              lcp: median(baseRuns.map((sample, i) => candidateRuns[i].lcp - sample.lcp)),
+              cls: median(baseRuns.map((sample, i) => candidateRuns[i].cls - sample.cls))
+            };
+            const lcpAllowance = before.lcp * 0.15 + 250;
+            const clsAllowance = 0.03;
+            const lcpCeiling = before.lcp + lcpAllowance;
+            const clsCeiling = before.cls + clsAllowance;
+            const passed = pairedDelta.lcp <= lcpAllowance && pairedDelta.cls <= clsAllowance;
+            summary.push({mode, baseline: before, candidate: after, pairedDelta,
+              lcpCeiling, clsCeiling, lcpAllowance, clsAllowance, passed});
             if (!passed) failure = true;
           }
           fs.writeFileSync('reports/summary.json', JSON.stringify(summary, null, 2));

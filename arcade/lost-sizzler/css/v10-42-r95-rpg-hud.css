@@ -1037,3 +1037,76 @@ body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{displ
  body[data-run-active="true"] .carried-meta strong{font-size:10px!important}
  body[data-run-active="true"] .carried-section-label{position:static!important;font-size:9px!important;padding:3px!important}
 }
+
+/* R154 — restore the mobile tactical radar as a readable row above live play.
+   R95 hid this parent in portrait mode, collapsing its canvas to 0×0; the
+   gameplay test must exercise the actual fullscreen layout rather than a
+   standalone CSS canvas. */
+@media (orientation:portrait) and (max-width:900px), (orientation:portrait) and (pointer:coarse){
+  body[data-run-active="true"] .ccg-game,
+  body[data-run-active="true"] .ccg-game:fullscreen,
+  body[data-run-active="true"] .ccg-game:-webkit-full-screen{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:28px auto minmax(0,1fr) 84px!important;
+  }
+  body[data-run-active="true"] .ccg-game>.tactical-zone{
+    display:grid!important;
+    grid-column:1!important;
+    grid-row:2!important;
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:120px!important;
+    max-height:none!important;
+    padding:4px 7px!important;
+    opacity:1!important;
+    visibility:visible!important;
+    pointer-events:none!important;
+    z-index:6!important;
+    overflow:hidden!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto!important;
+    gap:4px!important;
+  }
+  body[data-run-active="true"] .ccg-game>.tactical-zone>.v102-radar-card{
+    display:grid!important;
+    grid-column:1!important;
+    grid-row:1!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr) auto!important;
+    align-self:stretch!important;
+  }
+  body[data-run-active="true"] .ccg-game #radar-canvas{
+    display:block!important;
+    width:auto!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:100px!important;
+    max-height:min(20vh,180px)!important;
+    aspect-ratio:2/1!important;
+    object-fit:contain!important;
+    margin-inline:auto!important;
+  }
+  body[data-run-active="true"] .ccg-game>.game-area{grid-column:1!important;grid-row:3!important;min-height:0!important;}
+  body[data-run-active="true"] .ccg-game>.player-hub{grid-column:1!important;grid-row:4!important;}
+  body[data-run-active="true"] .ccg-game>.tactical-zone>.shortcut-dock{display:none!important;}
+}
+/* R154 portrait radar: at taller phone sizes the previous 20vh canvas cap
+   combined with intrinsic sizing can shrink the map below 300x150. Limit
+   this override to tall, >=380px portrait screens; compact 320px devices
+   retain their shorter radar budget and flexible playfield. */
+@media (orientation:portrait) and (min-width:380px) and (min-height:700px) and (max-width:900px){
+  body[data-run-active="true"] .ccg-game #radar-canvas{
+    width:min(100%,340px)!important;
+    height:auto!important;
+    max-height:170px!important;
+    min-height:0!important;
+    aspect-ratio:2/1!important;
+  }
+}

@@ -1,14 +1,14 @@
 /*
- * CCG selective copyright notice.
+ * CCG sitewide public-page context-menu suppression plus selective artwork notice.
  * A deterrent for casual image copying, not an access-control mechanism.
- * Keep real browser actions, game controls, editable content and downloads intact.
+ * Never intercept clicks, key presses, game input or file downloads.
  */
 (function () {
   'use strict';
 
   var path = (window.location.pathname || '/').toLowerCase();
   if (window.ccgCopyrightNoticeLoaded ||
-      /^(\/admin\/|\/auth\/|\/emulator\/|\/arcade\/)/.test(path) ||
+      /^(\/admin\/|\/auth\/)/.test(path) ||
       document.documentElement.getAttribute('data-ccg-page') === 'intro') {
     return;
   }
@@ -26,9 +26,15 @@
   var pointerInside = false;
 
   function guarded(target) {
-    if (!target || typeof target.closest !== 'function') return false;
-    if (target.closest(INTERACTIVE) || target.closest(EXCLUDED)) return false;
-    return Boolean(target.closest('img, picture, [data-ccg-protected-content]'));
+    // Public surfaces suppress the native browser menu; explicit opt-out is
+    // retained for integrations that genuinely require their own context menu.
+    if (!target || typeof target.closest !== 'function') return true;
+    return !target.closest('[data-ccg-allow-contextmenu]');
+  }
+
+  function artwork(target) {
+    return Boolean(target && typeof target.closest === 'function' &&
+      target.closest('img, picture, [data-ccg-protected-content]'));
   }
 
   function clearDismissTimer() {
@@ -114,7 +120,7 @@
   document.addEventListener('contextmenu', function (event) {
     if (!guarded(event.target)) return;
     event.preventDefault();
-    showNotice();
+    if (artwork(event.target)) showNotice();
   }, { capture: true });
 
   document.addEventListener('dragstart', function (event) {

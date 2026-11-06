@@ -84,6 +84,7 @@
 
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/home.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-do-not-press.css" />
     <link rel="stylesheet" href="/resources/css/home-support-panel.css" />
     <link rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/resources/css/home-fourthwall-merch.css" /></noscript>
@@ -627,6 +628,20 @@
                 </div>
             </section>
 
+
+            <!-- Self-contained CCG sound button. Reserve geometry in HTML; no layout injection. -->
+            <section class="ccg-dnp" data-ccg-do-not-press aria-labelledby="ccg-dnp-title">
+                <h2 class="ccg-dnp__title" id="ccg-dnp-title">PRESS FOR ICE-CREAM!</h2>
+                <div class="ccg-dnp__button-wrap">
+                    <div class="ccg-dnp__sprite" data-ccg-dnp-sprite aria-hidden="true"></div>
+                    <button class="ccg-dnp__button" type="button" data-ccg-dnp-button
+                            aria-label="Press the centre of the red button"></button>
+                </div>
+                <output class="ccg-dnp__counter-number" data-ccg-dnp-total
+                        aria-label="Total button presses">0000</output>
+                <audio data-ccg-dnp-sound src="/resources/audio/easter-eggs/ccg-ice-cream-speedbal.mp3" preload="none"></audio>
+            </section>
+
             <!-- SIGNATURE LINE: ATMOSPHERE WITHOUT ANOTHER FULL-SCREEN PANEL -->
             <section class="home-visitor-callout home-visitor-callout--compact ccg-chapter" aria-labelledby="visitor-callout-heading">
                 <div class="home-visitor-callout__inner">
@@ -679,6 +694,7 @@
 </script>
 
 <script src="js/ccg-supabase-config.js" defer></script>
+<script src="/js/ccg-do-not-press.js" defer></script>
 <script src="js/ccg-supabase-client.js" defer></script>
 <script src="js/ccg-community-auth.js" defer></script>
 <script src="/js/ccg-nav.js" defer></script>

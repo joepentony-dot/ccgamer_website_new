@@ -393,7 +393,7 @@
   // Deferred, first-party copyright notice; no listeners on game or emulator routes.
   function loadCopyrightNotice() {
     var route = (window.location.pathname || '').toLowerCase();
-    if (/^\/(?:arcade|emulator)\//.test(route)) return;
+    if (/^\/auth\//.test(route)) return;
     if (document.querySelector('script[data-ccg-copyright-notice]')) return;
     loadStylesheet('/resources/css/ccg-copyright-notice.css', 'data-ccg-copyright-style');
     var script = document.createElement('script');
