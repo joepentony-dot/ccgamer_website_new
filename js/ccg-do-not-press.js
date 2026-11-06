@@ -168,9 +168,11 @@
     }
   }
 
-  // On the homepage this control is a link to the dedicated Ice Cream page.
-  // Keep reading the shared total, but never play audio or increment on navigation.
-  if (button.tagName === 'A' && button.hasAttribute('href')) return;
+  // The homepage button navigates; the dedicated page retains the sound.
+  if (window.location && window.location.pathname === '/home.html' &&
+      typeof button.setAttribute === 'function') {
+    button.setAttribute('aria-label', 'Open the Speedball 2 Ice Cream button page');
+  }
 
   button.addEventListener('pointerenter', primeSound);
   button.addEventListener('focus', primeSound);
@@ -203,6 +205,10 @@
   });
   button.addEventListener('blur', cancelPress);
   button.addEventListener('click', function () {
+    if (window.location && window.location.pathname === '/home.html') {
+      window.location.assign('/ice-cream/');
+      return;
+    }
     press();
     if (!pointerDown && !keyboardDown) releaseSoon();
     // The original MP3 is the only primary sound. An extra synthesized tick
