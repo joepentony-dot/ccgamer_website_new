@@ -93,7 +93,7 @@ test('production header normalizer preserves the standalone page without duplica
   assert.equal(staged.changed, false, 'normalization must be an identity operation');
   assert.equal(staged.html, html);
   assert.equal(staged.publicHeaderInserted, false);
-  assert.equal((staged.html.match(/<header\\b/g) || []).length, 1);
+  assert.equal((staged.html.match(/<header\b/g) || []).length, 1);
   assert.equal((staged.html.match(/<link[^>]+rel="stylesheet"/g) || []).length, 2);
-  assert.equal((staged.html.match(/<script\\b/g) || []).length, 4);
+  assert.equal((staged.html.match(/<script\b/g) || []).length, 4);
 });
