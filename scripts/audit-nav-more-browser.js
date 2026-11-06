@@ -101,6 +101,13 @@ async function verifyLiveReleaseAssets() {
 
   const assets = [
     ["/service-worker.js", "service-worker.js"],
+    // The retired Ask CCG bootstrap must not reappear in the deployed Home script.
+    ["/js/ccg-archive-pulse-randomizer.js", "js/ccg-archive-pulse-randomizer.js"],
+    ["/js/music-composer-utils.js", "js/music-composer-utils.js"],
+    ["/js/games-library.js", "js/games-library.js"],
+    ["/js/retro-specials-loader.js", "js/retro-specials-loader.js"],
+    ["/js/load-single-game.js", "js/load-single-game.js"],
+    ["/resources/css/game-pages.css", "resources/css/game-pages.css"],
     ["/js/ccg-nav-fit.js", "js/ccg-nav-fit.js"],
     ["/resources/css/ccg-nav-fit.css", "resources/css/ccg-nav-fit.css"],
     ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"]
@@ -202,6 +209,331 @@ async function openHome(sessionId, width) {
     "document.querySelector('[data-ccg-more-toggle]') && !document.querySelector('[data-ccg-more-toggle]').disabled",
     `enabled More toggle at ${width}px`
   );
+}
+
+
+async function assertSingleGameExploreNormalFlow(sessionId, width, slug) {
+  // The owner-approved Explore menu belongs between the hero and Video Archive.
+  // Exercise the actual game page, not a synthetic DOM or source-only assertion.
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/games/${slug}/?ccg-explore-flow-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, `(
+    function () {
+      const nav = document.querySelector('[data-game-section-nav]');
+      return nav && !nav.hidden && nav.querySelector('a[href="#game-video-section"]')
+        && document.getElementById('game-video-section');
+    }
+  )()`, `visible ${slug} Explore section menu at ${width}px`, 20000);
+
+  const initial = await execute(sessionId, `return (function () {
+    const nav = document.querySelector('[data-game-section-nav]');
+    const hero = document.querySelector('.game-hero');
+    const video = document.getElementById('game-video-section');
+    const rect = nav.getBoundingClientRect();
+    return {
+      position: getComputedStyle(nav).position,
+      afterHero: hero?.nextElementSibling === nav,
+      beforeVideo: Boolean(nav.compareDocumentPosition(video) & Node.DOCUMENT_POSITION_FOLLOWING),
+      visible: rect.width > 10 && rect.height > 10,
+      videoLink: Boolean(nav.querySelector('a[href="#game-video-section"]'))
+    };
+  })();`);
+  if (initial.position !== "static" || !initial.afterHero || !initial.beforeVideo ||
+      !initial.visible || !initial.videoLink) {
+    throw new Error(`Single-game ${slug} Explore menu placement failed at ${width}px: ${JSON.stringify(initial)}`);
+  }
+
+  // A normal-flow menu moves out of the viewport as the visitor scrolls.
+  // A sticky/fixed regression remains visible and fails this real-browser check.
+  const scrolled = await execute(sessionId, `return (function () {
+    const nav = document.querySelector('[data-game-section-nav]');
+    const maxScroll = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - innerHeight;
+    const target = Math.min(maxScroll, Math.ceil(scrollY + nav.getBoundingClientRect().bottom + 180));
+    window.scrollTo({ top: target, behavior: 'instant' });
+    return {
+      scrollY: window.scrollY,
+      bottom: nav.getBoundingClientRect().bottom,
+      position: getComputedStyle(nav).position
+    };
+  })();`);
+  if (scrolled.scrollY < 100 || scrolled.bottom >= -10 || scrolled.position !== "static") {
+    throw new Error(`Single-game ${slug} Explore menu followed scrolling at ${width}px: ${JSON.stringify(scrolled)}`);
+  }
+
+  const restored = await execute(sessionId, `return (function () {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    const nav = document.querySelector('[data-game-section-nav]');
+    const rect = nav.getBoundingClientRect();
+    return { scrollY: window.scrollY, top: rect.top, bottom: rect.bottom };
+  })();`);
+  if (restored.scrollY > 1 || restored.bottom <= 0 || restored.top < 0) {
+    throw new Error(`Single-game ${slug} Explore menu did not return to its original position at ${width}px: ${JSON.stringify(restored)}`);
+  }
+}
+
+async function assertRetiredAskCCGAbsent(sessionId, width, visit) {
+  // Use the real browser, not a source-only grep. Revisit within the same
+  // Chrome profile to cover a returning session and its service-worker state.
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 900 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/home.html?ccg-assistant-retirement-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, "document.readyState !== 'loading' && Boolean(document.body)",
+    `Home DOM for retired assistant at ${width}px (${visit})`, 12000);
+  // The old launcher was attached on DOM readiness by a deferred Home script.
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  const evidence = await execute(sessionId, `
+    return (function () {
+      const retired = /(?:ccg-retro-assistant\\.js|ccg-retro-assistant\\.css)(?:[?#]|$)/i;
+      return {
+        viewport: window.innerWidth,
+        launcher: Boolean(document.querySelector('#ccg-retro-assistant, .ccg-ra__trigger, #ccg-ra-panel')),
+        bootstrapFlag: Boolean(window.__ccgRetroAssistantLoaded),
+        scripts: Array.from(document.scripts).filter((script) =>
+          retired.test(script.src || '') || script.hasAttribute('data-ccg-retro-assistant')).map((script) => script.src),
+        styles: Array.from(document.querySelectorAll('link[href]')).filter((link) =>
+          retired.test(link.href || '')).map((link) => link.href),
+        fetched: performance.getEntriesByType('resource').filter((entry) =>
+          retired.test(entry.name || '')).map((entry) => entry.name)
+      };
+    })();
+  `);
+  if (evidence.launcher || evidence.bootstrapFlag || evidence.scripts.length ||
+      evidence.styles.length || evidence.fetched.length) {
+    throw new Error(`Retired Ask CCG reappeared at ${width}px (${visit}): ${JSON.stringify(evidence)}`);
+  }
+}
+
+async function assertMusicHubSearch(sessionId, width) {
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/music/?ccg-music-search-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, `(function () {
+    const accordion = document.getElementById('composer-discovery-accordion');
+    const input = document.getElementById('composer-discovery-search');
+    return accordion?.dataset.ccgOmegaAccordionBound === 'true'
+      && input?.dataset.ccgOmegaSearchBound === 'true'
+      && accordion.querySelectorAll('.ccg-composer-chip').length > 0;
+  })()`, `Music Hub search initialisation at ${width}px`, 20000);
+
+  const snapshot = `(function () {
+    const accordion = document.getElementById('composer-discovery-accordion');
+    const input = document.getElementById('composer-discovery-search');
+    const groups = Array.from(accordion.querySelectorAll('.composer-accordion__group'));
+    const chips = groups.flatMap((group) =>
+      Array.from(group.querySelectorAll('.ccg-composer-chip')).map((chip) => ({
+        visible: !group.hidden && !chip.hidden,
+        name: Array.from(chip.childNodes)
+          .filter((node) => node.nodeType === Node.TEXT_NODE)
+          .map((node) => node.textContent || '').join(' ').trim()
+      }))
+    );
+    return {
+      query: input.value,
+      total: chips.length,
+      visible: chips.filter((chip) => chip.visible).map((chip) => chip.name),
+      empty: Boolean(accordion.querySelector('[data-ccg-composer-search-empty="true"]'))
+    };
+  })()`;
+  const cases = [
+    { query: "32", empty: true, zero: true },
+    { query: "Hubbard", empty: false, name: "Rob Hubbard" },
+    { query: "David Dunn", empty: false, name: "Julie Dunn" },
+    { query: "ccg-no-such-composer-2026", empty: true, zero: true },
+    { query: "", empty: false, all: true }
+  ];
+  for (const testCase of cases) {
+    await execute(sessionId, `
+      const input = document.getElementById('composer-discovery-search');
+      input.value = ${JSON.stringify(testCase.query)};
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    `);
+    const expectation = testCase.zero
+      ? "state.visible.length === 0"
+      : testCase.all
+        ? "state.total > 0 && state.visible.length === state.total"
+        : `state.visible.includes(${JSON.stringify(testCase.name)})`;
+    await waitUntil(sessionId, `(function () {
+      const state = ${snapshot};
+      return state.query === ${JSON.stringify(testCase.query)}
+        && state.empty === ${testCase.empty}
+        && ${expectation};
+    })()`, `Music Hub search ${JSON.stringify(testCase.query)} at ${width}px`, 12000);
+    const state = await execute(sessionId, `return ${snapshot};`);
+    if (state.query !== testCase.query || state.empty !== testCase.empty ||
+        (testCase.zero && state.visible.length !== 0) ||
+        (testCase.all && (state.total === 0 || state.visible.length !== state.total)) ||
+        (testCase.name && !state.visible.includes(testCase.name))) {
+      throw new Error(`Music Hub search mismatch at ${width}px: ${JSON.stringify({ testCase, state })}`);
+    }
+  }
+}
+
+
+async function assertGamesArchiveYearSearch(sessionId, width) {
+  // Exercise the deployed archive UI; expected counts use the actual catalogue.
+  const catalogue = JSON.parse(fs.readFileSync(path.join(ROOT, "games/games-search.json"), "utf8"));
+  const countYear = (year) => catalogue.filter((game) => Number(game.year) === year).length;
+  if (catalogue.length < 600 || !countYear(1986) || !countYear(1987)) {
+    throw new Error("Games Archive search fixture is incomplete.");
+  }
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/games/index.html?ccg-year-search-audit=${Date.now()}`
+  });
+  // The archive intentionally defers catalogue hydration until genuine user intent.
+  // A real pointer click on search must start it before we assert results.
+  await clickElement(sessionId, "#gamesSearchInput");
+  await waitUntil(sessionId, `(function () {
+    const input = document.getElementById('gamesSearchInput');
+    const total = document.getElementById('gamesTotalCount');
+    const result = document.getElementById('gamesResultsCount');
+    return window.CCG_GAMES_LIBRARY_READY === true
+      && input?.dataset.ccgBound === 'true'
+      && total?.textContent.trim() === result?.textContent.trim()
+      && Number(total?.textContent.replace(/,/g, '')) > 600;
+  })()`, `Games Archive initialisation at ${width}px`, 25000);
+
+  await execute(sessionId, `
+    document.querySelector('[data-system-filter="all"]').click();
+    const year = document.getElementById('gamesYearSelect');
+    year.value = 'all';
+    year.dispatchEvent(new Event('change', { bubbles: true }));
+    return true;
+  `);
+
+  const cases = [
+    { query: "1986", expected: countYear(1986) },
+    { query: "1987", expected: countYear(1987) },
+    { query: "1942", expected: 1 },
+    { query: "1986 1942", expected: 1 },
+    { query: "1987 1942", expected: 0 },
+    { query: "", expected: catalogue.length }
+  ];
+  for (const testCase of cases) {
+    await execute(sessionId, `
+      const input = document.getElementById('gamesSearchInput');
+      input.value = ${JSON.stringify(testCase.query)};
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    `);
+    await waitUntil(sessionId, `(function () {
+      const input = document.getElementById('gamesSearchInput');
+      const results = document.getElementById('gamesResultsCount');
+      const empty = document.getElementById('gamesEmptyState');
+      return input?.value === ${JSON.stringify(testCase.query)}
+        && Number(results?.textContent.replace(/,/g, '')) === ${testCase.expected}
+        && empty?.hidden === ${testCase.expected !== 0};
+    })()`, `year query ${JSON.stringify(testCase.query)} at ${width}px`, 15000);
+    const actual = await execute(sessionId, `
+      return {
+        query: document.getElementById('gamesSearchInput').value,
+        results: Number(document.getElementById('gamesResultsCount').textContent.replace(/,/g, '')),
+        total: Number(document.getElementById('gamesTotalCount').textContent.replace(/,/g, '')),
+        emptyHidden: document.getElementById('gamesEmptyState').hidden,
+        system: document.querySelector('[data-system-filter="all"]').getAttribute('aria-pressed'),
+        year: document.getElementById('gamesYearSelect').value,
+        focus: document.getElementById('gamesFocusPanel').textContent.trim()
+      };
+    `);
+    if (actual.query !== testCase.query || actual.results !== testCase.expected ||
+        actual.total !== catalogue.length || actual.emptyHidden !== (testCase.expected !== 0) ||
+        actual.system !== "true" || actual.year !== "all" ||
+        (testCase.query && !actual.focus.includes(testCase.query.toUpperCase()))) {
+      throw new Error(`Games Archive search mismatch at ${width}px: ${JSON.stringify({ testCase, actual })}`);
+    }
+  }
+}
+
+async function assertRetroSpecialsBrowser(sessionId, width) {
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/games/collections/retro-specials.html?ccg-retro-thumbnail-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, `(function () {
+    const grid = document.getElementById('genreGamesGrid');
+    const search = document.getElementById('ccgRetroSpecialsSearch');
+    const latest = document.getElementById('ccgRetroSpecialsLatestGrid');
+    return grid?.dataset.collectionState === 'ready'
+      && grid.querySelectorAll('.ccg-game-card').length > 0
+      && latest?.querySelectorAll('.ccg-game-card').length > 0
+      && search && document.getElementById('ccgRetroSpecialsStatus');
+  })()`, `Retro Specials dynamic cards at ${width}px`, 20000);
+
+  const baseline = await execute(sessionId, `return (function () {
+    const grid = document.getElementById('genreGamesGrid');
+    const latest = document.getElementById('ccgRetroSpecialsLatestGrid');
+    const images = Array.from(document.querySelectorAll(
+      '#genreGamesGrid .ccg-game-card img, #ccgRetroSpecialsLatestGrid .ccg-game-card img'
+    ));
+    const input = document.getElementById('ccgRetroSpecialsSearch');
+    const rect = input.getBoundingClientRect();
+    return {
+      viewport: innerWidth,
+      gridCount: grid.querySelectorAll('.ccg-game-card').length,
+      latestCount: latest.querySelectorAll('.ccg-game-card').length,
+      imageCount: images.length,
+      inlineHandlers: images.filter((img) => img.hasAttribute('onerror')).length,
+      badDimensions: images.filter((img) => img.getAttribute('width') !== '480'
+        || img.getAttribute('height') !== '270').length,
+      searchVisible: rect.width > 1 && rect.height > 1
+        && getComputedStyle(input).visibility !== 'hidden'
+    };
+  })();`);
+  if (baseline.gridCount < 1 || baseline.latestCount < 1 || baseline.imageCount < 2
+      || baseline.inlineHandlers !== 0 || baseline.badDimensions !== 0 || !baseline.searchVisible) {
+    throw new Error(`Retro Specials dynamic thumbnail contract failed at ${width}px: ${JSON.stringify(baseline)}`);
+  }
+
+  // Exercise the real capture-phase error handler without relying on whether
+  // third-party YouTube thumbnails are reachable from the CI runner.
+  const fallback = await execute(sessionId, `return (function () {
+    const original = document.querySelector('#genreGamesGrid .ccg-game-card img');
+    const probe = original.cloneNode(false);
+    const expected = 'https://img.youtube.com/vi/ccg-browser-probe/mqdefault.jpg';
+    probe.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    probe.setAttribute('data-ccg-retro-fallback', expected);
+    original.parentElement.appendChild(probe);
+    probe.dispatchEvent(new Event('error'));
+    const first = { src: probe.src, pending: probe.hasAttribute('data-ccg-retro-fallback') };
+    probe.dispatchEvent(new Event('error'));
+    const second = { src: probe.src, pending: probe.hasAttribute('data-ccg-retro-fallback') };
+    probe.remove();
+    return { expected, first, second };
+  })();`);
+  if (fallback.first.src !== fallback.expected || fallback.first.pending
+      || fallback.second.src !== fallback.expected || fallback.second.pending) {
+    throw new Error(`Retro Specials one-shot thumbnail fallback failed at ${width}px: ${JSON.stringify(fallback)}`);
+  }
+
+  for (const testCase of [
+    { query: 'Zzap!64', found: true },
+    { query: 'ccg-retro-unmatched-query-2026', found: false },
+    { query: '', found: true, reset: true }
+  ]) {
+    await execute(sessionId, `
+      const input = document.getElementById('ccgRetroSpecialsSearch');
+      input.value = ${JSON.stringify(testCase.query)};
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    `);
+    await waitUntil(sessionId, `(function () {
+      const grid = document.getElementById('genreGamesGrid');
+      const status = document.getElementById('ccgRetroSpecialsStatus');
+      const latest = document.getElementById('ccgRetroSpecialsLatest');
+      const count = grid.querySelectorAll('.ccg-game-card').length;
+      const empty = Boolean(grid.querySelector('.ccg-retro-empty'));
+      return document.getElementById('ccgRetroSpecialsSearch').value === ${JSON.stringify(testCase.query)}
+        && ${testCase.found} === (count > 0)
+        && ${testCase.found} !== empty
+        && ${testCase.reset ? "!latest.hidden && latest.querySelectorAll('.ccg-game-card').length > 0" : "latest.hidden"}
+        && status.textContent.includes(${JSON.stringify(testCase.reset ? "more specials in the archive" : "found")});
+    })()`, `Retro Specials search ${JSON.stringify(testCase.query)} at ${width}px`, 12000);
+  }
 }
 
 async function openMoreWithRealClick(sessionId, width) {
@@ -406,6 +738,29 @@ async function main() {
     });
     sessionId = session.sessionId;
 
+    // A fresh and a repeat visit in one browser profile must both stay free
+    // of the retired Ask CCG launcher on desktop and mobile-sized viewports.
+    for (const width of [1440, 390]) {
+      await assertRetiredAskCCGAbsent(sessionId, width, "first visit");
+      await assertRetiredAskCCGAbsent(sessionId, width, "return visit");
+    }
+
+    // Test actual composer-name search and no-results feedback on both viewport sizes.
+    for (const width of [1440, 390]) {
+      await assertMusicHubSearch(sessionId, width);
+    }
+
+    // Confirm real Games Archive year queries on desktop and mobile.
+    for (const width of [1440, 390]) await assertGamesArchiveYearSearch(sessionId, width);
+
+    // Verify the released Retro Specials dynamic thumbnails, one-shot fallback and search.
+    for (const width of [1440, 390]) await assertRetroSpecialsBrowser(sessionId, width);
+
+    // Confirm the owner-requested single-game Explore menu scrolls away normally.
+    for (const slug of ["fire-ant", "alien-breed"]) {
+      for (const width of [1440, 390]) await assertSingleGameExploreNormalFlow(sessionId, width, slug);
+    }
+
     // Desktop regression: check the actual Fourthwall link with real pointer hit-testing.
     for (const width of [1440, 1920]) {
       await openHome(sessionId, width);
@@ -506,6 +861,11 @@ async function main() {
     console.log("- Emulation, Music and Publishers are reachable from More on the Install destination at both widths");
     console.log("- Destination pages retain the canonical shared header");
     console.log("- Legacy text-social fallback is not visible");
+    console.log("- Retired Ask CCG launcher, scripts and resource requests are absent on first and return desktop/mobile visits");
+    console.log("- Music Hub search ignores track-count badges, resolves historical aliases, announces no results and restores all composers at desktop/mobile widths");
+    console.log("- Games Archive year, title and combined queries, wrong-year rejection and reset pass at desktop/mobile widths");
+    console.log("- Retro Specials dynamic cards, safe thumbnail dimensions, one-shot image fallback and search pass at desktop/mobile widths");
+    console.log("- C64 Fire Ant and Amiga Alien Breed Explore menus stay above Video Archive and scroll away at desktop/mobile widths");
   } finally {
     if (sessionId) {
       try { await webdriver("DELETE", `/session/${sessionId}`); } catch (error) {}

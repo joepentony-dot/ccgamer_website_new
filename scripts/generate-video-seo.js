@@ -146,6 +146,12 @@ function youtubeThumbnail(videoId, metadata) {
   return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 }
 
+function youtubeFacadePoster(videoId) {
+  // The runtime uses this same 480px poster. Keep the high-resolution URL in
+  // VideoObject and sitemap metadata, not in the smaller visible facade.
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+}
+
 function setAttribute(tag, name, value) {
   const attrRe = new RegExp(`\\s${name}\\s*=\\s*(["']).*?\\1`, "i");
   const escaped = escapeHtml(value);
@@ -205,7 +211,7 @@ function enhanceVideoSection(html, game, videoId, metadata) {
     const hasStage = /class=(["'])[^"']*\bgame-video__stage\b[^"']*\1/i.test(body);
 
     if (!hasFacade) {
-      const posterUrl = youtubeThumbnail(videoId, metadata);
+      const posterUrl = youtubeFacadePoster(videoId);
       const facadeMarkup = [
         `<button id="game-video-facade" class="game-video__facade" type="button" aria-label="Play ${escapeHtml(presentation.title)} video">`,
         `    <img id="game-video-poster" class="game-video__poster" src="${escapeHtml(posterUrl)}" alt="" width="480" height="360" loading="lazy" decoding="async">`,
@@ -245,7 +251,7 @@ function enhanceVideoSection(html, game, videoId, metadata) {
   const posterMatch = body.match(posterRe);
   if (posterMatch) {
     let poster = posterMatch[0];
-    poster = setAttribute(poster, "src", youtubeThumbnail(videoId, metadata));
+    poster = setAttribute(poster, "src", youtubeFacadePoster(videoId));
     poster = setAttribute(poster, "alt", "");
     poster = setAttribute(poster, "loading", "lazy");
     poster = setAttribute(poster, "decoding", "async");

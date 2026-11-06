@@ -1,10 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   REQUIRED_VALIDATION_WORKFLOWS, executedRunPassed,
   codeReviewPassed, currentPullIsSafe
 } from "../scripts/qualify-generated-publishing.mjs";
+import { findEquivalentGeneratedPr, buildStaleGeneratedMergeCommit, remoteBranchMatches, SEO_GENERATED_BRANCH, SEO_GENERATED_TITLE } from "../scripts/deduplicate-generated-publishing.mjs";
 
 const SHA = "a".repeat(40);
 const goodRun = {id:44, head_sha:SHA, event:"workflow_dispatch", status:"completed", conclusion:"success"};
@@ -104,4 +108,177 @@ test("authoritative publishing executes the guard before dispatching deployment"
   const deployIndex = workflow.indexOf("gh workflow run deploy-github-pages-omega-stable.yml");
   assert.ok(guardIndex > 0 && deployIndex > guardIndex);
   assert.doesNotMatch(workflow.slice(guardIndex), /gh pr merge/);
+});
+
+test("generated publisher reuses only an exactly equivalent same-repository open PR", () => {
+  const patch = "diff --git a/games/test/index.html b/games/test/index.html\\n-index\\n+poster\\n";
+  const make = (number, extras = {}) => ({
+    number, title:"Publish generated game archive output",
+    headRefName:"automation/games-publishing-" + number + "-1",
+    headRepositoryOwner:{login:"joepentony-dot"}, baseRefName:"main", ...extras
+  });
+  const newer = make(3002);
+  const older = make(3001);
+  const matching = findEquivalentGeneratedPr([older, newer], patch,
+    pr => pr.number === 3002 ? patch : patch + "different sitemap", "joepentony-dot");
+  assert.equal(matching?.number, 3002);
+  assert.equal(findEquivalentGeneratedPr([older], patch, () => patch, "joepentony-dot")?.number, 3001);
+  assert.equal(findEquivalentGeneratedPr([newer], patch, () => patch + "lastmod", "joepentony-dot"), null);
+  assert.equal(findEquivalentGeneratedPr([newer], "", () => patch, "joepentony-dot"), null);
+  assert.equal(findEquivalentGeneratedPr([newer], patch, () => patch, ""), null);
+  assert.equal(findEquivalentGeneratedPr([
+    make(3003, {headRepositoryOwner:{login:"untrusted-fork"}}),
+    make(3004, {headRefName:"other/branch"}),
+    make(3005, {baseRefName:"development"}),
+    make(3006, {title:"Different change"})
+  ], patch, () => patch, "joepentony-dot"), null);
+});
+
+test("authoritative publisher checks staged patch equivalence before creating a new branch", () => {
+  const workflow = fs.readFileSync(".github/workflows/games-publishing.yml", "utf8");
+  const stage = workflow.indexOf("git diff --cached --quiet");
+  const dedup = workflow.indexOf("node scripts/deduplicate-generated-publishing.mjs");
+  const branch = workflow.indexOf('OUTPUT_BRANCH="automation/games-publishing-');
+  assert.ok(stage > 0 && dedup > stage && branch > dedup);
+  assert.ok(workflow.includes('duplicate_pr=$DUPLICATE_PR'));
+  assert.ok(workflow.includes('GH_TOKEN: ${{ github.token }}'));
+  assert.ok(workflow.includes('node scripts/qualify-generated-publishing.mjs'));
+  const dedupSource = fs.readFileSync("scripts/deduplicate-generated-publishing.mjs", "utf8");
+  assert.ok(dedupSource.includes("if (base === main) return patch;"));
+  assert.ok(dedupSource.includes("if (patch === stagedPatch)"));
+  assert.ok(dedupSource.includes("buildStaleGeneratedMergeCommit(main, sha, stagedPatch)"));
+  assert.ok(dedupSource.includes('git(["push", "origin", mergeSha + ":refs/heads/" + pr.headRefName])'));
+  assert.doesNotMatch(dedupSource, /git\(\["push", "--force"/);
+  assert.ok(dedupSource.includes('live.head?.sha !== sha'));
+  assert.ok(dedupSource.includes('live.head?.repo?.full_name !== repo'));
+  assert.ok(dedupSource.includes('const stagedPatch = run("git", ["diff"'));
+  assert.ok(dedupSource.includes('const patch = run("git", ["diff"'));
+  assert.ok(!dedupSource.includes('trimEnd()'));
+});
+
+test("SEO generated output reuses only byte-identical fresh same-repository draft PRs", () => {
+  const patch = "diff --git a/sitemap-pages.xml b/sitemap-pages.xml\\n-old\\n+new\\n";
+  const make = (number, extras = {}) => ({
+    number, title: SEO_GENERATED_TITLE,
+    headRefName: "automation/seo-" + number + "-1",
+    headRepositoryOwner: {login:"joepentony-dot"},
+    baseRefName:"main", ...extras
+  });
+  const options = {branchPattern:SEO_GENERATED_BRANCH, title:SEO_GENERATED_TITLE};
+  assert.equal(findEquivalentGeneratedPr([make(4001)], patch, () => patch,
+    "joepentony-dot", options)?.number, 4001);
+  assert.equal(findEquivalentGeneratedPr([make(4001)], patch, () => patch + "different lastmod",
+    "joepentony-dot", options), null);
+  assert.equal(findEquivalentGeneratedPr([
+    make(4002, {headRefName:"automation/games-publishing-4002-1"}),
+    make(4003, {title:"Publish generated game archive output"}),
+    make(4004, {headRepositoryOwner:{login:"another-owner"}})
+  ], patch, () => patch, "joepentony-dot", options), null);
+  assert.equal(findEquivalentGeneratedPr([make(4001)], patch, () => patch,
+    "joepentony-dot"), null);
+});
+
+test("SEO automation never merges generated output before independent exact-head qualification", () => {
+  const workflow = fs.readFileSync(".github/workflows/seo.yml", "utf8");
+  const audit = fs.readFileSync("scripts/audit-publishing-automation.js", "utf8");
+  const dedup = workflow.indexOf("node scripts/deduplicate-generated-publishing.mjs --seo");
+  const branch = workflow.indexOf('OUTPUT_BRANCH="automation/seo-');
+  const create = workflow.indexOf("gh pr create");
+  assert.ok(dedup > 0 && branch > dedup && create > branch);
+  assert.match(workflow, /--draft/);
+  assert.match(workflow, /Created DRAFT generated SEO PR/);
+  assert.doesNotMatch(workflow, /gh pr merge/);
+  assert.match(audit, /forbidText\(seoWorkflow, "gh pr merge"/);
+  assert.match(audit, /node scripts\/deduplicate-generated-publishing\.mjs --seo/);
+});
+
+
+test("stale identical generated PR can be reconciled without rewriting history or changing output", () => {
+  const dir = fs.mkdtempSync(join(tmpdir(), "ccg-generated-dedup-"));
+  const gitRaw = args => execFileSync("git", ["-C", dir, ...args], {encoding:"utf8"});
+  const git = args => gitRaw(args).trim();
+  try {
+    git(["init", "-b", "main"]);
+    git(["config", "user.name", "CCG Fixture"]);
+    git(["config", "user.email", "fixture@example.invalid"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "old\n");
+    git(["add", "."]);
+    git(["commit", "-m", "baseline"]);
+    const oldMain = git(["rev-parse", "HEAD"]);
+
+    git(["checkout", "-b", "automation/seo-123-1"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "new\n");
+    git(["add", "."]);
+    git(["commit", "-m", "generated sitemap"]);
+    const oldHead = git(["rev-parse", "HEAD"]);
+
+    git(["checkout", "main"]);
+    fs.writeFileSync(join(dir, "unrelated.txt"), "newer main content\n");
+    git(["add", "."]);
+    git(["commit", "-m", "unrelated main update"]);
+    const main = git(["rev-parse", "HEAD"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "new\n");
+    git(["add", "sitemap-pages.xml"]);
+    const flags = ["--no-color", "--no-ext-diff", "--binary", "--full-index"];
+    const stagedPatch = gitRaw(["diff", "--cached", ...flags]);
+    assert.equal(gitRaw(["diff", ...flags, oldMain, oldHead]), stagedPatch);
+
+    const mergeSha = buildStaleGeneratedMergeCommit(main, oldHead, stagedPatch, gitRaw);
+    assert.equal(gitRaw(["diff", ...flags, main, mergeSha]), stagedPatch);
+    assert.equal(git(["merge-base", main, mergeSha]), main);
+    assert.equal(git(["rev-parse", "automation/seo-123-1"]), oldHead,
+      "helper must not move the PR ref itself");
+    const parents = git(["rev-list", "--parents", "-n", "1", mergeSha]).split(" ");
+    assert.deepEqual(parents, [mergeSha, oldHead, main]);
+    assert.throws(() => buildStaleGeneratedMergeCommit(main, oldHead,
+      stagedPatch + "different sitemap", gitRaw), /differs from exact staged/);
+    assert.equal(git(["rev-parse", "main"]), main);
+  } finally {
+    fs.rmSync(dir, {recursive:true, force:true});
+  }
+});
+
+
+test("remote branch confirmation uses actual Git ref, not a lagging PR REST snapshot", () => {
+  const dir = fs.mkdtempSync(join(tmpdir(), "ccg-dedup-remote-"));
+  const bare = fs.mkdtempSync(join(tmpdir(), "ccg-dedup-bare-"));
+  const gitRaw = args => execFileSync("git", ["-C", dir, ...args], {encoding:"utf8"});
+  const git = args => gitRaw(args).trim();
+  try {
+    execFileSync("git", ["init", "--bare", bare], {encoding:"utf8"});
+    git(["init", "-b", "main"]);
+    git(["config", "user.name", "CCG Fixture"]);
+    git(["config", "user.email", "fixture@example.invalid"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "old\n");
+    git(["add", "."]);
+    git(["commit", "-m", "baseline"]);
+    const base = git(["rev-parse", "HEAD"]);
+    git(["checkout", "-b", "automation/seo-456-1"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "new\n");
+    git(["add", "."]);
+    git(["commit", "-m", "generated"]);
+    const oldHead = git(["rev-parse", "HEAD"]);
+    git(["checkout", "main"]);
+    fs.writeFileSync(join(dir, "other.txt"), "main advanced\n");
+    git(["add", "."]);
+    git(["commit", "-m", "new main"]);
+    const main = git(["rev-parse", "HEAD"]);
+    fs.writeFileSync(join(dir, "sitemap-pages.xml"), "new\n");
+    git(["add", "sitemap-pages.xml"]);
+    const staged = gitRaw(["diff", "--cached", "--no-color", "--no-ext-diff", "--binary", "--full-index"]);
+    assert.notEqual(base, main);
+    const reconciled = buildStaleGeneratedMergeCommit(main, oldHead, staged, gitRaw);
+    git(["remote", "add", "origin", bare]);
+    git(["push", "origin", oldHead + ":refs/heads/automation/seo-456-1"]);
+    git(["push", "origin", reconciled + ":refs/heads/automation/seo-456-1"]);
+    const actual = gitRaw(["ls-remote", "--heads", "origin", "automation/seo-456-1"]);
+    assert.equal(remoteBranchMatches(actual, "automation/seo-456-1", reconciled), true);
+    assert.equal(remoteBranchMatches(actual, "automation/seo-456-1", oldHead), false);
+    assert.equal(remoteBranchMatches(actual, "automation/seo-999-1", reconciled), false);
+    assert.equal(remoteBranchMatches("", "automation/seo-456-1", reconciled), false);
+    assert.equal(remoteBranchMatches(actual + actual, "automation/seo-456-1", reconciled), false);
+  } finally {
+    fs.rmSync(dir, {recursive:true, force:true});
+    fs.rmSync(bare, {recursive:true, force:true});
+  }
 });

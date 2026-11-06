@@ -92,7 +92,10 @@ requireText(seoWorkflow, "authoritative_game_publish", "SEO Automation is missin
 requireText(seoWorkflow, "PUBLISH_PATHS=$(awk", "SEO Automation no longer derives ownership from Reliable Games Publishing push paths.");
 requireText(seoWorkflow, ".github/workflows/games-publishing.yml", "SEO Automation no longer reads the authoritative game-publishing workflow.");
 requireText(seoWorkflow, '[[ "$file" == $pattern ]]', "SEO Automation no longer matches changed files against authoritative publishing path patterns.");
-requireText(seoWorkflow, "gh pr merge", "SEO Automation does not merge generated SEO/video output.");
+forbidText(seoWorkflow, "gh pr merge", "SEO Automation can still bypass exact-head checks by immediately merging generated output.");
+requireText(seoWorkflow, "node scripts/deduplicate-generated-publishing.mjs --seo", "SEO Automation does not deduplicate byte-identical pending generated PRs.");
+requireText(seoWorkflow, "--draft", "SEO Automation does not stage generated output as a non-merging draft PR.");
+requireText(seoWorkflow, "Created DRAFT generated SEO PR", "SEO Automation no longer records its draft-only release hold.");
 
 requireManualValidationOnly(
   ".github/workflows/build-games-on-games-json-change.yml",

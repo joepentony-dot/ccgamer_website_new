@@ -6,23 +6,13 @@ on:
       - main
     paths:
       - "js/ccg-nav.js"
-      - "scripts/generate-publisher-pages.js"
       - "scripts/mark-rerelease-publishers.js"
       - "scripts/link-publisher-strength-genres.js"
-      - "scripts/normalize-public-header-shell.js"
-      - "scripts/materialize-publisher-histories.js"
       - "scripts/materialize-publisher-histories-tolerant.js"
-      - "scripts/audit-publisher-seo-evidence.js"
       - "scripts/audit-publisher-seo-evidence-tolerant.js"
-      - "scripts/apply-publisher-evidence-overrides.js"
       - "scripts/stabilize-publisher-static-pages.js"
-      - "scripts/ensure-publisher-history-runtime.js"
-      - "scripts/publisher-utils.js"
       - "scripts/fetch-publisher-logos.js"
-      - "scripts/apply-publisher-logos.js"
-      - "scripts/validate-publisher-logo-output.js"
       - "scripts/remove-invalid-publisher-labels.js"
-      - "data/publisher-histories*.json"
       - "tests/publisher-blue-ribbon-evidence.test.mjs"
       - "tests/publisher-299-classics-evidence.test.mjs"
       - "data/publisher-evidence-overrides.json"
@@ -30,8 +20,6 @@ on:
       - "data/publisher-playlists.json"
       - "resources/css/publisher-history.css"
       - "resources/css/publisher-logos.css"
-      - "resources/images/publishers/**"
-      - ".github/workflows/publisher-archives.yml"
   pull_request:
     branches:
       - main
@@ -63,6 +51,7 @@ on:
       - "resources/css/publisher-logos.css"
       - "resources/images/publishers/**"
       - ".github/workflows/publisher-archives.yml"
+      - "tests/publisher-pipeline-trigger-ownership.test.mjs"
   workflow_dispatch:
 
 permissions:
@@ -108,6 +97,7 @@ jobs:
           node --check scripts/fetch-publisher-logos.js
           node --check scripts/apply-publisher-logos.js
           node --check scripts/validate-publisher-logo-output.js
+          node --test tests/publisher-pipeline-trigger-ownership.test.mjs
 
       - name: Fetch vetted publisher logos
         env:
@@ -176,7 +166,7 @@ jobs:
         run: node scripts/validate-sitemaps.js
 
       - name: Commit generated publisher and sitemap outputs
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -192,21 +182,13 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Refresh generated publisher archives"
 
-          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          if git push origin "HEAD:${TARGET_BRANCH}"; then
-            exit 0
-          fi
-
-          if [ "$TARGET_BRANCH" != "main" ]; then
-            echo "Could not push generated output to ${TARGET_BRANCH}."
-            exit 1
-          fi
-
-          GENERATED_BRANCH="automation/publisher-archives-${GITHUB_RUN_ID}"
+          # Generated output must never be pushed directly to protected main.
+          GENERATED_BRANCH="automation/publisher-archives-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git push origin "HEAD:refs/heads/${GENERATED_BRANCH}"
 
           gh pr create \
+            --draft \
             --base main \
             --head "${GENERATED_BRANCH}" \
             --title "Refresh generated publisher archives" \
-            --body "Automatically generated publisher archive output after publisher logo assets were added directly to main."
+            --body "Generated publisher archives from main. Draft only: independent exact-head checks, review and guarded owner-authorised merge remain required."

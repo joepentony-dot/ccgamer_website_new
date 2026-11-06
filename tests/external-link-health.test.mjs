@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
 const script = fs.readFileSync('scripts/audit-external-links.js', 'utf8');
@@ -35,4 +38,138 @@ test('CCG internal URLs are excluded from the external monitor', () => {
   assert.match(script, /cheekycommodoregamer\.co\.uk/);
   assert.match(script, /SITE_HOSTS/);
   assert.match(script, /isInternalUrl/);
+});
+
+const workflow = fs.readFileSync('.github/workflows/external-link-health.yml', 'utf8');
+
+function makeIssueReporter() {
+  const marker = '          script: |\n';
+  const start = workflow.indexOf(marker);
+  assert.ok(start >= 0, 'the existing issue reporting step must remain');
+  const body = workflow.slice(start + marker.length).split('\n')
+    .map((line) => line.startsWith('            ') ? line.slice(12) : line).join('\n');
+  return new Function('require', 'github', 'context', 'core', `return (async () => {\n${body}\n})();`);
+}
+
+function reporterFixture({ broken = 4, existing = [], issueError = null } = {}) {
+  const warnings = [];
+  const summaries = [];
+  const updates = [];
+  const notices = [];
+  const requireMock = () => ({
+    readFileSync(file) {
+      return file.endsWith('.json')
+        ? JSON.stringify({ summary: { confirmedBroken: broken } })
+        : '# Link health report\\n\\nConfirmed broken: ' + broken;
+    },
+  });
+  const github = {
+    paginate: async () => existing,
+    rest: {
+      issues: {
+        listForRepo() {},
+        async create(data) {
+          if (issueError) throw issueError;
+          updates.push({ operation: 'create', data });
+        },
+        async update(data) {
+          if (issueError) throw issueError;
+          updates.push({ operation: 'update', data });
+        },
+      },
+    },
+  };
+  const core = {
+    summary: {
+      addRaw(value) { summaries.push(value); return this; },
+      async write() {},
+    },
+    warning(value) { warnings.push(value); },
+    notice(value) { notices.push(value); },
+  };
+  return {
+    run: () => makeIssueReporter()(requireMock, github, { repo: { owner: 'owner', repo: 'repo' } }, core),
+    warnings, summaries, updates, notices,
+  };
+}
+
+test('disabled GitHub Issues (410) preserves artifact, summary and broken-link warning without failing the audit', async () => {
+  const fixture = reporterFixture({ issueError: Object.assign(new Error('Issues disabled'), { status: 410 }) });
+  await assert.doesNotReject(fixture.run());
+  assert.equal(fixture.summaries.length, 1);
+  assert.match(fixture.summaries[0], /Confirmed broken: 4/);
+  assert.ok(fixture.warnings.some((warning) => /disabled.*410/.test(warning)));
+  assert.ok(fixture.warnings.some((warning) => /4 confirmed broken/.test(warning)));
+  assert.match(workflow, /Upload detailed health artifact/);
+});
+
+test('unexpected GitHub Issues failures remain visible as failures', async () => {
+  const fixture = reporterFixture({ issueError: Object.assign(new Error('Permission denied'), { status: 403 }) });
+  await assert.rejects(fixture.run(), { status: 403 });
+  assert.equal(fixture.summaries.length, 1);
+});
+
+test('enabled GitHub Issues still receives confirmed broken links and healthy closeouts', async () => {
+  const broken = reporterFixture({ existing: [] });
+  await broken.run();
+  assert.equal(broken.updates[0]?.operation, 'create');
+  assert.ok(broken.warnings.some((warning) => /4 confirmed broken/.test(warning)));
+
+  const healthy = reporterFixture({
+    broken: 0,
+    existing: [{ number: 42, state: 'open', title: '[Automated] External link health' }],
+  });
+  await healthy.run();
+  assert.equal(healthy.updates[0]?.operation, 'update');
+  assert.equal(healthy.updates[0]?.data?.state, 'closed');
+  assert.equal(healthy.updates[0]?.data?.issue_number, 42);
+});
+
+test('External Link Health upload enumerates both hidden-directory reports', () => {
+  const uploadStep = workflow.split('      - name: Upload detailed health artifact\n')[1]
+    ?.split('      - name: Update confirmed-broken-link issue\n')[0] || '';
+  assert.match(uploadStep, /uses: actions\/upload-artifact@v4/);
+  assert.match(uploadStep, /path: \|\n\s+\.health\/external-link-health\.json\n\s+\.health\/external-link-health\.md/);
+  assert.match(uploadStep, /include-hidden-files: true/);
+  assert.match(uploadStep, /if-no-files-found: error/);
+  assert.doesNotMatch(uploadStep, /^\s+path: \.health\/\s*$/m);
+  assert.match(workflow, /--json \.health\/external-link-health\.json/);
+  assert.match(workflow, /--markdown \.health\/external-link-health\.md/);
+});
+
+test('audit refuses partial, empty or malformed report artifacts before upload', () => {
+  const verifyStep = workflow.split('      - name: Verify both external-link reports\n')[1]
+    ?.split('      - name: Upload detailed health artifact\n')[0] || '';
+  const block = verifyStep.split('        run: |\n')[1] || '';
+  const commands = block.split('\n').filter((line) => line.startsWith('          '))
+    .map((line) => line.slice(10)).join('\n');
+  assert.match(commands, /test -s \.health\/external-link-health\.json/);
+  assert.match(commands, /test -s \.health\/external-link-health\.md/);
+  assert.match(commands, /JSON\.parse/);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ccg-external-link-artifact-'));
+  const folder = path.join(root, '.health');
+  const json = path.join(folder, 'external-link-health.json');
+  const markdown = path.join(folder, 'external-link-health.md');
+  const validJson = JSON.stringify({ summary: { confirmedBroken: 0 } });
+  const run = () => spawnSync('bash', ['-e', '-c', commands], { cwd: root, encoding: 'utf8' });
+  try {
+    fs.mkdirSync(folder);
+    fs.writeFileSync(json, validJson);
+    fs.writeFileSync(markdown, '# External link health\n');
+    assert.equal(run().status, 0, 'both valid reports pass');
+    fs.unlinkSync(markdown);
+    assert.notEqual(run().status, 0, 'missing Markdown must fail');
+    fs.writeFileSync(markdown, '# External link health\n');
+    fs.unlinkSync(json);
+    assert.notEqual(run().status, 0, 'missing JSON must fail');
+    fs.writeFileSync(json, '');
+    assert.notEqual(run().status, 0, 'empty JSON must fail');
+    fs.writeFileSync(json, '{malformed');
+    assert.notEqual(run().status, 0, 'malformed JSON must fail');
+    fs.writeFileSync(json, validJson);
+    fs.writeFileSync(markdown, '');
+    assert.notEqual(run().status, 0, 'empty Markdown must fail');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });

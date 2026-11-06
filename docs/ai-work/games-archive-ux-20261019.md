@@ -1,3 +1,14 @@
+## 1 November 2026 — Games Archive year-search browser acceptance (BRANCH ONLY)
+
+- Main `5ecbd95256c788d1eae43f4a5f7ae48f124193de` includes merged #2991 and a successful Pages deployment, but the existing live navigation browser audit did not exercise year search. This candidate tests the real Games Archive input, result counts, empty state, 1986/1987, title/year combinations and cleared search at 1440px/390px, with expected counts from the actual catalogue. It compares deployed `js/games-library.js` against the exact release.
+- Only the existing browser audit and continuation records change; no runtime, cache, catalogue, Omega intro, CSS, ratings, emulator or Dungeon changes. **DRAFT / NOT QUALIFIED / NOT MERGED / NOT LIVE** until exact-head native CI, guarded merge, Pages and production-domain browser acceptance. Owner-controlled holds remain separate.
+
+## 1 November 2026 — Games Archive release-year free-text search (BRANCH ONLY)
+
+- Fresh protected main at diagnosis `6078b4a82231ac7bec829478b08c66ecbd9da71a`. Live Games Archive advertises searching by release year, but `getGameSearchData()` omitted `game.year`; source-executed `1986` returned 0 matches despite 81 actual 1986 games in the 666-record search dataset.
+- Bounded fix adds year to existing normalised search fields; source-executed preflight returns exactly 81 matches for 1986 and 90 for 1987, retains Ace of Aces title and combined `1986 ace` search, and rejects the wrong year. Existing archive-directory test gains real-catalogue regression; cache v216→v217. Preserve dropdown year filter, fuzzy search, Omega design, games.json, links, ratings, emulator, backend and intro.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head CI, browser/performance safeguards, fresh-main reconciliation, guarded expected-head squash merge, Pages deployment and desktop/mobile live search acceptance. Generated publishing, Amazon, Dungeon Windows and genre CLS holds are independent.
+
 # Omega Games Archive decluttering — 19 October 2026
 
 ## Owner intent

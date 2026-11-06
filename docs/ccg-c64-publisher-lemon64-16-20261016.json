@@ -1,0 +1,248 @@
+{
+  "version": 1,
+  "checkedOn": "2026-10-16",
+  "baseCommit": "1d3a9732e0f96e39d9e5dc69f9bb947b1bb16ca1",
+  "releaseStatus": "16 individually sourced publisher metadata keys staged in current PR #2828 against audited playable cohort; not merged or deployed; 2 title/edition ambiguities quarantined.",
+  "screened": 18,
+  "accepted": 16,
+  "quarantined": 2,
+  "scope": "Title-level historical publisher and year only; hosted media edition not certified; no SHA equality with other media asserted",
+  "rows": [
+    {
+      "key": "a pig quest",
+      "publisher": "Protovision",
+      "year": 2023,
+      "sourceUrl": "https://www.lemon64.com/game/a-pig-quest",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "A Pig Quest",
+        "id": "a-pig-quest",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "07c6114a455c61defa8a614175e091ba398e99a9916850cce6b488aa65f1d59c"
+      }
+    },
+    {
+      "key": "actionauts",
+      "publisher": "Loadstar",
+      "year": 1986,
+      "sourceUrl": "https://www.lemon64.com/game/actionauts",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Actionauts",
+        "id": "owner-crt-more-actionauts",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "33912fa2f802b31fe3980acd91ccb9794a1bf78bf839578ccdabf05ae1edc708"
+      }
+    },
+    {
+      "key": "arac",
+      "publisher": "Addictive Games",
+      "year": 1986,
+      "sourceUrl": "https://www.lemon64.com/game/arac",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Arac",
+        "id": "owner-crt-more-arac",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "7d9a66425a815edf596d2e3f02075c7fe1ab698cef3cc7949dd1114e1d7dc8d5"
+      }
+    },
+    {
+      "key": "arnie 2",
+      "publisher": "Zeppelin Games",
+      "year": 1993,
+      "sourceUrl": "https://www.lemon64.com/game/arnie-2",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Arnie 2",
+        "id": "owner-crt-more-arnie-2",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "cc70408237e628dfc081601011ebe72b782263efa39c7eee6e2b9ec77169d52c"
+      }
+    },
+    {
+      "key": "auto mania",
+      "publisher": "Mikro-Gen",
+      "year": 1984,
+      "sourceUrl": "https://www.lemon64.com/game/auto-mania",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Auto Mania",
+        "id": "owner-crt-more-auto-mania",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "f1726e11855afbb1aa61d8c9baaac5f7158c3917286cd85aa714f580d451787b"
+      }
+    },
+    {
+      "key": "battle chopper",
+      "publisher": "Methodic Solutions",
+      "year": 1987,
+      "sourceUrl": "https://www.lemon64.com/game/battle-chopper",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Battle Chopper",
+        "id": "owner-crt-more-battle-chopper",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "d0901fc171ee05c3ff3358582462f97c83890190b4221a3ef93975f1a7fde1c1"
+      }
+    },
+    {
+      "key": "big mac",
+      "publisher": "Mastertronic",
+      "year": 1985,
+      "sourceUrl": "https://www.lemon64.com/game/big-mac",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Big Mac",
+        "id": "owner-crt-more-big-mac",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "8f9ef9c2f06812d0785281d335b216351e068863aff4cc11234c6aa276aa458b"
+      }
+    },
+    {
+      "key": "boulder dash construction kit",
+      "publisher": "First Star Software",
+      "year": 1986,
+      "sourceUrl": "https://www.lemon64.com/game/boulder-dash-construction-kit",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Boulder Dash Construction Kit",
+        "id": "boulder-dash-construction-kit",
+        "format": "d64",
+        "catalogue": "library",
+        "sha256": "4cf1b19d40ae2d5e61f52ef1a93d30cf3b90ed00a20389d1dd061140a1c832a9"
+      }
+    },
+    {
+      "key": "briley witch chronicles",
+      "publisher": "Witchsoft",
+      "year": 2021,
+      "sourceUrl": "https://www.lemon64.com/game/briley-witch-chronicles",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Briley Witch Chronicles",
+        "id": "briley-witch-chronicles",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "71408953c7570ffd428d8fa7c6fd8d2de693f635b4140534c503c0c845b42ffd"
+      }
+    },
+    {
+      "key": "buck rogers countdown to doomsday",
+      "publisher": "Strategic Simulations Inc.",
+      "year": 1990,
+      "sourceUrl": "https://www.lemon64.com/game/buck-rogers-countdown-to-doomsday",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Buck Rogers: Countdown to Doomsday",
+        "id": "buck-rogers-countdown-to-doomsday",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "38f0c16396c50535c0e2c855db068c4fde8f9be092416e983b9dba67dab5a895"
+      }
+    },
+    {
+      "key": "cavelon ii",
+      "publisher": "JetSoft",
+      "year": 1984,
+      "sourceUrl": "https://www.lemon64.com/game/cavelon-2",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Cavelon II",
+        "id": "owner-crt-more-cavelon-ii",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "826ffb8b640a5e36ec17b8aae3f66ecebbd15fd5e7641354a5252ab431d39b20"
+      }
+    },
+    {
+      "key": "champions of krynn",
+      "publisher": "Strategic Simulations Inc.",
+      "year": 1990,
+      "sourceUrl": "https://www.lemon64.com/game/champions-of-krynn",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Champions of Krynn",
+        "id": "champions-of-krynn",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "e9afdb75172f728d1846386ecc78b6f9f206a10813cb7fa28ce1cfbcac6a810f"
+      }
+    },
+    {
+      "key": "cops and robbers",
+      "publisher": "Atlantis Software",
+      "year": 1985,
+      "sourceUrl": "https://www.lemon64.com/game/cops-and-robbers",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Cops & Robbers",
+        "id": "owner-crt-more-cops-and-robbers",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "13db85aa258433eef3d9766f39de703486043c25eb915bef8548ddd3c8a7a512"
+      }
+    },
+    {
+      "key": "cosmic causeway",
+      "publisher": "Gremlin Graphics",
+      "year": 1987,
+      "sourceUrl": "https://www.lemon64.com/game/cosmic-causeway-trailblazer-2",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Cosmic Causeway",
+        "id": "owner-crt-more-cosmic-causeway",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "f6460768c7b3e5b602e5bceb7214764085a1b0d6c2075857da8c379ed16d3448"
+      }
+    },
+    {
+      "key": "count duckula",
+      "publisher": "Alternative Software",
+      "year": 1989,
+      "sourceUrl": "https://www.lemon64.com/game/count-duckula",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Count Duckula",
+        "id": "owner-crt-more-count-duckula",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "56b423a50668d63ce6dfaf2754585d70c8c3275f66e95703ad4968abe40f047a"
+      }
+    },
+    {
+      "key": "creatures 2",
+      "publisher": "Thalamus",
+      "year": 1992,
+      "sourceUrl": "https://www.lemon64.com/game/creatures-2",
+      "originalPublisherNotDeveloperOrReissue": true,
+      "selectedPlayableMedia": {
+        "title": "Creatures 2",
+        "id": "creatures-2",
+        "format": "crt",
+        "catalogue": "library",
+        "sha256": "224c5b1933fa5bd7b54cddd5c53d216959994c6e27180007ede32e277e0f0686"
+      }
+    }
+  ],
+  "quarantine": [
+    {
+      "key": "alien syndrome",
+      "sourceUrl": "https://www.lemon64.com/game/alien-syndrome",
+      "reason": "ACE Europe and Sega US publishers; hosted CRT edition unproven"
+    },
+    {
+      "key": "billiards",
+      "sourceUrl": "https://www.lemon64.com/game/billiards",
+      "reason": "Generic same-title identity not proven to match Commodore/HAL release"
+    }
+  ]
+}

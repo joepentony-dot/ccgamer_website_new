@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-10-30T06:50:13.836Z",
+  "updatedAt": "2026-10-30T21:52:10.126Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -6027,7 +6027,8 @@
     "XxEhpjSoYc8": {
       "title": "Think You Know the ZX Spectrum? Name These 50 Games!",
       "description": "🕹️ ZX SPECTRUM QUIZ – CAN YOU NAME ALL 50 GAMES?\nThink you know your ZX Spectrum games? Put those 8-bit memories to the test! Can you identify 50 classic Speccy games from just 10 seconds of gameplay?\n\nAcross five rounds, we've got a mixture of familiar favourites, forgotten gems and some particularly tricky titles. From the golden age of British home computing to games you might never have encountered, this is a proper test of your ZX Spectrum knowledge!\n\nI'm normally firmly in the Commodore 64 camp, but I spent plenty of time playing on the Spectrum round at a mate's house. I've deliberately avoided filling the quiz with just the obvious classics, so even the most dedicated Speccy veterans might struggle with a few of these!\n\nYou'll have 10 seconds to recognise each game before the answer is revealed. Keep track of your score, see how many you remember and perhaps discover a few games worth going back and playing.\n\n💬 HOW DID YOU DO?\nLet me know your score out of 50 in the comments! Which games caught you out, and which forgotten Spectrum classics would you have included?\n\n▶️ MORE NAME THAT GAME QUIZZES\n🕹️ Commodore 64 – Can You Identify 50 Games?\nhttps://youtu.be/qJZa1zB2zHU\n🕹️ Commodore Amiga – 50-Game Quiz Challenge\nhttps://youtu.be/kc86gnQh7ww\n\n🌐 EXPLORE THE C64 & AMIGA GAME ARCHIVE\nBrowse classic games, reviews, magazine ratings, manuals and more:\nhttps://www.cheekycommodoregamer.co.uk\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n00:00 🎬 Introduction – 50 ZX Spectrum Games Challenge!\n00:47 🌈 Round 1 – Spectrum Legends (Games 1–10)\n05:18 🕹️ Round 2 – Platformers & Peculiar Characters (Games 11–20)\n09:53 🏎️ Round 3 – Arcade Action & Racing (Games 21–30)\n14:25 🏰 Round 4 – Fantasy, Exploration & Isometric Adventures (Games 31–40)\n18:57 🧠 Round 5 – The Spectrum Expert's Challenge (Games 41–50)\n23:32 🏆 Final Scores & Outro – How Many Did You Recognise?\n\n#ZXSpectrum #ZXSpectrumQuiz #RetroGaming #NameThatGame #8BitGaming",
-      "uploadDate": "2026-10-30T00:35:01Z",
+      "uploadDate": "2026-10-30T18:30:10Z",
+      "duration": "PT24M26S",
       "thumbnailUrl": "https://i.ytimg.com/vi/XxEhpjSoYc8/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"

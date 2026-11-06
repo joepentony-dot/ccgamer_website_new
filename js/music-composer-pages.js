@@ -1,4 +1,32 @@
 (function () {
+  // Music hub and composer profiles do not use the normal analytics bootstrap.
+  // Bind the browser-menu guard at once; load the existing rights-aware notice
+  // separately without changing page flow or composer layout.
+  try {
+    if (typeof window !== 'undefined' && typeof document !== 'undefined' &&
+        String(window.location && window.location.pathname || '').indexOf('/music/') === 0 &&
+        typeof document.addEventListener === 'function') {
+      document.addEventListener('contextmenu', function (event) {
+        if (!event.target || !event.target.closest ||
+            !event.target.closest('[data-ccg-allow-contextmenu]')) {
+          event.preventDefault();
+        }
+      }, { capture: true });
+      if (document.head && typeof document.createElement === 'function') {
+        var noticeCss = document.createElement('link');
+        noticeCss.rel = 'stylesheet';
+        noticeCss.href = '/resources/css/ccg-copyright-notice.css';
+        document.head.appendChild(noticeCss);
+        var noticeJs = document.createElement('script');
+        noticeJs.src = '/js/ccg-copyright-notice.js';
+        noticeJs.async = true;
+        document.head.appendChild(noticeJs);
+      }
+    }
+  } catch (_copyrightError) {
+    // Composer content must remain available if optional protection cannot load.
+  }
+
   const PROFILE_DATA = {
     "allister-brimble": { name: "Allister Brimble", slug: "allister-brimble", bio: "Allister Brimble is a British game composer known for work on home computers and 16-bit platforms, including projects on Commodore systems and beyond." },
     "barry-leitch": { name: "Barry Leitch", slug: "barry-leitch", bio: "Barry Leitch is a game composer associated with Amiga-era releases and later soundtrack work across multiple platforms." },
@@ -83,6 +111,16 @@
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, " ")
       .trim();
+  }
+
+  // Catalogue credits are editable: escape values before inserting HTML templates.
+  function escapeComposerMarkup(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function getCanonicalComposerName(value) {
@@ -450,11 +488,11 @@ function composerSortLetter(name) {
     const cardImagePath = imagePath.replace("/resources/images/composers/", "/resources/images/composers/hub/");
 
     return `
-      <a href="${getComposerUrl(composer, composer.name, { allowDedicated: !compact })}" class="${cardClass}" data-slug="${composer.slug}">
-        ${compact ? "" : `<div class="composer-thumb"><img src="${cardImagePath}" alt="${composer.name}" loading="lazy" decoding="async" fetchpriority="low" width="400" height="400"></div>`}
+      <a href="${escapeComposerMarkup(getComposerUrl(composer, composer.name, { allowDedicated: !compact }))}" class="${cardClass}" data-slug="${escapeComposerMarkup(composer.slug)}">
+        ${compact ? "" : `<div class="composer-thumb"><img src="${escapeComposerMarkup(cardImagePath)}" alt="${escapeComposerMarkup(composer.name)}" loading="lazy" decoding="async" fetchpriority="low" width="400" height="400"></div>`}
         <div class="composer-info">
-          <h3>${composer.name}</h3>
-          <p class="composer-platform">${systemLabel}</p>
+          <h3>${escapeComposerMarkup(composer.name)}</h3>
+          <p class="composer-platform">${escapeComposerMarkup(systemLabel)}</p>
           <p class="composer-count">${trackCount} Tracks</p>
         </div>
       </a>
@@ -508,7 +546,7 @@ function composerSortLetter(name) {
 
         const shouldOpen = hasQuery || openSet.has(letter);
         const chips = matches
-          .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${getComposerUrl(composer, composer.name)}">${composer.name}<span>${stats.get(composer.slug)?.games.length || 0}</span></a>`)
+          .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${escapeComposerMarkup(getComposerUrl(composer, composer.name))}">${escapeComposerMarkup(composer.name)}<span>${stats.get(composer.slug)?.games.length || 0}</span></a>`)
           .join("");
 
         return `
@@ -629,14 +667,14 @@ function composerSortLetter(name) {
 
     content.innerHTML = `
       <article class="ccg-composer-profile ${imagePath ? "" : "ccg-composer-profile--text-only"}">
-        ${imagePath ? `<img src="${imagePath}" alt="${composer.name}" class="ccg-composer-profile__image" loading="lazy">` : ""}
+        ${imagePath ? `<img src="${escapeComposerMarkup(imagePath)}" alt="${escapeComposerMarkup(composer.name)}" class="ccg-composer-profile__image" loading="lazy">` : ""}
         <div>
-          <h2 class="ccg-composer-profile__title">${composer.name}</h2>
-          ${systemLabel ? `<p class="ccg-composer-profile__platform">${systemLabel}</p>` : ""}
+          <h2 class="ccg-composer-profile__title">${escapeComposerMarkup(composer.name)}</h2>
+          ${systemLabel ? `<p class="ccg-composer-profile__platform">${escapeComposerMarkup(systemLabel)}</p>` : ""}
           <p class="ccg-composer-profile__facts">${gameCount} linked game credits</p>
-          ${composer.born ? `<p class="ccg-composer-profile__factline"><strong>Born:</strong> ${composer.born}</p>` : ""}
-          ${composer.birthplace ? `<p class="ccg-composer-profile__factline"><strong>Birthplace:</strong> ${composer.birthplace}</p>` : ""}
-          ${composer.bio ? `<p class="ccg-composer-profile__bio">${composer.bio}</p>` : ""}
+          ${composer.born ? `<p class="ccg-composer-profile__factline"><strong>Born:</strong> ${escapeComposerMarkup(composer.born)}</p>` : ""}
+          ${composer.birthplace ? `<p class="ccg-composer-profile__factline"><strong>Birthplace:</strong> ${escapeComposerMarkup(composer.birthplace)}</p>` : ""}
+          ${composer.bio ? `<p class="ccg-composer-profile__bio">${escapeComposerMarkup(composer.bio)}</p>` : ""}
         </div>
       </article>
     `;
@@ -675,7 +713,7 @@ function composerSortLetter(name) {
     essential.innerHTML = `
       <h2>🔥 Essential Track</h2>
       <p class="ccg-essential-track__title"></p>
-      ${displayMeta ? `<p class="ccg-essential-track__meta">${displayMeta}</p>` : ""}
+      ${displayMeta ? `<p class="ccg-essential-track__meta">${escapeComposerMarkup(displayMeta)}</p>` : ""}
     `;
 
     const title = essential.querySelector(".ccg-essential-track__title");
@@ -732,7 +770,7 @@ function composerSortLetter(name) {
     const sortedGames = [...bucket.games].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
 
     if (!sortedGames.length) {
-      const safeName = requestedName ? requestedName.replace(/[<>]/g, "") : "this composer";
+      const safeName = requestedName ? escapeComposerMarkup(requestedName) : "this composer";
       gamesList.innerHTML = `<li class="ccg-composer-games__item">No linked games found for ${safeName} yet. Try the <a href="/music/index.html">music hub</a> to browse the full archive.</li>`;
       return;
     }
@@ -930,7 +968,7 @@ function composerSortLetter(name) {
       .slice(0, 8);
 
     featured.innerHTML = featuredSet
-      .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${getComposerUrl(composer, composer.name)}">${composer.name}</a>`)
+      .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${escapeComposerMarkup(getComposerUrl(composer, composer.name))}">${escapeComposerMarkup(composer.name)}</a>`)
       .join("");
   }
 

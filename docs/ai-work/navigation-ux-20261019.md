@@ -1,3 +1,8 @@
+## 1 November 2026 — owner-requested Explore scroll-off live acceptance (BRANCH ONLY)
+
+- #2925 was merged 28 October (`bce91ff8bfc704b36b73c4eb26313b0d604c3e06`), and current main keeps `.ccg-game-section-nav { position: static; }` in `resources/css/game-pages.css`. The merged source regression checks that rule, but the post-merge live navigation workflow had no real game-menu scroll assertion.
+- With #2964 already formally parked on its measured CLS failure, the sole bounded new acceptance candidate extends the **existing** ChromeDriver audit for C64 Fire Ant and Amiga Alien Breed at desktop/mobile widths. It checks real nav placement and scroll-off/return, and compares deployed game CSS and loader to release bytes. No public runtime or cache changed. JavaScript syntax parsed successfully; native CI, merge, Pages and live acceptance remain unverified. Preserve owner site/intro/data protections.
+
 ## 28 October 2026, 12:25 UTC — execute previously unrun real Explore wheel regression (BRANCH ONLY)
 
 - Refreshed `main` `e0febc33fcc72ee04f3a06996c979eafcf59637f`; #2925 at `f67519069c7b977829d6d404bc1e1f0026d4b6d3` was nine commits ahead / zero behind, with all 17 applicable GitHub Actions workflow groups successful. The separate Cloudflare Workers check marked `failure` because its PR preview deployment was **skipped**, not a green production deployment. No independent exact-head Codex review exists; the owner-account COMMENTED review is not independent approval. **Do not merge.**
