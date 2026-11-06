@@ -300,7 +300,10 @@ function validateCanonicalGameRoutes(games, problems) {
 // publisher archives. Admit only materialized, self-canonical, indexable
 // routes that also appear exactly once in the generated page sitemap.
 function validateNewForeignArchive(entry, sitemapPageLocs, problems) {
-    if (!/^(?:music|games\/(?:publishers|developers))\/[a-z0-9-]+\/index\.html$/.test(entry)) return "";
+    // The owner's shareable Ice Cream page is a single reviewed, indexable route.
+    // Keep it behind the same materialized/canonical/robots/sitemap checks below.
+    if (!/^(?:music|games\/(?:publishers|developers))\/[a-z0-9-]+\/index\.html$/.test(entry) &&
+        entry !== "ice-cream/index.html") return "";
     const url = `${SITE_ORIGIN}/${entry.slice(0, -"index.html".length)}`;
     const filePath = path.join(repoRoot, entry);
     if (!fs.existsSync(filePath)) {
