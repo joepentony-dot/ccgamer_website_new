@@ -12,6 +12,8 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 GLOBAL = (ROOT / "js/ccg-global.js").read_text(encoding="utf-8")
 METRICS = (ROOT / "js/ccg-visitor-metrics.js").read_text(encoding="utf-8")
+SUPABASE_CLIENT = (ROOT / "js/ccg-supabase-client.js").read_text(encoding="utf-8")
+DO_NOT_PRESS = (ROOT / "js/ccg-do-not-press.js").read_text(encoding="utf-8")
 BASE = "https://www.cheekycommodoregamer.co.uk"
 
 assert "ccgEnsureVisitorMetrics" in GLOBAL
@@ -25,8 +27,32 @@ def check_page(browser, path: str, is_game: bool):
     )
     page = context.new_page()
     errors = []
+    supabase_requests = []
     page.on("pageerror", lambda e: errors.append(str(e)))
     try:
+        def block_supabase(route):
+            supabase_requests.append(route.request.url)
+            route.abort("blockedbyclient")
+
+        # This acceptance run reads live HTML, so never allow its browser to
+        # generate production Supabase traffic. Candidate code is injected below.
+        context.route("https://*.supabase.co/**", block_supabase)
+        page.route(
+            "**/js/ccg-do-not-press.js*",
+            lambda route: route.fulfill(
+                status=200,
+                content_type="application/javascript",
+                body=DO_NOT_PRESS,
+            ),
+        )
+        page.route(
+            "**/js/ccg-supabase-client.js*",
+            lambda route: route.fulfill(
+                status=200,
+                content_type="application/javascript",
+                body=SUPABASE_CLIENT,
+            ),
+        )
         page.route(
             "**/js/ccg-global.js*",
             lambda route: route.fulfill(
@@ -81,6 +107,10 @@ def check_page(browser, path: str, is_game: bool):
         counter_text = counter.inner_text()
         assert counter_text.strip().replace(',', '').isdigit(), counter_text
         print(f"PASS: {path} rendered real GoatCounter count={counter_text!r}")
+        if not is_game:
+            page.locator("[data-ccg-do-not-press]").scroll_into_view_if_needed()
+            page.wait_for_timeout(250)
+        assert not supabase_requests, f"{path} attempted production Supabase egress: {supabase_requests}"
         assert not any("SyntaxError" in error for error in errors), errors
     finally:
         context.close()
