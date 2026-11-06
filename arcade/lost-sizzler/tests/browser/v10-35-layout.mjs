@@ -101,9 +101,17 @@ try{
   await page.setViewportSize({width:390,height:844});
   await page.waitForTimeout(100);
   const portraitRadar=await page.evaluate(()=>{
+    const selectors=[".ccg-game",".ccg-game>.tactical-zone",".v102-radar-card","#radar-canvas",".fullscreen-hint",".ccg-game>.game-area",".ccg-game>.player-hub"];
+    const boxes=Object.fromEntries(selectors.map(selector=>{
+      const element=document.querySelector(selector);
+      if(!element)return[selector,null];
+      const rect=element.getBoundingClientRect(),style=getComputedStyle(element);
+      return[selector,{x:rect.x,y:rect.y,width:rect.width,height:rect.height,display:style.display,visibility:style.visibility,gridRows:style.gridTemplateRows}];
+    }));
     const canvas=document.querySelector("#radar-canvas"),rect=canvas?.getBoundingClientRect();
-    return rect?{width:rect.width,height:rect.height,ratio:rect.width/rect.height}:null;
+    return rect?{width:rect.width,height:rect.height,ratio:rect.width/rect.height,viewport:{width:innerWidth,height:innerHeight},fullscreen:document.fullscreenElement?.className||false,runActive:document.body.dataset.runActive,playMode:document.body.dataset.playMode,specialMode:document.body.dataset.specialMode,boxes}:null;
   });
+  console.log("Mobile portrait radar layout diagnostics:",JSON.stringify(portraitRadar));
   assert.ok(portraitRadar, "mobile portrait must retain the live tactical radar canvas");
   assert.ok(portraitRadar.width>=300&&portraitRadar.height>=150,
     `mobile portrait radar must be readable at full width: ${JSON.stringify(portraitRadar)}`);
