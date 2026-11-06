@@ -796,3 +796,27 @@ body[data-special-mode="sizzler-saboteurs"] .radar-card::after{content:"SPY VS S
   .shop-item p{-webkit-line-clamp:1;min-height:1.2em}
   .shop-note{display:none!important}
 }
+
+/* R154 — keep the tactical radar legible on narrow and short screens.
+   The canvas source is 480×240; preserve its 2:1 shape instead of forcing
+   the whole tactical strip and canvas into a short, distorted row. */
+@media(max-width:820px){
+  .tactical-zone{
+    grid-template-rows:auto!important;
+    max-height:none!important;
+  }
+  .v102-radar-card{
+    height:auto!important;
+    min-height:0!important;
+    grid-template-rows:auto auto auto!important;
+  }
+  .v102-radar-card canvas{
+    width:auto!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:min(28vh,220px)!important;
+    aspect-ratio:2 / 1!important;
+    margin-inline:auto!important;
+  }
+}

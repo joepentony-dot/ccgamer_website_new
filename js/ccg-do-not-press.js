@@ -18,7 +18,24 @@
   var lastCount = null;
   var countInitialised = false;
 
+  function counterRemoteAccessAllowed() {
+    try {
+      if (window.CCGDungeonCarnageItchPackage === true ||
+          window.CCG_OFFLINE_BUILD === true ||
+          (window.location && window.location.protocol === 'file:')) return false;
+      if (typeof navigator !== 'undefined' &&
+          (navigator.webdriver === true || /HeadlessChrome/i.test(String(navigator.userAgent || '')))) return false;
+      if (window.ccgSupabase && typeof window.ccgSupabase.remoteBackendAllowed === 'function' &&
+          !window.ccgSupabase.remoteBackendAllowed()) return false;
+      return true;
+    } catch (_error) {
+      // Fail closed if a test/offline environment cannot be classified safely.
+      return false;
+    }
+  }
+
   function counterConfig() {
+    if (!counterRemoteAccessAllowed()) return null;
     var base = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
     var key = String(window.CCG_SUPABASE_ANON_KEY || '');
     // Only the already-configured public Supabase API is allowed. Never place
