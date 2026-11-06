@@ -25,6 +25,12 @@ const browser=await chromium.launch({headless:true,args:['--disable-dev-shm-usag
 
 try{
   const context=await browser.newContext({viewport:{width:1366,height:768}});
+  // Browser CI must never call the production Supabase project for community or game data.
+  const attemptedSupabaseRequests=[];
+  await context.route("https://*.supabase.co/**",async route=>{
+    attemptedSupabaseRequests.push(route.request().url());
+    await route.abort("blockedbyclient");
+  });
   // Local/headless testing is never allowed to transfer production media.
   // Abort CDN requests before bytes leave the origin and fail on any attempt.
   let attemptedProductionStorage=0;
@@ -33,12 +39,23 @@ try{
     await route.abort("blockedbyclient");
   });
   const page=await context.newPage();
+  page.on('request',request=>{
+    if(/\.supabase\.co\//i.test(request.url()))attemptedSupabaseRequests.push(request.url());
+  });
   page.setDefaultTimeout(45000);
   const remoteMusicRequests=[];
   page.on('request',request=>{
     const url=request.url();
     if(/\.supabase\.co\/storage\/v1\/object\//i.test(url)&&/\/music\//i.test(url))remoteMusicRequests.push(url);
   });
+
+  await page.goto(`${origin}/`,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>typeof window.ccgSupabase?.remoteBackendSkipReason==='function');
+  const homeBackendPolicy=await page.evaluate(()=>({allowed:window.ccgSupabase.remoteBackendAllowed(),reason:window.ccgSupabase.remoteBackendSkipReason()}));
+  assert.equal(homeBackendPolicy.allowed,false,`Automated homepage must disable remote Supabase: ${JSON.stringify(homeBackendPolicy)}`);
+  assert.equal(homeBackendPolicy.reason,'automated_test','Automated homepage must report the explicit test-only backend skip reason.');
+  await page.waitForTimeout(300);
+  assert.equal(attemptedSupabaseRequests.length,0,'Automated homepage must make zero requests to the production Supabase project.');
 
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.body.dataset.gameReady==='true'&&document.body.dataset.releaseReady==='true'&&window.CCG_ADMIN_AUDIO_READY===true&&Boolean(window.CCGLostSizzlerPlaylistAudio));
@@ -65,8 +82,9 @@ try{
   assert.ok(String(audioState.url||'').startsWith('assets/audio/music/'),`Headless test must use bundled music, got ${audioState.url}`);
   assert.equal(remoteMusicRequests.length,0,'Automated Chromium must request zero production Supabase music.');
   assert.equal(attemptedProductionStorage,0,'Blocked Supabase Storage route must never be reached.');
+  assert.equal(attemptedSupabaseRequests.length,0,'Headless gameplay must make zero production Supabase REST/Auth/Storage requests.');
 
-  console.log('Dungeon canonical headless Chromium test passed: bundled authored soundtrack and zero production Storage requests.');
+  console.log('Dungeon canonical headless Chromium test passed: bundled soundtrack and zero production Supabase requests on the homepage and during gameplay.');
   await context.close();
 }finally{
   await browser.close();
