@@ -350,6 +350,14 @@ function buildCanonicalPage(shell, game) {
   );
   html = removeStaticNotFoundCopy(html);
   html = prefillStaticContent(html, game, title, imagePath, imageMetadata);
+  if (slug === "speedball-2-brutal-deluxe") {
+    const shareStatus = "<span class=\"game-share__status\" data-ccg-share-status role=\"status\" aria-live=\"polite\"></span>";
+    const iceCreamLink = "<a class=\"ccg-btn ccg-btn--secondary\" href=\"/ice-cream/\">🍦 PRESS FOR ICE CREAM!</a>";
+    if (!html.includes(shareStatus)) {
+      throw new Error("Speedball 2 Ice Cream CTA: missing game share action marker");
+    }
+    html = html.replace(shareStatus, iceCreamLink + "\n                        " + shareStatus);
+  }
   return normalizeGeneratedWhitespace(html);
 }
 
