@@ -55,7 +55,17 @@ try{
   assert.equal(homeBackendPolicy.allowed,false,`Automated homepage must disable remote Supabase: ${JSON.stringify(homeBackendPolicy)}`);
   assert.equal(homeBackendPolicy.reason,'automated_test','Automated homepage must report the explicit test-only backend skip reason.');
   await page.waitForTimeout(300);
-  assert.equal(attemptedSupabaseRequests.length,0,'Automated homepage must make zero requests to the production Supabase project.');
+  assert.equal(attemptedSupabaseRequests.length,0,'Automated intro must make zero requests to the production Supabase project.');
+
+  // The homepage button calls Supabase directly rather than using the shared
+  // client, so drive it into the viewport and verify that its initial count
+  // read is also blocked in WebDriver/HeadlessChrome.
+  await page.goto(`${origin}/home.html`,{waitUntil:'domcontentloaded'});
+  const pressSection=page.locator('[data-ccg-do-not-press]');
+  await pressSection.waitFor({state:'attached'});
+  await pressSection.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  assert.equal(attemptedSupabaseRequests.length,0,'Automated homepage counter must make zero requests to the production Supabase project.');
 
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.body.dataset.gameReady==='true'&&document.body.dataset.releaseReady==='true'&&window.CCG_ADMIN_AUDIO_READY===true&&Boolean(window.CCGLostSizzlerPlaylistAudio));
