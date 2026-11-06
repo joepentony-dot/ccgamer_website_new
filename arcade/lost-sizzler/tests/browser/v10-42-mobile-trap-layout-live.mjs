@@ -235,6 +235,8 @@ async function runViewport(viewport){
       mission:box(".ccg-game>.mission"),
       gameArea:box(".ccg-game>.game-area"),
       canvasWrap:box(".ccg-game>.game-area>.canvas-wrap"),
+      radarCard:box(".ccg-game>.tactical-zone>.v102-radar-card"),
+      radarCanvas:box("#radar-canvas"),
       playerHub:box(".ccg-game>.player-hub"),
       touch:box("#v104-touch-controls"),
       touchPosition:getComputedStyle(document.getElementById("v104-touch-controls")).position,
@@ -259,7 +261,7 @@ async function runViewport(viewport){
   });
 
   assert.deepEqual(errors,[],`portrait launch must have no uncaught browser errors: ${errors.join("\n")}`);
-  for(const key of ["shell","mission","gameArea","canvasWrap","playerHub","touch"])assert.ok(layout[key],`${key} must exist at ${viewport.width}x${viewport.height}`);
+  for(const key of ["shell","mission","gameArea","canvasWrap","radarCard","radarCanvas","playerHub","touch"])assert.ok(layout[key],`${key} must exist at ${viewport.width}x${viewport.height}`);
   assert.ok(layout.bodyScrollWidth<=layout.viewport.width+2,`portrait layout must not create horizontal page overflow: ${JSON.stringify(layout)}`);
   assert.ok(layout.shell.width<=layout.viewport.width+2,`game shell must fit the portrait viewport: ${JSON.stringify(layout)}`);
   assert.ok(layout.shell.height<=layout.viewport.height+2,`game shell must fit the portrait viewport height: ${JSON.stringify(layout)}`);
@@ -267,7 +269,8 @@ async function runViewport(viewport){
   assert.ok(layout.playerHub.height>=80&&layout.playerHub.height<=90,`portrait RPG player HUD should remain compact and readable: ${JSON.stringify(layout)}`);
   assert.ok(layout.gameArea.height>layout.viewport.height*.55,`dungeon playfield must own most active portrait height: ${JSON.stringify(layout)}`);
   assert.ok(layout.gameArea.height>layout.mission.height+layout.playerHub.height,`gameplay area must retain the majority of active vertical space: ${JSON.stringify(layout)}`);
-  assert.ok(layout.canvasWrap.width>0&&layout.canvasWrap.height>0,`portrait canvas must have usable geometry: ${JSON.stringify(layout)}`);
+  assert.ok(layout.canvasWrap.width>0&&layout.canvasWrap.height>0,`portrait playfield canvas must have usable geometry: ${JSON.stringify(layout)}`);
+  assert.ok(layout.radarCanvas.width>=200&&layout.radarCanvas.height>=100&&Math.abs(layout.radarCanvas.width/layout.radarCanvas.height-2)<=0.02,`portrait tactical radar must remain visible, readable and 2:1: ${JSON.stringify(layout)}`);
   assert.ok(layout.touch.width>0&&layout.touch.height>0,`touch dock must have rendered portrait geometry: ${JSON.stringify(layout)}`);
   assert.equal(layout.touchPosition,"absolute",`current touch dock must overlay the gameplay area instead of creating a legacy grid row: ${JSON.stringify(layout)}`);
   assert.equal(layout.legacyPatchLoaded,false,"retired v10-4-patch.js must not execute in the current V10.42 runtime");
@@ -276,7 +279,7 @@ async function runViewport(viewport){
   assert.ok(Math.abs(layout.cssAspect-layout.backingAspect)<=0.01,`canvas backing aspect must match displayed portrait aspect: ${JSON.stringify(layout)}`);
   assert.ok(layout.backing.width>=640&&layout.backing.height>=360,`portrait backing store must retain canonical minimum dimensions: ${JSON.stringify(layout)}`);
   assert.ok(layout.repairs>=1,`portrait runtime should repair the initial landscape backing store when required: ${JSON.stringify(layout)}`);
-  assert.deepEqual(layout.hiddenRows,{topbar:"none",critical:"none",fullscreenHint:"none",tactical:"none"},`desktop information rows must not consume active portrait gameplay height: ${JSON.stringify(layout.hiddenRows)}`);
+  assert.deepEqual(layout.hiddenRows,{topbar:"none",critical:"none",fullscreenHint:"none",tactical:"grid"},`portrait gameplay must keep desktop chrome hidden while retaining the dedicated tactical radar row: ${JSON.stringify(layout.hiddenRows)}`);
   assert.equal(layout.movement.length,4,"mobile movement pad must expose four directional buttons");
   for(const button of layout.movement){
     assert.ok(button.width>=43.5&&button.height>=43.5,`mobile movement target ${button.key} must remain at least 44px: ${JSON.stringify({button,layout})}`);

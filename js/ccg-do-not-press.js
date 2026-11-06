@@ -18,7 +18,24 @@
   var lastCount = null;
   var countInitialised = false;
 
+  function counterRemoteAccessAllowed() {
+    try {
+      if (window.CCGDungeonCarnageItchPackage === true ||
+          window.CCG_OFFLINE_BUILD === true ||
+          (window.location && window.location.protocol === 'file:')) return false;
+      if (typeof navigator !== 'undefined' &&
+          (navigator.webdriver === true || /HeadlessChrome/i.test(String(navigator.userAgent || '')))) return false;
+      if (window.ccgSupabase && typeof window.ccgSupabase.remoteBackendAllowed === 'function' &&
+          !window.ccgSupabase.remoteBackendAllowed()) return false;
+      return true;
+    } catch (_error) {
+      // Fail closed if a test/offline environment cannot be classified safely.
+      return false;
+    }
+  }
+
   function counterConfig() {
+    if (!counterRemoteAccessAllowed()) return null;
     var base = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
     var key = String(window.CCG_SUPABASE_ANON_KEY || '');
     // Only the already-configured public Supabase API is allowed. Never place
@@ -168,6 +185,12 @@
     }
   }
 
+  // The homepage button navigates; the dedicated page retains the sound.
+  if (window.location && window.location.pathname === '/home.html' &&
+      typeof button.setAttribute === 'function') {
+    button.setAttribute('aria-label', 'Open the Speedball 2 Ice Cream button page');
+  }
+
   button.addEventListener('pointerenter', primeSound);
   button.addEventListener('focus', primeSound);
 
@@ -199,6 +222,10 @@
   });
   button.addEventListener('blur', cancelPress);
   button.addEventListener('click', function () {
+    if (window.location && window.location.pathname === '/home.html') {
+      window.location.assign('/ice-cream/');
+      return;
+    }
     press();
     if (!pointerDown && !keyboardDown) releaseSoon();
     // The original MP3 is the only primary sound. An extra synthesized tick
