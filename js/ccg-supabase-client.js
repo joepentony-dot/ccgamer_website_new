@@ -6,6 +6,9 @@
   const AUTH_READY_KEY = '__ccgAuthReadyState';
   const AUTH_DEBUG_KEY = '__ccgAuthDebugState';
   const RPC_MISSING_KEY = '__ccgRpcMissingCache';
+  const COMMUNITY_READINESS_CACHE_KEY = 'ccgCommunityReadinessCacheV1';
+  const COMMUNITY_READINESS_READY_TTL_MS = 5 * 60 * 1000;
+  const COMMUNITY_READINESS_FAILURE_TTL_MS = 15 * 1000;
 
   const globalState = window[GLOBAL_KEY] || (window[GLOBAL_KEY] = {
     loadPromise: null,
@@ -45,6 +48,43 @@
   });
 
   const rpcMissingCache = window[RPC_MISSING_KEY] || (window[RPC_MISSING_KEY] = new Set());
+
+  function remoteBackendSkipReason() {
+    try {
+      if (window.CCGDungeonCarnageItchPackage === true || window.CCG_OFFLINE_BUILD === true || window.location.protocol === 'file:') return 'offline_build';
+      if (typeof navigator !== 'undefined' && (navigator.webdriver === true || /HeadlessChrome/i.test(String(navigator.userAgent || ''))) return 'automated_test';
+    } catch (_error) {}
+    return '';
+  }
+
+  function remoteBackendAllowed() {
+    return !remoteBackendSkipReason();
+  }
+
+  function readCommunityReadinessCache(url) {
+    try {
+      const raw = window.localStorage.getItem(COMMUNITY_READINESS_CACHE_KEY);
+      if (!raw) return null;
+      const entry = JSON.parse(raw);
+      const age = Date.now() - Number(entry && entry.checkedAt);
+      const ttl = entry && entry.ready ? COMMUNITY_READINESS_READY_TTL_MS : COMMUNITY_READINESS_FAILURE_TTL_MS;
+      if (!entry || entry.url !== url || !Number.isFinite(age) || age < 0 || age >= ttl) return null;
+      return { ready: Boolean(entry.ready), reason: String(entry.reason || '') };
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function writeCommunityReadinessCache(url, result) {
+    try {
+      window.localStorage.setItem(COMMUNITY_READINESS_CACHE_KEY, JSON.stringify({
+        url: url,
+        ready: Boolean(result && result.ready),
+        reason: String(result && result.reason || ''),
+        checkedAt: Date.now()
+      }));
+    } catch (_error) {}
+  }
 
   /* ===================================================
      OMEGA COMMUNITY SUPABASE URL LOCK
@@ -117,6 +157,8 @@
   }
 
   async function getClient() {
+    const blockedReason = remoteBackendSkipReason();
+    if (blockedReason) throw new Error('Supabase backend disabled for ' + blockedReason + ' context.');
     const url = normalizeSupabaseUrl(window.CCG_SUPABASE_URL);
     const key = window.CCG_SUPABASE_ANON_KEY;
     const storageKey = window.CCG_SUPABASE_STORAGE_KEY;
@@ -252,6 +294,23 @@
   }
 
   async function waitForAuth() {
+    const blockedReason = remoteBackendSkipReason();
+    if (blockedReason) {
+      authReadyState.ready = true;
+      authReadyState.session = null;
+      authReadyState.bootstrapError = null;
+      resolveAuthReadyContext({
+        user: null,
+        session: null,
+        role: null,
+        isAuthenticated: false,
+        remoteBackendSkipped: true,
+        reason: blockedReason
+      });
+      emitAuthReady(true);
+      return null;
+    }
+
     const client = await getClient();
     ensureAuthListener(client);
     ensureAuthReadyPromise();
@@ -479,6 +538,13 @@
   }
 
   async function checkCommunityReadiness() {
+    const blockedReason = remoteBackendSkipReason();
+    if (blockedReason) {
+      readinessState.checked = true;
+      readinessState.available = false;
+      readinessState.reason = blockedReason;
+      return { ready: false, reason: blockedReason };
+    }
     if (readinessState.checked) return { ready: readinessState.available, reason: readinessState.reason };
     if (readinessState.checkPromise) return readinessState.checkPromise;
 
@@ -490,6 +556,14 @@
         readinessState.available = false;
         readinessState.reason = 'missing_config';
         return { ready: false, reason: readinessState.reason };
+      }
+
+      const cached = readCommunityReadinessCache(url);
+      if (cached) {
+        readinessState.checked = true;
+        readinessState.available = cached.ready;
+        readinessState.reason = cached.reason;
+        return cached;
       }
 
       try {
@@ -507,6 +581,7 @@
           readinessState.checked = true;
           readinessState.available = false;
           readinessState.reason = 'not_configured';
+          writeCommunityReadinessCache(url, { ready: false, reason: readinessState.reason });
           warnCommunityOnce('CCG community data endpoints are temporarily unavailable.');
           return { ready: false, reason: readinessState.reason };
         }
@@ -514,6 +589,7 @@
         readinessState.checked = true;
         readinessState.available = false;
         readinessState.reason = 'unavailable';
+        writeCommunityReadinessCache(url, { ready: false, reason: readinessState.reason });
         warnCommunityOnce('CCG community data endpoints are temporarily unavailable.');
         return { ready: false, reason: readinessState.reason };
       }
@@ -521,6 +597,7 @@
       readinessState.checked = true;
       readinessState.available = true;
       readinessState.reason = '';
+      writeCommunityReadinessCache(url, { ready: true, reason: '' });
       return { ready: true, reason: '' };
     })().finally(function () {
       readinessState.checkPromise = null;
@@ -574,6 +651,8 @@
   window.ccgSupabase = window.ccgSupabase || {};
   window.ccgSupabase.getClient = getClient;
   window.ccgSupabase.checkCommunityReadiness = checkCommunityReadiness;
+  window.ccgSupabase.remoteBackendAllowed = remoteBackendAllowed;
+  window.ccgSupabase.remoteBackendSkipReason = remoteBackendSkipReason;
   window.ccgSupabase.waitForAuth = waitForAuth;
   window.ccgSupabase.callRpcSafe = callRpcSafe;
   window.ccgSupabase.isCommunityUnavailableError = isCommunityUnavailableError;
