@@ -1087,8 +1087,8 @@ body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{displ
     width:auto!important;
     max-width:100%!important;
     height:auto!important;
-    min-height:0!important;
-    max-height:min(28vh,220px)!important;
+    min-height:100px!important;
+    max-height:min(20vh,180px)!important;
     aspect-ratio:2/1!important;
     object-fit:contain!important;
     margin-inline:auto!important;
