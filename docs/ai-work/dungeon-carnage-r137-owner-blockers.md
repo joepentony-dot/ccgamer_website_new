@@ -1,3 +1,10 @@
+## 6 November 2026 — Dungeon R154 narrow-screen tactical map (#2958, BRANCH ONLY)
+
+- Fresh reconciliation: protected `main` is `e02fb388d24babb03c34c2c6b2837db0449d9ed1`; existing draft PR #2958 is on `fix/dungeon-r153-live-boss-warden-chamber-guard-20261030` at `650156a7ae431b8be0a7a364c26ace9d8694cc79`, zero behind. The R153 exact-head checks were green, but there is no submitted independent review or owner Windows acceptance.
+- Source audit found the narrow layout forced the tactical row to 112 px and its 480×240 radar canvas to 83 px (75 px on shorter screens), stretching the map. R154 lets the radar row grow to its content and scales the canvas within a viewport-height cap while preserving its 2:1 geometry. It does not change map discovery, room data, saves, combat, audio or backend behaviour.
+- Extended the existing real Chromium layout test to measure the live Solo radar at desktop, 390×844 and 390×400. The retained thresholds require a visible readable canvas with its source geometry intact. The canonical and compatibility entry pages use the R154 cache identity and CSS URL.
+- **BRANCH ONLY.** Re-run all exact-head qualification, obtain independent high-risk review, inspect the new cumulative Windows preview and retain the existing owner Windows acceptance/commercial-release hold. No merge or deployment is implied by this source change.
+
 ## 30 October 2026 — Dungeon R153 live-boss Warden chamber exclusion (BRANCH ONLY)
 
 - Latest inspected main `7423a19336cda4b3a158fe4da7af0718962a70a2` includes merged R152 #2955 at `01a4620063b5aeefef2856f1f5c7b9769c4c705b`; Pages `41016326907`, Full Dungeon `41016326789`, HTML5 `41016326932` and live navigation `41016572820` succeeded. R152 separates the two unique Warden initial spawn rooms but does not prevent later AI convergence. Shop #2957 remains OPEN/BLOCKED on unverified Amazon Idea List titles and UK earning attribution for `joepentony-20`; its 25 exact-head Actions are green and ordinary Codex review is owner-waived under native 0-review rules. No shop source modified.

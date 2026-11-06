@@ -98,7 +98,31 @@ try{
   assert.ok(layout.mission.width>=shellWidth*.95,`mission strip must span both desktop columns: ${JSON.stringify(layout)}`);
   assert.ok(layout.playerHub.width>=shellWidth*.95,`player hub must span both desktop columns: ${JSON.stringify(layout)}`);
 
-  console.log("Lost Sizzler V10.35 desktop layout geometry passed in Chromium.");
+  await page.setViewportSize({width:390,height:844});
+  await page.waitForTimeout(100);
+  const portraitRadar=await page.evaluate(()=>{
+    const canvas=document.querySelector("#radar-canvas"),rect=canvas?.getBoundingClientRect();
+    return rect?{width:rect.width,height:rect.height,ratio:rect.width/rect.height}:null;
+  });
+  assert.ok(portraitRadar, "mobile portrait must retain the live tactical radar canvas");
+  assert.ok(portraitRadar.width>=300&&portraitRadar.height>=150,
+    `mobile portrait radar must be readable at full width: ${JSON.stringify(portraitRadar)}`);
+  assert.ok(Math.abs(portraitRadar.ratio-2)<=.08,
+    `mobile portrait radar must preserve its 2:1 source geometry: ${JSON.stringify(portraitRadar)}`);
+
+  await page.setViewportSize({width:390,height:400});
+  await page.waitForTimeout(100);
+  const shortRadar=await page.evaluate(()=>{
+    const canvas=document.querySelector("#radar-canvas"),rect=canvas?.getBoundingClientRect();
+    return rect?{width:rect.width,height:rect.height,ratio:rect.width/rect.height}:null;
+  });
+  assert.ok(shortRadar, "short mobile landscape must retain the tactical radar canvas");
+  assert.ok(shortRadar.width>=200&&shortRadar.height>=100,
+    `short mobile radar must remain legible within the available height: ${JSON.stringify(shortRadar)}`);
+  assert.ok(Math.abs(shortRadar.ratio-2)<=.08,
+    `short mobile radar must preserve its 2:1 source geometry: ${JSON.stringify(shortRadar)}`);
+
+  console.log("Lost Sizzler desktop and responsive tactical-map layout geometry passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();

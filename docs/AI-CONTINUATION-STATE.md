@@ -1,3 +1,10 @@
+## 6 November 2026 — Dungeon R154 narrow-screen tactical map (#2958, BRANCH ONLY)
+
+- Fresh reconciliation: protected `main` is `e02fb388d24babb03c34c2c6b2837db0449d9ed1`; existing draft PR #2958 is on `fix/dungeon-r153-live-boss-warden-chamber-guard-20261030` at `650156a7ae431b8be0a7a364c26ace9d8694cc79`, zero behind. The R153 exact-head checks were green, but there is no submitted independent review or owner Windows acceptance.
+- Source audit found the narrow layout forced the tactical row to 112 px and its 480×240 radar canvas to 83 px (75 px on shorter screens), stretching the map. R154 lets the radar row grow to its content and scales the canvas within a viewport-height cap while preserving its 2:1 geometry. It does not change map discovery, room data, saves, combat, audio or backend behaviour.
+- Extended the existing real Chromium layout test to measure the live Solo radar at desktop, 390×844 and 390×400. The retained thresholds require a visible readable canvas with its source geometry intact. The canonical and compatibility entry pages use the R154 cache identity and CSS URL.
+- **BRANCH ONLY.** Re-run all exact-head qualification, obtain independent high-risk review, inspect the new cumulative Windows preview and retain the existing owner Windows acceptance/commercial-release hold. No merge or deployment is implied by this source change.
+
 ## 1 November 2026 — single-game Explore live browser acceptance (BRANCH ONLY)
 
 - Fresh main `65352a062338e597e02fc4ba3212e83aa84c98c1` includes merged #2925's normal-flow Explore CSS and existing source regression, but the latest live navigation browser audit does not test the actual game-section menu or verify deployed game CSS/loader bytes. The owner specifically requires the menu to remain above Video Archive and scroll away rather than following the viewport.
