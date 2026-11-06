@@ -3,9 +3,12 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
 import test from 'node:test';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const require = createRequire(import.meta.url);
+const publicHeaderShell = require('../scripts/normalize-public-header-shell.js');
 const read = (file) => readFileSync(path.join(root, file), 'utf8');
 const html = read('ice-cream/index.html');
 const css = read('resources/css/ccg-ice-cream.css');
@@ -79,4 +82,18 @@ test('Phase 4D accepts only the exact new indexable page through existing valida
   assert.match(validator, /entry !== "ice-cream\/index\.html"/);
   assert.match(validator, /canonicals\.length !== 1 \|\| canonicals\[0\] !== url/);
   assert.match(validator, /sitemapPageLocs\.filter\(\(loc\) => loc === url\)\.length !== 1/);
+});
+
+test('production header normalizer preserves the standalone page without duplicate navigation or extra CSS/JS', () => {
+  assert.match(html, /data-ccg-no-public-header="true"/);
+  const location = 'ice-cream/index.html';
+  assert.equal(publicHeaderShell.shouldInjectPublicHeader(location, html), false);
+  assert.equal(publicHeaderShell.shouldInjectPublicHeader(location, html.replace(' data-ccg-no-public-header="true"', '')), true);
+  const staged = publicHeaderShell.normaliseHtml(html, { relativePath: location });
+  assert.equal(staged.changed, false, 'normalization must be an identity operation');
+  assert.equal(staged.html, html);
+  assert.equal(staged.publicHeaderInserted, false);
+  assert.equal((staged.html.match(/<header\\b/g) || []).length, 1);
+  assert.equal((staged.html.match(/<link[^>]+rel="stylesheet"/g) || []).length, 2);
+  assert.equal((staged.html.match(/<script\\b/g) || []).length, 4);
 });
