@@ -97,3 +97,22 @@ test('production header normalizer preserves the standalone page without duplica
   assert.equal((staged.html.match(/<link[^>]+rel="stylesheet"/g) || []).length, 2);
   assert.equal((staged.html.match(/<script\b/g) || []).length, 4);
 });
+
+test('Speedball 2 source-backed history and the optimised poster are published together', () => {
+  const image = 'resources/images/easter-eggs/speedball2-ice-cream-ccg-poster.avif';
+  const bytes = readFileSync(path.join(root, image));
+  assert.equal(bytes.toString('ascii', 4, 12), 'ftypavif', 'image must be AVIF, not a missing or placeholder file');
+  assert.ok(bytes.byteLength > 4000 && bytes.byteLength < 40000, 'poster must stay a small, real image asset');
+  assert.match(html, /src="\/resources\/images\/easter-eggs\/speedball2-ice-cream-ccg-poster\.avif"/);
+  assert.match(html, /width="400" height="500" loading="lazy" decoding="async"/);
+  assert.match(css, /\.ice-poster img/);
+  assert.match(html, /96% in Zzap!/);
+  assert.match(html, /95% in CU Amiga/);
+  assert.match(html, /1991 Golden Joystick Awards/);
+  assert.match(html, /Michael Burdett/);
+  assert.match(html, /the identification of Burdett comes from later accounts/);
+  assert.match(html, /amigareviews\.leveluphost\.com\/speedba2\.htm/);
+  const schemaText = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
+  assert.equal(JSON.parse(schemaText).image, 'https://www.cheekycommodoregamer.co.uk/' + image);
+  assert.equal((html.match(/data-ccg-do-not-press/g) || []).length, 1, 'existing button must remain singleton');
+});
