@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="home" data-ccg-feature="ice-cream">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Speedball 2 Ice Cream Button | Play the Famous Amiga Sound</title>
+  <meta name="description" content="Remember the Ice Cream! Ice Cream! shout from Speedball 2: Brutal Deluxe on the Amiga? Press the red button, play the sound and share it with your mates.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/ice-cream/">
+  <link rel="icon" href="/favicon.ico">
+  <meta name="theme-color" content="#0a1024">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Cheeky Commodore Gamer">
+  <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/ice-cream/">
+  <meta property="og:title" content="Speedball 2 Ice Cream Button — PRESS FOR ICE-CREAM!">
+  <meta property="og:description" content="The famous Amiga Ice Cream shout. Press the big red button and share it with your retro gaming mates.">
+  <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/easter-eggs/ccg-do-not-press-red-button.webp">
+  <meta property="og:image:alt" content="Red Press for Ice-Cream button from Cheeky Commodore Gamer">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Speedball 2 Ice Cream Button — PRESS FOR ICE-CREAM!">
+  <meta name="twitter:description" content="Remember the famous Speedball 2 Amiga sound? Press the button and share it.">
+  <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/easter-eggs/ccg-do-not-press-red-button.webp">
+  <link rel="preload" as="image" href="/resources/images/easter-eggs/ccg-do-not-press-two-state.webp" type="image/webp" fetchpriority="high">
+  <link rel="stylesheet" href="/resources/css/ccg-do-not-press.css">
+  <link rel="stylesheet" href="/resources/css/ccg-ice-cream.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Speedball 2 Ice Cream Button","description":"An interactive tribute to the famous ice-cream announcement in Speedball 2: Brutal Deluxe on the Commodore Amiga.","url":"https://www.cheekycommodoregamer.co.uk/ice-cream/","applicationCategory":"EntertainmentApplication","operatingSystem":"Web browser","isAccessibleForFree":true,"publisher":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/"}}</script>
+  <script src="/js/ccg-supabase-config.js" defer></script>
+  <script src="/js/ccg-do-not-press.js" defer></script>
+</head>
+<body class="ccg-ice-page">
+  <div class="ice-shell">
+    <header class="ice-topbar">
+      <a class="ice-brand" href="/home.html" aria-label="Cheeky Commodore Gamer homepage">
+        <img src="/resources/images/ccgamer-logo.png" width="54" height="37" alt="">
+        <span>CHEEKY COMMODORE GAMER</span>
+      </a>
+      <a href="/home.html">Back to the archive</a>
+    </header>
+    <main>
+      <div class="ice-intro">
+        <p class="ice-eyebrow">AMIGA NOSTALGIA • SPEEDBALL 2: BRUTAL DELUXE</p>
+        <h1>The Speedball 2 Ice Cream Button</h1>
+        <p>Remember that unmistakable shout? Turn your sound on and give the red button a press.</p>
+      </div>
+      <section class="ccg-dnp" data-ccg-do-not-press aria-labelledby="ccg-dnp-title">
+        <h2 class="ccg-dnp__title" id="ccg-dnp-title">PRESS FOR ICE-CREAM!</h2>
+        <div class="ccg-dnp__button-wrap">
+          <div class="ccg-dnp__sprite" data-ccg-dnp-sprite aria-hidden="true"></div>
+          <button class="ccg-dnp__button" type="button" data-ccg-dnp-button aria-label="Press the centre of the red button to play the Ice Cream sound"></button>
+        </div>
+        <output class="ccg-dnp__counter-number" data-ccg-dnp-total aria-label="Total button presses">0000</output>
+        <audio data-ccg-dnp-sound src="/resources/audio/easter-eggs/ccg-ice-cream-speedbal.mp3" preload="none"></audio>
+      </section>
+      <div class="ice-sharing">
+        <p>Know someone who played Speedball 2? Send them the button.</p>
+        <div class="ice-sharing-actions">
+          <button class="ice-action ice-action--primary" id="ice-share" type="button">Share the Ice Cream</button>
+          <button class="ice-action" id="ice-copy" type="button">Copy link</button>
+        </div>
+        <p class="ice-share-status" id="ice-share-status" role="status" aria-live="polite"></p>
+      </div>
+      <section class="ice-history" aria-labelledby="ice-history-heading">
+        <h2 id="ice-history-heading">Where does the Ice Cream sound come from?</h2>
+        <p>The “Ice cream! Ice cream!” announcement is remembered from <em>Speedball 2: Brutal Deluxe</em>, the futuristic sports game released by the Bitmap Brothers in 1990. It became a particularly familiar sound to Commodore Amiga players.</p>
+        <p>More retro nostalgia? Visit our <a href="/games/speedball-2-brutal-deluxe/">Speedball 2 game page</a> or explore the <a href="/home.html">Commodore 64 and Amiga archive</a>.</p>
+      </section>
+    </main>
+    <footer class="ice-footer">An unofficial retro gaming tribute from <a href="/home.html">Cheeky Commodore Gamer</a>. Speedball 2 remains the property of its respective rights holders.</footer>
+  </div>
+  <script>
+  (function () {
+    'use strict';
+    var url = 'https://www.cheekycommodoregamer.co.uk/ice-cream/';
+    var msg = 'Remember the Ice Cream shout from Speedball 2 on the Amiga? Press the red button!';
+    var status = document.getElementById('ice-share-status');
+    function tell(message) { status.textContent = message; }
+    function copyLink() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(url).then(function () {
+          tell('Link copied. Send it to your retro gaming mates!');
+        }).catch(function () { tell('Copy this link: ' + url); });
+      }
+      tell('Copy this link: ' + url);
+      return Promise.resolve();
+    }
+    document.getElementById('ice-copy').addEventListener('click', copyLink);
+    document.getElementById('ice-share').addEventListener('click', function () {
+      if (typeof navigator.share !== 'function') { copyLink(); return; }
+      navigator.share({ title: 'Speedball 2 Ice Cream Button', text: msg, url: url })
+        .catch(function (error) {
+          if (error && error.name === 'AbortError') return;
+          copyLink();
+        });
+    });
+  })();
+  </script>
+</body>
+</html>
