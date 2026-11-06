@@ -168,6 +168,10 @@
     }
   }
 
+  // On the homepage this control is a link to the dedicated Ice Cream page.
+  // Keep reading the shared total, but never play audio or increment on navigation.
+  if (button.tagName === 'A' && button.hasAttribute('href')) return;
+
   button.addEventListener('pointerenter', primeSound);
   button.addEventListener('focus', primeSound);
 
