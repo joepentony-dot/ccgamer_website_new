@@ -49,7 +49,14 @@ try{
     if(/\.supabase\.co\/storage\/v1\/object\//i.test(url)&&/\/music\//i.test(url))remoteMusicRequests.push(url);
   });
 
+  // The intro page intentionally has no Supabase client; do not wait for a
+  // global it never loads or change the protected intro stack to satisfy CI.
   await page.goto(`${origin}/`,{waitUntil:'domcontentloaded'});
+  await page.waitForTimeout(300);
+  assert.equal(attemptedSupabaseRequests.length,0,'Automated intro must make zero requests to the production Supabase project.');
+
+  // Home loads the shared client with defer; verify its automation guard here.
+  await page.goto(`${origin}/home.html`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof window.ccgSupabase?.remoteBackendSkipReason==='function');
   const homeBackendPolicy=await page.evaluate(()=>({allowed:window.ccgSupabase.remoteBackendAllowed(),reason:window.ccgSupabase.remoteBackendSkipReason()}));
   assert.equal(homeBackendPolicy.allowed,false,`Automated homepage must disable remote Supabase: ${JSON.stringify(homeBackendPolicy)}`);
@@ -60,7 +67,6 @@ try{
   // The homepage button calls Supabase directly rather than using the shared
   // client, so drive it into the viewport and verify that its initial count
   // read is also blocked in WebDriver/HeadlessChrome.
-  await page.goto(`${origin}/home.html`,{waitUntil:'domcontentloaded'});
   const pressSection=page.locator('[data-ccg-do-not-press]');
   await pressSection.waitFor({state:'attached'});
   await pressSection.scrollIntoViewIfNeeded();
