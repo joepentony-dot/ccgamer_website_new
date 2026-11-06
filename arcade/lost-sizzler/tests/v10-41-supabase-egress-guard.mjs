@@ -10,6 +10,54 @@ const adminSource=read('arcade/lost-sizzler/js/admin-audio-overrides.js');
 const playlistSource=read('arcade/lost-sizzler/js/lost-sizzler-playlist-audio.js');
 const adminUploaderSource=read('admin/js/arcade-assets.js');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
+const supabaseClientSource=read('js/ccg-supabase-client.js');
+class ContractCustomEvent{constructor(type,init={}){this.type=type;this.detail=init.detail}}
+function supabaseHarness({webdriver,userAgent,storage,requests}){
+  const windowState={
+    CCG_SUPABASE_URL:'https://lcslgxpgmttaexsorxik.supabase.co',
+    CCG_SUPABASE_ANON_KEY:'test-anon-key',
+    CCG_SUPABASE_STORAGE_KEY:'ccg-test-auth',
+    location:{protocol:'http:',hostname:'127.0.0.1',search:'',hash:''},
+    localStorage:storage,
+    addEventListener(){},
+    dispatchEvent(){},
+    setTimeout(){}
+  };
+  const documentState={readyState:'loading',addEventListener(){},querySelector(){return null}};
+  vm.runInNewContext(supabaseClientSource,{
+    window:windowState,document:documentState,
+    navigator:{webdriver,userAgent},
+    fetch:async(url,options)=>{requests.push({url:String(url),method:String(options?.method||'GET')});return{ok:true,status:200}},
+    CustomEvent:ContractCustomEvent,URL,URLSearchParams,console:{info(){},warn(){},error(){}}
+  },{filename:'ccg-supabase-client-contract.js'});
+  return windowState;
+}
+
+// Browser automation and offline builds must never use the production Supabase project.
+const automatedRequests=[];
+const automatedStorage={getItem(){return null},setItem(){}};
+const automatedWindow=supabaseHarness({webdriver:true,userAgent:'HeadlessChrome/140',storage:automatedStorage,requests:automatedRequests});
+const automatedReadiness=await automatedWindow.ccgSupabase.checkCommunityReadiness();
+assert(automatedReadiness.ready===false&&automatedReadiness.reason==='automated_test','Automated browser must explicitly skip community backend readiness requests.');
+assert(automatedWindow.ccgSupabase.remoteBackendAllowed()===false,'Automated browser must expose a closed remote-backend policy.');
+assert(await automatedWindow.ccgSupabase.waitForAuth()===null,'Automated browser auth bootstrap must resolve without a remote session.');
+let automatedClientError=null;
+try{await automatedWindow.ccgSupabase.getClient()}catch(error){automatedClientError=error}
+assert(/disabled for automated_test/.test(String(automatedClientError?.message||'')),'Automated client creation must fail closed before loading the remote SDK.');
+assert(automatedRequests.length===0,'Headless automation must make zero Supabase REST/Auth/Storage requests.');
+
+// A production browser still checks readiness, then caches only the public service-availability result.
+const productionRequests=[];
+const sharedReadinessStorage=new Map();
+const storageAdapter={getItem:key=>sharedReadinessStorage.get(key)||null,setItem:(key,value)=>sharedReadinessStorage.set(key,String(value))};
+const productionWindow=supabaseHarness({webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36',storage:storageAdapter,requests:productionRequests});
+assert(productionWindow.ccgSupabase.remoteBackendAllowed()===true,'Normal production browser must retain Supabase access.');
+const firstReadiness=await productionWindow.ccgSupabase.checkCommunityReadiness();
+assert(firstReadiness.ready===true&&productionRequests.length===4,'First production check must retain the existing endpoint validation.');
+const secondWindow=supabaseHarness({webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36',storage:storageAdapter,requests:productionRequests});
+const cachedReadiness=await secondWindow.ccgSupabase.checkCommunityReadiness();
+assert(cachedReadiness.ready===true&&productionRequests.length===4,'Warm public readiness cache must prevent repeating the four endpoint probes.');
+
 
 assert(adminSource.includes('navigator.webdriver===true'),'Remote audio policy must identify automated browsers.');
 assert(adminSource.includes('__CCG_ALLOW_REMOTE_TEST_ASSETS__'),'Remote audio tests need an explicit opt-in escape hatch.');
