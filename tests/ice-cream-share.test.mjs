@@ -125,7 +125,7 @@ test('only Speedball 2 contains the first-party Ice Cream game-page link', () =>
   const fixture = { slug: 'speedball-2-brutal-deluxe', title: 'Speedball 2: Brutal Deluxe', year: 1990, system: 'Amiga' };
   const generated = buildCanonicalPage(gameShell, fixture);
   const unrelated = buildCanonicalPage(gameShell, { ...fixture, slug: 'fire-ant', title: 'Fire Ant' });
-  const link = "<a class=\"ccg-btn ccg-btn--secondary\" href=\"/ice-cream/\" aria-label=\"Play the Speedball 2 Ice Cream sound\">🍦 PRESS FOR ICE CREAM!</a>";
+  const link = "<a class=\"ccg-btn ccg-btn--secondary\" href=\"/ice-cream/\">🍦 PRESS FOR ICE CREAM!</a>";
   assert.equal(speedball.split(link).length - 1, 1, 'live candidate must contain one Speedball CTA');
   assert.equal(generated.split(link).length - 1, 1, 'canonical generator must retain one CTA');
   assert.ok(!otherGame.includes('href="/ice-cream/"'), 'unrelated published page must not gain the CTA');
