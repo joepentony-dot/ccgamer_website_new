@@ -73,3 +73,10 @@ test('canonical route is in the generator source and current sitemap exactly onc
   assert.equal(paths.filter((x) => x === 'ice-cream/index.html').length, 1);
   assert.equal((read('sitemap-pages.xml').match(/<loc>https:\/\/www\.cheekycommodoregamer\.co\.uk\/ice-cream\/<\/loc>/g) || []).length, 1);
 });
+
+test('Phase 4D accepts only the exact new indexable page through existing validation', () => {
+  const validator = read('scripts/validate-year-platform-discovery.js');
+  assert.match(validator, /entry !== "ice-cream\/index\.html"/);
+  assert.match(validator, /canonicals\.length !== 1 \|\| canonicals\[0\] !== url/);
+  assert.match(validator, /sitemapPageLocs\.filter\(\(loc\) => loc === url\)\.length !== 1/);
+});
