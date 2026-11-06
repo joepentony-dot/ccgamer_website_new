@@ -67,3 +67,24 @@ html[data-ccg-feature="ice-cream"] .ccg-dnp__counter-number { font-size: 1.7rem;
   html[data-ccg-feature="ice-cream"] .ccg-dnp__button-wrap { width: min(248px, 66vw); }
 }
 @media (prefers-reduced-motion: reduce) { .ice-action { transition: none; } }
+
+/* Source-backed Speedball 2 facts and optional poster, below the interactive button. */
+.ice-history h3 { color: #f6fbff; font-size: clamp(1rem,2.5vw,1.14rem); line-height: 1.35; margin: 22px 0 6px; }
+.ice-poster {
+  width: min(100%, 390px);
+  margin: 25px auto 22px;
+  text-align: center;
+}
+.ice-poster a { display: block; border-radius: 10px; overflow: hidden; }
+.ice-poster img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #0b1b35;
+  box-shadow: 0 0 0 1px rgba(114,215,255,.25), 0 6px 26px rgba(0,0,0,.36);
+}
+.ice-poster figcaption { margin-top: 12px; color: #b9c9df; font-size: .82rem; line-height: 1.5; }
+.ice-history .ice-history__sources { font-size: .81rem; color: #b9c9df; line-height: 1.65; }
