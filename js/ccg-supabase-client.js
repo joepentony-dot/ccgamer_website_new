@@ -52,7 +52,7 @@
   function remoteBackendSkipReason() {
     try {
       if (window.CCGDungeonCarnageItchPackage === true || window.CCG_OFFLINE_BUILD === true || window.location.protocol === 'file:') return 'offline_build';
-      if (typeof navigator !== 'undefined' && (navigator.webdriver === true || /HeadlessChrome/i.test(String(navigator.userAgent || ''))) return 'automated_test';
+      if (typeof navigator !== 'undefined' && (navigator.webdriver === true || /HeadlessChrome/i.test(String(navigator.userAgent || '')))) return 'automated_test';
     } catch (_error) {}
     return '';
   }
