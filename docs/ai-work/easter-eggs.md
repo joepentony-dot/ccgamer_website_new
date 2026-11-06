@@ -1,3 +1,11 @@
+## 6 November 2026 — shareable Speedball 2 Ice Cream page (PR qualification pending)
+
+- Owner approved a fast promotional landing page without redesigning the existing homepage button. Branch `feature/shareable-speedball-ice-cream-20261106` started from main `e02fb388d24babb03c34c2c6b2837db0449d9ed1`.
+- New `ice-cream/index.html` reuses the existing two-state first-party button, defer-loaded controller and audio plus its existing anonymous counter RPCs. The dedicated `resources/css/ccg-ice-cream.css` contains page-scoped styling; the homepage HTML, existing button CSS/JS, audio and backend tables/functions are unchanged. The dedicated document deliberately carries `data-ccg-page="home"` only to reuse the established homepage-scoped button CSS and adds `data-ccg-feature="ice-cream"` for separate overrides.
+- The new page includes native mobile sharing with an explicit copy-link fallback, a verified existing Speedball 2 archive link, real visible historical context, one self-canonical SEO page, social preview metadata and structured WebApplication schema. Registration in the authoritative static-pages list and generated sitemap XML makes it discoverable. A targeted source-executed share/SEO regression was added; the public code cache increments v225→v226.
+- No new backend counter, new tracking endpoints, automated clicks, per-second polling, fabricated totals, homepage layout modifications, intro stack changes, catalogue edits or paid services. The anonymous count RPC is already known to lack bot protection: do not treat it as unique visitors, and monitor request load before major promotion.
+- **BRANCH ONLY / CI AND REVIEW PENDING / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head CI (especially homepage hash, sitemap/SEO and Lighthouse safety), fresh-main reconciliation, guarded squash merge, Pages deployment and production mobile/desktop acceptance before promoting the link. Do not bypass failing qualifications.
+
 # Easter Egg system workstream
 
 ## E11 Interactive Archive Expansion — 28 September 2026
