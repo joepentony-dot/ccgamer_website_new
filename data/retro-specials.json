@@ -726,7 +726,37 @@
       "50-essential-commodore-64-games"
     ],
     "deferYouTubePlayer": true,
-    "disableAutoFeaturedGames": true
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "🕹️ The 50-Game C64 Identification Challenge"
+      },
+      {
+        "time": "00:30",
+        "title": "👾 Round 1 – Arcade Deep Cuts"
+      },
+      {
+        "time": "05:12",
+        "title": "🧊 Round 2 – Isometric Icons"
+      },
+      {
+        "time": "10:00",
+        "title": "📼 Round 3 – Budget Brain-Burners"
+      },
+      {
+        "time": "14:44",
+        "title": "🎬 Round 4 – Movie & Licence Oddities"
+      },
+      {
+        "time": "19:30",
+        "title": "🏆 Round 5 – Veteran's Vault"
+      },
+      {
+        "time": "24:13",
+        "title": "How Many Did You Get?"
+      }
+    ]
   },
   {
     "id": "50-amiga-games-can-you-identify-them",
@@ -761,7 +791,37 @@
       "50-essential-amiga-games"
     ],
     "deferYouTubePlayer": true,
-    "disableAutoFeaturedGames": true
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "🕹️ The 50-Game Amiga Identification Challenge"
+      },
+      {
+        "time": "00:25",
+        "title": "👾 Round 1 – Arcade Deep Cuts"
+      },
+      {
+        "time": "04:48",
+        "title": "🕹️ Round 2 – Platform Heroes & Oddballs"
+      },
+      {
+        "time": "09:16",
+        "title": "💾 Round 3 – Workbench Wildcards"
+      },
+      {
+        "time": "13:42",
+        "title": "🎬 Round 4 – Lights, Camera, Amiga!"
+      },
+      {
+        "time": "18:11",
+        "title": "🏆 Round 5 – Veteran's Vault"
+      },
+      {
+        "time": "22:38",
+        "title": "How Many Did You Get?"
+      }
+    ]
   },
   {
     "id": "50-zx-spectrum-games-can-you-identify-them",
@@ -796,7 +856,37 @@
       "c64-vs-zx-spectrum"
     ],
     "deferYouTubePlayer": true,
-    "disableAutoFeaturedGames": true
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "🎬 Introduction – 50 ZX Spectrum Games Challenge!"
+      },
+      {
+        "time": "00:47",
+        "title": "🌈 Round 1 – Spectrum Legends (Games 1–10)"
+      },
+      {
+        "time": "05:18",
+        "title": "🕹️ Round 2 – Platformers & Peculiar Characters (Games 11–20)"
+      },
+      {
+        "time": "09:53",
+        "title": "🏎️ Round 3 – Arcade Action & Racing (Games 21–30)"
+      },
+      {
+        "time": "14:25",
+        "title": "🏰 Round 4 – Fantasy, Exploration & Isometric Adventures (Games 31–40)"
+      },
+      {
+        "time": "18:57",
+        "title": "🧠 Round 5 – The Spectrum Expert's Challenge (Games 41–50)"
+      },
+      {
+        "time": "23:32",
+        "title": "🏆 Final Scores & Outro – How Many Did You Recognise?"
+      }
+    ]
   },
   {
     "id": "50-arcade-games-can-you-identify-them",

@@ -207,7 +207,7 @@ function buildPlayAlongGuide(entry, pagePrefix) {
   const link = (chapter) => {
     const time = parsePlayAlongTime(chapter.time);
     return '<li><a class="retro-video-page__chapter-link" href="' +
-      escapeHtml(pagePrefix + entry.slug + '/?t=' + time + '#watch-video') +
+      escapeHtml(SITE_ORIGIN + pagePrefix + entry.slug + '/?t=' + time + '#watch-video') +
       '" data-video-chapter="' + time + '"><span class="retro-video-page__chapter-time">' +
       escapeHtml(chapter.time) + '</span><span class="retro-video-page__chapter-name">' +
       escapeHtml(chapter.title) + '</span></a></li>';

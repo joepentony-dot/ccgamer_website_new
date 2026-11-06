@@ -119,7 +119,11 @@ jobs:
           # producing the sitemap index; no changes to committed page output.
           # These two tools use CCG_REPO_ROOT, not the --root CLI argument.
           CCG_REPO_ROOT="$PWD/_site" node scripts/generate-retro-video-seo.js
+          # Preserve source-owned chapters, challenge groups and Clip metadata
+          # after template regeneration, using the same companion publisher.
+          CCG_REPO_ROOT="$PWD/_site" node scripts/generate-video-library.js
           CCG_REPO_ROOT="$PWD/_site" node scripts/validate-retro-video-seo.js
+          CCG_REPO_ROOT="$PWD/_site" node scripts/validate-video-library.js
 
           # The sitemap owner resolves sibling helpers relative to __dirname__.
           # Keep scripts out of the public artifact, but stage the complete tool

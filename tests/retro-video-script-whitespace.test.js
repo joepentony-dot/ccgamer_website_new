@@ -45,12 +45,17 @@ test("Pages staging restores retro VideoObject and validates it before sitemap g
   );
   const start = deploy.indexOf("node scripts/generate-retro-pages.js --root _site");
   const enrich = deploy.indexOf('CCG_REPO_ROOT="$PWD/_site" node scripts/generate-retro-video-seo.js');
+  const discovery = deploy.indexOf('CCG_REPO_ROOT="$PWD/_site" node scripts/generate-video-library.js');
   const validate = deploy.indexOf('CCG_REPO_ROOT="$PWD/_site" node scripts/validate-retro-video-seo.js');
+  const validateDiscovery = deploy.indexOf('CCG_REPO_ROOT="$PWD/_site" node scripts/validate-video-library.js');
   const index = deploy.indexOf("(cd _site && node scripts/generate-sitemaps.js)");
   const removeTools = deploy.indexOf("rm -rf _site/scripts", start);
   assert.ok(start >= 0, "Pages must rebuild authoritative retro watch pages");
   assert.ok(enrich > start, "Rebuild must be followed by VideoObject/sitemap enrichment");
-  assert.ok(validate > enrich, "Published retro video markup must be validated");
+  assert.ok(discovery > enrich, "Restore authored discovery only after VideoObject enrichment");
+  assert.ok(validate > discovery, "Validate the final enriched video markup");
+  assert.ok(validateDiscovery > discovery && validateDiscovery < index,
+    "Published chapters and video library must be validated before the sitemap index");
   assert.ok(index > validate, "Video sitemap must exist before producing the sitemap index");
   assert.ok(removeTools > validate, "The staged validation must run before staging tools are removed");
   assert.equal(
@@ -106,7 +111,8 @@ test("real staged retro regeneration validates all ten demo pages and is repeata
     "data/retro-events.json",
     "data/amiga-demo-music.json",
     "data/video-metadata.json",
-    "admin/templates/retro-video-template.html"
+    "admin/templates/retro-video-template.html",
+    "admin/templates/video-library-template.html"
   ];
 
   const execute = (script, args = [], environment = {}) => execFileSync(
@@ -130,12 +136,27 @@ test("real staged retro regeneration validates all ten demo pages and is repeata
 
     const demos = JSON.parse(fs.readFileSync(path.join(stage, "data/amiga-demo-music.json"), "utf8"));
     const records = JSON.parse(fs.readFileSync(path.join(stage, "data/video-metadata.json"), "utf8")).videos || {};
+    // This isolated fixture qualifies the retro portion of the real companion
+    // pipeline; full Pages CI separately checks the actual 666-game catalogue.
+    fs.mkdirSync(path.join(stage, "games"), { recursive: true });
+    fs.writeFileSync(path.join(stage, "games/games.json"), "[]\n");
+    const specials = JSON.parse(fs.readFileSync(path.join(stage, "data/retro-specials.json"), "utf8"));
+    const quizzes = specials.filter((entry) => ["50-commodore-64-games-can-you-identify-them",
+      "50-amiga-games-can-you-identify-them", "50-zx-spectrum-games-can-you-identify-them"].includes(entry.slug));
+    assert.equal(quizzes.length, 3);
+    const changedMetadata = JSON.parse(fs.readFileSync(path.join(stage, "data/video-metadata.json"), "utf8"));
+    for (const quiz of quizzes) {
+      changedMetadata.videos[quiz.youtubeId].description = "00:00 Changed upstream description\n00:01 Incomplete guide";
+    }
+    fs.writeFileSync(path.join(stage, "data/video-metadata.json"), JSON.stringify(changedMetadata));
     assert.equal(demos.length, 10, "All ten original Amiga demo routes must be retained");
 
     const rebuildAndValidate = () => {
       execute("generate-retro-pages.js", ["--root", stage]);
       execute("generate-retro-video-seo.js", [], { CCG_REPO_ROOT: stage });
+      execute("generate-video-library.js", [], { CCG_REPO_ROOT: stage });
       execute("validate-retro-video-seo.js", [], { CCG_REPO_ROOT: stage });
+      execute("validate-video-library.js", [], { CCG_REPO_ROOT: stage });
 
       const pages = new Map();
       const sitemap = fs.readFileSync(path.join(stage, "sitemap-retro-videos.xml"), "utf8");
@@ -156,6 +177,28 @@ test("real staged retro regeneration validates all ten demo pages and is repeata
           demo.slug + " must have the correct sitemap inclusion");
         pages.set(demo.slug, html);
       }
+      for (const quiz of quizzes) {
+        const html = fs.readFileSync(path.join(stage, "retro-specials", quiz.slug, "index.html"), "utf8");
+        assert.equal((html.match(/data-video-chapter="/g) || []).length, 7,
+          quiz.slug + " must retain its published chapters after final Pages enrichment");
+        const video = JSON.parse(html.match(/<script type="application\/ld\+json" data-ccg-schema="retro-video">\s*([\s\S]*?)<\/script>/)[1]);
+        assert.equal(video.hasPart.length, 7);
+        assert.deepEqual(video.hasPart.map((clip) => clip.name), quiz.chapters.map((chapter) => chapter.title));
+        pages.set(quiz.slug, html);
+      }
+      const showdown = fs.readFileSync(path.join(stage, "retro-specials/c64-vs-amiga-100-games-compared/index.html"), "utf8");
+      assert.equal((showdown.match(/data-video-chapter="/g) || []).length, 111);
+      assert.equal((showdown.match(/<details\b/g) || []).length, 10);
+      assert.ok(showdown.includes("Can you guess the higher reader rating?"));
+      assert.ok(showdown.includes('data-ccg-youtube-src="https://www.youtube-nocookie.com/embed/ygPOtslHRfk"'));
+      pages.set("c64-vs-amiga-100-games-compared", showdown);
+      for (const privateEntry of specials.filter((entry) => entry.membersOnly === true)) {
+        const html = fs.readFileSync(path.join(stage, "retro-specials", privateEntry.slug, "index.html"), "utf8");
+        assert.doesNotMatch(html, /"@type": "VideoObject"|data-video-chapter="/,
+          "Restricted entries must not gain public video metadata or chapters");
+      }
+      pages.set("videos/index.html", fs.readFileSync(path.join(stage, "videos/index.html"), "utf8"));
+      pages.set("videos/video-index.json", fs.readFileSync(path.join(stage, "videos/video-index.json"), "utf8"));
       return { pages, sitemap };
     };
 
