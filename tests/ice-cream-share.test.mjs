@@ -116,3 +116,20 @@ test('Speedball 2 source-backed history and the optimised poster are published t
   assert.equal(JSON.parse(schemaText).image, 'https://www.cheekycommodoregamer.co.uk/' + image);
   assert.equal((html.match(/data-ccg-do-not-press/g) || []).length, 1, 'existing button must remain singleton');
 });
+
+test('only Speedball 2 contains the first-party Ice Cream game-page link', () => {
+  const speedball = read('games/speedball-2-brutal-deluxe/index.html');
+  const otherGame = read('games/fire-ant/index.html');
+  const { buildCanonicalPage } = require('../scripts/prepare-seo-game-routes.js');
+  const gameShell = read('games/game.html');
+  const fixture = { slug: 'speedball-2-brutal-deluxe', title: 'Speedball 2: Brutal Deluxe', year: 1990, system: 'Amiga' };
+  const generated = buildCanonicalPage(gameShell, fixture);
+  const unrelated = buildCanonicalPage(gameShell, { ...fixture, slug: 'fire-ant', title: 'Fire Ant' });
+  const link = "<a class=\"ccg-btn ccg-btn--secondary\" href=\"/ice-cream/\" aria-label=\"Play the Speedball 2 Ice Cream sound\">🍦 PRESS FOR ICE CREAM!</a>";
+  assert.equal(speedball.split(link).length - 1, 1, 'live candidate must contain one Speedball CTA');
+  assert.equal(generated.split(link).length - 1, 1, 'canonical generator must retain one CTA');
+  assert.ok(!otherGame.includes('href="/ice-cream/"'), 'unrelated published page must not gain the CTA');
+  assert.ok(!unrelated.includes('href="/ice-cream/"'), 'generator must exclude other games');
+  assert.equal(speedball.split('data-ccg-share-btn').length - 1, 1, 'the original Share button remains');
+  assert.ok(!speedball.includes('data-ccg-dnp-button'), 'the interactive button remains on its standalone page');
+});
