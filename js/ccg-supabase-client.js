@@ -307,7 +307,8 @@
         remoteBackendSkipped: true,
         reason: blockedReason
       });
-      emitAuthReady(true);
+      // Readiness listeners may request auth again; dispatch this event only once.
+      emitAuthReady(false);
       return null;
     }
 
