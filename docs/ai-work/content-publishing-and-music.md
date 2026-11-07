@@ -1,3 +1,8 @@
+## 7 November 2026 — chapter source repair released; generated output qualification active
+
+- #3035 guarded-merged as `47cbfd4ee649f9cf96056ebbe475a56cad0d32ba` after 17 native workflow groups, 86 tests, staged/browser/performance gates and clean independent review; Pages `42415063658` / live navigation `42415253857`, all 99 served artifact hashes and 34 live desktop/mobile watch cases passed (receipt `6713217864`, zero production Supabase requests). Full commands/variance/fixture diagnostics are in the SEO record.
+- Existing #3034 normally reconciled at `a326e7cc15b3239105db7045b324c9044a8b6d0f`; two offline 69-stage full rebuilds passed identically. Preserved newer native metadata's author correction rather than silently replacing it with older output. All original IDs/verified dates/access/source ordering and source-owned quiz/guide chapters remain intact. New native #3036/#3037 are preserved drafts with complete-patch audit addendum; #3037 parent failed closed on draft after successful generation, no unchanged retry. Final #3034 exact-head qualification/review/guarded release/production proof remain pending; no schedules or competing automation changed.
+
 ## 6 November 2026 — complete generated backlog audit / published chapter preservation
 
 - Audited all 43 open generated SEO/game/publisher PRs against main `c3cad3bfff8c1ed8f8786eac947d1ed126e29a6f`, plus separately preserved #2816 source research. Full binary-patch identities, stale bases, conflicts, already-main payloads and native check states are recorded in `generated-backlog-audit-20261106.md`. Matching titles are not duplicates: only #2929/#2928 and #2895/#2893/#2890 match as complete patches. No PR closed or branch discarded.
