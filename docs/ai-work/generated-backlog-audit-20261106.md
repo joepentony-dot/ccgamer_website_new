@@ -85,3 +85,61 @@ Reproducible commands also checked all unmerged commits: #2996's three and #2981
 ### New release blocker found by real publisher browser qualification
 
 The refreshed existing #3034 at `ee24bb29c6a3353673a5aa74d54129066fb18bc7` is not release-qualified: Firebird has31 static cards but runtime0 because the generator omits the existing runtime selector/platform attributes. The same mismatch is present in current served HTML. This is a demonstrated owning-generator defect; corrected on the same existing branch with a source-executed real-catalogue/runtime negative-control regression and full regeneration. All new-head gates must rerun; clean old-head review is not merge permission. No branch work, cards, URLs, metadata or data ordering discarded.
+
+## 7 November final-main comparison — qualified output is live
+
+#3034 final `2017de2830b7ffc05d51d24503d4232d1370621b` was qualified after correcting the demonstrated publisher marker defect: all 28 executed native workflow runs (20 families) / 30 checks, Workers, 91 tests, full offline owner/idempotence, actual Pages/browser and paired performance gates; final independent clean receipt `6713381584`. Guarded normal PR merge `54d9b25965d10ff11cf8bcb4699ba8facd91db3e` has the identical tree. Pages `42418617902`, navigation `42418826920`, all 12 post-merge groups, all 278 changed served artifact hashes and 40 live cases passed. Publishing `42418617872` reports output already current. Production receipt `6713656371`.
+
+Fresh inventory now has **44 open generated PRs**, plus separately preserved #2816 source research and unrelated #2957/#2867/#2813. Repeated the **complete** binary-patch, dependency, per-path blob and actual prospective merge audit against current main `54d9b259`, rather than reusing c3/47cb results. All current generated proposal paths already exist in main; none proposes deletions. Exact complete-patch duplicate groups remain #2929/#2928 and #2895/#2893/#2890. Differing old output is not blanket-authorised to merge: older quiz labels/timestamps/curated titles, flattened guide and pre-marker publisher pages would undo newer qualified work. #3037's unique author correction was explicitly retained in #3034; historical IDs/verified fields preserved. Unique #2816 research still requires independent record/edition/provenance review and reconciliation, not output auto-merge.
+
+Command: `python /workspace/work/generated-audit/final-main-audit/audit-patches.py` after fresh API inventory and `git fetch origin`; same full-index/binary/merge-tree commands as initial audit. Results `final-main-audit/patch-audit.json` SHA-256 `8649f64b4d8c62f4299e5267ea6563953835476b9ca003fa32f69a9e5ec5d935`. No new output PR, lost branch work, bulk merge or title-based closure. The following table is a **current-main comparison**, not qualification; action-required/unexecuted historical checks remain blocked. Fresh exact-head Actions listings for all 44 generated heads still show `action_required` PR events; the separate eight successful native validations on game-output proposals do not qualify those events. Full hashes identify each compared complete patch even where merge-base has advanced since the first snapshot.
+
+| PR | Behind main | Three-way conflicts | Changed payloads already equal main | Actions success / action_required | Complete patch SHA-256 |
+| --- | ---: | ---: | ---: | --- | --- |
+| #3037 | 5 | 1 | 72/279 | 8 / 17 | `69acd756bb009c7aeab250ac096046a90f798dfe34b09b0ea538ee6a2438b9b4` |
+| #3036 | 6 | 3 | 61/70 | 0 / 11 | `a689abb749d05b67b882a388ab9e708ecf69037f4cde8cd4ebf0c9bae2d35e29` |
+| #3033 | 7 | 13 | 44/269 | 8 / 17 | `c20dcf5b090e85bc71211f10d9b720c2564d5ea0c40bd62a7ce22bb5881db837` |
+| #3032 | 8 | 13 | 37/58 | 0 / 10 | `944b181838119dc84e4c6b2afa5a6745aa65e481149a6e39e177b136319c4415` |
+| #3031 | 9 | 14 | 37/58 | 0 / 10 | `b9c4950c9bccaae357023739756892866600ac67c2ba3b3be20f811ab6280a21` |
+| #3029 | 10 | 14 | 37/58 | 0 / 10 | `f2601231b3d4420ddbe6edaa816a9b648e054a603f71f321e300ec9f07af50e3` |
+| #3027 | 10 | 14 | 37/58 | 0 / 10 | `7f0161388cd82761c125f5f88028a92f86ad9746c841fc82039a88ecaf3326de` |
+| #3025 | 11 | 14 | 43/267 | 8 / 16 | `21d923df05f316d8a96a9e3aabea87c889804b318a6eb4af40a664cae5186e5d` |
+| #3023 | 12 | 15 | 42/267 | 8 / 16 | `91b66304fb45629c82c7c50c68201828ec8b62a0a985c5647e3dcfa8e806fc42` |
+| #3021 | 13 | 15 | 35/57 | 0 / 10 | `2c47ca35b3d487caaa8de96e3d5e74ae784fc97885267578bd4ec782493e5df6` |
+| #3020 | 13 | 15 | 35/57 | 0 / 9 | `f34dae78f7555ebc3039b8beac12365e93bcd445a0626a7a04aa931aa3e53231` |
+| #3019 | 13 | 15 | 35/57 | 0 / 10 | `b244df1cda43e88201a9cdc95a8828d9554dd23bbc4f627d85894a329e8a30d7` |
+| #3018 | 14 | 15 | 35/57 | 0 / 10 | `bf1e67d3c8e5e5241cafe5622fb4adbdb9d6dd1cfcd75f06e8f7f5be46011edd` |
+| #3015 | 15 | 15 | 35/57 | 0 / 10 | `05bde8c812569b5eb18b5e2b4e11025948b667cf5bf3b760aa818534300e2bed` |
+| #3012 | 17 | 15 | 39/265 | 8 / 16 | `f81127a3b4e51191a63b579630ebceff2b4265fa8546655eb5e4166fcb9f0487` |
+| #3009 | 18 | 17 | 34/57 | 0 / 10 | `864c044b03f428757880c8f8061472be332fde721a679007902e684b99ac89ab` |
+| #3008 | 18 | 17 | 34/57 | 0 / 10 | `55cb23a9db8725cb19d5d13ad8f6ec455717f64d63d63ef7bbbf94d60888d515` |
+| #3007 | 19 | 17 | 34/57 | 0 / 10 | `627149a94aca737d08e09ba3a158cd15b704653f0b342ed5a687145c91dae06f` |
+| #3005 | 20 | 17 | 38/265 | 8 / 16 | `a613b32dc6f713eec64d222716f00f77465ebb26695a1c86c22780863f9ce4a9` |
+| #3003 | 21 | 17 | 5/265 | 8 / 16 | `3ec736b917356d8ed42b9f38329a32b1b92f7004d5ab248a40c751a90d945d6a` |
+| #3001 | 22 | 20 | 1/260 | 8 / 14 | `067093c9b752785ee4a69e02c04cc5f2e1d082749f74e8758f4e804f2142e904` |
+| #2999 | 23 | 15 | 0/48 | 0 / 9 | `0a58d12ba64fd3af8e8707777a5789de54937ed955ba956d10f73ba2e3e7c327` |
+| #2996 | 23 | 14 | 0/47 | 0 / 9 | `4bb3a241be51159b403261fefa90900d97562fe1738884d38600fdd9033f81d4` |
+| #2987 | 33 | 1 | 1/211 | 8 / 14 | `f50658f74279c27df73d184beee1354351ef7e267e23c6b633c92a7a2f7593cb` |
+| #2981 | 26 | 2 | 0/2 | 0 / 7 | `88bdbbd3d931ded03cd7b2a05e3a132c709373ddeaab5c7c8ff6832026db939c` |
+| #2973 | 43 | 1 | 0/4 | 8 / 9 | `4b8fc4da0189476c2531769537e096bc6127edb7fe15dd8c385f63b72f0b7c20` |
+| #2969 | 47 | 3 | 665/672 | 8 / 13 | `6fdc492c57d17e086bac8a64035df561c5643dafd64d4804b760d7d0d23119c4` |
+| #2950 | 61 | 7 | 0/10 | 8 / 10 | `3d06f74410e6bef3b2eaefe936a38e468a57b99da46e332e8ee19ef2e4ab838e` |
+| #2936 | 76 | 3 | 30/281 | 8 / 14 | `017f0cdc6bafe62f10e03994e5a5db3376b469403effed259c20b72999f45077` |
+| #2935 | 76 | 0 | 0/207 | 0 / 11 | `ba17ec5b1d4f49de32233fe15b2fb57ca387765f92e535163ac853ce967035d7` |
+| #2933 | 77 | 3 | 30/281 | 8 / 14 | `3e9412629c74e91d553aa37f36b59fbf3eb51521542adc352b91b82ef09a627c` |
+| #2929 | 79 | 1 | 29/279 | 8 / 14 | `6f467263c4f38cfaecb6b25ee0f2251eda303ed5b21baff483a624a339fb18e6` |
+| #2928 | 80 | 1 | 29/279 | 8 / 14 | `6f467263c4f38cfaecb6b25ee0f2251eda303ed5b21baff483a624a339fb18e6` |
+| #2917 | 86 | 4 | 29/323 | 8 / 14 | `1192039c8f6c10ca8c8245baaa3825213148933e02fe2f63deb3502dfb6abc85` |
+| #2911 | 89 | 3 | 29/281 | 8 / 15 | `6ef9befe96975d889e0f2c6506d651ddb99c4602c3621ba0e59aed14124bee47` |
+| #2910 | 90 | 1 | 29/279 | 8 / 14 | `068d0daa4ae2346e380e8f75d12a316204c7004302303d7c7840d825362425dd` |
+| #2908 | 92 | 1 | 29/320 | 8 / 14 | `ba36f8d3fed4316a561283f0e9cb6224be2160a3ffa15f7f28804a060a982ed1` |
+| #2907 | 92 | 0 | 0/207 | 0 / 11 | `9d78cb1d4ab9e9cb14a50236357bfb62799bf6812d82f93865778b858b687f09` |
+| #2906 | 93 | 1 | 0/1 | 8 / 7 | `891762eee5cf2eb1b9d3ebade3fcc9d9d6bb4c1a5fe7aed025e37e8d690f686f` |
+| #2902 | 96 | 48 | 1/50 | 0 / 15 | `1a53f5b9abcbbf364dafc29734ea4fd5f77d7481a68eec37d7ab50cf72f6c2f9` |
+| #2895 | 102 | 3 | 0/6 | 8 / 10 | `161026d3cf1216f56f29cee6008392460b7e1ae511a7271c09d6d9502356bceb` |
+| #2893 | 103 | 3 | 0/6 | 8 / 10 | `161026d3cf1216f56f29cee6008392460b7e1ae511a7271c09d6d9502356bceb` |
+| #2890 | 104 | 3 | 0/6 | 8 / 10 | `161026d3cf1216f56f29cee6008392460b7e1ae511a7271c09d6d9502356bceb` |
+| #2872 | 114 | 8 | 1/12 | 8 / 11 | `30ad9b3c7760671a399f347e3c67b07f4ed04221a10def839b49f9cf9969f3bd` |
+| #2816 | 162 | 1 | 0/18 | source research; held | `ac05f97b82be8e8d6359e97b3a26780df663ca08246f773cd1fcb514b284f731` |
+
+#2816 in this table is source research, not one of the 44 generated proposals. Preserve all unmerged branches and their unique evidence. Future head/main changes require another comparison and exact-head qualification.

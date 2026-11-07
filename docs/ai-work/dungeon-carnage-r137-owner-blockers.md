@@ -1,3 +1,20 @@
+## 7 November 2026 — verified R154 production and current owner-defect status
+
+#2958 **MERGED / DEPLOYED / AUTOMATED QUALIFICATION PASSED**: exact merge `148db2cfe21b15260460e5b24c14ef655190bbe0`, qualified head `d573443646011311c8e0f67b5d7543cb8546eba7`, independent clean review `6692845964`. Pre-merge Full `42274578232`, post-merge Full `42278181603` (canonical Node + discovery + six Chromium shards), post-merge Lighthouse `42278181612` (25 executed jobs), Pages `42278181619`, production smoke `42278181702` and live navigation `42278662839` succeeded. Full/Lighthouse attempt 1; latest post-merge Native Wheel is attempt 2. Fresh main `54d9b25965d10ff11cf8bcb4699ba8facd91db3e` retains the same Dungeon source tree. Current served R154 / `20261106r154` and ten critical files equal qualified Pages staging. Historical branch-only notes below do not describe current merge status.
+
+| Owner condition | Current evidence | Acceptance status |
+| --- | --- | --- |
+| P0 Guardian Floor 5 freeze / overlapping FX | R150 counted labels, R151 linear retirement, R141 corpse retention and R153 chamber separation are merged safeguards. Fresh source regressions and controlled Chromium 12-second triple-threat / 300-defeat pressure / final-generator-and-Maw settlement pass. No matching owner save/trace or freeze reproduction. | **OPEN / NOT OWNER ACCEPTED** |
+| P0 two apparent invulnerables / second Flask | Count Loadula and Death Stalker are distinct authored actors, not automatically duplicates. Current real-source tests pass sequential one-charge acquisition/payment to distinct wards, broken-ward nonpayment, line-of-sight refusal/refund, JSON restore and deterministic R152/R153 placement/movement boundaries. This does not identify the owner's actors or prove the original second-Flask incident fixed. | **OPEN / NOT OWNER ACCEPTED** |
+| P1 minimap triangle / narrow-screen geometry | R154 is merged and automated layout-qualified, not branch-only. | **MERGED / NOT OWNER ACCEPTED** |
+| P0 invisible chest warning | Existing R144 correction remains merged. No new owner-matching replay here. | **MERGED / NOT OWNER ACCEPTED** |
+| P1 wearable Equip / Swap | Existing R147 correction remains merged. | **MERGED / NOT OWNER ACCEPTED** |
+| P2 Magic Sack ownership count | Existing R145 correction remains merged. | **MERGED / NOT OWNER ACCEPTED** |
+
+Fresh supporting checks on unchanged `54d9b259`: 21 Node contract files passed with all outbound fetch/HTTP(S)/DNS/socket calls rejected; existing real Chromium R78, incident reporter and egress contracts passed with loopback-only routing, all Supabase attempts counted (zero), blocked external proxy and no TLS bypass. No new demonstrated current runtime problem; no speculative fix, weaker assertion or new test. [Full commands, receipts, production hashes and hypothesis boundaries](dungeon-carnage-20261107-verification.md).
+
+**OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED. Commercial Windows release HOLD.** Windows preview artifact `13531084685` exists/unexpired for qualified d573443646; artifact existence/CI is not installed owner acceptance. Needed to match the original incident: save or floor/seed, exact installed build/cache, actions including first/second Flask and death/Continue, and the existing F8/`?bugreport=1` report (actor IDs/ward routes/2-of-3 state/FX history). Do not include account tokens or private credentials. The screenshots alone cannot establish actor identity or root cause. Preserve all historical evidence and other asset/manual holds.
+
 ## 6 November 2026 — PR #2958 current-main reconciliation
 
 - Continued existing branch `fix/dungeon-r153-live-boss-warden-chamber-guard-20261030` from `1536c88958451119df6bbb926a5b666fe074adc9`; merged current main `5905fadae` with two parents, without rebase/force push. The sole conflict was the public cache namespace: advance v227/v229 to v230. Incoming Ice Cream page/navigation, SEO and safety work retained; existing automation/offline Supabase guards retained. No database/schema, saved-game format or user-data changes.
