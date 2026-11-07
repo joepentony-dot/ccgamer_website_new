@@ -1,13 +1,41 @@
 {
   "version": 1,
   "counts": {
-    "total": 707,
+    "total": 709,
     "gameVideos": 666,
-    "retroVideos": 41,
+    "retroVideos": 43,
     "c64GameVideos": 563,
     "amigaGameVideos": 103
   },
   "items": [
+    {
+      "id": "ygPOtslHRfk",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "C64 vs Amiga: 100 Games Compared – Can You Guess the Winner?",
+      "description": "100 C64 vs Amiga game comparisons. Guess which version earned the higher Lemon reader rating, keep score and see which machine wins.",
+      "url": "/retro-specials/c64-vs-amiga-100-games-compared/",
+      "thumbnail": "https://i.ytimg.com/vi/ygPOtslHRfk/mqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
+    {
+      "id": "cNv9J-MhMA0",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "Think You Know Arcade Games? Name These 50 Classics! | 80s & 90s Quiz",
+      "description": "Can you recognise 50 arcade games from just ten seconds of gameplay? Five rounds of coin-op classics, difficult favourites and a bonus soundtrack challenge.",
+      "url": "/retro-specials/50-arcade-games-can-you-identify-them/",
+      "thumbnail": "https://i.ytimg.com/vi/cNv9J-MhMA0/mqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
     {
       "id": "XxEhpjSoYc8",
       "kind": "retro",
@@ -27,7 +55,7 @@
       "kind": "retro",
       "filter": "retro-specials",
       "badge": "Retro Special",
-      "title": "Think You Know the Commodore Amiga? Try This 50-Game Quiz!",
+      "title": "50 Classic & Forgotten Amiga Games – Test Your 16-Bit Memory!",
       "description": "Can you recognise 50 Commodore Amiga games from short gameplay clips? Test your memory across a range of familiar favourites and tougher titles.",
       "url": "/retro-specials/50-amiga-games-can-you-identify-them/",
       "thumbnail": "https://i.ytimg.com/vi/kc86gnQh7ww/mqdefault.jpg",
@@ -8232,7 +8260,7 @@
       "kind": "retro",
       "filter": "retro-specials",
       "badge": "Retro Special",
-      "title": "Inside Europe’s LARGEST Free-Play Arcade… This Place Is Unreal",
+      "title": "Inside Europe’s LARGEST Free-Play Arcade… Arcade Club Bury - This Place Is Unreal",
       "description": "Inside one of the UK’s biggest retro arcades — hundreds of machines, all free-play.",
       "url": "/retro-specials/arcade-club-bury/",
       "thumbnail": "https://i.ytimg.com/vi/6PmRNlqIdFY/mqdefault.jpg",
