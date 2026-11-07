@@ -496,7 +496,7 @@ function renderGameCard(game) {
     const platform = String(game.system || game.platform || "Retro").trim();
     const year = Number(game.year) || "Year unknown";
 
-    return `                    <article class="ccg-publisher-game-card" data-publisher-game-card data-game-title="${htmlEscape(String(game.title || "").toLowerCase())}" data-game-platform="${htmlEscape(String(platform).toLowerCase())}">
+    return `                    <article class="ccg-publisher-game-card" data-publisher-game-card data-publisher-game data-game-title="${htmlEscape(String(game.title || "").toLowerCase())}" data-game-platform="${htmlEscape(String(platform).toLowerCase())}" data-system="${htmlEscape(String(platform).toLowerCase())}">
                         <a class="ccg-publisher-game-card__link" href="/games/${htmlEscape(game.slug)}/">
                             <div class="ccg-publisher-game-card__media">
                                 <img src="${htmlEscape(thumbnail)}" alt="${htmlEscape(game.title)} thumbnail" loading="lazy" decoding="async">

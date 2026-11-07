@@ -1,3 +1,7 @@
+## 7 November 2026 — existing #3034 held on demonstrated publisher filter defect
+
+Final browser gate on `ee24bb29c6a3353673a5aa74d54129066fb18bc7` found31 rendered Firebird cards but a zero runtime count/search result. Verified the same existing generator/runtime marker mismatch in served production HTML. Correct the owner to include the runtime's existing `data-publisher-game` and `data-system` attributes, preserving existing markup/metadata/source order and all cards. Added real generated-catalogue/runtime regression: old generator fails `0 !== 31`, corrected producer passes. Regenerate via the full owner; repeat final exact-head CI, independent review, staging/browser/performance and guarded release. Previous-head successes remain historical. Detailed defect evidence is in the Games Archive record. No second implementation branch or weaker check.
+
 ## 7 November 2026 — chapter preservation released; existing #3034 is the active output qualification
 
 - #3028 and #3010 remain guarded-merged and production-verified. Source repair #3035 qualified exact head `abc4393f36e3aaedb35843f4d4ad43fc198b3e3a` with 86 tests, all 17 executed native workflow groups, full 96-case staged Pages browser matrix, 24 paired Lighthouse reports and independent clean Codex summary `6697122957` / receipt `6697145135`. After fresh head/base/check/review reads, expected-head squash merged as `47cbfd4ee649f9cf96056ebbe475a56cad0d32ba`; trees match.
