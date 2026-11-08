@@ -25,7 +25,10 @@ assert.equal(voiceCtx.state.active,null,"Audio owner must release the old active
 assert.equal(voiceCtx.finish(),false,"Completing an old clip must not pause a new clip");
 assert.match(npc,/if\(host\?\.rescue\?\.following&&!host\.rescue\.rescued\)return args/,"Escort cannot be interrupted by generic keeper greeting");
 assert.doesNotMatch(npc,/else if\(rescue\.following&&withinReach\(player,rescue\)\)present\(rescue,lines\.scout\.following/,"Every step near the scout must not replay the same voice");
-assert.match(npc,/else if\(rescue\.rescued&&withinReach\(player,rescue\)\)present\(rescue,lines\.scout\.rescued/,"Direct interaction with a rescued Scout must retain its safe-state acknowledgement");
+assert.match(npc,/else if\(rescue\.rescued&&withinReach\(player,rescue\)\)present\(rescue,lineForScout\(rescue,"rescued",player\)/,"Direct interaction with a rescued Scout must retain its safe-state acknowledgement through the canonical voiced line");
+assert.match(npc,/const key=stateKey\|\|scoutState\(rescue\),base=lines\.scout\[key\]\|\|lines\.scout\.trapped/,"The contextual Scout line must keep the existing keyed recorded dialogue as its authoritative base");
+assert.match(npc,/const subtitle=`\$\{base\.text\} \$\{scoutEscortGuidance\(rescue,player,key\)\}`\.trim\(\)/,"Scout guidance may extend subtitles without changing the original audio phrase");
+assert.doesNotMatch(npc,/else if\(rescue\.following&&withinReach\(player,rescue\)\)present\(/,"Scout following must not emit a voice line every movement step");
 
 const movement=cut(play,"function solveSequenceTorch(p){","function weightBridgeCell(");
 const puzzle={roomId:4,torches:[{dir:"N",x:2,y:2,lit:false},{dir:"E",x:3,y:2,lit:false}],sequence:["N","E"],progress:0,solved:false};
