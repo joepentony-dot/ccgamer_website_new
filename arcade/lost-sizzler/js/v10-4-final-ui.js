@@ -58,6 +58,122 @@
     document.querySelectorAll("#v106-enemy-credits [data-enemy-avatar-index]").forEach(canvas=>{const row=rows[Number(canvas.dataset.enemyAvatarIndex)];try{window.CCGRenderEnemyCreditAvatar?.(canvas,row)}catch(error){console.warn("Enemy credit avatar render failed",error)}})
   }
 
+  // R155: local-only, one-time post-victory relic. Existing runs and saved
+  // checkpoint formats are untouched; loss of local storage fails visibly.
+  const CRIMSON_KEY="ccg-dungeon-carnage-crimson-dungeonheart-v1";
+  const CRIMSON_TITLE="Keeper of the Crimson Dungeonheart";
+  function readCrimsonReward(){
+    try{
+      const value=JSON.parse(localStorage.getItem(CRIMSON_KEY)||"null");
+      return value?.id==="crimson-dungeonheart"&&value.title===CRIMSON_TITLE?value:null;
+    }catch(_){return null}
+  }
+  function awardCrimsonReward(){
+    if(!campaignComplete())return null;
+    const existing=readCrimsonReward();
+    if(existing)return existing;
+    const reward={id:"crimson-dungeonheart",title:CRIMSON_TITLE,earnedAt:new Date().toISOString(),maxFloor:15};
+    try{localStorage.setItem(CRIMSON_KEY,JSON.stringify(reward))}catch(_){return null}
+    return readCrimsonReward(); // Verify durable write before claiming an unlock.
+  }
+  function updateCrimsonMenu(){
+    const panel=document.querySelector?.("#menu .panel");
+    if(!panel)return;
+    const reward=readCrimsonReward(),old=panel.querySelector?.("#v155-permanent-title");
+    if(!reward){old?.remove?.();return}
+    let target=old;
+    if(!target){
+      const anchor=panel.querySelector?.(".menu-blurb");
+      if(!anchor)return;
+      target=document.createElement("p");
+      target.id="v155-permanent-title";target.className="v155-permanent-title";
+      anchor.insertAdjacentElement("afterend",target);
+    }
+    target.textContent="PERMANENT TITLE UNLOCKED — "+reward.title;
+  }
+  function verifiedItchRelease(){
+    try{
+      const value=String(window.CCG_DUNGEON_RELEASE?.itchUrl||"");
+      if(!value)return "";
+      const url=new URL(value);
+      const host=url.hostname.toLowerCase();
+      if(url.protocol!=="https:"||(host!=="itch.io"&&!host.endsWith(".itch.io"))||url.pathname==="/")return "";
+      return url.href;
+    }catch(_){return ""}
+  }
+  function releaseDownloadAction(){
+    const url=verifiedItchRelease();
+    return url?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Download C64 Dungeon Carnage on itch.io</a>':
+      '<span>Windows / itch.io edition is not yet released. The game-specific download link will appear after release approval.</span>';
+  }
+
+  // The default credits cue is a physically bundled WAV, never a live Supabase
+  // fetch. A same-origin owner override can replace it after audio acceptance.
+  let creditsAudio=null;
+  function stopCreditsAudio(){
+    if(creditsAudio){try{creditsAudio.pause();creditsAudio.currentTime=0}catch(_){}creditsAudio=null}
+    try{window.CCGLostSizzlerMusicBus?.release?.("end-credits")}catch(_){}
+  }
+  function creditsAudioUrl(){
+    const candidates=[
+      window.CCG_ASSET_OVERRIDES?.audio?.music?.endgame,
+      window.CCG_ADMIN_AUDIO?.endgame,
+      window.CCG_AUDIO_ASSETS?.music?.endgame
+    ];
+    for(const candidate of candidates){
+      if(!candidate)continue;
+      try{
+        const base=new URL(document.baseURI||location.href);
+        const url=new URL(String(candidate),base),page=new URL(location.href);
+        if(url.origin===page.origin&&/^https?:$/.test(url.protocol))return url.href;
+        // Electron/standalone file launches: permit ONLY packaged audio under
+        // this game's own assets/audio directory. Never accept arbitrary file
+        // paths or network music in an offline build.
+        if(url.protocol==="file:"&&page.protocol==="file:"&&url.host===page.host){
+          const packagedAudio=new URL("assets/audio/",base);
+          if(url.href.startsWith(packagedAudio.href))return url.href;
+        }
+      }catch(_){}
+    }
+    return "";
+  }
+  function creditsVolume(){
+    const level=Number(window.CCGSound?.getMusicLevel?.());
+    return Number.isFinite(level)?Math.max(0,Math.min(.45,level)):.12;
+  }
+  if(!window.CCGEndCreditsMusic){
+    window.CCGEndCreditsMusic={
+      play({reason}={}){
+        if(reason!=="campaign-complete"||window.CCGSound?.isEnabled?.()===false)return false;
+        const volume=creditsVolume();
+        if(volume<=0){stopCreditsAudio();return false}
+        if(creditsAudio&&!creditsAudio.paused){creditsAudio.volume=volume;return true}
+        const url=creditsAudioUrl();
+        if(!url)return false;
+        try{
+          stopCreditsAudio();
+          const audio=new Audio(url);
+          audio.preload="none";audio.loop=true;audio.volume=volume;
+          creditsAudio=audio;
+          window.CCGLostSizzlerMusicBus?.claim?.("end-credits",stopCreditsAudio);
+          const started=audio.play();
+          started?.catch?.(()=>{if(creditsAudio===audio)stopCreditsAudio()});
+          return true;
+        }catch(_){stopCreditsAudio();return false}
+      },
+      stop:stopCreditsAudio,
+      syncVolume(value){
+        const level=Number(value);
+        const volume=Number.isFinite(level)?Math.max(0,Math.min(.45,level)):creditsVolume();
+        if(volume<=0){stopCreditsAudio();return false}
+        if(creditsAudio)creditsAudio.volume=volume;
+        return true;
+      },
+      isPlaying(){return Boolean(creditsAudio&&!creditsAudio.paused)}
+    };
+  }
+  window.addEventListener?.("pagehide",()=>window.CCGEndCreditsMusic?.stop?.(),{once:true});
+
   function campaignComplete(){
     return Boolean(run?.runComplete&&!run.dailyFailed&&!run.xpGameOver&&Number(run.floor||0)>=Number(window.CCG_CONFIG?.maxFloors||15));
   }
@@ -103,7 +219,8 @@
     // The asynchronous C64 slug lookup renders retro credits again. Do not
     // restart music, replace DOM or restart the ceremony when it finishes.
     if(existing)return;
-    const highlights=finalRunHighlights();
+    const highlights=finalRunHighlights(),crimson=awardCrimsonReward();
+    updateCrimsonMenu();
     UI.endText.insertAdjacentHTML("afterbegin",`<section id="v108-completion-credits" class="v104-retro-credits v108-completion-credits v130-finale" aria-labelledby="v130-victory-heading">
       <div class="v130-cinematic-header">
         <span class="v130-victory-kicker">FLOOR ${highlights.floor} — THE FINAL DESCENT</span>
@@ -116,6 +233,7 @@
         <article class="v130-final-chapter"><b>02</b><div><strong>THE LAST GUARDIAN</strong><span>The Citadel's final keeper has fallen. The path out is yours.</span></div></article>
         <article class="v130-final-chapter"><b>03</b><div><strong>THE RECORD REMAINS</strong><span>Your defeated enemies and recovered Commodore classics are listed below.</span></div></article>
       </div>
+      <div class="v155-crimson-reward" role="status"><strong>CRIMSON DUNGEONHEART</strong><span>${crimson?"PERMANENT TITLE — "+esc(crimson.title):"Victory recorded, but permanent reward could not be saved on this device."}</span></div>
       <div class="v130-victory-scoreboard" aria-label="Final run highlights">
         <div><strong>${highlights.score.toLocaleString("en-GB")}</strong><span>FINAL SCORE</span></div>
         <div><strong>${highlights.level}</strong><span>HERO LEVEL</span></div>
@@ -126,7 +244,10 @@
       <div class="v130-credits-navigation" aria-label="Jump to detailed credits">
         <button type="button" id="v130-jump-bestiary">Skip Ceremony — Enemy Bestiary</button>
         <button type="button" id="v130-jump-pickups">C64 Games Collected</button>
+        <button type="button" id="v155-credits-music">Play / Pause Credits Music</button>
+        <button type="button" id="v155-skip-credits">Skip Credits — Return to Menu</button>
       </div>
+      <div class="v155-itch-release"><b>DOWNLOADABLE EDITION</b>${releaseDownloadAction()}</div>
       <div class="v108-special-thanks"><b>SPECIAL THANKS</b><span>Patreon and long-term supporters, including AZALEA and CPU, for supporting C64 Dungeon Carnage and the Cheeky Commodore Gamer channel.</span></div>
       <div class="v108-special-thanks" aria-label="Artwork credits"><b>ARTWORK CREDIT</b><span>Treasure chest artwork: Will Tice — Super Pixel Objects Sample (free edition). More third-party artwork credits are included with the game.</span></div>
       <div class="v108-end-actions">
@@ -148,6 +269,15 @@
     };
     jump("v130-jump-bestiary","v106-enemy-credits");
     jump("v130-jump-pickups","v104-retro-credits");
+    document.getElementById("v155-credits-music")?.addEventListener("click",()=>{
+      const music=window.CCGEndCreditsMusic;
+      if(music?.isPlaying?.())music.stop?.();
+      else music?.play?.({reason:"campaign-complete",run});
+    });
+    document.getElementById("v155-skip-credits")?.addEventListener("click",()=>{
+      window.CCGEndCreditsMusic?.stop?.();
+      document.getElementById("again-btn")?.click?.();
+    });
     document.getElementById("v108-end-share")?.addEventListener("click",()=>shareCompletion());
     if(!run.v108CreditsMusicStarted){
       run.v108CreditsMusicStarted=true;
@@ -193,6 +323,11 @@
     .v104-credit-game{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px dotted rgba(255,255,255,.12);color:#faf4ff;font-size:11px;line-height:1.35}
     .v104-credit-actions{display:flex;align-items:center;gap:10px}.v104-credit-game b{color:#6cecff}.v104-credit-game a{color:#ffd85a;text-decoration:underline;text-underline-offset:2px}.v104-credit-empty{color:#b9aec8;font-size:11px}.v104-retro-credits small{display:block;margin-top:10px;color:#9f93ad;font-size:9px;line-height:1.45}.v108-completion-credits p{margin:0 0 12px;color:#faf4ff;font-size:11px;line-height:1.5}.v108-special-thanks{display:grid;gap:5px;padding:10px;border:1px solid rgba(255,216,90,.28);background:rgba(255,216,90,.06);font-size:10px;line-height:1.45}.v108-special-thanks b{color:#ffd85a}.v108-end-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.v108-end-actions a,.v108-end-actions button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 10px;border:1px solid rgba(108,236,255,.42);background:rgba(108,236,255,.08);color:#faf4ff;text-decoration:none;font-size:10px}.v108-end-actions .primary{border-color:rgba(255,216,90,.55);background:rgba(255,216,90,.12);color:#ffd85a}
 
+    .v155-permanent-title{margin:8px 0;color:#ffd85a;font-size:11px;text-align:center;letter-spacing:.5px}
+    .v155-crimson-reward{display:grid;gap:7px;margin:14px 0;padding:15px;text-align:center;border:1px solid #e7a56b;background:linear-gradient(125deg,rgba(130,13,30,.4),rgba(246,191,102,.08));color:#ffe7c3}
+    .v155-crimson-reward strong{font-size:16px;letter-spacing:1.4px}.v155-crimson-reward span{font-size:12px}
+    .v155-itch-release{display:grid;gap:6px;margin:14px 0;padding:12px;border:1px solid rgba(255,216,90,.35);font-size:11px;color:#dfd1ca}
+    .v155-itch-release b{color:#ffd85a}.v155-itch-release a{color:#6cecff;text-decoration:underline}
     /* R130 finale: simple transform/opacity only; no timers or new game loops. */
     .v130-finale{position:relative;overflow:hidden;border-color:rgba(255,138,88,.7);background:linear-gradient(155deg,#210e17 0%,#100910 48%,#080c17 100%);box-shadow:inset 0 0 0 1px rgba(255,216,90,.08)}
     .v130-cinematic-header{text-align:center;padding:16px 8px 22px;border-bottom:1px solid rgba(255,216,90,.3)}
@@ -225,5 +360,7 @@
     .v106-enemy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:8px}.v106-enemy-credit{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:center;padding:8px;border:1px solid rgba(108,236,255,.18);background:rgba(3,2,5,.42)}.v106-enemy-credit.named{border-color:rgba(255,216,90,.38)}.v106-enemy-avatar{position:relative;display:grid;place-items:center;width:54px;height:54px;border:1px solid rgba(108,236,255,.45);background:#120c1b;overflow:hidden}.v106-enemy-credit.named .v106-enemy-avatar{border-color:#ffd85a}.v106-enemy-avatar img,.v106-enemy-avatar-fallback,.v106-enemy-avatar-canvas{position:absolute;inset:0;width:100%;height:100%}.v106-enemy-avatar img{z-index:1;object-fit:cover;image-rendering:pixelated}.v106-enemy-avatar-fallback{z-index:1;display:grid;place-items:center;color:#6cecff;font-weight:bold;font-size:12px;background:radial-gradient(circle at 50% 35%,#2f2550,#090611 72%)}.v106-enemy-avatar-canvas{z-index:2;image-rendering:pixelated}.v106-enemy-credit h4{margin:0;color:#faf4ff;font-size:11px}.v106-enemy-credit h4 b{color:#ffd85a}.v106-enemy-credit p{margin:3px 0 0;color:#9f93ad;font-size:9px}.v106-enemy-credit small{margin-top:3px;color:#6cecff;font-size:9px}
   `;
   document.head.appendChild(style);
+  document.getElementById("again-btn")?.addEventListener("click",()=>window.CCGEndCreditsMusic?.stop?.());
+  updateCrimsonMenu();
   loadGameSlugs();
 })();

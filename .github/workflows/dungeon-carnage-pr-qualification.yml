@@ -109,7 +109,8 @@ jobs:
   browser-smoke:
     name: Focused Chromium regression smoke
     needs: fast-contracts
-    runs-on: ubuntu-latest
+    # Playwright 1.55 is incompatible with the ubuntu-latest 26.04 runner.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - name: Checkout repository

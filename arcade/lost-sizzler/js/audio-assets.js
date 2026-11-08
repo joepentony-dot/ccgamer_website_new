@@ -56,6 +56,7 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     bones:"assets/audio/sfx/bones.wav"
   }),
   music:Object.freeze({
+    endgame:"assets/audio/music/sanctuary.wav",
     normal:"assets/audio/music/exploration.wav",
     danger:"assets/audio/music/danger.wav",
     sanctuary:"assets/audio/music/sanctuary.wav",

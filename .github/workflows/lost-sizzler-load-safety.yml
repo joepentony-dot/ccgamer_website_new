@@ -182,7 +182,8 @@ jobs:
   browser-contract:
     name: Chromium shard ${{ matrix.shard }}
     needs: browser-manifest
-    runs-on: ubuntu-latest
+    # Pin all six Chromium shards to a Playwright 1.55-supported runner.
+    runs-on: ubuntu-24.04
     # Each shard runs the retained active contracts after one Chromium install.
     timeout-minutes: 45
     strategy:
