@@ -51,7 +51,10 @@ try{
     p1.x=tile.x;p1.y=tile.y;p1.rx=tile.x;p1.ry=tile.y;p1.lastRoom=-999;
     const before={score:Number(score||0),health:Number(p1.health||0),maxHealth:Number(p1.maxHealth||0),inventory:JSON.stringify(p1.inventory||[]),revision:Number(host.revision||0),presentations:Number(api.state.presentations||0),suppressed:Number(api.state.suppressed||0)};
     updateRoomMessage(p1,false);
-    const first={title:String(document.getElementById("pickup-title")?.textContent||""),body:String(document.getElementById("pickup-text")?.textContent||""),last:{...(api.state.last||{})}};
+    const first={title:String(document.getElementById("pickup-title")?.textContent||""),body:String(document.getElementById("pickup-text")?.textContent||""),last:{...(api.state.last||{})},expectedHint:api.sanctuaryAdvice(p1)};
+    const injuredHint=api.sanctuaryAdvice({health:2,maxHealth:10,wearables:{body:{},trinket:{}}});
+    const missingGearHint=api.sanctuaryAdvice({health:10,maxHealth:10,wearables:{body:null,trinket:null}});
+    const fullyEquippedHint=api.sanctuaryAdvice({health:10,maxHealth:10,wearables:{body:{},trinket:{}}});
 
     p1.lastRoom=-999;
     updateRoomMessage(p1,false);
@@ -63,7 +66,7 @@ try{
     const isolatedArgs=api.augmentSanctuaryToast(["SANCTUARY — ISOLATION TEST","Canonical sanctuary text.","green",1000]);
     if(priorSpecial)document.body.dataset.specialMode=priorSpecial;else delete document.body.dataset.specialMode;
 
-    return{roomId:room.id,before,first,second,after,isolated:String(isolatedArgs[1]||""),toastDepth:depth(window.showToast,"__ccgStage8ScoutToastBridge"),sanctuaryDepth:depth(window.showToast,"__ccgStage8SanctuaryDialogue"),controller:window.CCGLostSizzlerModeRuntime?.detect?.()||""};
+    return{roomId:room.id,before,first,second,after,injuredHint,missingGearHint,fullyEquippedHint,isolated:String(isolatedArgs[1]||""),toastDepth:depth(window.showToast,"__ccgStage8ScoutToastBridge"),sanctuaryDepth:depth(window.showToast,"__ccgStage8SanctuaryDialogue"),controller:window.CCGLostSizzlerModeRuntime?.detect?.()||""};
   });
 
   assert.notEqual(result.missingSanctuary,true,"generated Solo floor must expose the existing sanctuary-room contract");
@@ -73,6 +76,10 @@ try{
   assert.match(result.first.body,/No monster can enter this safe room\./,"canonical sanctuary safety guidance must remain present");
   assert.match(result.first.body,/green regeneration square to recover 1 HP every 3 seconds\./,"canonical regeneration guidance must remain present");
   assert.match(result.first.body,/Keeper: /,"Stage 8 must append the Sanctuary Keeper character line to the canonical room toast");
+  assert.ok(result.first.body.includes(result.first.expectedHint),"actual Sanctuary must show context-aware Keeper advice");
+  assert.match(result.injuredHint,/marked green square/,"Keeper must guide injured players to canonical regeneration");
+  assert.match(result.missingGearHint,/Body and Trinket slots/,"Keeper must warn an unarmoured hero before leaving");
+  assert.match(result.fullyEquippedHint,/Check your supplies and route/,"Keeper must adapt when gear slots are filled");
   assert.equal(result.first.last.key,"sanctuary.keeper","Stage 8 must expose the sanctuary dialogue key for optional local voice assets");
   assert.equal(result.first.last.voiceKey,"npc.sanctuary.keeper","Stage 8 sanctuary must retain its package-safe local voice key");
   assert.doesNotMatch(result.second.body,/Keeper: /,"immediate repeated sanctuary room messaging must suppress only the repeated character line");
