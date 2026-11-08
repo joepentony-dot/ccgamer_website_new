@@ -11,6 +11,9 @@ const core=read("arcade/lost-sizzler/js/game-core.js");
 const recovery=read("arcade/lost-sizzler/js/v10-41-r53-terminal-solo-end-recovery.js");
 const main=read("arcade/lost-sizzler/js/game-main.js");
 const finalUi=read("arcade/lost-sizzler/js/v10-4-final-ui.js");
+const audioAssets=read("arcade/lost-sizzler/js/audio-assets.js");
+assert.match(audioAssets,/endgame:"assets\/audio\/music\/sanctuary\.wav"/,"credits music must resolve to an existing packaged cue");
+assert.ok(fs.existsSync(path.join(root,"arcade/lost-sizzler/assets/audio/music/sanctuary.wav")),"default credits WAV must actually exist");
 
 assert.doesNotMatch(core,/Friendly fire:/i,"normal end-run statistics must not expose retired friendly-fire data");
 assert.doesNotMatch(recovery,/Friendly fire:/i,"terminal recovery end screen must not expose retired friendly-fire data");
@@ -45,8 +48,8 @@ assert.match(finaleSource,/if\(existing\)return/,"asynchronous game-slug enrichm
 assert.doesNotMatch(finaleSource,/setInterval\(/,"finale must never install a new persistent timer");
 assert.match(finaleSource,/insertAdjacentHTML\("afterbegin"/,"finale belongs before the long bestiary and retro game roll");
 
-function exerciseFinale({floor=15,complete=true,xpGameOver=false,dailyFailed=false,shareMode="native"}={}){
-  const nodes=new Map(),inserts=[],music=[],styles=[],visited=[],shares=[],copied=[],toasts=[];
+function exerciseFinale({floor=15,complete=true,xpGameOver=false,dailyFailed=false,shareMode="native",rewardStorage=new Map()}={}){
+  const nodes=new Map(),inserts=[],music=[],styles=[],visited=[],shares=[],copied=[],toasts=[],rewardWrites=[];
   const node=id=>{
     const value={id,events:new Map(),remove(){nodes.delete(id)},addEventListener(event,handler){this.events.set(event,handler)},
       setAttribute(key,value){this[key]=value},scrollIntoView(){visited.push(id)},focus(){visited.push(id+":focus")}};
@@ -65,15 +68,23 @@ function exerciseFinale({floor=15,complete=true,xpGameOver=false,dailyFailed=fal
     navigator:shareMode==="native"?{share:async data=>{shares.push(data)}}:
       shareMode==="clipboard"?{clipboard:{writeText:async value=>{copied.push(value)}}}:{},
     location:{href:"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/"},
+    localStorage:{getItem:key=>rewardStorage.get(key)||null,setItem:(key,value)=>{rewardWrites.push(key);rewardStorage.set(key,String(value))}},
     showToast:(...args)=>toasts.push(args),
     fetch:()=>Promise.resolve({ok:true,json:()=>Promise.resolve([])}),
     console:{warn:()=>{}}
   };
   vm.runInNewContext(finaleSource,ctx,{timeout:1000});
   ctx.endRun("Citadel cleared");
-  return{ctx,runState,inserts,nodes,music,styles,visited,shares,copied,toasts};
+  return{ctx,runState,inserts,nodes,music,styles,visited,shares,copied,toasts,rewardStorage,rewardWrites};
 }
 const victory=exerciseFinale();
+assert.equal(victory.rewardWrites.length,1,"first legitimate win must persist one permanent reward");
+const crimson=JSON.parse(victory.rewardStorage.get("ccg-dungeon-carnage-crimson-dungeonheart-v1"));
+assert.equal(crimson.id,"crimson-dungeonheart");
+assert.equal(crimson.title,"Keeper of the Crimson Dungeonheart");
+const previouslyWon=exerciseFinale({rewardStorage:victory.rewardStorage});
+assert.equal(previouslyWon.rewardWrites.length,0,"subsequent completed runs must reuse, not re-award, the permanent reward");
+assert.match(previouslyWon.inserts[0].html,/PERMANENT TITLE/,"already-earned title must remain visible in a later winning run");
 const ceremony=victory.inserts.filter(x=>x.html.includes('id="v108-completion-credits"'));
 assert.equal(ceremony.length,1,"one victory ceremony must be inserted per run");
 assert.equal(ceremony[0].where,"afterbegin","cinematic finale must appear before long credits");
@@ -102,6 +113,12 @@ await plainVictory.nodes.get("v108-end-share").events.get("click")();
 assert.equal(plainVictory.toasts[0][0],"SHARE COMPLETION","unavailable sharing APIs must retain visible result text");
 assert.match(plainVictory.toasts[0][1],/1,234 points/);
 assert.equal(victory.music.length,1,"end music hook should be called once per winning run");
+assert.match(ceremony[0].html,/Windows \/ itch.io edition is not yet released/,"unverified purchase URL must not be invented");
+assert.match(ceremony[0].html,/v155-skip-credits/,"credits must provide an explicit exit");
+let returnedToMenu=0;
+victory.nodes.set("again-btn",{click(){returnedToMenu++}});
+victory.nodes.get("v155-skip-credits").events.get("click")();
+assert.equal(returnedToMenu,1,"Skip Credits must invoke the established Return to Menu owner");
 assert.equal(victory.music[0].reason,"campaign-complete");
 assert.equal(victory.styles.length,1,"finale must reuse existing single stylesheet owner");
 victory.nodes.get("v130-jump-bestiary").events.get("click")();
@@ -123,6 +140,7 @@ for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver
   assert.equal(sample.inserts.some(x=>x.html.includes('id="v108-completion-credits"')),false,
     "non-winning and failed runs must never receive victory credits: "+JSON.stringify(scenario));
   assert.equal(sample.music.length,0,"non-winning runs must not play completion music");
+  assert.equal(sample.rewardWrites.length,0,"nonwinning and failed runs must never award the permanent title");
 }
 
 console.log("Dungeon Carnage R88 endgame and credits contract passed.");
