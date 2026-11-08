@@ -79,9 +79,11 @@ assert.match(voice,/lootKind==="artefact"\?"essenceCollected"/,"current artefact
 assert.match(voice,/BANISHMENT FLASK \(\?:ACQUIRED\|DISTILLED\)/,"voice classifier must recognise the new distillation success toast");
 
 for(const page of [index,alias]){
-  assert.match(page,/collect Banishment Essence, distil a Flask at a Banishment Alchemist/i,"public Death Stalker tip must explain current Flask acquisition");
+  assert.ok(page.includes("distil Banishment Essence into a Ward-Break Charge at an Alchemist"),"public Warden tip must describe current Essence distillation");
+  assert.ok(page.includes("Press <b>B</b> near a sealed Warden with clear line of sight to break its immunity, then defeat it with weapons."),"public Warden tip must explain immunity removal followed by weapon defeat");
   assert.match(page,/ESSENCE <b id="shop-artefacts">0<\/b>/,"shop wallet must label the current Banishment currency as Essence");
-  assert.match(page,/Banishment Flasks are not score purchases/,"public shop note must reject the retired score route");
+  assert.match(page,/Ward-Break Charges are not score purchases/,"public shop note must reject the retired score purchase route");
+  assert.doesNotMatch(page,/destroy it permanently|Permanent banishment awards 15,000 score|Banishment Flasks are not score purchases/i,"public tip and shop must not retain obsolete instant-banishment copy");
   assert.doesNotMatch(page,/trade 3 artefacts or pay 10,000 score at a shop/i,"public game pages must not advertise the retired Flask route");
 }
 
