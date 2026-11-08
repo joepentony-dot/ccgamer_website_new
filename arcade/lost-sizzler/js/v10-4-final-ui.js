@@ -123,7 +123,7 @@
     for(const candidate of candidates){
       if(!candidate)continue;
       try{
-        const url=new URL(String(candidate),location.href),page=new URL(location.href);
+        const url=new URL(String(candidate),document.baseURI||location.href),page=new URL(location.href);
         if(url.origin===page.origin&&/^https?:$/.test(url.protocol))return url.href;
       }catch(_){}
     }

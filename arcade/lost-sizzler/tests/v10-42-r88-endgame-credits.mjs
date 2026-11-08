@@ -189,6 +189,15 @@ for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver
   soundEnabled=false;
   assert.equal(musicOwner.play({reason:"campaign-complete"}),false,"sound-off must prevent new credits playback");
   assert.equal(musicOwner.isPlaying(),false);
+  // Public /arcade/c64-dungeon-carnage/ has a canonical <base href>
+  // pointing to /arcade/lost-sizzler/. Resolve the bundled WAV against
+  // document.baseURI rather than the alias address.
+  soundEnabled=true;
+  audioContext.location.href="http://127.0.0.1:8123/arcade/c64-dungeon-carnage/";
+  audioContext.document.baseURI="http://127.0.0.1:8123/arcade/lost-sizzler/";
+  assert.equal(musicOwner.play({reason:"campaign-complete"}),true);
+  assert.equal(played.at(-1).src,played[0].src,"public alias must load the real canonical bundled WAV");
+  musicOwner.stop();
   assert.ok(claims.includes("end-credits"),"credits music must claim the shared music owner");
 }
 
