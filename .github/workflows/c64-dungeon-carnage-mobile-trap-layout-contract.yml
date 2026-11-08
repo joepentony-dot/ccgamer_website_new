@@ -28,7 +28,8 @@ jobs:
         run: node tests/v10-42-mobile-trap-layout-stability.mjs
 
   mobile-trap-layout-live:
-    runs-on: ubuntu-latest
+    # Pinned Chromium 1.55 cannot install on ubuntu-latest 26.04.
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
       - name: Checkout repository
