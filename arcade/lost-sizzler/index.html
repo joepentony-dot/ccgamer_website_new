@@ -3,25 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="ccg-lost-sizzler-build" content="V10.42 r158">
-  <meta name="ccg-lost-sizzler-cache" content="20261108r158">
+  <meta name="ccg-lost-sizzler-build" content="V10.42 r159">
+  <meta name="ccg-lost-sizzler-cache" content="20261108r159">
   <meta name="theme-color" content="#09040f">
   <meta name="robots" content="index,follow">
   <meta name="description" content="Play C64 Dungeon Carnage, a free retro Commodore 64-inspired browser dungeon crawler. Fight tactical enemies, collect loot and survive fifteen procedural floors.">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/">
   <title>C64 Dungeon Carnage | Free Retro C64 Dungeon Game</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="assets/pixel/explorer-sheet-v10-34.png?v=20261108r158" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=20261108r158" fetchpriority="high">
-  <link rel="stylesheet" href="css/game.css?v=20261108r158">
-  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20261108r158">
-  <link rel="stylesheet" href="css/v10-41-r28.css?v=20261108r158">
-  <link rel="stylesheet" href="css/v10-41-r29.css?v=20261108r158">
-  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20261108r158">
-  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20261108r158">
-  <link rel="stylesheet" href="css/v10-42-r71-equipment-inventory.css?v=20261108r158&ui=20261006-viewport">
-  <link rel="stylesheet" href="css/v10-42-r95-rpg-hud.css?v=20261108r158&ui=20261006-viewport">
-  <link rel="stylesheet" href="css/dungeon-public-playtest.css?v=20261108r158">
+  <link rel="preload" as="image" href="assets/pixel/explorer-sheet-v10-34.png?v=20261108r159" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=20261108r159" fetchpriority="high">
+  <link rel="stylesheet" href="css/game.css?v=20261108r159">
+  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20261108r159">
+  <link rel="stylesheet" href="css/v10-41-r28.css?v=20261108r159">
+  <link rel="stylesheet" href="css/v10-41-r29.css?v=20261108r159">
+  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20261108r159">
+  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20261108r159">
+  <link rel="stylesheet" href="css/v10-42-r71-equipment-inventory.css?v=20261108r159&ui=20261006-viewport">
+  <link rel="stylesheet" href="css/v10-42-r95-rpg-hud.css?v=20261108r159&ui=20261006-viewport">
+  <link rel="stylesheet" href="css/dungeon-public-playtest.css?v=20261108r159">
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <div id="ccg-release-loading" class="ccg-release-loading" role="status" aria-live="polite">
@@ -45,10 +45,10 @@
     </div>
   </div>
 </div>
-  <script src="/js/ccg-supabase-config.js?v=20261108r158"></script>
-  <script src="/js/ccg-supabase-client.js?v=20261108r158"></script>
+  <script src="/js/ccg-supabase-config.js?v=20261108r159"></script>
+  <script src="/js/ccg-supabase-client.js?v=20261108r159"></script>
   <script src="/js/ccg-play-maintenance-owner-gate.js?v=20261015-development-v1" data-ccg-play-maintenance-gate="owner-preview"></script>
-  <script src="js/dungeon-public-playtest.js?v=20261108r158"></script>
+  <script src="js/dungeon-public-playtest.js?v=20261108r159"></script>
 <main class="ccg-game">
   <header class="topbar v102-topbar">
     <div class="brand v102-brand">
@@ -69,7 +69,7 @@
     <div class="critical-card torch-card"><kbd>Q</kbd><div><b>TORCH</b><strong id="quick-utility">0 HELD</strong><span>LIGHT THE DUNGEON</span></div></div>
     <div class="critical-card keys-card"><svg class="keyring-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="10" r="4"/><path d="M11 10h10M17 10v4M20 10v3"/></svg><div><b>KEYS HELD</b><strong id="hud-bronze">BRONZE 0</strong><span id="quick-keyring">MAIN 0/3 • SIGIL 0</span></div></div>
     <div class="critical-card inventory-card"><kbd>TAB</kbd><div><b>INVENTORY</b><strong>3–6 SLOTS</strong><span>EXPAND IN SHOPS · ITEM INFO</span></div></div>
-    <div id="banish-alert" class="banish-context hidden" aria-live="assertive"><kbd>B</kbd><div><b>BANISHMENT READY</b><span id="banish-alert-text">DEATH STALKER IN RANGE — PRESS B</span></div></div>
+    <div id="banish-alert" class="banish-context hidden" aria-live="assertive"><kbd>B</kbd><div><b>WARD-BREAK READY</b><span id="banish-alert-text">SEALED WARDEN IN RANGE — PRESS B</span></div></div>
   </section>
 
   <section class="mission v102-mission">
@@ -86,7 +86,7 @@
     <section class="reference-card dossier-card">
       <div class="dossier-heading"><h3>NAMED ENEMY DOSSIER</h3><button id="named-dossier-btn" class="dossier-expand" type="button">OPEN FULL DOSSIER</button></div>
       <div id="named-enemy-guide" class="named-enemy-guide"></div>
-      <div class="reference-tip"><b>Death Stalker:</b> collect Banishment Essence, distil a Flask at a Banishment Alchemist, then press <b>B</b> in range to destroy it permanently.</div>
+      <div class="reference-tip"><b>Supernatural Wardens:</b> distil Banishment Essence into a Ward-Break Charge at an Alchemist. Press <b>B</b> near a sealed Warden with clear line of sight to break its immunity, then defeat it with weapons.</div>
     </section>
     <section class="shortcut-dock" aria-labelledby="shortcut-dock-title">
       <div class="shortcut-dock-head"><h3 id="shortcut-dock-title">COMMANDS</h3><span>LIVE KEYS</span></div>
@@ -119,7 +119,7 @@
         <div class="feature-strip">
           <span><b>15-FLOOR RUN</b>Different objectives, floor themes and increasing danger</span>
           <span><b>RPG PROGRESSION</b>XP, level choices, rare weapons and inventory</span>
-          <span><b>DEATH STALKERS</b>Collect Banishment Essence and distil a Banishment Flask at an Alchemist. The contextual B prompt appears in range.</span>
+          <span><b>SUPERNATURAL WARDENS</b>Distil Banishment Essence into a Ward-Break Charge at an Alchemist. Press B near a sealed Warden, then finish it with weapons.</span>
         </div>
         <div class="menu-config"><label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label><label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label></div>
         <div class="mode-select-label"><span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span></div>
@@ -128,10 +128,11 @@
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="release-note" class="note">C64 Dungeon Carnage runs directly in your browser. Start the main game or use the Tutorial to learn the controls. Starting a run requests fullscreen automatically. Sound begins when play starts.</p><p id="menu-note" hidden aria-hidden="true" style="display:none!important"></p>
         <details id="developer-changelog" class="menu-details developer-changelog" data-latest-build-only="true">
-          <summary>Latest Build Changes · V10.42 R158</summary>
+          <summary>Latest Build Changes · V10.42 R159</summary>
           <div class="developer-changelog-current">
-            <p><strong>ACTIVE BUILD: V10.42 R158</strong></p>
+            <p><strong>ACTIVE BUILD: V10.42 R159</strong></p>
             <ul>
+              <li>R159 corrects Warden guidance across the menu, dossier, controls, shop and Dungeon Guide: a Ward-Break Charge removes immunity, and the Warden must still be defeated with weapons. No gameplay or saved-run rules changed.</li>
               <li>R158 provides state-aware Scout escort guidance: the Scout must reach Sanctuary, lagging distance is reported, and rescue completion is acknowledged. The recorded Scout dialogue remains unchanged.</li>
               <li>R157 adds context-aware Quartermaster, Alchemist and Sanctuary Keeper guidance: real Essence deficits, Body/Trinket loadout gaps and healing advice, while keeping the established recorded dialogue and encounter limits.</li>
               <li>R156 adds Body and Trinket to the existing RPG wearables, with real chest loot, five independent slot transactions, passive enchanted bonuses and responsive inventory controls.</li>
@@ -182,7 +183,7 @@
           </div>
         </details>
         <p class="game-copyright">© 2026 CHEEKY COMMODORE GAMER · ALL RIGHTS RESERVED</p>
-        <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE ATTACK • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • M MAP • TAB INVENTORY</kbd></div>
+        <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE ATTACK • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B WARD BREAK • M MAP • TAB INVENTORY</kbd></div>
       </div>
     </div>
 
@@ -205,7 +206,7 @@
       <div class="shop-wallet"><span>SCORE <b id="shop-score">000000</b></span><span>ESSENCE <b id="shop-artefacts">0</b></span><span>NEXT SCORE PRICE <b id="shop-next-price">1000</b></span></div>
       <div id="shop-status" class="shop-status hidden" role="status" aria-live="assertive" aria-atomic="true"><b id="shop-status-title">SHOP READY</b><span id="shop-status-text">Purchase feedback will appear here.</span></div>
       <div id="shop-items" class="shop-grid"></div>
-      <p class="shop-note">Normal score items can be bought repeatedly at the same shop. The shared price ladder is 1,000, 2,000, 4,000, 8,000 and so on. Stock: Potion, Torch, Teleport Spell, Inventory Slot, Ammo, Armour and a floor-gated Firearm Upgrade. Inventory expansions stop only when all six slots are open. The Firearm Upgrade starts at 2,500 score (20 Gold Score Coins) and rises by 1,250 score per tier without affecting the normal shop price ladder. Banishment Flasks are not score purchases. Collect Banishment Essence and distil one Flask at a Banishment Alchemist; ordinary supply desks do not stock them.</p>
+      <p class="shop-note">Normal score items can be bought repeatedly at the same shop. The shared price ladder is 1,000, 2,000, 4,000, 8,000 and so on. Stock: Potion, Torch, Teleport Spell, Inventory Slot, Ammo, Armour and a floor-gated Firearm Upgrade. Inventory expansions stop only when all six slots are open. The Firearm Upgrade starts at 2,500 score (20 Gold Score Coins) and rises by 1,250 score per tier without affecting the normal shop price ladder. Ward-Break Charges are not score purchases. Collect Banishment Essence and distil one Ward-Break Charge at a Banishment Alchemist; ordinary supply desks do not stock them. Each charge removes one sealed Warden's immunity; finish the Warden with weapons.</p>
     </div></div>
 
     <div id="save-panel" class="overlay hidden"><div class="panel compact save-panel-card">
@@ -230,7 +231,7 @@
         <section><div class="rulebook-icon">⌘</div><h3>KEYS &amp; MAP</h3><p>Floor Keys belong to the current floor. Campaign Keys are longer-term discoveries. Bronze keys open optional locks. If a chest is inside a room you already unlocked with a bronze key, that chest costs no second key. The map fills in as you explore; rare Cartographer's Eyes reveal the whole current floor.</p></section>
         <section><div class="rulebook-icon">⚔</div><h3>COMBAT &amp; GEAR</h3><p>Your Archive Sword never needs ammo. Firearms grow stronger as you descend, and rare named weapons can change or refine their firing pattern. Wear Head, Hands and Feet gear for armour and extra bonuses.</p></section>
         <section><div class="rulebook-icon">♥</div><h3>HEALTH &amp; RECOVERY</h3><p>Restoration Potions are valuable, so use Sanctuary rooms when you find them. Magic Sacks permanently raise stack limits for the current run, up to three times.</p></section>
-        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Normal attacks can push it back but cannot finish it. A lit torch drives it away. Gather Banishment Essence, obtain a Banishment Flask and use the on-screen Banish prompt when you are close enough.</p></section>
+        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Normal weapons cannot defeat a sealed Death Stalker or Count Loadula. Collect Banishment Essence and distil a Ward-Break Charge at an Alchemist. Press B within range and line of sight to remove one Warden's immunity, then finish it with weapons to earn its rewards. A lit torch can repel a pursuing Death Stalker.</p></section>
         <section><div class="rulebook-icon">▣</div><h3>SEALED CHALLENGES</h3><p>Memory Vaults, timed rooms, arenas and boss chambers can lock behind you. Complete the room to reopen the route. Teleport cannot be used while a challenge is sealed.</p></section>
         <section><div class="rulebook-icon">?</div><h3>EXPLORE</h3><p>Cracked walls, switches, clues, torch puzzles, bridges, rare traders and unusual rooms reward curiosity. Not every discovery is required, but many contain stronger loot or useful shortcuts.</p></section>
         <section><div class="rulebook-icon">☠</div><h3>DEATH CACHE</h3><p>Death can leave your carried items, armour protection and equipped gear in a recoverable cache. Find it to reclaim what was lost; essential keys or an Exit Sigil are returned safely to the floor and marked on the maps.</p></section>
@@ -284,34 +285,34 @@
     <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
   </section>
 </main>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-cache-guard.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-load-watchdog.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/version-check.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-23-tutorial-guidance.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/asset-overrides.js?v=20261108r158&ui=20261006-viewport"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/avatar-data.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/config.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/progression.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/audio-assets.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/audio.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/lost-sizzler-playlist-audio.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/world.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/ai.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/systems.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-core.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-local-runtime.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-play.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-render.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-main.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-lake-item-safety.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-gambler-devroom.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-developer-vault-hardening.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-developer-asset-catalog.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-landing-notification-polish.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-major-notification-hardening.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-active-enemy-fire.js?v=20261108r158"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-r29-runtime-repair.js?v=20261108r158"></script>
-  <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-r30-global-movement-guard.js?v=20261108r158"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-cache-guard.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-load-watchdog.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/version-check.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-23-tutorial-guidance.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/asset-overrides.js?v=20261108r159&ui=20261006-viewport"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/avatar-data.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/config.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/progression.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/audio-assets.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/audio.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/lost-sizzler-playlist-audio.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/world.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/ai.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/systems.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-core.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-local-runtime.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-play.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-render.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-main.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-lake-item-safety.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-gambler-devroom.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-developer-vault-hardening.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-developer-asset-catalog.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-landing-notification-polish.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-major-notification-hardening.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-active-enemy-fire.js?v=20261108r159"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-r29-runtime-repair.js?v=20261108r159"></script>
+  <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-r30-global-movement-guard.js?v=20261108r159"></script>
 <script type="application/ccg-protected-runtime" data-ccg-protected-runtime>
 (()=>{const purgeLegacy=()=>document.querySelectorAll("#developer-changelog,.developer-changelog").forEach(node=>{if(node.dataset.latestBuildOnly!=="true")node.remove()});purgeLegacy();addEventListener("DOMContentLoaded",purgeLegacy,{once:true});addEventListener("load",purgeLegacy,{once:true});setTimeout(purgeLegacy,2000)})();
 </script>
