@@ -320,6 +320,16 @@ assert(playingCount()===0,'Muting must still stop all existing dungeon playlist 
 assert(fakeWindow.CCGSound.toggle()===true,'Sound toggle must restore the established game setting.');
 assert(creditsMuteStops===1,'Unmuting must not stop the victory cue again.');
 
+// The existing MUSIC LEVEL slider must propagate its compensated value into
+// the separate credits owner, including explicit zero percent.
+const creditsSliderLevels=[];
+fakeWindow.CCGEndCreditsMusic.syncVolume=value=>creditsSliderLevels.push(value);
+fakeWindow.CCGSound.setMusicLevel(0);
+assert(creditsSliderLevels.at(-1)===0,'Music Level 0% must propagate to the credits owner.');
+fakeWindow.CCGSound.setMusicLevel(.075);
+assert(Math.abs(creditsSliderLevels.at(-1)-.15)<1e-8,'Saved Music Level 30% must propagate with the established gain compensation.');
+assert(Math.abs(fakeWindow.CCGSound.getMusicLevel()-.15)<1e-8,'Credits should read the active playlist music level on first playback.');
+
 console.log('Lost Sizzler multi-track playlist, mobile recovery and late uploaded soundtrack contracts passed.');
 
 

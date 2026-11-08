@@ -528,6 +528,8 @@
     const legacyLevel=Math.max(0,Number(value)||0);
     musicLevel=Math.max(0,Math.min(.45,legacyLevel*2));
     updateVolumes();
+    // Keep the separately owned victory cue in sync with the same user slider.
+    try{window.CCGEndCreditsMusic?.syncVolume?.(musicLevel)}catch(_){}
   }
 
   function reconcilePendingGestureState(){
@@ -595,6 +597,7 @@
     toggle,
     isEnabled:()=>enabled,
     setMusicLevel,
+    getMusicLevel:()=>musicLevel,
     setRoomMood,
     setNamedEnemy:()=>{},
     setStalkerNear,

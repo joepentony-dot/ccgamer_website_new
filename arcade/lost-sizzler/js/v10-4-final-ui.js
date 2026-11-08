@@ -137,17 +137,23 @@
     }
     return "";
   }
+  function creditsVolume(){
+    const level=Number(window.CCGSound?.getMusicLevel?.());
+    return Number.isFinite(level)?Math.max(0,Math.min(.45,level)):.12;
+  }
   if(!window.CCGEndCreditsMusic){
     window.CCGEndCreditsMusic={
       play({reason}={}){
         if(reason!=="campaign-complete"||window.CCGSound?.isEnabled?.()===false)return false;
-        if(creditsAudio&&!creditsAudio.paused)return true;
+        const volume=creditsVolume();
+        if(volume<=0){stopCreditsAudio();return false}
+        if(creditsAudio&&!creditsAudio.paused){creditsAudio.volume=volume;return true}
         const url=creditsAudioUrl();
         if(!url)return false;
         try{
           stopCreditsAudio();
           const audio=new Audio(url);
-          audio.preload="none";audio.loop=true;audio.volume=.12;
+          audio.preload="none";audio.loop=true;audio.volume=volume;
           creditsAudio=audio;
           window.CCGLostSizzlerMusicBus?.claim?.("end-credits",stopCreditsAudio);
           const started=audio.play();
@@ -156,6 +162,13 @@
         }catch(_){stopCreditsAudio();return false}
       },
       stop:stopCreditsAudio,
+      syncVolume(value){
+        const level=Number(value);
+        const volume=Number.isFinite(level)?Math.max(0,Math.min(.45,level)):creditsVolume();
+        if(volume<=0){stopCreditsAudio();return false}
+        if(creditsAudio)creditsAudio.volume=volume;
+        return true;
+      },
       isPlaying(){return Boolean(creditsAudio&&!creditsAudio.paused)}
     };
   }

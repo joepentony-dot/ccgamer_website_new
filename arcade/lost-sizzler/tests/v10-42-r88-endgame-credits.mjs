@@ -148,7 +148,7 @@ for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver
 // spy, use packaged audio only, and refuse muted playback and remote overrides.
 {
   const played=[],stopped=[],claims=[];
-  let soundEnabled=true;
+  let soundEnabled=true,musicLevel=.12;
   class MockAudio{
     constructor(src){this.src=src;this.paused=true;this.loop=false;this.volume=0}
     play(){this.paused=false;played.push({src:this.src,loop:this.loop,volume:this.volume});return Promise.resolve()}
@@ -157,7 +157,7 @@ for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver
   const audioWindow={
     CCG_CONFIG:{maxFloors:15},
     CCG_AUDIO_ASSETS:{music:{endgame:"assets/audio/music/sanctuary.wav"}},
-    CCGSound:{isEnabled:()=>soundEnabled},
+    CCGSound:{isEnabled:()=>soundEnabled,getMusicLevel:()=>musicLevel},
     CCGLostSizzlerMusicBus:{claim(owner,stop){claims.push(owner);this.stop=stop},release(owner){claims.push("release:"+owner)}}
   };
   const audioContext={
@@ -210,6 +210,18 @@ for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver
   assert.equal(musicOwner.play({reason:"campaign-complete"}),true,"unsafe local override must fall back to packaged cue");
   assert.equal(played.at(-1).src,expectedFile,"file URL outside packaged assets/audio must be refused");
   musicOwner.stop();
+  // Saved zero-volume preference must suppress the victory music on entry.
+  musicLevel=0;
+  const countBeforeZero=played.length;
+  assert.equal(musicOwner.play({reason:"campaign-complete"}),false,"explicit Music Level 0% must not start credits audio");
+  assert.equal(played.length,countBeforeZero,"zero-percent music must not construct or play a new track");
+  musicLevel=.2;
+  assert.equal(musicOwner.play({reason:"campaign-complete"}),true,"nonzero music level should permit playback");
+  assert.equal(played.at(-1).volume,.2,"credits volume must follow the current soundtrack preference");
+  assert.equal(musicOwner.syncVolume(.1),true,"live slider changes must be applied to active credits");
+  assert.equal(played.at(-1).volume,.1,"active credits must update volume without restarting");
+  assert.equal(musicOwner.syncVolume(0),false,"muting with the slider must stop the audio owner");
+  assert.equal(musicOwner.isPlaying(),false,"zero-percent slider must silence the running credits");
   assert.ok(claims.includes("end-credits"),"credits music must claim the shared music owner");
 }
 
