@@ -7,12 +7,14 @@
   if(!PGR)return;
 
   const STYLE="css/v10-42-r80-wearable-equipment.css";
-  const SLOT_ORDER=["head","hands","feet"];
-  const SLOT_LABELS={head:"HEAD",hands:"HANDS",feet:"FEET"};
+  const SLOT_ORDER=["head","body","hands","feet","trinket"];
+  const SLOT_LABELS={head:"HEAD",body:"BODY",hands:"HANDS",feet:"FEET",trinket:"TRINKET"};
   const GEAR_NAMES={
     head:["SCOUT HOOD","ARCHIVE HOOD","TORCHFINDER HELM","WARDEN CIRCLET","LEGENDARY VISOR"],
+    body:["PADDED VEST","SCAVENGER JACKET","ARCHIVE CUIRASS","WARDEN PLATE","LEGENDARY BREASTPLATE"],
     hands:["UTILITY GLOVES","SCAVENGER GLOVES","VAULTGRIP GLOVES","WARDEN GAUNTLETS","LEGENDARY GAUNTLETS"],
-    feet:["EXPLORER BOOTS","RUNNER BOOTS","VAULT RUNNER BOOTS","WARDEN BOOTS","LEGENDARY BOOTS"]
+    feet:["EXPLORER BOOTS","RUNNER BOOTS","VAULT RUNNER BOOTS","WARDEN BOOTS","LEGENDARY BOOTS"],
+    trinket:["COPPER TOKEN","DUNGEON CHARM","ARCHIVE TALISMAN","WARDEN AMULET","LEGENDARY RELIC"]
   };
   const state={drops:0,equips:0,unequips:0};
 
@@ -28,7 +30,7 @@
   function hashText(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h>>>0}
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
   function luckPoints(player=currentPlayer()){return Math.max(0,Math.floor(Number(player?.rpgStats?.luck)||5)-5)}
-  function wearables(player){if(!player)return{head:null,hands:null,feet:null};if(!player.wearables||typeof player.wearables!=="object"||Array.isArray(player.wearables))player.wearables={head:null,hands:null,feet:null};for(const slot of SLOT_ORDER)if(!(slot in player.wearables))player.wearables[slot]=null;return player.wearables}
+  function wearables(player){const empty=()=>Object.fromEntries(SLOT_ORDER.map(slot=>[slot,null]));if(!player)return empty();if(!player.wearables||typeof player.wearables!=="object"||Array.isArray(player.wearables))player.wearables=empty();for(const slot of SLOT_ORDER)if(!(slot in player.wearables))player.wearables[slot]=null;return player.wearables}
   function gearTierFor(rarity){
     const idx=rarityIndex(rarity);
     if(idx>=3)return{name:"ENCHANTED",armourBonus:3,enchanted:true};
@@ -40,8 +42,10 @@
     const tier=gearTierFor(rarity),base={gearTier:tier.name,armourBonus:tier.armourBonus};
     if(!tier.enchanted)return base;
     if(slot==="head")return{...base,sightBonus:1};
+    if(slot==="body")return{...base,armourBonus:tier.armourBonus+1};
     if(slot==="hands")return{...base,scavengerBonus:.15};
     if(slot==="feet")return{...base,moveFactor:.95};
+    if(slot==="trinket")return{...base,sightBonus:1};
     return base
   }
   function effectText(item){
@@ -125,8 +129,10 @@
     const name=String(item.name||item.short||"").toUpperCase();
     const matches=[];
     if(/\b(HELM|HELMET|HOOD|CIRCLET|VISOR)\b/.test(name))matches.push("head");
+    if(/\b(VEST|JACKET|CUIRASS|PLATE|BREASTPLATE)\b/.test(name))matches.push("body");
     if(/\b(GLOVES|GAUNTLETS)\b/.test(name))matches.push("hands");
     if(/\bBOOTS\b/.test(name))matches.push("feet");
+    if(/\b(TOKEN|CHARM|TALISMAN|AMULET|RELIC)\b/.test(name))matches.push("trinket");
     return matches.length===1?matches[0]:null
   }
   function wearableGrade(item){
@@ -160,7 +166,7 @@
     const item=player?.inventory?.[index],slot=wearableSlot(item);
     if(!item||item.kind!=="wearable")return false;
     if(!slot){
-      wearableEquipNotice("CANNOT EQUIP",`${item.name||"This wearable"} has no identifiable Head, Hands or Feet slot. The item has not been consumed.`);
+      wearableEquipNotice("CANNOT EQUIP",`${item.name||"This wearable"} has no identifiable Head, Body, Hands, Feet or Trinket slot. The item has not been consumed.`);
       return false
     }
     const slots=wearables(player),old=slots[slot]?{...slots[slot]}:null;
@@ -206,8 +212,9 @@
 
   const baseSight=PGR.effectiveSight.bind(PGR);
   PGR.effectiveSight=function r80WearableSight(player,...args){
-    const result=Number(baseSight(player,...args))||2,head=wearables(player).head;
-    return result+Math.max(0,Number(head?.sightBonus)||0)
+    const result=Number(baseSight(player,...args))||2,slots=wearables(player);
+    // An enchanted Trinket adds its own sight bonus without replacing Head.
+    return result+Math.max(0,Number(slots.head?.sightBonus)||0)+Math.max(0,Number(slots.trinket?.sightBonus)||0)
   };
   PGR.effectiveSight.__ccgV142R80Wearables=true;
   PGR.effectiveSight.__ccgOriginal=baseSight;
@@ -234,7 +241,7 @@
     const basePreserve=preservePlayer;
     preservePlayer=function r80PreserveWearables(old,...args){
       const result=basePreserve(old,...args);
-      if(old?.wearables&&typeof old.wearables==="object")result.wearables={head:old.wearables.head?{...old.wearables.head}:null,hands:old.wearables.hands?{...old.wearables.hands}:null,feet:old.wearables.feet?{...old.wearables.feet}:null};
+      if(old?.wearables&&typeof old.wearables==="object"){result.wearables={...old.wearables};for(const slot of SLOT_ORDER)result.wearables[slot]=old.wearables[slot]?{...old.wearables[slot]}:null}
       if(old?.v142R80HandsBonus!=null)result.v142R80HandsBonus=Number(old.v142R80HandsBonus)||0;
       if(old?.v142R80FeetFactor!=null)result.v142R80FeetFactor=Number(old.v142R80FeetFactor)||1;
       return result
@@ -257,7 +264,7 @@
 
   if(typeof itemHelp==="function"){
     const baseItemHelp=itemHelp;
-    itemHelp=function r80ItemHelp(kind,...args){return kind==="wearable"?"Wearable equipment. Use EQUIP in TAB to place it in its matching Head, Hands or Feet slot. Equipped gear drops into your death box on death and must be recovered and re-equipped.":baseItemHelp(kind,...args)};
+    itemHelp=function r80ItemHelp(kind,...args){return kind==="wearable"?"Wearable equipment. Use EQUIP in TAB to place it in its matching Head, Body, Hands, Feet or Trinket slot. Equipped gear drops into your death box on death and must be recovered and re-equipped.":baseItemHelp(kind,...args)};
   }
   if(typeof collectedName==="function"){
     const baseCollectedName=collectedName;
@@ -328,7 +335,7 @@
         if(detail){
           const equipped=SLOT_ORDER.filter(slot=>Boolean(slots[slot])).map(slot=>SLOT_LABELS[slot]);
           detail.textContent=equipped.length?equipped.join(" · "):"NO WEARABLE GEAR";
-          detail.title=equipped.length?equipped.join(", "):"No head, hands or feet equipment"
+          detail.title=equipped.length?equipped.join(", "):"No Head, Body, Hands, Feet or Trinket equipment"
         }
       }
     }
@@ -375,8 +382,8 @@
     return({"COMMON":"#9aa3ad","UNCOMMON":"#72ff9b","SIZZLER":"#6cecff","GOLD MEDAL":"#ffd85a","ZZAP! 97%":"#ff5bae"})[String(item?.rarity||"COMMON")]||"#9aa3ad"
   }
   function drawLiveWearables(player,cx,cy,d){
-    const slots=wearables(player),head=slots.head,hands=slots.hands,feet=slots.feet;
-    if(!head&&!hands&&!feet)return;
+    const slots=wearables(player),head=slots.head,body=slots.body,hands=slots.hands,feet=slots.feet,trinket=slots.trinket;
+    if(!head&&!body&&!hands&&!feet&&!trinket)return;
     // Genuine equipped body-part silhouettes, aligned to the original player
     // animation position; no changes to input, movement or save state.
     const fx=Math.sign(Number(d?.x)||0),fy=Math.sign(Number(d?.y)||0);
@@ -385,6 +392,15 @@
     ctx.imageSmoothingEnabled=false;
     ctx.translate(Math.round(cx),Math.round(cy));
     try{
+      if(body){
+        const edge=wearableColour(body),heavy=/PLATE|BREASTPLATE|CUIRASS/i.test(String(body.name||""));
+        pixel(-9,-6,18,16,"#20242f");pixel(-8,-5,16,12,heavy?"#667581":"#424c59");
+        pixel(-8,-5,16,3,edge);pixel(-6,7,12,3,"#26313d");pixel(-7,9,14,2,edge);
+      }
+      if(trinket){
+        const edge=wearableColour(trinket);
+        pixel(-3,-3,6,7,"#141b25");pixel(-2,-2,4,5,edge);pixel(-1,-1,2,3,"#e1edff");
+      }
       if(head){
         const edge=wearableColour(head),name=String(head.name||"").toUpperCase();
         if(name.includes("HOOD")){
