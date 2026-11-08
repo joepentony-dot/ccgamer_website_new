@@ -40,29 +40,38 @@ export function findEquivalentGeneratedPr(pulls, stagedPatch, patchForPr, owner,
 }
 
 // A refreshed YouTube sync should not open an additional SEO draft when only
-// the generated metadata timestamp changed. Everything else remains byte-exact.
+// the generated metadata timestamp (and its derived Git blob hash) changed.
+// Every other patch byte, including the old blob hash, remains exact.
 export function seoPatchesEqualExceptTimestamp(candidate, staged) {
   if (typeof candidate !== "string" || typeof staged !== "string" ||
       !candidate.includes("diff --git ") || !staged.includes("diff --git ")) return false;
   if (candidate === staged) return true;
   const normalize = patch => {
-    let inVideoMetadata = false, removed = 0, added = 0;
+    let inVideoMetadata = false, removed = 0, added = 0, blobIndexes = 0;
     const lines = patch.split("\n").map(line => {
       if (line.startsWith("diff --git ")) {
         inVideoMetadata = line === "diff --git a/data/video-metadata.json b/data/video-metadata.json";
       }
       if (!inVideoMetadata) return line;
+      // A one-field timestamp refresh changes the Git postimage object ID.
+      // Keep the preimage ID and every other file's index byte-for-byte.
+      const index = line.match(/^index ([a-f0-9]{40})..[a-f0-9]{40}(s+d{6})?$/);
+      if (index) {
+        blobIndexes++;
+        return "index " + index[1] + "..<generated-blob>" + (index[2] || "");
+      }
       const match = line.match(/^([+-]\s*"updatedAt":\s*")\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z(",?\s*)$/);
       if (!match) return line;
       if (line.startsWith("+")) added++;
       else removed++;
       return match[1] + "<generated-refresh>" + match[2];
     });
-    return {patch: lines.join("\n"), removed, added};
+    return {patch: lines.join("\n"), removed, added, blobIndexes};
   };
   const left = normalize(candidate), right = normalize(staged);
-  return left.added === 1 && left.removed === 1 &&
-    right.added === 1 && right.removed === 1 && left.patch === right.patch;
+  return left.added === 1 && left.removed === 1 && left.blobIndexes === 1 &&
+    right.added === 1 && right.removed === 1 && right.blobIndexes === 1 &&
+    left.patch === right.patch;
 }
 
 function run(command, args) {
