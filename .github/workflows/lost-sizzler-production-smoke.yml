@@ -23,7 +23,9 @@ concurrency:
 
 jobs:
   smoke:
-    runs-on: ubuntu-latest
+    # Playwright 1.55.0 cannot install Chromium dependencies on Ubuntu 26.04.
+    # Pin the runner; preserve all live smoke assertions and commands.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
