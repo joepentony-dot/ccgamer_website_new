@@ -198,6 +198,18 @@ for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver
   assert.equal(musicOwner.play({reason:"campaign-complete"}),true);
   assert.equal(played.at(-1).src,played[0].src,"public alias must load the real canonical bundled WAV");
   musicOwner.stop();
+  // Installed Windows and offline HTML5 builds may launch from file://.
+  // Allow the shipped audio directory only, not arbitrary local files.
+  audioContext.location.href="file:///C:/CCG_Dungeon_Carnage/index.html";
+  audioContext.document.baseURI="file:///C:/CCG_Dungeon_Carnage/";
+  assert.equal(musicOwner.play({reason:"campaign-complete"}),true,"offline credits must play their bundled audio");
+  const expectedFile="file:///C:/CCG_Dungeon_Carnage/assets/audio/music/sanctuary.wav";
+  assert.equal(played.at(-1).src,expectedFile);
+  musicOwner.stop();
+  audioWindow.CCG_ASSET_OVERRIDES={audio:{music:{endgame:"file:///C:/private/secret.mp3"}}};
+  assert.equal(musicOwner.play({reason:"campaign-complete"}),true,"unsafe local override must fall back to packaged cue");
+  assert.equal(played.at(-1).src,expectedFile,"file URL outside packaged assets/audio must be refused");
+  musicOwner.stop();
   assert.ok(claims.includes("end-credits"),"credits music must claim the shared music owner");
 }
 

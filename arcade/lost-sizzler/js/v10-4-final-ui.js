@@ -123,8 +123,16 @@
     for(const candidate of candidates){
       if(!candidate)continue;
       try{
-        const url=new URL(String(candidate),document.baseURI||location.href),page=new URL(location.href);
+        const base=new URL(document.baseURI||location.href);
+        const url=new URL(String(candidate),base),page=new URL(location.href);
         if(url.origin===page.origin&&/^https?:$/.test(url.protocol))return url.href;
+        // Electron/standalone file launches: permit ONLY packaged audio under
+        // this game's own assets/audio directory. Never accept arbitrary file
+        // paths or network music in an offline build.
+        if(url.protocol==="file:"&&page.protocol==="file:"&&url.host===page.host){
+          const packagedAudio=new URL("assets/audio/",base);
+          if(url.href.startsWith(packagedAudio.href))return url.href;
+        }
       }catch(_){}
     }
     return "";
