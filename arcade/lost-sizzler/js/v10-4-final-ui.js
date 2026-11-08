@@ -115,12 +115,19 @@
     try{window.CCGLostSizzlerMusicBus?.release?.("end-credits")}catch(_){}
   }
   function creditsAudioUrl(){
-    try{
-      const override=window.CCG_ASSET_OVERRIDES?.audio?.music?.endgame||window.CCG_ADMIN_AUDIO?.endgame;
-      const value=String(override||window.CCG_AUDIO_ASSETS?.music?.endgame||"");
-      const audioUrl=new URL(value,location.href),pageUrl=new URL(location.href);
-      return value&&audioUrl.origin===pageUrl.origin&&/^https?:$/.test(audioUrl.protocol)?audioUrl.href:"";
-    }catch(_){return ""}
+    const candidates=[
+      window.CCG_ASSET_OVERRIDES?.audio?.music?.endgame,
+      window.CCG_ADMIN_AUDIO?.endgame,
+      window.CCG_AUDIO_ASSETS?.music?.endgame
+    ];
+    for(const candidate of candidates){
+      if(!candidate)continue;
+      try{
+        const url=new URL(String(candidate),location.href),page=new URL(location.href);
+        if(url.origin===page.origin&&/^https?:$/.test(url.protocol))return url.href;
+      }catch(_){}
+    }
+    return "";
   }
   if(!window.CCGEndCreditsMusic){
     window.CCGEndCreditsMusic={

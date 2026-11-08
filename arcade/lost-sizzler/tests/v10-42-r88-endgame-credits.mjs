@@ -143,4 +143,53 @@ for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver
   assert.equal(sample.rewardWrites.length,0,"nonwinning and failed runs must never award the permanent title");
 }
 
+
+// The actual credits audio owner must work without the existing test's music
+// spy, use packaged audio only, and refuse muted playback and remote overrides.
+{
+  const played=[],stopped=[],claims=[];
+  let soundEnabled=true;
+  class MockAudio{
+    constructor(src){this.src=src;this.paused=true;this.loop=false;this.volume=0}
+    play(){this.paused=false;played.push({src:this.src,loop:this.loop,volume:this.volume});return Promise.resolve()}
+    pause(){this.paused=true;stopped.push(this.src)}
+  }
+  const audioWindow={
+    CCG_CONFIG:{maxFloors:15},
+    CCG_AUDIO_ASSETS:{music:{endgame:"assets/audio/music/sanctuary.wav"}},
+    CCGSound:{isEnabled:()=>soundEnabled},
+    CCGLostSizzlerMusicBus:{claim(owner,stop){claims.push(owner);this.stop=stop},release(owner){claims.push("release:"+owner)}}
+  };
+  const audioContext={
+    window:audioWindow,Audio:MockAudio,URL,
+    location:{href:"http://127.0.0.1:8123/arcade/lost-sizzler/"},
+    document:{
+      getElementById(){return null},querySelector(){return null},querySelectorAll(){return []},
+      createElement(){return {}},head:{appendChild(){}}
+    },
+    fetch:()=>Promise.resolve({ok:true,json:()=>Promise.resolve([])}),
+    console:{warn(){}}
+  };
+  vm.runInNewContext(finaleSource,audioContext,{timeout:1000});
+  const musicOwner=audioWindow.CCGEndCreditsMusic;
+  assert.equal(musicOwner.play({reason:"campaign-complete"}),true,"winning credits should play the configured cue");
+  assert.equal(played.length,1);
+  assert.match(played[0].src,/^http:\/\/127\.0\.0\.1:8123\/arcade\/lost-sizzler\/assets\/audio\/music\/sanctuary\.wav$/);
+  assert.equal(played[0].loop,true);
+  assert.ok(played[0].volume>0&&played[0].volume<=.15);
+  assert.equal(musicOwner.isPlaying(),true);
+  musicOwner.stop();
+  assert.equal(musicOwner.isPlaying(),false,"return-to-menu must stop credits audio");
+  assert.equal(stopped.length,1);
+  audioWindow.CCG_ASSET_OVERRIDES={audio:{music:{endgame:"https://outside.example.invalid/music.mp3"}}};
+  assert.equal(musicOwner.play({reason:"campaign-complete"}),true,"remote override should fall back to bundled audio");
+  assert.equal(played.length,2);
+  assert.equal(played[1].src,played[0].src,"external override must never be requested");
+  musicOwner.stop();
+  soundEnabled=false;
+  assert.equal(musicOwner.play({reason:"campaign-complete"}),false,"sound-off must prevent new credits playback");
+  assert.equal(musicOwner.isPlaying(),false);
+  assert.ok(claims.includes("end-credits"),"credits music must claim the shared music owner");
+}
+
 console.log("Dungeon Carnage R88 endgame and credits contract passed.");
