@@ -67,6 +67,32 @@ assert.equal(voices[0].opts.stateKey,"rescued");
 assert.equal(rescueToasts.length,1,"Completion feedback must not repeat");
 assert.equal(rescueToasts[0][4].ccgDialogueVoiceHandled,true,"Generic sanctuary voice must not replace scout");
 assert.equal(updated.length,1,"Rescue objective must update only once");
+// Execute the REAL updateRescue owner and confirm its lagging UI hook is reachable.
+const lagScout={x:9,y:2,following:true,rescued:false},lagHero={id:"lag-hero",x:2,y:2};
+const lagNotifications=[],lagVoices=[];
+const lagCtx={
+  host:{rescue:lagScout},world:{},performance:{now:()=>10000},
+  localPlayers:()=>[lagHero],md:(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y),
+  SYS:{inSanctuary:()=>false,pathStep:()=>null},
+  window:{
+    CCGLostSizzlerStage8NpcDialogue:{presentScoutEscortHint:(player,rescue,distance)=>lagNotifications.push({player,rescue,distance})},
+    CCGLostSizzlerVoice:{say:key=>lagVoices.push(key)}
+  },
+  showToast(){}
+};
+vm.createContext(lagCtx);
+vm.runInContext(rescueFn+";this.rescueTick=updateRescue;",lagCtx,{timeout:1200});
+lagCtx.rescueTick();
+assert.equal(lagNotifications.length,1,"real updateRescue must dispatch the far-Scout subtitle event");
+assert.equal(lagNotifications[0].distance,7,"actual lagging distance must be forwarded from game-play");
+assert.equal(lagNotifications[0].player,lagHero,"subtitle must target actual nearest player");
+assert.equal(lagNotifications[0].rescue,lagScout,"subtitle must use authoritative rescue object");
+assert.deepEqual(lagVoices,[],"seven-tile subtitle must preserve existing eight-tile recorded-voice threshold");
+lagScout.x=6;
+lagCtx.rescueTick();
+assert.equal(lagNotifications.length,1,"nearby Scout must not dispatch another distance event");
+assert.equal(lagScout.following,true,"hint cannot complete the rescue");
+assert.equal(lagScout.rescued,false,"hint cannot alter rescue state");
 
 
 const countSource=cut(play,"function updateStalker(dt){","function updateBanishment(){");

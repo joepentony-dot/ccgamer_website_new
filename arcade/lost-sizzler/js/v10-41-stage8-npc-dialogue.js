@@ -10,6 +10,7 @@
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
   const merchantVoiceVisits=new WeakMap();
+  const escortHintTimes=new WeakMap();
   const environmentalSeen=new WeakSet();
   const environmentalFloors=new WeakMap();
   const explorationFloors=new WeakMap();
@@ -20,7 +21,7 @@
     Object.freeze({id:"crossfire-routes",min:6,max:8,cadence:3,maxEncounters:3,squad:2,hpBonus:1,kinds:Object.freeze(["ambusher","scout"]),label:"Crossfire Routes"}),
     Object.freeze({id:"lockdown-depths",min:9,max:Infinity,cadence:2,maxEncounters:4,squad:2,hpBonus:1,kinds:Object.freeze(["ambusher","scout","ambusher"]),label:"Lockdown Depths"})
   ]);
-  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,levelDirectorEncounters:0,levelDirectorEnemies:0,levelDirectorSkips:0,lastLevelProfile:null,last:null,lastMerchantTask:null};
+  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,scoutEscortHints:0,levelDirectorEncounters:0,levelDirectorEnemies:0,levelDirectorSkips:0,lastLevelProfile:null,last:null,lastMerchantTask:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"Thank God you found me.",tone:"green",duration:6200,voiceKey:"npc.scout.found"}),
@@ -200,6 +201,27 @@
     let rescue=null;try{rescue=host?.rescue||null}catch(_){return false}
     if(!rescue)return false;
     return present(rescue,lineForScout(rescue,stateKey,player),{player,force})
+  }
+  // The original updateRescue step invokes this without another timer or scanner.
+  // Keep the owner's recorded lagging voice separate: this is subtitle-only.
+  function presentScoutEscortHint(player,rescue,distance=null){
+    if(!soloDungeon()||!player||!rescue?.following||rescue.rescued)return false;
+    try{if(host?.rescue!==rescue)return false}catch(_){return false}
+    const px=Number(player.x),py=Number(player.y),sx=Number(rescue.x),sy=Number(rescue.y);
+    const separation=Number.isFinite(distance)?distance:Math.abs(px-sx)+Math.abs(py-sy);
+    if(!Number.isFinite(separation)||separation<6)return false;
+    const now=clockNow(),last=escortHintTimes.get(rescue);
+    if(last!==undefined&&now-last<12000)return false;
+    const line=lineForScout(rescue,"following",player);
+    const deferred=queueDialogueSubtitleBehindActiveToast(line,true);
+    if(!deferred)try{
+      showToast(line.title,line.speaker+": "+line.subtitle,line.tone,line.duration,{ccgDialogueVoiceHandled:true,retain:true});
+    }catch(_){return false}
+    escortHintTimes.set(rescue,now);
+    state.scoutEscortHints++;
+    state.presentations++;
+    state.last={key:line.key,title:line.title,text:line.subtitle,voiceKey:line.voiceKey,at:now};
+    return true
   }
   function presentMerchant(shop,{force=false}={}){
     if(!shop?.active)return false;
@@ -533,5 +555,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,scoutEscortGuidance,lineForMerchant,fieldTaskSnapshot,equipmentAdvice,alchemistAdvice,sanctuaryAdvice,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,scoutEscortGuidance,lineForMerchant,fieldTaskSnapshot,equipmentAdvice,alchemistAdvice,sanctuaryAdvice,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentScoutEscortHint,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();

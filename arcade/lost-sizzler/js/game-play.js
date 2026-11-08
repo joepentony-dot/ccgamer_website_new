@@ -1111,6 +1111,8 @@ function updateRescue(){
     r._ccgLaggingVoiceAt=now;
     try{window.CCGLostSizzlerVoice?.say?.("scoutLagging",{cooldown:0})}catch(_){}
   }
+  // Existing rescue tick is the event source; Stage8 limits subtitle repeats.
+  if(distance>=6)try{window.CCGLostSizzlerStage8NpcDialogue?.presentScoutEscortHint?.(target,r,distance)}catch(_){}
   if(SYS.inSanctuary(world,target.x,target.y)&&!SYS.inSanctuary(world,r.x,r.y)&&!r._ccgSanctuaryVoice){
     r._ccgSanctuaryVoice=true;
     try{window.CCGLostSizzlerVoice?.say?.("scoutSanctuaryNear",{cooldown:0})}catch(_){}
