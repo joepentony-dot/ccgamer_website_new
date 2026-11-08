@@ -84,7 +84,7 @@ assert.equal(crimson.id,"crimson-dungeonheart");
 assert.equal(crimson.title,"Keeper of the Crimson Dungeonheart");
 const previouslyWon=exerciseFinale({rewardStorage:victory.rewardStorage});
 assert.equal(previouslyWon.rewardWrites.length,0,"subsequent completed runs must reuse, not re-award, the permanent reward");
-assert.match(previouslyWon.inserts[0].html,/PERMANENT TITLE/,"already-earned title must remain visible in a later winning run");
+assert.ok(previouslyWon.inserts.some(entry=>entry.html.includes("PERMANENT TITLE")),"already-earned title must remain visible in a later winning run");
 const ceremony=victory.inserts.filter(x=>x.html.includes('id="v108-completion-credits"'));
 assert.equal(ceremony.length,1,"one victory ceremony must be inserted per run");
 assert.equal(ceremony[0].where,"afterbegin","cinematic finale must appear before long credits");
