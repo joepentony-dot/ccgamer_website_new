@@ -31,9 +31,47 @@ export function findEquivalentGeneratedPr(pulls, stagedPatch, patchForPr, owner,
   ).sort((a, b) => b.number - a.number);
 
   for (const pr of candidates) {
-    if (patchForPr(pr) === stagedPatch) return pr;
+    const patch = patchForPr(pr);
+    if (patch === stagedPatch ||
+        (options.allowSeoTimestampRefresh === true &&
+          seoPatchesEqualExceptTimestamp(patch, stagedPatch))) return pr;
   }
   return null;
+}
+
+// A refreshed YouTube sync should not open an additional SEO draft when only
+// the generated metadata timestamp (and its derived Git blob hash) changed.
+// Every other patch byte, including the old blob hash, remains exact.
+export function seoPatchesEqualExceptTimestamp(candidate, staged) {
+  if (typeof candidate !== "string" || typeof staged !== "string" ||
+      !candidate.includes("diff --git ") || !staged.includes("diff --git ")) return false;
+  if (candidate === staged) return true;
+  const normalize = patch => {
+    let inVideoMetadata = false, removed = 0, added = 0, blobIndexes = 0;
+    const lines = patch.split("\n").map(line => {
+      if (line.startsWith("diff --git ")) {
+        inVideoMetadata = line === "diff --git a/data/video-metadata.json b/data/video-metadata.json";
+      }
+      if (!inVideoMetadata) return line;
+      // A one-field timestamp refresh changes the Git postimage object ID.
+      // Keep the preimage ID and every other file's index byte-for-byte.
+      const index = line.match(/^index ([a-f0-9]{40})\.\.[a-f0-9]{40}(\s+\d{6})?$/);
+      if (index) {
+        blobIndexes++;
+        return "index " + index[1] + "..<generated-blob>" + (index[2] || "");
+      }
+      const match = line.match(/^([+-]\s*"updatedAt":\s*")\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z(",?\s*)$/);
+      if (!match) return line;
+      if (line.startsWith("+")) added++;
+      else removed++;
+      return match[1] + "<generated-refresh>" + match[2];
+    });
+    return {patch: lines.join("\n"), removed, added, blobIndexes};
+  };
+  const left = normalize(candidate), right = normalize(staged);
+  return left.added === 1 && left.removed === 1 && left.blobIndexes === 1 &&
+    right.added === 1 && right.removed === 1 && right.blobIndexes === 1 &&
+    left.patch === right.patch;
 }
 
 function run(command, args) {
@@ -119,7 +157,14 @@ export function findExistingPrFromCheckout(repo, options = {}) {
     const patch = run("git", ["diff", "--no-color", "--no-ext-diff",
       "--binary", "--full-index", base, sha]);
     if (base === main) return patch;
+    let equalGeneratedOutput = false;
     if (patch === stagedPatch) {
+      equalGeneratedOutput = true;
+    } else if (options.allowSeoTimestampRefresh === true &&
+               seoPatchesEqualExceptTimestamp(patch, stagedPatch)) {
+      equalGeneratedOutput = true;
+    }
+    if (equalGeneratedOutput) {
       if (live.draft !== true) {
         throw new Error("Matching stale generated PR #" + pr.number +
           " is not draft; owner must reconcile it before new publication.");
@@ -177,7 +222,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   try {
     const seoMode = process.argv.slice(2).includes("--seo");
     const options = seoMode
-      ? {branchPattern: SEO_GENERATED_BRANCH, title: SEO_GENERATED_TITLE}
+      ? {branchPattern: SEO_GENERATED_BRANCH, title: SEO_GENERATED_TITLE, allowSeoTimestampRefresh: true}
       : {};
     const match = findExistingPrFromCheckout(process.env.GITHUB_REPOSITORY, options);
     if (match) process.stdout.write(String(match.number) + "\n");

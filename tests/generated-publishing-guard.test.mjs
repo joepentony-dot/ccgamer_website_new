@@ -8,7 +8,7 @@ import {
   REQUIRED_VALIDATION_WORKFLOWS, executedRunPassed,
   codeReviewPassed, currentPullIsSafe
 } from "../scripts/qualify-generated-publishing.mjs";
-import { findEquivalentGeneratedPr, buildStaleGeneratedMergeCommit, remoteBranchMatches, SEO_GENERATED_BRANCH, SEO_GENERATED_TITLE } from "../scripts/deduplicate-generated-publishing.mjs";
+import { findEquivalentGeneratedPr, buildStaleGeneratedMergeCommit, remoteBranchMatches, SEO_GENERATED_BRANCH, SEO_GENERATED_TITLE, seoPatchesEqualExceptTimestamp } from "../scripts/deduplicate-generated-publishing.mjs";
 
 const SHA = "a".repeat(40);
 const goodRun = {id:44, head_sha:SHA, event:"workflow_dispatch", status:"completed", conclusion:"success"};
@@ -176,6 +176,42 @@ test("SEO generated output reuses only byte-identical fresh same-repository draf
   ], patch, () => patch, "joepentony-dot", options), null);
   assert.equal(findEquivalentGeneratedPr([make(4001)], patch, () => patch,
     "joepentony-dot"), null);
+});
+
+test("SEO timestamp refresh reuses a draft without ignoring actual content or sitemap changes", () => {
+  const p = [
+    "diff --git a/data/video-metadata.json b/data/video-metadata.json",
+    "index " + "a".repeat(40) + ".." + "b".repeat(40) + " 100644",
+    "--- a/data/video-metadata.json", "+++ b/data/video-metadata.json",
+    "@@ -1,6 +1,6 @@", '-  "updatedAt": "2026-11-07T21:17:26.490Z",',
+    '+  "updatedAt": "2026-11-08T18:37:58.483Z",',
+    '   "videos": {"v": {"description": "Original video copy"}}',
+    "diff --git a/sitemap-pages.xml b/sitemap-pages.xml",
+    "index " + "c".repeat(40) + ".." + "d".repeat(40) + " 100644",
+    "--- a/sitemap-pages.xml", "+++ b/sitemap-pages.xml",
+    "@@ -1,3 +1,3 @@", "-<lastmod>2026-11-06</lastmod>",
+    "+<lastmod>2026-11-08</lastmod>", ""
+  ].join("\n");
+  const next = p.replace("2026-11-08T18:37:58.483Z", "2026-11-08T20:38:58.632Z")
+    .replace(".." + "b".repeat(40) + " 100644", ".." + "e".repeat(40) + " 100644");
+  assert.equal(seoPatchesEqualExceptTimestamp(p,next),true);
+  assert.equal(seoPatchesEqualExceptTimestamp(next,p),true);
+  assert.equal(seoPatchesEqualExceptTimestamp(p,p),true);
+  assert.equal(seoPatchesEqualExceptTimestamp("",next),false);
+  assert.equal(seoPatchesEqualExceptTimestamp(p,next.replace("Original video copy","New video copy")),false);
+  assert.equal(seoPatchesEqualExceptTimestamp(p,next.replace("index " + "a".repeat(40),"index " + "f".repeat(40))),false,"source Git blob must match");
+  assert.equal(seoPatchesEqualExceptTimestamp(p,next.replace(".." + "d".repeat(40),".." + "e".repeat(40))),false,"unrelated sitemap Git blob must match");
+  assert.equal(seoPatchesEqualExceptTimestamp(p,next.replace("+<lastmod>2026-11-08</lastmod>","+<lastmod>2026-11-09</lastmod>")),false);
+  assert.equal(seoPatchesEqualExceptTimestamp(p,next.replace("sitemap-pages.xml","sitemap-games.xml")),false);
+  assert.equal(seoPatchesEqualExceptTimestamp(p,next.replace("2026-11-08T20:38:58.632Z","invalid-date")),false);
+  const pr={number:5050,title:SEO_GENERATED_TITLE,headRefName:"automation/seo-5050-1",
+    headRepositoryOwner:{login:"joepentony-dot"},baseRefName:"main"};
+  const guarded={branchPattern:SEO_GENERATED_BRANCH,title:SEO_GENERATED_TITLE,allowSeoTimestampRefresh:true};
+  assert.equal(findEquivalentGeneratedPr([pr],p,()=>next,"joepentony-dot",guarded)?.number,5050);
+  assert.equal(findEquivalentGeneratedPr([pr],p,()=>next,"joepentony-dot",{
+    branchPattern:SEO_GENERATED_BRANCH,title:SEO_GENERATED_TITLE}),null);
+  assert.equal(findEquivalentGeneratedPr([pr],p,()=>next.replace("Original video copy","Changed"),"joepentony-dot",guarded),null);
+  assert.equal(findEquivalentGeneratedPr([{...pr,headRepositoryOwner:{login:"other"}}],p,()=>next,"joepentony-dot",guarded),null);
 });
 
 test("SEO automation never merges generated output before independent exact-head qualification", () => {
