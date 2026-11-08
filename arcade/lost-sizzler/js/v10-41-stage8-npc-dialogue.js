@@ -90,12 +90,38 @@
     ];
     return tasks.find(task=>task.progress<task.target)||{id:"complete",label:"All field commissions complete",progress:3,target:3,complete:true}
   }
+  // R157: context-only advice. Keep the existing human-recorded clip keys,
+  // transaction owners and NPC encounter frequency unchanged.
+  function equipmentAdvice(player){
+    const gear=player?.wearables;
+    if(!gear?.body)return "Body slot empty: armour can increase your armour capacity.";
+    if(!gear?.trinket)return "Trinket slot empty: enchanted charms can improve sight.";
+    return "Body and Trinket equipped. Check your supplies before the next floor.";
+  }
+  function alchemistAdvice(essence,required){
+    const have=Math.max(0,Math.floor(Number(essence)||0)),need=Math.max(2,Math.floor(Number(required)||3));
+    return have>=need
+      ? "Essence "+have+"/"+need+": enough to distil one Banishment Flask."
+      : "Essence "+have+"/"+need+": "+(need-have)+" more needed for one Banishment Flask.";
+  }
+  function sanctuaryAdvice(player){
+    const hp=Number(player?.health),maxHp=Number(player?.maxHealth);
+    if(Number.isFinite(hp)&&Number.isFinite(maxHp)&&maxHp>0&&hp/maxHp<=.5)
+      return "You're hurt. Use the marked green square to recover before leaving.";
+    if(!player?.wearables?.body||!player?.wearables?.trinket)
+      return "Check your Body and Trinket slots before the next fight.";
+    return "You've got a safe room here. Check your supplies and route.";
+  }
   function lineForMerchant(shop,task=fieldTaskSnapshot()){
     const visits=Math.max(0,Number(merchantVoiceVisits.get(shop)||0));
-    let base;
-    if(shop?.shopType==="hidden"){
-      let essence=0;try{essence=Math.max(0,Number(p1?.banishmentEssence||0))+Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
-      const need=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
+    let base,essence=0;
+    const hidden=shop?.shopType==="hidden";
+    let need=3;
+    if(hidden){
+      // The Vessel is the sole canonical Essence store. inventoryKindCount("artefact")
+      // aliases this exact value; adding both counts the same Essence twice.
+      try{essence=Math.max(0,Math.floor(Number(p1?.banishmentEssence)||0))}catch(_){}
+      need=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
       if(visits===0)base=lines.merchant.hidden;
       else if(essence>=need)base=lines.merchant.hiddenReady;
       else if(essence>0)base=lines.merchant.hiddenPartial;
@@ -106,8 +132,12 @@
     const briefing=task.complete
       ?"Field board: all three commissions are complete; their normal +350 score reward path remains unchanged."
       :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
-    const essenceNeed=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3)),trade=shop?.shopType==="hidden"?` Distil ${essenceNeed} Banishment Essence into one Banishment Flask.`:"";
-    return{...base,text:`${base.text}${trade} ${briefing}`.trim()}
+    const trade=hidden?` Distil ${need} Banishment Essence into one Banishment Flask.`:"";
+    let owner=null;try{owner=p1}catch(_){}
+    const hint=hidden?alchemistAdvice(essence,need):equipmentAdvice(owner);
+    const text=`${base.text}${trade} ${briefing} ${hint}`.trim();
+    // Longer subtitles do not outlive the existing notification rail.
+    return{...base,text,duration:Math.min(10500,Math.max(Number(base.duration)||5200,2000+text.length*36))}
   }
   function speakDialogueLine(line,{priority=44,cooldown=REPEAT_MS}={}){
     if(!line?.voiceKey||!line?.text)return false;
@@ -182,7 +212,9 @@
     try{if(host?.rescue?.following&&!host.rescue.rescued)return args}catch(_){}
     const now=clockNow(),previous=memory.get(room);
     if(previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return args}
-    args[1]=`${String(args[1]||"")} ${line.speaker}: ${line.text}`.trim();
+    let keeperPlayer=null;try{keeperPlayer=p1}catch(_){}
+    args[1]=`${String(args[1]||"")} ${line.speaker}: ${line.text} ${sanctuaryAdvice(keeperPlayer)}`.trim();
+    args[3]=Math.min(10500,Math.max(Number(args[3])||0,2000+String(args[1]).length*32));
     const spoken=speakDialogueLine(line,{priority:42,cooldown:REPEAT_MS});
     if(spoken)args[4]={...(args[4]&&typeof args[4]==="object"?args[4]:{}),ccgDialogueVoiceHandled:true};
     memory.set(room,{key:line.key,at:now});
@@ -483,5 +515,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,equipmentAdvice,alchemistAdvice,sanctuaryAdvice,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();

@@ -59,10 +59,60 @@ try{
   const hiddenNotificationText=[hidden.toastText,...hidden.queued.map(entry=>entry.text)].join(" | ");
   assert.match(hiddenNotificationTitles,/BANISHMENT ALCHEMIST/i,"hidden Alchemist dialogue must use the existing notification surface, immediately or through the established toast queue");
   assert.match(hiddenNotificationText,/Banishment Flask|Essence/i,"hidden Alchemist dialogue must describe the current Essence-to-Flask distillation");
+  assert.match(hiddenNotificationText,/Essence \d+\/\d+:/,"live Alchemist encounter must show the actual Essence count and required amount");
   assert.equal(hidden.scoreUnchanged,true,"merchant dialogue must not alter player score");
   assert.equal(hidden.inventoryUnchanged,true,"merchant dialogue must not alter inventory");
   assert.equal(hidden.revisionUnchanged,true,"merchant dialogue must not alter canonical world revision");
   assert.equal(hidden.scorePurchases,0,"opening merchant dialogue must not purchase stock or advance the shop price ladder");
+
+  // R157: dialogue advice must reflect real gear/Essence state without writes.
+  const advice=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerStage8NpcDialogue;
+    const body={kind:"wearable",slot:"body",name:"PADDED VEST"};
+    const trinket={kind:"wearable",slot:"trinket",name:"DUNGEON CHARM"};
+    const before={score,inventory:JSON.stringify(p1.inventory),revision:host.revision};
+    const hints=[
+      api.equipmentAdvice({wearables:{body:null,trinket:null}}),
+      api.equipmentAdvice({wearables:{body,trinket:null}}),
+      api.equipmentAdvice({wearables:{body,trinket}})
+    ];
+    const alchemy=[api.alchemistAdvice(0,3),api.alchemistAdvice(2,3),api.alchemistAdvice(3,3)];
+    return{hints,alchemy,noGameMutation:before.score===score&&before.inventory===JSON.stringify(p1.inventory)&&before.revision===host.revision};
+  });
+  assert.match(advice.hints[0],/Body slot empty/i,"Quartermaster must explain missing Body protection");
+  assert.match(advice.hints[1],/Trinket slot empty/i,"Quartermaster must explain the second missing slot");
+  assert.match(advice.hints[2],/Body and Trinket equipped/i,"Fully equipped player must receive different guidance");
+  assert.match(advice.alchemy[0],/Essence 0\/3: 3 more needed/,"Alchemist must report exact zero-Essence deficit");
+  assert.match(advice.alchemy[1],/Essence 2\/3: 1 more needed/,"Alchemist must report exact remaining Essence");
+  assert.match(advice.alchemy[2],/Essence 3\/3: enough to distil one/,"Alchemist must report ready state without buying a Flask");
+  assert.equal(advice.noGameMutation,true,"Advice must not alter score, inventory or host revision");
+
+  // P2 review: the real inventoryKindCount("artefact") aliases the Vessel.
+  // The actual shop readiness subtitle must not double-count it.
+  const realVessel=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerStage8NpcDialogue;
+    const saved={essence:p1.banishmentEssence,hasCost:Object.hasOwn(p1,"banishmentEssenceCost"),cost:p1.banishmentEssenceCost};
+    const before={score,inventory:JSON.stringify(p1.inventory),revision:host.revision};
+    const shop={active:true,shopType:"hidden"};
+    const task={id:"games",label:"Rescue 1 C64 game",progress:0,target:1};
+    try{
+      p1.banishmentEssence=2;p1.banishmentEssenceCost=3;
+      const twoOfThree=api.lineForMerchant(shop,task).text;
+      p1.banishmentEssenceCost=2;
+      const twoOfTwo=api.lineForMerchant(shop,task).text;
+      p1.banishmentEssence=0;
+      const empty=api.lineForMerchant(shop,task).text;
+      return{twoOfThree,twoOfTwo,empty,unchanged:before.score===score&&before.inventory===JSON.stringify(p1.inventory)&&before.revision===host.revision};
+    }finally{
+      p1.banishmentEssence=saved.essence;
+      if(saved.hasCost)p1.banishmentEssenceCost=saved.cost;else delete p1.banishmentEssenceCost;
+    }
+  });
+  assert.match(realVessel.twoOfThree,/Essence 2\/3: 1 more needed/,"two carried Essence must not be double-counted to four");
+  assert.doesNotMatch(realVessel.twoOfThree,/Essence 4\/3|enough to distil one/,"underfunded Alchemist must not suggest a usable Flask");
+  assert.match(realVessel.twoOfTwo,/Essence 2\/2: enough to distil one/,"reduced-cost trade must reflect real readiness");
+  assert.match(realVessel.empty,/Essence 0\/2: 2 more needed/,"empty Vessel must reflect the current cost");
+  assert.equal(realVessel.unchanged,true,"dialogue inspection cannot alter score, inventory or host revision");
 
   const repeat=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue,shop=activeShop,before=api.state.presentations;
@@ -86,6 +136,7 @@ try{
   assert.equal(entrance.presented,1,"forced entrance merchant interaction must present one line");
   assert.equal(entrance.last.key,"merchant.entrance","entrance supply shop must use its own merchant dialogue state");
   assert.equal(entrance.last.voiceKey,"npc.merchant.entrance","entrance merchant must carry a stable optional local-voice key");
+  assert.match(entrance.last.text,/Body slot empty|Trinket slot empty|Body and Trinket equipped/,"live Quartermaster must give equipment-aware advice");
   assert.equal(entrance.mode,"playing","direct non-blocking merchant dialogue must leave normal play active");
 
   const isolated=await page.evaluate(()=>{
