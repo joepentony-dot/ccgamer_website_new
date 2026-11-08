@@ -55,7 +55,7 @@ export function seoPatchesEqualExceptTimestamp(candidate, staged) {
       if (!inVideoMetadata) return line;
       // A one-field timestamp refresh changes the Git postimage object ID.
       // Keep the preimage ID and every other file's index byte-for-byte.
-      const index = line.match(/^index ([a-f0-9]{40})..[a-f0-9]{40}(s+d{6})?$/);
+      const index = line.match(/^index ([a-f0-9]{40})\.\.[a-f0-9]{40}(\s+\d{6})?$/);
       if (index) {
         blobIndexes++;
         return "index " + index[1] + "..<generated-blob>" + (index[2] || "");
