@@ -99,6 +99,31 @@ try{
   assert.match(scoutNotificationTitles,/CCG SCOUT/i,"Scout dialogue must use the existing notification surface, immediately or through the established toast queue");
   assert.match(scoutNotificationText,/found me/i,"the supplied first Scout line must remain available through the existing non-blocking notification queue");
   assert.equal(first.voiceKey,"npc.scout.found","Scout text must carry a stable optional local-voice key for later expansion");
+  assert.match(first.last.text,/Escort objective: guide the Scout himself into a permanently lit Sanctuary/,"first Scout encounter must explain the actual rescue target");
+  assert.match(first.last.text,/Arriving there alone does not finish the rescue/,"Scout help must explain that player-only arrival is insufficient");
+  const guidance=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerStage8NpcDialogue;
+    const saved={revision:host.revision,inventory:JSON.stringify(p1.inventory),score:run.score,found:host.rescue.found,following:host.rescue.following,rescued:host.rescue.rescued};
+    const far={...host.rescue,following:true,found:true,rescued:false,x:Number(p1.x)+7,y:Number(p1.y)};
+    const near={...far,x:Number(p1.x)+1};
+    const out={
+      far:api.lineForScout(far,"following",p1),
+      near:api.lineForScout(near,"following",p1),
+      safe:api.lineForScout({...far,rescued:true,following:false},"rescued",p1),
+      original:api.lines.scout.trapped.text,
+      voice:api.lines.scout.following.voiceKey
+    };
+    out.noMutation=saved.revision===host.revision&&saved.inventory===JSON.stringify(p1.inventory)&&saved.score===run.score
+      &&saved.found===host.rescue.found&&saved.following===host.rescue.following&&saved.rescued===host.rescue.rescued;
+    return out;
+  });
+  assert.match(guidance.far.subtitle,/Scout is 7 tiles away.*Wait for him to catch up/,"distant Scout must show actual tile distance");
+  assert.match(guidance.near.subtitle,/Keep the Scout nearby/,"near Scout must indicate the remaining Sanctuary goal");
+  assert.match(guidance.safe.subtitle,/Escort complete: the Scout has reached/,"rescued Scout must acknowledge completed escort");
+  assert.equal(guidance.original,"Thank God you found me.","source-recorded first Scout phrase remains unchanged");
+  assert.equal(guidance.far.text,"I’ll follow you.","source-recorded following voice text remains unchanged");
+  assert.equal(guidance.voice,"npc.scout.following","recorded Scout clip key remains unchanged");
+  assert.equal(guidance.noMutation,true,"Scout advice must not modify score, saves or rescue state");
 
   const following=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue,r=host.rescue;
@@ -109,6 +134,7 @@ try{
   assert.equal(following.shown,true,"a nearby following Scout must be able to speak from the reusable dialogue surface");
   assert.equal(following.presented,1,"forced focused regression interaction must present one following line");
   assert.equal(following.last.key,"scout.following","following interaction must use the following dialogue state");
+  assert.match(following.last.text,/Keep the Scout nearby/,"real following state should provide escort guidance");
   assert.equal(following.following,true,"dialogue must not alter the canonical following state");
   assert.equal(following.rescued,false,"following dialogue must not complete the rescue");
 
@@ -120,6 +146,7 @@ try{
   });
   assert.equal(rescued.presented,1,"a rescued Scout encountered nearby must acknowledge the safe state");
   assert.equal(rescued.last.key,"scout.rescued","post-rescue interaction must use the safe dialogue state");
+  assert.match(rescued.last.text,/Escort complete: the Scout has reached/,"rescued Scout must report completed Sanctuary escort");
   assert.equal(rescued.following,false,"post-rescue dialogue must not restart following");
   assert.equal(rescued.rescued,true,"post-rescue dialogue must preserve canonical completion state");
 

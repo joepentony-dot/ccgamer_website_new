@@ -79,7 +79,24 @@
     try{return typeof md==="function"?md(player,entity)<=1:Math.abs(Number(player.x)-Number(entity.x))+Math.abs(Number(player.y)-Number(entity.y))<=1}catch(_){return false}
   }
   function scoutState(rescue){if(rescue?.rescued)return"rescued";if(rescue?.following)return"following";return"trapped"}
-  function lineForScout(rescue,stateKey=""){const key=stateKey||scoutState(rescue);return lines.scout[key]||lines.scout.trapped}
+  // R158: the Scout's authored voice remains the original brief recording.
+  // Add useful rescue directions only to the existing subtitle surface.
+  function scoutEscortGuidance(rescue,player=null,stateKey=""){
+    const key=stateKey||scoutState(rescue);
+    if(key==="rescued")return "Escort complete: the Scout has reached a permanently lit Sanctuary.";
+    if(key==="trapped")return "Escort objective: guide the Scout himself into a permanently lit Sanctuary. Arriving there alone does not finish the rescue.";
+    const px=Number(player?.x),py=Number(player?.y),sx=Number(rescue?.x),sy=Number(rescue?.y);
+    if([px,py,sx,sy].every(Number.isFinite)){
+      const distance=Math.abs(px-sx)+Math.abs(py-sy);
+      if(distance>=6)return "Scout is "+distance+" tiles away. Wait for him to catch up, then enter a permanently lit Sanctuary together.";
+    }
+    return "Keep the Scout nearby and lead him into a permanently lit Sanctuary to finish the rescue.";
+  }
+  function lineForScout(rescue,stateKey="",player=null){
+    const key=stateKey||scoutState(rescue),base=lines.scout[key]||lines.scout.trapped;
+    const subtitle=`${base.text} ${scoutEscortGuidance(rescue,player,key)}`.trim();
+    return {...base,subtitle,duration:Math.min(10000,Math.max(base.duration,2000+subtitle.length*40))};
+  }
   function fieldTaskSnapshot(){
     let games=0,secrets=0,champions=0;
     try{games=Math.max(0,Number(stats?.games||0));secrets=Math.max(0,Number(stats?.secrets||0));champions=Math.max(0,Number(run?.stats?.champions||0))}catch(_){}
@@ -159,8 +176,8 @@
     try{
       if(typeof toastTimer==="undefined"||Number(toastTimer)<=0||typeof toastQueue==="undefined"||!Array.isArray(toastQueue))return false;
       const current=String(document.getElementById("pickup-text")?.textContent||"");
-      const text=`${line.speaker}: ${line.text}`;
-      if(!current||current.includes(line.text)||toastQueue.some(entry=>String(entry?.text||"")===text))return false;
+      const displayText=String(line.subtitle||line.text),text=`${line.speaker}: ${displayText}`;
+      if(!current||current.includes(displayText)||toastQueue.some(entry=>String(entry?.text||"")===text))return false;
       toastQueue.push({title:String(line.title),text,tone:line.tone,duration:Math.max(5200,Number(line.duration)||7600),retain:true,ccgDialogueVoiceHandled:Boolean(spoken)});
       state.deferredSubtitles=(state.deferredSubtitles||0)+1;
       return true
@@ -172,16 +189,17 @@
     const now=clockNow(),previous=memory.get(entity);
     if(!force&&previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return false}
     const spoken=speakDialogueLine(line),deferred=queueDialogueSubtitleBehindActiveToast(line,spoken);
-    if(!deferred)try{showToast(line.title,`${line.speaker}: ${line.text}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true,retain:true}:{retain:true})}catch(_){return false}
+    const displayed=String(line.subtitle||line.text);
+    if(!deferred)try{showToast(line.title,`${line.speaker}: ${displayed}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true,retain:true}:{retain:true})}catch(_){return false}
     memory.set(entity,{key:line.key,at:now});
     state.presentations++;
-    state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:now};
+    state.last={key:line.key,title:line.title,text:displayed,voiceKey:line.voiceKey,at:now};
     return true
   }
   function presentScout(player,{force=false,stateKey=""}={}){
     let rescue=null;try{rescue=host?.rescue||null}catch(_){return false}
     if(!rescue)return false;
-    return present(rescue,lineForScout(rescue,stateKey),{player,force})
+    return present(rescue,lineForScout(rescue,stateKey,player),{player,force})
   }
   function presentMerchant(shop,{force=false}={}){
     if(!shop?.active)return false;
@@ -373,11 +391,11 @@
       if(!before||!soloDungeon())return result;
       try{
         const rescue=host?.rescue;if(!rescue)return result;
-        if(!before.rescued&&!before.following&&rescue.following&&rescue.found)present(rescue,lines.scout.trapped,{player});
+        if(!before.rescued&&!before.following&&rescue.following&&rescue.found)present(rescue,lineForScout(rescue,"trapped",player),{player});
         // The actual hand-off fires from updateRescue(), while a later direct
         // interaction with an already rescued Scout may acknowledge safety.
         // Keep the following-state line disabled during ordinary movement.
-        else if(rescue.rescued&&withinReach(player,rescue))present(rescue,lines.scout.rescued,{player});
+        else if(rescue.rescued&&withinReach(player,rescue))present(rescue,lineForScout(rescue,"rescued",player),{player});
       }catch(_){}
       return result
     };
@@ -448,7 +466,7 @@
     if(hadDialogueOwner)return true;
     try{
       const rescue=host?.rescue||null,player=typeof p1!=="undefined"?p1:null;
-      if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lines.scout.trapped,{player});
+      if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lineForScout(rescue,"trapped",player),{player});
     }catch(_){}
     return ancestryHasMarker(window.triggerRescue,"__ccgStage8NpcDialogue")
   }
@@ -515,5 +533,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,equipmentAdvice,alchemistAdvice,sanctuaryAdvice,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,scoutEscortGuidance,lineForMerchant,fieldTaskSnapshot,equipmentAdvice,alchemistAdvice,sanctuaryAdvice,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();
