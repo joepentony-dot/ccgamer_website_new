@@ -87,6 +87,33 @@ try{
   assert.match(advice.alchemy[2],/Essence 3\/3: enough to distil one/,"Alchemist must report ready state without buying a Flask");
   assert.equal(advice.noGameMutation,true,"Advice must not alter score, inventory or host revision");
 
+  // P2 review: the real inventoryKindCount("artefact") aliases the Vessel.
+  // The actual shop readiness subtitle must not double-count it.
+  const realVessel=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerStage8NpcDialogue;
+    const saved={essence:p1.banishmentEssence,hasCost:Object.hasOwn(p1,"banishmentEssenceCost"),cost:p1.banishmentEssenceCost};
+    const before={score,inventory:JSON.stringify(p1.inventory),revision:host.revision};
+    const shop={active:true,shopType:"hidden"};
+    const task={id:"games",label:"Rescue 1 C64 game",progress:0,target:1};
+    try{
+      p1.banishmentEssence=2;p1.banishmentEssenceCost=3;
+      const twoOfThree=api.lineForMerchant(shop,task).text;
+      p1.banishmentEssenceCost=2;
+      const twoOfTwo=api.lineForMerchant(shop,task).text;
+      p1.banishmentEssence=0;
+      const empty=api.lineForMerchant(shop,task).text;
+      return{twoOfThree,twoOfTwo,empty,unchanged:before.score===score&&before.inventory===JSON.stringify(p1.inventory)&&before.revision===host.revision};
+    }finally{
+      p1.banishmentEssence=saved.essence;
+      if(saved.hasCost)p1.banishmentEssenceCost=saved.cost;else delete p1.banishmentEssenceCost;
+    }
+  });
+  assert.match(realVessel.twoOfThree,/Essence 2\/3: 1 more needed/,"two carried Essence must not be double-counted to four");
+  assert.doesNotMatch(realVessel.twoOfThree,/Essence 4\/3|enough to distil one/,"underfunded Alchemist must not suggest a usable Flask");
+  assert.match(realVessel.twoOfTwo,/Essence 2\/2: enough to distil one/,"reduced-cost trade must reflect real readiness");
+  assert.match(realVessel.empty,/Essence 0\/2: 2 more needed/,"empty Vessel must reflect the current cost");
+  assert.equal(realVessel.unchanged,true,"dialogue inspection cannot alter score, inventory or host revision");
+
   const repeat=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue,shop=activeShop,before=api.state.presentations;
     closeShop();

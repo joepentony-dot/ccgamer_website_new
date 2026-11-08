@@ -118,7 +118,9 @@
     const hidden=shop?.shopType==="hidden";
     let need=3;
     if(hidden){
-      try{essence=Math.max(0,Number(p1?.banishmentEssence||0))+Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
+      // The Vessel is the sole canonical Essence store. inventoryKindCount("artefact")
+      // aliases this exact value; adding both counts the same Essence twice.
+      try{essence=Math.max(0,Math.floor(Number(p1?.banishmentEssence)||0))}catch(_){}
       need=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
       if(visits===0)base=lines.merchant.hidden;
       else if(essence>=need)base=lines.merchant.hiddenReady;
