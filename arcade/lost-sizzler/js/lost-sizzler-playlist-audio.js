@@ -570,6 +570,9 @@
       musicBus.claim("dungeon",()=>stopMusic(false));
       transition(false,false);
     }else{
+      // R155: the credits cue owns a separate Audio element. The global sound
+      // switch must silence it immediately, not just the dungeon playlists.
+      try{window.CCGEndCreditsMusic?.stop?.()}catch(_){}
       clearRetry();
       cancelFade();
       for(const slot of stateSlots.values())pauseSlot(slot);

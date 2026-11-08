@@ -310,6 +310,16 @@ assert(mobileState.pendingGestureState==="","The next mobile touch must clear pe
 assert(mobileState.fallbackActive===false,"Gesture recovery must keep the legacy fallback stopped.");
 assert(FakeAudio.instances.at(-1).url===uploadedDanger&&!FakeAudio.instances.at(-1).paused,"The next mobile touch must restart the uploaded Danger track rather than legacy music.");
 
+// R155: the game's actual sound toggle must also stop the separately
+// owned victory music. Do not alter earlier gameplay playlist assertions.
+let creditsMuteStops=0;
+fakeWindow.CCGEndCreditsMusic={stop(){creditsMuteStops++}};
+assert(fakeWindow.CCGSound.toggle()===false,'Sound toggle must switch the shared game to mute.');
+assert(creditsMuteStops===1,'Muting must stop an already-playing victory cue immediately.');
+assert(playingCount()===0,'Muting must still stop all existing dungeon playlist tracks.');
+assert(fakeWindow.CCGSound.toggle()===true,'Sound toggle must restore the established game setting.');
+assert(creditsMuteStops===1,'Unmuting must not stop the victory cue again.');
+
 console.log('Lost Sizzler multi-track playlist, mobile recovery and late uploaded soundtrack contracts passed.');
 
 
