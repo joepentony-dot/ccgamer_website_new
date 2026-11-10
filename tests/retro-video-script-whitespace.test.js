@@ -298,7 +298,7 @@ test("updated Spectrum quiz title stays identical across verified public video s
     path.join(__dirname, "../retro-specials/50-zx-spectrum-games-can-you-identify-them/index.html"), "utf8"
   );
   const schemaMatch = page.match(
-    /<script type="application\\/ld\\+json" data-ccg-schema="retro-video">\\s*([\\s\\S]*?)<\\/script>/
+    /<script type="application\/ld\+json" data-ccg-schema="retro-video">\s*([\s\S]*?)<\/script>/
   );
   assert.ok(schemaMatch, "Spectrum quiz has its verified VideoObject");
   const video = JSON.parse(schemaMatch[1]);
