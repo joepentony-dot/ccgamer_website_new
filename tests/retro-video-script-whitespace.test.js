@@ -253,6 +253,74 @@ test("real staged retro regeneration validates all ten demo pages and is repeata
   }
 });
 
+test("flat legacy retro redirect aliases preserve source-owned SEO, noindex and canonical routing", () => {
+  // Regression: after correcting the canonical SEO source, a generated
+  // metadata refresh must also correct the legacy .html redirect surfaces.
+  const entries = JSON.parse(fs.readFileSync(
+    path.join(__dirname, "../data/retro-specials.json"), "utf8"
+  ));
+  const slugs = [
+    "50-essential-amiga-games",
+    "50-essential-commodore-64-games",
+    "c64-vs-zx-spectrum"
+  ];
+  for (const slug of slugs) {
+    const matches = entries.filter((entry) => entry.slug === slug);
+    assert.equal(matches.length, 1, slug + " has exactly one source record");
+    const seo = matches[0].seo;
+    assert.ok(seo && typeof seo.title === "string" && typeof seo.description === "string");
+    const html = fs.readFileSync(
+      path.join(__dirname, "../retro-specials", slug + ".html"), "utf8"
+    );
+    const canonical = "https://www.cheekycommodoregamer.co.uk/retro-specials/" + slug + "/";
+    assert.ok(html.includes("<title>Redirecting to " + seo.title +
+      " | Cheeky Commodore Gamer</title>"), slug + " legacy title must match source SEO");
+    assert.ok(html.includes('content="Redirecting to the canonical page: ' +
+      seo.description + '"'), slug + " legacy description must match source SEO");
+    assert.ok(html.includes('<meta name="robots" content="noindex,follow" />'),
+      slug + " legacy redirect must remain noindex");
+    assert.ok(html.includes('<link rel="canonical" href="' + canonical + '"'),
+      slug + " canonical must remain the real indexable page");
+    assert.ok(html.includes('<meta http-equiv="refresh" content="0; url=/retro-specials/' +
+      slug + '/"'), slug + " legacy redirect must target its original route");
+  }
+});
+
+test("updated Spectrum quiz title stays identical across verified public video surfaces", () => {
+  const id = "XxEhpjSoYc8";
+  const metadata = JSON.parse(fs.readFileSync(
+    path.join(__dirname, "../data/video-metadata.json"), "utf8"
+  )).videos[id];
+  assert.ok(metadata?.verifiedBy === "youtube-data-api-v3", "Use verified YouTube metadata only");
+  const title = metadata.title;
+  assert.ok(title && typeof title === "string");
+  const page = fs.readFileSync(
+    path.join(__dirname, "../retro-specials/50-zx-spectrum-games-can-you-identify-them/index.html"), "utf8"
+  );
+  const schemaMatch = page.match(
+    /<script type="application\/ld\+json" data-ccg-schema="retro-video">\s*([\s\S]*?)<\/script>/
+  );
+  assert.ok(schemaMatch, "Spectrum quiz has its verified VideoObject");
+  const video = JSON.parse(schemaMatch[1]);
+  assert.equal(video.name, title, "VideoObject name matches verified metadata");
+  assert.ok(page.includes('https://www.youtube.com/embed/' + id));
+  const listings = JSON.parse(fs.readFileSync(
+    path.join(__dirname, "../videos/video-index.json"), "utf8"
+  )).items.filter((item) => item.id === id);
+  assert.equal(listings.length, 1, "Video discovery has one Spectrum quiz entry");
+  assert.equal(listings[0].title, title, "Video discovery title matches YouTube metadata");
+  const xml = fs.readFileSync(
+    path.join(__dirname, "../sitemap-retro-videos.xml"), "utf8"
+  );
+  assert.ok(xml.includes("<video:title>" + title + "</video:title>"),
+    "Video sitemap title matches YouTube metadata");
+  const library = fs.readFileSync(
+    path.join(__dirname, "../videos/index.html"), "utf8"
+  );
+  assert.ok(library.includes('"name": "' + title + '"'),
+    "Public video library structured data matches verified YouTube title");
+});
+
 test("locked retro-special SEO source agrees with generated HTML and verified VideoObject", () => {
   // Prevent a scheduled rebuild from overwriting editorial SEO improvements.
   // These are already the approved values in the website main HTML.
