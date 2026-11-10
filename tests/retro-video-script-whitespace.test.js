@@ -252,3 +252,59 @@ test("real staged retro regeneration validates all ten demo pages and is repeata
     fs.rmSync(stage, { recursive: true, force: true });
   }
 });
+
+test("locked retro-special SEO source agrees with generated HTML and verified VideoObject", () => {
+  // Prevent a scheduled rebuild from overwriting editorial SEO improvements.
+  // These are already the approved values in the website main HTML.
+  const approved =   [
+    [
+      "50-essential-amiga-games",
+      "Best Amiga Games – 50 Essential Amiga Games | CCG",
+      "Discover 50 of the best Amiga games ever made, from arcade action and strategy to adventures, simulations and essential Commodore Amiga classics."
+    ],
+    [
+      "50-essential-commodore-64-games",
+      "Best C64 Games – 50 Essential Commodore 64 Games | CCG",
+      "Discover 50 of the best Commodore 64 games ever made, covering essential C64 classics across arcade action, adventure, strategy, racing and more."
+    ],
+    [
+      "c64-vs-zx-spectrum",
+      "C64 vs ZX Spectrum – Commodore 64 vs Spectrum | CCG",
+      "C64 vs ZX Spectrum: compare the Commodore 64 and Sinclair ZX Spectrum through their games, strengths, differences and enduring 8-bit rivalry."
+    ]
+  ];
+  const entries = JSON.parse(fs.readFileSync(
+    path.join(__dirname, "../data/retro-specials.json"), "utf8"
+  ));
+  for (const [slug, title, description] of approved) {
+    const records = entries.filter((entry) => entry.slug === slug);
+    assert.equal(records.length, 1, slug + " must have one canonical source record");
+    assert.equal(records[0].seo?.title, title,
+      slug + " must retain its already-published SEO title in authoritative JSON");
+    assert.equal(records[0].seo?.description, description,
+      slug + " must retain its already-published SEO description in authoritative JSON");
+
+    const html = fs.readFileSync(
+      path.join(__dirname, "../retro-specials", slug, "index.html"), "utf8"
+    );
+    const expectedTags = [
+      "<title>" + title + "</title>",
+      '<meta name="description" content="' + description + '"',
+      '<meta property="og:title" content="' + title + '"',
+      '<meta property="og:description" content="' + description + '"',
+      '<meta name="twitter:title" content="' + title + '"',
+      '<meta name="twitter:description" content="' + description + '"'
+    ];
+    for (const expected of expectedTags) {
+      assert.ok(html.includes(expected), slug + " generated HTML differs from source: " + expected.slice(0, 50));
+    }
+    const videoSchemas = [...html.matchAll(
+      /<script type="application\/ld\+json" data-ccg-schema="retro-video">\s*([\s\S]*?)<\/script>/g
+    )];
+    assert.equal(videoSchemas.length, 1, slug + " must retain one verified VideoObject");
+    const schema = JSON.parse(videoSchemas[0][1]);
+    assert.equal(schema["@type"], "VideoObject");
+    assert.equal(schema.description, description,
+      slug + " structured-data description must match authoritative SEO text");
+  }
+});
