@@ -545,6 +545,13 @@ async function resumeStoredPublication() {
     return;
   }
   try {
+    // A closed browser can miss the successful merge and deployment. Verify
+    // the actual canonical game page before replaying old failed-run status.
+    await refreshStoredLivePublication(job);
+    if (readStoredJob()?.status === 'live') {
+      setRecoveryMessage(`The saved game ${job.title || job.slug} has already been published. No rebuild is necessary.`, false);
+      return;
+    }
     const config = getGithubConfig();
     activateStatusTab();
     setPublisherPipelineStep('source', 'ok', 'Source saved');
@@ -632,6 +639,9 @@ async function monitorPublication(config, job) {
 
 async function monitorWorkflowRun(config, runId, job) {
   const run = await waitForRunCompletion(config, runId);
+  // Deployment may have finished in another tab while GitHub status was
+  // being polled. Never replace verified live state with an older failure.
+  if (readStoredJob()?.status === 'live' && readStoredJob()?.sourceSha === job?.sourceSha) return;
   const payload = await githubRequest(config, `/actions/runs/${runId}/jobs?per_page=100`);
   const steps = (payload?.jobs || []).flatMap((item) => item?.steps || []);
   const metadata = steps.find((step) => step?.name === 'Sync verified YouTube metadata');
