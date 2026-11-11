@@ -1,4 +1,5 @@
 import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage } from './content-publisher-recovery-state.mjs';
+import { decideGamePublishingRetry, selectSourceWorkflowRun } from './content-publisher-retry-guard.mjs';
 
 const DEFAULT_OWNER = 'joepentony-dot';
 const DEFAULT_REPO = 'ccgamer_website_new';
@@ -22,6 +23,7 @@ const recoveryState = {
   originalLemonValue: '',
   originalZzapValue: '',
   monitorBusy: false,
+  retryBusy: false,
 };
 
 if (log && typeof MutationObserver === 'function') {
@@ -523,27 +525,60 @@ async function resumeStoredPublication() {
 }
 
 async function retryCurrentGamesPublishing() {
-  if (recoveryState.monitorBusy) return;
+  if (recoveryState.monitorBusy || recoveryState.retryBusy) return;
+  recoveryState.retryBusy = true;
   const button = document.querySelector('[data-action="retry-games-publishing"]');
   try {
     const config = getGithubConfig();
-    setButtonBusy(button, true, 'Starting retry…');
+    setButtonBusy(button, true, 'Checking existing publication…');
     activateStatusTab();
+    const decision = await preflightGamePublishingRetry(config, readStoredJob());
+    if (!decision.allow) {
+      writePublisherLog(`Publishing retry avoided: ${decision.message}`);
+      setRecoveryMessage(decision.message, false);
+      return;
+    }
     resetPipeline();
     setPublisherPipelineStep('source', 'ok', 'Already saved');
     ['metadata', 'pages', 'library', 'sitemaps', 'validation'].forEach((step) => setPublisherPipelineStep(step, 'running', 'Retry queued'));
     setPublisherPipelineStep('live', 'running', 'Waiting');
     const startedAt = Date.now();
     await githubRequest(config, '/actions/workflows/games-publishing.yml/dispatches', { method: 'POST', body: { ref: config.branch } });
-    writePublisherLog('Manual Reliable Games Publishing retry requested. Existing games.json will be rebuilt without adding another game record.');
+    writePublisherLog('Verified failed source rebuild re-dispatched. The existing games.json record is reused without creating another game.');
     const run = await waitForDispatchedRun(config, startedAt);
     await monitorWorkflowRun(config, run.id, readStoredJob());
   } catch (error) {
-    writePublisherLog(`Manual publishing retry failed: ${error.message}`, true);
-    setRecoveryMessage(`Retry failed: ${error.message}`, true);
+    writePublisherLog(`Publishing recovery could not be safely started: ${error.message}`, true);
+    setRecoveryMessage(`Recovery preflight failed: ${error.message}. No new game record was created.`, true);
   } finally {
+    recoveryState.retryBusy = false;
     setButtonBusy(button, false, 'Retry game publishing on current main');
   }
+}
+
+async function preflightGamePublishingRetry(config, job) {
+  if (!job?.sourceSha || !job?.slug) {
+    return decideGamePublishingRetry({ branch: config.branch, job });
+  }
+  if (config.branch !== 'main') return decideGamePublishingRetry({ branch: config.branch, job });
+  const [source, runsPayload, generatedPageExists] = await Promise.all([
+    fetchGithubJsonFile(config, SOURCE_PATH),
+    githubRequest(config, '/actions/workflows/games-publishing.yml/runs?branch=main&per_page=100'),
+    githubFileExists(config, `games/${job.slug}/index.html`)
+  ]);
+  const record = Array.isArray(source.data) ? source.data.find((item) =>
+    String(item?.slug || '') === job.slug &&
+    (!job.videoId || String(item?.videoid || '') === job.videoId)
+  ) : null;
+  const runs = Array.isArray(runsPayload?.workflow_runs) ? runsPayload.workflow_runs : null;
+  const sourceRun = selectSourceWorkflowRun(runs, job.sourceSha);
+  const generatedPr = sourceRun ? await lookupGeneratedOutputPr(config, sourceRun) : null;
+  return decideGamePublishingRetry({
+    branch: config.branch, job, runs,
+    sourceExists: Boolean(record),
+    generatedPageExists,
+    generatedPr
+  });
 }
 
 async function monitorPublication(config, job) {
