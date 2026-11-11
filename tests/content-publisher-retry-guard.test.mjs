@@ -26,6 +26,8 @@ test('Gloom generated-output PR and already-merged or generated-page states cann
   assert.equal(open.reason,'open-pr');
   const merged = decideGamePublishingRetry({ ...base, generatedPr: {state:'closed',merged_at:'2026-11-11T18:30:39Z'} });
   assert.equal(merged.reason,'merged-pr');
+  const closed = decideGamePublishingRetry({ ...base, generatedPr: {state:'closed',merged_at:null,merged:false} });
+  assert.equal(closed.reason,'closed-pr');
   const page = decideGamePublishingRetry({ ...base, generatedPageExists:true });
   assert.equal(page.reason,'page-present');
 });
@@ -49,6 +51,15 @@ test('source-run selection prefers the newest matching execution', () => {
   const selected=selectSourceWorkflowRun([newer, {...failed,id:12},{...failed,id:18}, {id:200,head_sha:'b'.repeat(40)}],SHA);
   assert.equal(selected.id,99);
   assert.equal(decideGamePublishingRetry({...base,runs:[failed,newer]}).reason,'not-failed');
+});
+
+test('newer successfully completed publishing work blocks a blind retry of an old failure', () => {
+  const result = decideGamePublishingRetry({
+    ...base,
+    runs: [failed, { id: 43, head_sha: 'd'.repeat(40), status: 'completed', conclusion: 'success' }]
+  });
+  assert.equal(result.allow, false);
+  assert.equal(result.reason, 'newer-success');
 });
 
 test('failed run from an unknown source is not sufficient for a retry', () => {
