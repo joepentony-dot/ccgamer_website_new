@@ -10,6 +10,8 @@ on:
       - "admin/help.html"
       - "admin/js/content-publisher.js"
       - "admin/js/content-publisher-asset-preflight.mjs"
+      - "admin/js/content-publisher-recovery-state.mjs"
+      - "tests/content-publisher-recovery-state.test.mjs"
       - "tests/content-publisher-asset-preflight.test.mjs"
       - "admin/js/content-publisher-image-optimizer.js"
       - "admin/js/content-publisher-existing-game-update.js"
@@ -53,6 +55,8 @@ on:
       - "admin/help.html"
       - "admin/js/content-publisher.js"
       - "admin/js/content-publisher-asset-preflight.mjs"
+      - "admin/js/content-publisher-recovery-state.mjs"
+      - "tests/content-publisher-recovery-state.test.mjs"
       - "tests/content-publisher-asset-preflight.test.mjs"
       - "admin/js/content-publisher-image-optimizer.js"
       - "admin/js/content-publisher-existing-game-update.js"
@@ -109,6 +113,7 @@ jobs:
         run: |
           node --check admin/js/content-publisher.js
           node --check admin/js/content-publisher-asset-preflight.mjs
+          node --check admin/js/content-publisher-recovery-state.mjs
           node --check admin/js/content-publisher-image-optimizer.js
           node --check admin/js/content-publisher-existing-game-update.js
           node --check admin/js/content-publisher-status-reconciler.js
@@ -132,6 +137,7 @@ jobs:
         run: |
           node --test tests/content-publisher.test.mjs
           node --test tests/content-publisher-asset-preflight.test.mjs
+          node --test tests/content-publisher-recovery-state.test.mjs
           node --test tests/goatcounter-sitewide.test.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
           node --test tests/game-seo-snippet-quality.test.mjs
