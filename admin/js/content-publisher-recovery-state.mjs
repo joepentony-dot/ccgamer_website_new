@@ -40,7 +40,7 @@ export function classifyGeneratedOutputFailure({ failedStep = '', pullRequest = 
 
 export function storedPublicationMessage(job) {
   if (!job?.sourceSha) return {
-    text: 'No recent source commit is stored in this browser. Older stranded games can still use “Retry game publishing on current main”.',
+    text: 'No recent game source commit is stored in this browser. For an older publication, locate its saved source record before starting recovery.',
     error: false
   };
   if (job.status === 'review-blocked' || job.status === 'deploy-blocked' || job.status === 'failed') {
