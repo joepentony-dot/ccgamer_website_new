@@ -64,3 +64,22 @@ export function storedPublicationMessage(job) {
     error: false
   };
 }
+
+/** Return only the newest status event from the current log submission.
+ * Historical error messages must not overwrite a later successful release.
+ */
+export function latestPublicationLogTransition(logText) {
+  const text = String(logText || '');
+  const latestStart = Math.max(
+    text.lastIndexOf('Preparing new game:'),
+    text.lastIndexOf('Preparing game update:')
+  );
+  const failure = text.lastIndexOf('Automated publishing check failed:');
+  const live = Math.max(
+    text.lastIndexOf('Live page confirmed:'),
+    text.lastIndexOf('Live canonical game page confirmed')
+  );
+  const index = Math.max(failure, live);
+  if (index < 0 || index < latestStart) return null;
+  return { index, status: live > failure ? 'live' : 'failed' };
+}
