@@ -226,7 +226,7 @@ function installRecoveryControls() {
       <button class="ccg-btn ccg-btn--secondary" type="button" data-action="resume-game-publication">Resume last publication</button>
       <button class="ccg-btn ccg-btn--secondary" type="button" data-action="retry-games-publishing">Retry game publishing on current main</button>
     </div>
-    <small>Retry rebuilds the existing games.json source. It does not add the game again.</small>`;
+    <small>A retry is allowed only for a traceable failed build after verifying that no game page, active publishing run or unresolved output PR already exists. It never creates another game record.</small>`;
   pipeline.insertAdjacentElement('beforebegin', card);
 
   card.querySelector('[data-action="resume-game-publication"]')?.addEventListener('click', () => void resumeStoredPublication());
@@ -511,7 +511,7 @@ function validateEditedEntry(entry) {
 async function resumeStoredPublication() {
   const job = readStoredJob();
   if (!job?.sourceSha) {
-    setRecoveryMessage('No stored source commit is available. Use “Retry game publishing on current main” for an older stranded record.', true);
+    setRecoveryMessage('No saved source commit is available in this browser. Recovery requires the original committed game record; do not add it again.', true);
     return;
   }
   try {
