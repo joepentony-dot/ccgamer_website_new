@@ -23,7 +23,7 @@
     ["NAMED THREATS, WARDENS & THE STALKER",{
       title:"KNOW THE BIG THREATS",
       copy:"Named champions, Wardens and the Death Stalker need different tactics. Watch their introductions and learn how each threat behaves.",
-      detail:"The Death Stalker cannot be killed with normal attacks. A lit torch drives it away; Banishment can destroy it permanently."
+      detail:"Press B near a sealed Warden with a clear line of sight to spend a Ward-Break Charge. Then defeat it with weapons."
     }],
     ["SHOPS, SANCTUARY & SPECIAL OPPORTUNITIES",{
       title:"USE WHAT THE DUNGEON OFFERS",
@@ -50,8 +50,8 @@
     }],
     ["READ THE THREAT, NOT JUST THE HEALTH BAR",{
       title:"LEARN EACH THREAT",
-      copy:"Ordinary enemies, named champions, Wardens and the Death Stalker behave differently. Watch how they move and attack.",
-      items:[["♟","ENEMY","Standard threat"],["★","CHAMPION","Stronger enemy"],["W","WARDEN","Major threat"],["S","DEATH STALKER","Torch or Banishment"]]
+      copy:"Use a Ward-Break Charge to remove a sealed Warden’s immunity, then finish the fight with weapons.",
+      items:[["♟","ENEMY","Standard threat"],["★","CHAMPION","Stronger enemy"],["W","WARDEN","Major threat"],["S","DEATH STALKER","Break its ward, then fight"]]
     }],
     ["USE SERVICES WHEN YOU FIND THEM",{
       title:"BUILD YOUR RUN",

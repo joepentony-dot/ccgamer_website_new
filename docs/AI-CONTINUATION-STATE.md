@@ -1,3 +1,8 @@
+## 11 November 2026 — Dungeon R160 Tutorial ward-break candidate
+
+- R159 #3050 merged at `35b406038da3063a6b7cc1275c06f5dca9676ae7`; all 11 PR workflow groups passed on `5618dc44a82b1766e4e2ebf8bd8df28314fc7af9`. Current main `c73dc89b2808d5096b6bd275873859e6d63e6fcd` retains that release.
+- R160 corrects the playable Tutorial lesson, rail and visual tour. The regression fails on R159 and passes with the fix. [Runtime checkpoint](ai-work/dungeon-carnage-runtime.md) records the scope, tests and remaining release gates.
+
 ## 8 November 2026 — R159 Warden instructions parity candidate (not merged)
 
 - Dungeon Carnage R158 #3048 is MERGED at `de797b949b57b418c88c3d4552d8ce98cd8840b8`, deployed and independently verified LIVE; all 7/7 post-merge workflow groups SUCCESS, including full six-shard qualification `42515857536` on first attempt. Existing #3048 release receipt has final green evidence.

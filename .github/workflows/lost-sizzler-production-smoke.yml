@@ -10,6 +10,7 @@ on:
       - 'supabase/functions/ccq-weekly-challenge/**'
       - 'supabase/migrations/**lost_sizzler**'
       - '.github/workflows/lost-sizzler-production-smoke.yml'
+      - 'scripts/install-dungeon-chromium.sh'
   schedule:
     - cron: '17 6 * * *'
   workflow_dispatch:
@@ -37,10 +38,7 @@ jobs:
 
       - name: Install Chromium smoke runtime
         shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --no-package-lock playwright@1.55.0
-          npx playwright install --with-deps chromium
+        run: bash scripts/install-dungeon-chromium.sh
 
       - name: Verify deployed C64 Dungeon Carnage browser and backend
         shell: bash
