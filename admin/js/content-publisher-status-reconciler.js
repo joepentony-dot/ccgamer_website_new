@@ -6,8 +6,10 @@ const SOURCE_PATH = 'games/games.json';
 const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const STORAGE_KEY = 'ccg_publisher_last_game_publication_v2';
 const SOURCE_MIN_WORDS = 40;
-const WORKFLOW_POLL_MS = 6000;
-const WORKFLOW_TIMEOUT_MS = 240000;
+const WORKFLOW_POLL_MS = 12000;
+// Generated-output qualification can wait up to 45 minutes for an independent
+// review, followed by deployment. A four-minute timeout was a false failure.
+const WORKFLOW_TIMEOUT_MS = 75 * 60 * 1000;
 
 const log = document.querySelector('[data-publisher-log]');
 const gameForm = document.querySelector('[data-game-form]');
@@ -595,8 +597,21 @@ async function monitorWorkflowRun(config, runId, job) {
   setPublisherPipelineStep('validation', validationPassed ? 'ok' : 'running', validationPassed ? 'Passed' : 'Not confirmed');
 
   if (run.conclusion !== 'success') {
-    updateStoredJob({ status: 'failed', runId, updatedAt: new Date().toISOString() });
-    setRecoveryMessage(`Reliable Games Publishing finished with ${run.conclusion || 'an unknown result'}.`, true);
+    const failedStep = steps.find((step) => step?.conclusion === 'failure');
+    const awaitingReview = failedStep?.name === 'Open and merge generated output pull request';
+    updateStoredJob({
+      status: awaitingReview ? 'review-blocked' : 'failed',
+      runId,
+      updatedAt: new Date().toISOString()
+    });
+    if (awaitingReview) {
+      setPublisherPipelineStep('validation', 'error', 'Review blocked');
+      setPublisherPipelineStep('live', 'running', 'Not deployed');
+      setRecoveryMessage('The generated output passed its build but was not merged. Open the GitHub generated-output PR and resolve its independent review or validation findings. Do not add the game again or blindly retry.', true);
+    } else {
+      setPublisherPipelineStep('validation', 'error', 'Build / workflow failed');
+      setRecoveryMessage(`Reliable Games Publishing failed at "${failedStep?.name || 'an unknown step'}" (run ${runId}). The source is saved. Inspect the GitHub Actions log before retrying.`, true);
+    }
     return;
   }
 
@@ -619,7 +634,7 @@ async function waitForWorkflowBySha(config, sourceSha) {
     if (run) return run;
     await sleep(WORKFLOW_POLL_MS);
   }
-  throw new Error(`Reliable Games Publishing was not found for source ${sourceSha.slice(0, 8)} within four minutes.`);
+  throw new Error(`Reliable Games Publishing was not found for source ${sourceSha.slice(0, 8)}. Check GitHub Actions before attempting another publication.`);
 }
 
 async function waitForDispatchedRun(config, startedAt) {
@@ -630,7 +645,7 @@ async function waitForDispatchedRun(config, startedAt) {
     if (run) return run;
     await sleep(WORKFLOW_POLL_MS);
   }
-  throw new Error('The manual Reliable Games Publishing run was not found within four minutes.');
+  throw new Error('The requested Reliable Games Publishing run could not be located. Check GitHub Actions before starting another run.');
 }
 
 async function waitForRunCompletion(config, runId) {
@@ -638,9 +653,25 @@ async function waitForRunCompletion(config, runId) {
   while (Date.now() - started < WORKFLOW_TIMEOUT_MS) {
     const run = await githubRequest(config, `/actions/runs/${runId}`);
     if (run?.status === 'completed') return run;
+    // Report the lengthy, legitimate independent-review stage as pending.
+    if (Date.now() - started > 60000 && Date.now() - started < WORKFLOW_TIMEOUT_MS) {
+      try {
+        const payload = await githubRequest(config, `/actions/runs/${runId}/jobs?per_page=100`);
+        const steps = (payload?.jobs || []).flatMap((item) => item?.steps || []);
+        if (steps.some((step) => step.name === 'Open and merge generated output pull request' && step.status === 'in_progress')) {
+          setPublisherPipelineStep('pages', 'ok', 'Generated');
+          setPublisherPipelineStep('validation', 'running', 'Independent review');
+          setPublisherPipelineStep('live', 'running', 'Awaiting merge');
+          setRecoveryMessage('Page generation completed. Independent validation and Codex review are running; the game has not deployed yet.', false);
+          updateStoredJob({ status: 'awaiting-review', runId, updatedAt: new Date().toISOString() });
+        }
+      } catch (_error) {
+        // A status lookup should not fail an otherwise healthy publishing run.
+      }
+    }
     await sleep(WORKFLOW_POLL_MS);
   }
-  throw new Error('Reliable Games Publishing did not finish within four minutes.');
+  throw new Error('Reliable Games Publishing is still pending after 75 minutes. Check the GitHub Actions run; the saved game record must not be submitted again.');
 }
 
 async function fetchVerifiedVideo(videoId) {
