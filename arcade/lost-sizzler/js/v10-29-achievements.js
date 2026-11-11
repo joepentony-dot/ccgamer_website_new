@@ -35,7 +35,7 @@
     ["LS_GUN_KILLS_10","Straight Shooter","Defeat 10 enemies with firearms in one run.","combat","silver"],
     ["LS_HAZARD_KILL","Use the Scenery","Knock an enemy into a damaging floor hazard.","combat","silver"],
     ["LS_VORTEX_KILL","Into the Vortex","Knock an enemy into a rare vortex.","combat","gold"],
-    ["LS_STALKER_BANISHED","No More Stalking","Permanently banish a Death Stalker.","combat","gold"],
+    ["LS_STALKER_BANISHED","No More Stalking","Break a Death Stalker’s ward and defeat it in combat.","combat","gold"],
     ["LS_BOUNTY_1","Bounty Claimed","Complete a floor Dungeon Bounty.","combat","silver"],
     ["LS_BOUNTIES_5","Bounty Grand Slam","Complete the Dungeon Bounty on all five depths in one run.","combat","gold"],
     ["LS_MAIN_KEY_1","Key Claimed","Recover the required campaign Key on a key depth.","objectives","bronze"],
