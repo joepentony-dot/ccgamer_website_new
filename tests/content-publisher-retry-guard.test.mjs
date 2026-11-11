@@ -59,7 +59,16 @@ test('newer successfully completed publishing work blocks a blind retry of an ol
     runs: [failed, { id: 43, head_sha: 'd'.repeat(40), status: 'completed', conclusion: 'success' }]
   });
   assert.equal(result.allow, false);
-  assert.equal(result.reason, 'newer-success');
+  assert.equal(result.reason, 'newer-run');
+});
+
+test('a newer failed or cancelled run also blocks retrying the original game source', () => {
+  for (const conclusion of ['failure', 'cancelled', 'action_required']) {
+    const decision = decideGamePublishingRetry({
+      ...base, runs: [failed, { id: 22, head_sha: 'e'.repeat(40), status: 'completed', conclusion }]
+    });
+    assert.equal(decision.reason, 'newer-run', conclusion);
+  }
 });
 
 test('failed run from an unknown source is not sufficient for a retry', () => {
