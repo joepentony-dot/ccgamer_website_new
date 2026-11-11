@@ -28,10 +28,17 @@ function tag(xml, name) {
     return rx.exec(xml)?.[1]?.trim() || "";
 }
 
+function canonicalChannelId(raw) {
+    const value = String(raw || "").trim();
+    if (/^UC[A-Za-z0-9_-]{22}$/.test(value)) return value;
+    if (/^[A-Za-z0-9_-]{22}$/.test(value)) return "UC" + value;
+    return "";
+}
+
 export function parseChannelFeed(xml, expectedChannel = CHANNEL_ID) {
     if (typeof xml !== "string" || xml.length > 2_000_000) throw new Error("Invalid YouTube feed response size");
     const channel = tag(xml, "yt:channelId");
-    if (channel !== expectedChannel) throw new Error("YouTube RSS channel ID mismatch");
+    if (canonicalChannelId(channel) !== expectedChannel) throw new Error("YouTube RSS channel ID mismatch");
     const seen = new Set();
     const entries = [];
     for (const match of xml.matchAll(/<entry\b[^>]*>([\s\S]*?)<\/entry>/gi)) {
@@ -42,7 +49,7 @@ export function parseChannelFeed(xml, expectedChannel = CHANNEL_ID) {
         const timestamp = Date.parse(publishedAt);
         if (!/^[A-Za-z0-9_-]{11}$/.test(id) || seen.has(id) || !title || title.length > 300
             || !Number.isFinite(timestamp) || timestamp <= 0) continue;
-        if (tag(entry, "yt:channelId") !== expectedChannel) continue;
+        if (canonicalChannelId(tag(entry, "yt:channelId")) !== expectedChannel) continue;
         seen.add(id);
         entries.push({
             id,
@@ -88,8 +95,33 @@ export async function refreshFeed(fetchImpl = fetch, outputPath = OUTPUT_PATH) {
     return { changed: true, videos };
 }
 
+export async function probeFeed(fetchImpl = fetch) {
+    const url = "https://www.youtube.com/feeds/videos.xml?channel_id=" + encodeURIComponent(CHANNEL_ID);
+    const response = await fetchImpl(url, { signal: AbortSignal.timeout(20000) });
+    const xml = await response.text();
+    const summary = {
+        status: response.status,
+        contentType: response.headers?.get?.("content-type") || "",
+        expectedChannelId: CHANNEL_ID,
+        receivedChannelId: tag(xml, "yt:channelId") || null,
+        canonicalFeedChannelId: canonicalChannelId(tag(xml, "yt:channelId")) || null,
+        xmlFeed: /<feed\b/i.test(xml),
+        responsePrefix: xml.slice(0, 140).replace(/\s+/g, " ").replace(/[^\x20-\x7e]/g, "")
+    };
+    try {
+        const parsed = parseChannelFeed(xml);
+        summary.validVideos = parsed.length;
+        summary.newestVideoId = parsed[0]?.id || null;
+    } catch (error) {
+        summary.parseError = error.message;
+    }
+    console.log("[CCG recent YouTube] RSS diagnostic: " + JSON.stringify(summary));
+    return summary;
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-    refreshFeed().catch((error) => {
+    const run = process.argv.includes("--probe") ? probeFeed : refreshFeed;
+    run().catch((error) => {
         console.error("[CCG recent YouTube] Keeping last good feed: " + error.message);
         process.exitCode = 1;
     });
