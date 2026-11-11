@@ -1,11 +1,13 @@
 import { ensureRole, startAccessMonitor } from './guard.js';
+import { validateGameArtwork } from './content-publisher-asset-preflight.mjs';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const DEFAULT_GITHUB_OWNER = 'joepentony-dot';
 const DEFAULT_GITHUB_REPO = 'ccgamer_website_new';
 const DEFAULT_GITHUB_BRANCH = 'main';
 const WORKFLOW_POLL_INTERVAL_MS = 6000;
-const WORKFLOW_POLL_TIMEOUT_MS = 240000;
+// Independent publishing validation and Codex review can take longer than four minutes.
+const WORKFLOW_POLL_TIMEOUT_MS = 60 * 60 * 1000;
 const RETRO_SPECIAL_MAX_SLUG_LENGTH = 55;
 const ALLOWED_THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const BOX3D_PREFIX = 'resources/images/games/boxes-3d/';
@@ -780,21 +782,23 @@ async function publishGame(event) {
 
     const thumbnailFile = el.gameThumbnailFile?.files?.[0] || null;
     if (thumbnailFile) {
+      await validateSelectedArtwork(thumbnailFile, entry.thumbnail, NEW_GAME_THUMBNAIL_MAX_BYTES, 'Thumbnail');
       files.push({
         path: entry.thumbnail,
         base64: await fileToBase64(thumbnailFile)
       });
     } else {
-      const thumbnailExists = await githubFileExists(config, entry.thumbnail);
-      if (!thumbnailExists) {
-        throw new Error(`Thumbnail does not exist in GitHub at ${entry.thumbnail}. Select the local thumbnail file before publishing.`);
-      }
+      await validateRepositoryArtwork(config, entry.thumbnail, NEW_GAME_THUMBNAIL_MAX_BYTES, 'Thumbnail', true);
     }
 
     const box3dFile = el.gameBox3dFile?.files?.[0] || null;
+    const boxPath = box3dPathForSlug(entry.slug);
     if (box3dFile) {
-      if (box3dFile.type !== 'image/webp') throw new Error('3D box optimisation is still running or did not produce WebP. Select the image again and wait for the ready message.');
-      files.push({ path: box3dPathForSlug(entry.slug), base64: await fileToBase64(box3dFile) });
+      await validateSelectedArtwork(box3dFile, boxPath, NEW_GAME_BOX3D_MAX_BYTES, '3D box');
+      files.push({ path: boxPath, base64: await fileToBase64(box3dFile) });
+    } else {
+      // Optional: existing slug-based box artwork is discovered by the public page.
+      await validateRepositoryArtwork(config, boxPath, NEW_GAME_BOX3D_MAX_BYTES, '3D box', false);
     }
     const result = await commitFiles(config, files, `Add ${entry.title} via CCG Content Publisher`, entry.slug);
     state.lastPublish = { type: 'game', entry, result };
@@ -1120,6 +1124,38 @@ async function githubFileExists(config, path) {
     if (error.status === 404) return false;
     throw error;
   }
+}
+
+async function validateSelectedArtwork(file, path, maxBytes, label) {
+  const result = validateGameArtwork(new Uint8Array(await file.arrayBuffer()), { path, maxBytes });
+  if (!result.ok) {
+    throw new Error(`${label} cannot publish: ${result.errors.join(' ')} Please select a valid, optimised WebP image.`);
+  }
+  writeLog(`${label} preflight passed: ${result.width}×${result.height}, ${Math.ceil(result.byteLength / 1024)} KB.`);
+}
+
+async function validateRepositoryArtwork(config, path, maxBytes, label, required) {
+  let asset;
+  try {
+    asset = await githubRequest(config, `/contents/${encodePath(path)}?ref=${encodeURIComponent(config.branch)}`);
+  } catch (error) {
+    if (error.status === 404) {
+      if (required) throw new Error(`${label} does not exist at ${path}. Upload it to GitHub or select a local WebP before publishing.`);
+      return;
+    }
+    throw error;
+  }
+
+  if (asset?.encoding !== 'base64' || typeof asset.content !== 'string') {
+    throw new Error(`${label} at ${path} could not be verified from GitHub. Publishing stopped before the game record was committed.`);
+  }
+  const data = atob(asset.content.replace(/\s+/g, ''));
+  const bytes = Uint8Array.from(data, (character) => character.charCodeAt(0));
+  const result = validateGameArtwork(bytes, { path, maxBytes });
+  if (!result.ok) {
+    throw new Error(`Existing ${label.toLowerCase()} at ${path} cannot publish: ${result.errors.join(' ')} Repair the image in GitHub before adding the game.`);
+  }
+  writeLog(`Existing ${label.toLowerCase()} verified in GitHub: ${result.width}×${result.height}, ${Math.ceil(result.byteLength / 1024)} KB; no duplicate upload needed.`);
 }
 
 async function commitFiles(config, files, message, slugHint) {
