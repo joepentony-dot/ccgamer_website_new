@@ -44,6 +44,9 @@ jobs:
           node --check js/ccg-recent-content.js
       - name: Run channel authenticity, chronology and fallback tests
         run: node --test tests/latest-youtube-feed.test.mjs
+      - name: Probe public YouTube channel feed identity (read-only)
+        continue-on-error: true
+        run: node scripts/sync-latest-youtube-feed.mjs --probe
 
   update-public-feed:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
