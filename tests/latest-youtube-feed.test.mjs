@@ -89,7 +89,17 @@ test("homepage reads the channel feed first, retaining the existing site index f
     assert.match(source, /getVideos\(VIDEO_INDEX_PATH, "items"\)/);
     assert.ok(source.indexOf('getVideos(RECENT_FEED_PATH, "videos")') <
         source.indexOf('getVideos(VIDEO_INDEX_PATH, "items")'));
-    const seed = JSON.parse(fs.readFileSync(new URL("../data/latest-youtube-videos.json", import.meta.url), "utf8"));
-    assert.equal(seed.videos[0].id, id1);
-    assert.equal(seed.videos[0].publishedAt, undefined, "Do not invent a YouTube publication date in the seed");
+    const feed = JSON.parse(fs.readFileSync(new URL("../data/latest-youtube-videos.json", import.meta.url), "utf8"));
+    assert.equal(feed.channelId, CHANNEL);
+    assert.ok(Array.isArray(feed.videos) && feed.videos.length >= 3);
+    assert.ok(feed.videos.every(item => /^[A-Za-z0-9_-]{11}$/.test(item.id)));
+    if (feed.source === "site-archive-seed") {
+        assert.equal(feed.videos[0].id, id1, "Initial emergency seed must feature Gloom");
+        assert.equal(feed.videos[0].publishedAt, undefined, "Do not invent a YouTube publication date in the seed");
+    } else {
+        assert.equal(feed.source, "youtube-atom-feed");
+        const timestamps = feed.videos.map(item => Date.parse(item.publishedAt));
+        assert.ok(timestamps.every(Number.isFinite), "Synced channel entries need verified dates");
+        assert.deepEqual(timestamps, [...timestamps].sort((a, b) => b - a), "New channel uploads must be newest-first");
+    }
 });
