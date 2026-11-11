@@ -1,5 +1,6 @@
 import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage } from './content-publisher-recovery-state.mjs';
 import { decideGamePublishingRetry, selectSourceWorkflowRun } from './content-publisher-retry-guard.mjs';
+import { publishedGamePageMatches } from './content-publisher-live-verification.mjs';
 
 const DEFAULT_OWNER = 'joepentony-dot';
 const DEFAULT_REPO = 'ccgamer_website_new';
@@ -37,6 +38,19 @@ if (gameForm) {
   installRecoveryControls();
   void refreshEditableGames();
   restoreStoredPublication();
+  // The browser may have been closed while GitHub completed the publication.
+  // Reconcile the public page when the admin returns without requiring a retry.
+  let lastLiveCheck = 0;
+  const refreshOnReturn = () => {
+    const job = readStoredJob();
+    if (!job?.slug || job.status === 'live' || Date.now() - lastLiveCheck < 30000) return;
+    lastLiveCheck = Date.now();
+    void refreshStoredLivePublication(job);
+  };
+  window.addEventListener('focus', refreshOnReturn);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshOnReturn();
+  });
 }
 
 function installPublishingStatusReconciler(logNode) {
@@ -737,17 +751,40 @@ async function fetchVerifiedVideo(videoId) {
   }
 }
 
+async function verifyCanonicalLiveGame(slug) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(slug || ''))) return false;
+  const url = `${SITE_ORIGIN}/games/${slug}/?publisher_recovery=${Date.now()}`;
+  const response = await fetch(url, { cache: 'no-store' });
+  return response.ok && publishedGamePageMatches(await response.text(), slug, SITE_ORIGIN);
+}
+
 async function waitForLiveUrl(url) {
+  const match = String(url || '').match(/\/games\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?(?:\?|$)/);
+  if (!match) return false;
   for (let attempt = 0; attempt < 8; attempt += 1) {
     try {
-      const response = await fetch(`${url}?publisher_recovery=${Date.now()}`, { cache: 'no-store' });
-      if (response.ok) return true;
+      if (await verifyCanonicalLiveGame(match[1])) return true;
     } catch (_error) {
       // Deployment may still be catching up.
     }
     await sleep(5000);
   }
   return false;
+}
+
+async function refreshStoredLivePublication(job) {
+  if (!job?.slug || job.status === 'live') return;
+  try {
+    if (!(await verifyCanonicalLiveGame(job.slug))) return;
+    const current = readStoredJob();
+    if (!current || current.slug !== job.slug || current.sourceSha !== job.sourceSha) return;
+    updateStoredJob({ status: 'live', recoveryMessage: '', updatedAt: new Date().toISOString() });
+    setPublisherPipelineStep('pages', 'ok', 'Deployed');
+    setPublisherPipelineStep('live', 'ok', 'Verified live');
+    writePublisherLog(`Live canonical game page confirmed from a previously saved publication: ${SITE_ORIGIN}/games/${job.slug}/`);
+  } catch (_error) {
+    // A temporary network error must not erase the original recovery state.
+  }
 }
 
 function restoreStoredPublication() {
@@ -760,6 +797,7 @@ function restoreStoredPublication() {
     setLaterStagesNotConfirmed();
   }
   if (job.status === 'live') setPublisherPipelineStep('live', 'ok', 'Live');
+  else void refreshStoredLivePublication(job);
 }
 
 function updateRecoveryCard() {
