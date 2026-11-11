@@ -42,7 +42,9 @@ on:
       - "admin/js/content-publisher.js"
       - "admin/js/content-publisher-asset-preflight.mjs"
       - "admin/js/content-publisher-recovery-state.mjs"
+      - "admin/js/content-publisher-retry-guard.mjs"
       - "tests/content-publisher-recovery-state.test.mjs"
+      - "tests/content-publisher-retry-guard.test.mjs"
       - "tests/content-publisher-asset-preflight.test.mjs"
       - "admin/js/content-publisher-status-reconciler.js"
       - "admin/js/content-publisher-source-preflight.mjs"
@@ -169,6 +171,7 @@ jobs:
           node --check admin/js/content-publisher-source-preflight.mjs
           node --check admin/js/content-publisher-asset-preflight.mjs
           node --check admin/js/content-publisher-recovery-state.mjs
+          node --check admin/js/content-publisher-retry-guard.mjs
           node --check js/ccg-game-seo-snippet.js
           node --check scripts/prepare-seo-game-routes.js
           node --check admin/js/content-publisher-completion-guard.js
@@ -176,6 +179,7 @@ jobs:
           node --test tests/content-publisher-source-preflight.test.mjs
           node --test tests/content-publisher-asset-preflight.test.mjs
           node --test tests/content-publisher-recovery-state.test.mjs
+          node --test tests/content-publisher-retry-guard.test.mjs
           node --test tests/game-seo-snippet-quality.test.mjs
 
       - name: Validate fail-closed generated publishing merge guard
