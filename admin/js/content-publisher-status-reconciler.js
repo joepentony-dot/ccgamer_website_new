@@ -539,6 +539,11 @@ async function resumeStoredPublication() {
     setRecoveryMessage('No saved source commit is available in this browser. Recovery requires the original committed game record; do not add it again.', true);
     return;
   }
+  if (job.status === 'live') {
+    setPublisherPipelineStep('live', 'ok', 'Verified live');
+    setRecoveryMessage(`The saved game ${job.title || job.slug} is already confirmed live. No rebuilding is necessary.`, false);
+    return;
+  }
   try {
     const config = getGithubConfig();
     activateStatusTab();
@@ -615,8 +620,10 @@ async function monitorPublication(config, job) {
     const run = await waitForWorkflowBySha(config, job.sourceSha);
     await monitorWorkflowRun(config, run.id, job);
   } catch (error) {
-    updateStoredJob({ status: 'failed', updatedAt: new Date().toISOString() });
-    setRecoveryMessage(`Publication check failed: ${error.message}`, true);
+    if (readStoredJob()?.status !== 'live') {
+      updateStoredJob({ status: 'failed', recoveryMessage: `Publication check failed: ${error.message}`, updatedAt: new Date().toISOString() });
+      setRecoveryMessage(`Publication check failed: ${error.message}`, true);
+    }
   } finally {
     recoveryState.monitorBusy = false;
     updateRecoveryCard();
