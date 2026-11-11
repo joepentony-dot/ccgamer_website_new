@@ -1,4 +1,4 @@
-import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage } from './content-publisher-recovery-state.mjs';
+import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage, latestPublicationLogTransition } from './content-publisher-recovery-state.mjs';
 import { decideGamePublishingRetry, selectSourceWorkflowRun } from './content-publisher-retry-guard.mjs';
 import { publishedGamePageMatches } from './content-publisher-live-verification.mjs';
 
@@ -248,14 +248,17 @@ function installRecoveryControls() {
 }
 
 function installPublicationPersistence(logNode) {
+  let lastHandledTransitionIndex = -1;
   const reconcile = () => {
     const text = String(logNode.textContent || '');
     const starts = [...text.matchAll(/Preparing new game:\s*(.+?)\s*\(([^)]+)\)/g)];
     const sourceMatches = [...text.matchAll(/Source commit created:\s*([0-9a-f]{40})/gi)];
     const latestStart = starts.at(-1);
-    const sourceSha = sourceMatches.at(-1)?.[1] || '';
+    const latestCommit = sourceMatches.at(-1);
+    const sourceSha = latestCommit?.[1] || '';
 
-    if (latestStart && sourceSha) {
+    // Never associate an old game's commit with a new form submission.
+    if (latestStart && sourceSha && latestCommit.index > latestStart.index) {
       const current = readStoredJob();
       if (!current || current.sourceSha !== sourceSha) {
         saveStoredJob({
@@ -270,8 +273,16 @@ function installPublicationPersistence(logNode) {
       }
     }
 
-    if (/Automated publishing check failed:/i.test(text)) updateStoredJob({ status: 'failed', updatedAt: new Date().toISOString() });
-    if (/Live page confirmed:/i.test(text)) updateStoredJob({ status: 'live', updatedAt: new Date().toISOString() });
+    const transition = latestPublicationLogTransition(text);
+    if (!transition) lastHandledTransitionIndex = -1;
+    else if (transition.index !== lastHandledTransitionIndex) {
+      lastHandledTransitionIndex = transition.index;
+      updateStoredJob({
+        status: transition.status,
+        recoveryMessage: '',
+        updatedAt: new Date().toISOString()
+      });
+    }
     if (/YouTube did not provide verified metadata for\s+[A-Za-z0-9_-]{11}/i.test(text)) {
       setPublisherPipelineStep('metadata', 'running', 'Unavailable / withheld');
     }
