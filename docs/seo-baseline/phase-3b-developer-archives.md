@@ -4,9 +4,9 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **666** |
-| Static developer routes | **47** |
-| Indexable credited routes | **47** |
+| Game records scanned | **667** |
+| Static developer routes | **48** |
+| Indexable credited routes | **48** |
 | No-credit noindex routes | **0** |
 | Developer hub pages | **1** |
 

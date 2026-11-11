@@ -4728,6 +4728,25 @@
     ]
   },
   {
+    "name": "Kevan Stannard",
+    "slug": "kevan-stannard",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1995,
+    "lastYear": 1995,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Kevan Stannard"
+    ],
+    "games": [
+      "gloom"
+    ]
+  },
+  {
     "name": "J. Steele",
     "slug": "j-steele",
     "count": 1,
