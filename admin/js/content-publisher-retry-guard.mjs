@@ -55,9 +55,11 @@ export function decideGamePublishingRetry({
   if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'failure') {
     return refuse('not-failed', 'The original publishing run has not been confirmed as a failed build. Resume monitoring instead.');
   }
-  if (runs.some((run) => Number(run?.id || 0) > Number(sourceRun.id || 0) &&
-      run?.status === 'completed' && run?.conclusion === 'success')) {
-    return refuse('newer-success', 'A newer publishing workflow succeeded after the original failure. Check its generated output and deployment before requesting another rebuild.');
+  // A previous failed source run is not enough to authorise another dispatch
+  // after newer publishing work has occurred. Newer failed or cancelled runs
+  // may still own an unmerged output PR; that state must be inspected first.
+  if (runs.some((run) => Number(run?.id || 0) > Number(sourceRun.id || 0))) {
+    return refuse('newer-run', 'A newer game publishing run exists after this source failure. Resume or inspect that run and its generated-output PR before attempting another rebuild.');
   }
   return {
     allow: true,
