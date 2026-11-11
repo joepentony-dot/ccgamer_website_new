@@ -32,6 +32,15 @@ test("valid RSS sorts by verified YouTube publication date and decodes XML title
     assert.equal(items[0].thumbnail, "https://i.ytimg.com/vi/" + id1 + "/mqdefault.jpg");
 });
 
+test("accepts YouTube Atom channelId values without their canonical UC prefix", () => {
+    const feed = sampleFeed().replaceAll(
+        "<yt:channelId>" + CHANNEL + "</yt:channelId>",
+        "<yt:channelId>" + CHANNEL.slice(2) + "</yt:channelId>"
+    );
+    const items = parseChannelFeed(feed);
+    assert.deepEqual(items.map(item => item.id), [id1, id2, id3]);
+});
+
 test("rejects a feed from another channel or one with too few valid videos", () => {
     assert.throws(() => parseChannelFeed(sampleFeed().replace("<yt:channelId>" + CHANNEL + "</yt:channelId>",
         "<yt:channelId>another</yt:channelId>")), /channel ID mismatch/);
