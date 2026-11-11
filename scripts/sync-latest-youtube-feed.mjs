@@ -88,8 +88,25 @@ export async function refreshFeed(fetchImpl = fetch, outputPath = OUTPUT_PATH) {
     return { changed: true, videos };
 }
 
+export async function probeFeed(fetchImpl = fetch) {
+    const url = "https://www.youtube.com/feeds/videos.xml?channel_id=" + encodeURIComponent(CHANNEL_ID);
+    const response = await fetchImpl(url, { signal: AbortSignal.timeout(20000) });
+    const xml = await response.text();
+    const summary = {
+        status: response.status,
+        contentType: response.headers?.get?.("content-type") || "",
+        expectedChannelId: CHANNEL_ID,
+        receivedChannelId: tag(xml, "yt:channelId") || null,
+        xmlFeed: /<feed\\b/i.test(xml),
+        responsePrefix: xml.slice(0, 140).replace(/\\s+/g, " ").replace(/[^\\x20-\\x7e]/g, "")
+    };
+    console.log("[CCG recent YouTube] RSS diagnostic: " + JSON.stringify(summary));
+    return summary;
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-    refreshFeed().catch((error) => {
+    const run = process.argv.includes("--probe") ? probeFeed : refreshFeed;
+    run().catch((error) => {
         console.error("[CCG recent YouTube] Keeping last good feed: " + error.message);
         process.exitCode = 1;
     });
