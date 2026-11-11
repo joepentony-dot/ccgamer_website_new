@@ -1,0 +1,77 @@
+name: CCG Latest YouTube Feed
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "data/retro-specials.json"
+      - "data/retro-events.json"
+      - "data/amiga-demo-music.json"
+      - "data/video-metadata.json"
+      - "js/ccg-recent-content.js"
+      - "scripts/sync-latest-youtube-feed.mjs"
+      - ".github/workflows/ccg-latest-youtube-feed.yml"
+  pull_request:
+    paths:
+      - "js/ccg-recent-content.js"
+      - "scripts/sync-latest-youtube-feed.mjs"
+      - "tests/latest-youtube-feed.test.mjs"
+      - "data/latest-youtube-videos.json"
+      - ".github/workflows/ccg-latest-youtube-feed.yml"
+
+concurrency:
+  group: ccg-latest-youtube-feed
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax-check channel sync and homepage presentation
+        run: |
+          node --check scripts/sync-latest-youtube-feed.mjs
+          node --check js/ccg-recent-content.js
+      - name: Run channel authenticity, chronology and fallback tests
+        run: node --test tests/latest-youtube-feed.test.mjs
+
+  update-public-feed:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    permissions:
+      contents: write
+    steps:
+      - name: Check out main with write credentials
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Validate feed refresher before contacting YouTube
+        run: node --test tests/latest-youtube-feed.test.mjs
+      - name: Refresh YouTube Atom RSS
+        run: node scripts/sync-latest-youtube-feed.mjs
+      - name: Commit only refreshed public feed (if changed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- data/latest-youtube-videos.json; then
+            echo "Latest-video feed already current; nothing to publish."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/latest-youtube-videos.json
+          git commit -m "chore(youtube): refresh latest public channel uploads"
+          # No force or bypass: branch protection and competing writes remain authoritative.
+          git push origin HEAD:main
