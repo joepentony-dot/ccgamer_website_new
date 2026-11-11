@@ -1,3 +1,5 @@
+import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage } from './content-publisher-recovery-state.mjs';
+
 const DEFAULT_OWNER = 'joepentony-dot';
 const DEFAULT_REPO = 'ccgamer_website_new';
 const DEFAULT_BRANCH = 'main';
@@ -598,20 +600,28 @@ async function monitorWorkflowRun(config, runId, job) {
 
   if (run.conclusion !== 'success') {
     const failedStep = steps.find((step) => step?.conclusion === 'failure');
-    const awaitingReview = failedStep?.name === 'Open and merge generated output pull request';
+    let generatedPr = null;
+    if (failedStep?.name === GENERATED_OUTPUT_STEP) {
+      try { generatedPr = await lookupGeneratedOutputPr(config, run); }
+      catch (_error) { /* Unknown merge state must not be guessed. */ }
+    }
+    const diagnosis = classifyGeneratedOutputFailure({
+      failedStep: failedStep?.name || '',
+      pullRequest: generatedPr,
+      runId
+    });
     updateStoredJob({
-      status: awaitingReview ? 'review-blocked' : 'failed',
+      status: diagnosis.status,
       runId,
+      recoveryMessage: diagnosis.message,
+      reviewUrl: generatedPr?.html_url || '',
       updatedAt: new Date().toISOString()
     });
-    if (awaitingReview) {
-      setPublisherPipelineStep('validation', 'error', 'Review blocked');
-      setPublisherPipelineStep('live', 'running', 'Not deployed');
-      setRecoveryMessage('The generated output passed its build but was not merged. Open the GitHub generated-output PR and resolve its independent review or validation findings. Do not add the game again or blindly retry.', true);
-    } else {
-      setPublisherPipelineStep('validation', 'error', 'Build / workflow failed');
-      setRecoveryMessage(`Reliable Games Publishing failed at "${failedStep?.name || 'an unknown step'}" (run ${runId}). The source is saved. Inspect the GitHub Actions log before retrying.`, true);
+    setPublisherPipelineStep(diagnosis.stage, 'error', diagnosis.label);
+    if (diagnosis.stage !== 'live') {
+      setPublisherPipelineStep('live', 'running', 'Not confirmed');
     }
+    setRecoveryMessage(diagnosis.message, true);
     return;
   }
 
@@ -624,6 +634,14 @@ async function monitorWorkflowRun(config, runId, job) {
     setPublisherPipelineStep('live', 'running', 'Check live site');
   }
   setRecoveryMessage('Publishing rebuild completed from the existing source record.', false);
+}
+
+async function lookupGeneratedOutputPr(config, run) {
+  const attempt = Number.isSafeInteger(run?.run_attempt) && run.run_attempt > 0 ? run.run_attempt : 1;
+  const branch = `automation/games-publishing-${run.id}-${attempt}`;
+  const head = `${config.owner}:${branch}`;
+  const result = await githubRequest(config, `/pulls?state=all&head=${encodeURIComponent(head)}&per_page=10`);
+  return Array.isArray(result) ? result.find((pr) => pr?.head?.ref === branch) || null : null;
 }
 
 async function waitForWorkflowBySha(config, sourceSha) {
@@ -710,12 +728,8 @@ function restoreStoredPublication() {
 }
 
 function updateRecoveryCard() {
-  const job = readStoredJob();
-  if (!job?.sourceSha) {
-    setRecoveryMessage('No recent source commit is stored in this browser. Older stranded games can still use “Retry game publishing on current main”.', false);
-    return;
-  }
-  setRecoveryMessage(`${job.title || job.slug || 'Game'} · source ${job.sourceSha.slice(0, 8)} · ${job.status || 'pending'}. Source data is saved separately from generated site output.`, job.status === 'failed');
+  const message = storedPublicationMessage(readStoredJob());
+  setRecoveryMessage(message.text, message.error);
 }
 
 function saveStoredJob(job) {
