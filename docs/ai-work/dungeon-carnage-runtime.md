@@ -1,3 +1,10 @@
+## 11 November 2026 — R160 Tutorial ward-break candidate
+
+- Continued from main `c73dc89b2808d5096b6bd275873859e6d63e6fcd`, after R159 #3050 merged at `35b406038da3063a6b7cc1275c06f5dca9676ae7` with all 11 PR workflow groups successful. R159 corrected static help. The playable Tutorial still said Banishment permanently destroys the Death Stalker.
+- The Tutorial lesson, rail and information tour now teach the same sequence as combat: use a Ward-Break Charge in range and line of sight, then defeat the Warden with weapons. Updated the base onboarding and tour copy as well as the campaign presentation. Both entrypoints, version marker and ordered bootstrap carry `V10.42 r160 / 20261111r160`. Combat, saves, voice, data and access controls are outside this change.
+- `node arcade/lost-sizzler/tests/v10-42-tutorial-campaign-contract.mjs` executes the actual presentation source for modal, rail and tour. The added assertion fails against R159 and passes with the correction. `node tests/dungeon-carnage-public-route.test.mjs`, changed-script syntax and `git diff --check` pass.
+- Require exact-head GitHub qualification and independent review before an expected-head merge, then Pages and live verification. The original Floor 5 Guardian freeze and dual-Warden/second-Flask incidents still require the matching owner evidence. Installed Windows acceptance and commercial release remain held.
+
 ## 8 November 2026 — R159 Warden guidance parity (DRAFT / exact-head CI pending)
 
 - Latest verified R158 `main` `de797b949b57b418c88c3d4552d8ce98cd8840b8` is MERGED and LIVE at `V10.42 r158 / 20261108r158`. All seven post-merge workflow groups succeeded, including all 8/8 Full Qualification jobs (six Chromium shards) on first attempt, Pages, production smoke, navigation and site safety. The final release receipt is on #3048.

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -58,5 +59,45 @@ assert(!/\bgrid\.innerHTML\s*=/.test(source),'Campaign copy must never assign ne
 assert(!/querySelector\(["']\.tour-grid["']\)\.innerHTML\s*=/.test(source),'Campaign copy must never rebuild the stabilized information-tour grid through a direct selector assignment.');
 assert(source.includes('const p=tour.querySelector(".tour-head p")'),'Tutorial presentation must update tour copy without rebuilding the stabilized live-node grid.');
 assert(source.includes('window.CCGLostSizzlerV142TutorialCampaign=Object.freeze'),'Tutorial campaign layer must expose a stable diagnostic API.');
+
+// Execute the presentation owner with the lesson modal, rail and tour mounted.
+function lesson(headingTag){
+  const heading={textContent:'NAMED THREATS, WARDENS & THE STALKER'};
+  const paragraph={textContent:'',classList:{contains:()=>false}};
+  const detail={textContent:'',classList:{contains:name=>name==='tutorial-detail'}};
+  return {
+    detail, dataset:{},
+    querySelector:selector=>selector===headingTag?heading:null,
+    querySelectorAll:selector=>selector==='p'?[paragraph,detail]:[]
+  };
+}
+const modal=lesson('h2');
+const rail=lesson('h3');
+const tourTitle={textContent:'READ THE THREAT, NOT JUST THE HEALTH BAR'};
+const tourCopy={textContent:''};
+const tour={
+  dataset:{}, classList:{contains:()=>false},
+  querySelector:selector=>({'h3':tourTitle,'.tour-head p':tourCopy})[selector]
+};
+vm.runInNewContext(source,{
+  window:{},
+  document:{
+    documentElement:{},
+    querySelector:selector=>selector==='#ccg-tutorial-stage-modal .ccg-tutorial-modal-card'?modal:null,
+    getElementById:id=>({'ccg-tutorial-rail':rail,'ccg-tutorial-info-tour':tour})[id]
+  },
+  MutationObserver:class{observe(){}},
+  addEventListener(){}
+});
+for(const surface of [modal.detail.textContent,rail.detail.textContent,tourCopy.textContent]){
+  assert(/Ward-Break Charge.*(?:weapons|weapon attacks)/i.test(surface),
+    'The displayed threat lesson must teach ward break followed by weapon combat.');
+}
+assert(/Press B.*clear line of sight/i.test(modal.detail.textContent),
+  'The displayed lesson must explain how to aim a charge.');
+assert(guidance.includes('Break its ward, then fight'),
+  'The actual visual-tour tile must teach the same sequence.');
+assert(!/Banishment can destroy it permanently/i.test(source),
+  'The retired instant defeat must stay out of the Tutorial.');
 
 console.log('Dungeon Carnage current-system Tutorial contract passed with five-floor legacy teaching retired.');
