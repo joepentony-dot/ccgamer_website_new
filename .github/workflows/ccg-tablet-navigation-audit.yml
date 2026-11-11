@@ -1,0 +1,29 @@
+name: CCG Tablet Navigation Audit
+
+on:
+  pull_request:
+    paths:
+      - "resources/css/ccg-nav-labelled-bridge.css"
+      - "resources/css/ccg-nav-fit.css"
+      - "js/ccg-global.js"
+      - "scripts/audit-responsive-browser.js"
+      - "tests/navigation-fit-reflow.test.mjs"
+      - ".github/workflows/ccg-tablet-navigation-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tablet-navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out current PR
+        uses: actions/checkout@v4
+
+      - name: Validate shared Menu and drawer breakpoint contracts
+        run: node --test tests/navigation-fit-reflow.test.mjs
+
+      - name: Validate responsive navigation in rendered Chrome
+        run: node scripts/audit-responsive-browser.js
