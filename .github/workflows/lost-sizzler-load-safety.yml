@@ -20,6 +20,7 @@ on:
       - 'service-worker.js'
       - 'js/ccg-pwa.js'
       - '.github/workflows/lost-sizzler-load-safety.yml'
+      - 'scripts/install-dungeon-chromium.sh'
   pull_request:
     branches:
       - main
@@ -35,6 +36,7 @@ on:
       - 'js/ccg-pwa.js'
       - '.github/workflows/dungeon-carnage-pr-qualification.yml'
       - '.github/workflows/lost-sizzler-load-safety.yml'
+      - 'scripts/install-dungeon-chromium.sh'
   workflow_dispatch:
 
 permissions:
@@ -201,13 +203,7 @@ jobs:
 
       - name: Install Chromium test runtime
         shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --no-package-lock playwright@1.55.0
-          # Playwright downloads its own Chromium; the preinstalled Google Chrome
-          # repository is not required for its Ubuntu dependency installation.
-          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
-          npx playwright install --with-deps chromium
+        run: bash scripts/install-dungeon-chromium.sh
 
       - name: Run browser contracts in shard
         shell: bash

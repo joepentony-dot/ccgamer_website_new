@@ -8,6 +8,7 @@ on:
       - "arcade/lost-sizzler/tests/browser/v10-42-mobile-trap-layout-live.mjs"
       - "tests/v10-42-mobile-trap-layout-stability.mjs"
       - ".github/workflows/c64-dungeon-carnage-mobile-trap-layout-contract.yml"
+      - "scripts/install-dungeon-chromium.sh"
   workflow_dispatch:
 
 permissions:
@@ -40,11 +41,6 @@ jobs:
           node-version: 22
       - name: Install Chromium test runtime
         shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --no-package-lock playwright@1.55.0
-          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
-          sudo apt-get update
-          npx playwright install --with-deps chromium
+        run: bash scripts/install-dungeon-chromium.sh
       - name: Verify live portrait geometry and trap damage
         run: node arcade/lost-sizzler/tests/browser/v10-42-mobile-trap-layout-live.mjs
