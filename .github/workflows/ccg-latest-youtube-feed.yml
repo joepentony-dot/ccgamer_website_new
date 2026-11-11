@@ -51,9 +51,11 @@ jobs:
   update-public-feed:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
     permissions:
       contents: write
+      pull-requests: write
+      actions: write
     steps:
       - name: Check out main with write credentials
         uses: actions/checkout@v4
@@ -64,7 +66,11 @@ jobs:
         run: node --test tests/latest-youtube-feed.test.mjs
       - name: Refresh YouTube Atom RSS
         run: node scripts/sync-latest-youtube-feed.mjs
-      - name: Commit only refreshed public feed (if changed)
+      - name: Verify generated feed before publication
+        run: node --test tests/latest-youtube-feed.test.mjs
+      - name: Publish through a guarded pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -72,9 +78,39 @@ jobs:
             echo "Latest-video feed already current; nothing to publish."
             exit 0
           fi
+
+          # Never create concurrent or duplicate open feed branches.
+          if [ -n "$(git ls-remote --heads origin 'refs/heads/automation/ccg-latest-youtube-*')" ]; then
+            echo "::error::A prior feed update branch still exists. Review that PR/branch before another update."
+            exit 1
+          fi
+
+          # Use the actual current main; do not overwrite concurrent publishing.
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "::error::main advanced during feed refresh. Retry from fresh main on next schedule."
+            exit 1
+          fi
+
+          branch="automation/ccg-latest-youtube-$GITHUB_RUN_ID"
+          git switch -c "$branch"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/latest-youtube-videos.json
+          if [ "$(git diff --cached --name-only)" != "data/latest-youtube-videos.json" ]; then
+            echo "::error::Unexpected staged files: refusing to publish."
+            exit 1
+          fi
           git commit -m "chore(youtube): refresh latest public channel uploads"
-          # No force or bypass: branch protection and competing writes remain authoritative.
-          git push origin HEAD:main
+          git push origin "$branch"
+
+          # Respect Protect Main: create and merge a normal PR, no direct
+          # main push, forced update or branch-protection bypass.
+          pr_url="$(gh pr create --base main --head "$branch" \
+            --title "Refresh latest CCG YouTube uploads" \
+            --body "Validated public YouTube Atom feed only. Channel identity, dates, ordering, and source tests passed. This updates data/latest-youtube-videos.json only.")"
+          gh pr merge "$pr_url" --squash --delete-branch
+
+          # GITHUB_TOKEN-originated merges do not reliably fire push workflows.
+          # Explicit workflow_dispatch is allowed and publishes the new data.
+          gh workflow run deploy-github-pages-omega-stable.yml --ref main

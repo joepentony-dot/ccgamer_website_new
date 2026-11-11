@@ -27,8 +27,8 @@ for(const category of ["journey","platinum","combat","objectives","exploration",
   assert.ok(rows.some(row=>row[3]===category),`achievement category must be represented: ${category}`);
 }
 const platinum=rows.find(row=>row[0]==="LS_CITADEL_PLATINUM");
-assert.deepEqual(platinum,["LS_CITADEL_PLATINUM","Dungeon Carnage Platinum","Complete all five Dungeon Carnage depths, finish the Sigil and escape.","platinum","platinum"],"the five-depth completion badge must be the Platinum-style profile achievement");
-assert.match(achievements,/Number\(run\.floor\|\|0\)<Number\(C\?\.maxFloors\|\|5\)/,"Platinum must not unlock before the final floor");
+assert.deepEqual(platinum,["LS_CITADEL_PLATINUM","Dungeon Carnage Platinum","Clear all 15 Dungeon Carnage floors and escape the Blood Citadel.","platinum","platinum"],"the full-campaign completion badge must be the Platinum-style profile achievement");
+assert.match(achievements,/if\(run\?\.campaignComplete!==true\)return/,"Platinum must follow the canonical campaign result");
 assert.match(achievements,/award\("LS_CITADEL_PLATINUM"\)/,"a successful full-game completion must award Platinum");
 assert.match(achievements,/ccg-lost-sizzler-achievements-v1/,"guest achievements must persist locally");
 assert.match(achievements,/rpc\("award_lost_sizzler_achievement",\{target_badge_key:key\}\)/,"signed-in achievements must sync through the restricted profile RPC");
