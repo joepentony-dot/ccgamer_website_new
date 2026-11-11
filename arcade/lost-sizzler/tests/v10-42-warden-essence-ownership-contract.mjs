@@ -147,6 +147,8 @@ assert.equal(countNoticeCount(),2,"Sealed Count guidance resumes after cooldown"
 assert.equal(f.run.stats.kills,0,"Immune-hit feedback never manufactures defeat or XP");
 
 const pair=soloEncounter(),c=pair.ctx;
+const earnedBadges=[];
+c.window.CCGLostSizzlerAchievementsV129={award:key=>earnedBadges.push(key)};
 c.damageEnemy(pair.death,999,"energy",c.p1);
 assert.equal(pair.death.hp,10,"Sealed Death Stalker must retain ordinary-fire immunity");
 c.damageEnemy(pair.guardian,999,"energy",c.p1);
@@ -159,8 +161,10 @@ assert.equal(c.activateBanishment(c.p1),true);
 assert.equal(c.PGR.inventoryKindCount(c.p1,"banishment"),0,"One ward consumes exactly one charge");
 assert.equal(pair.death.alive,true,"Ward break permits combat; it does not grant a free kill");
 assert.equal(pair.count.v142WardBroken,undefined,"Nearest-target activation must not break the second supernatural ward");
+assert.deepEqual(earnedBadges,[],"Immune hits, Guardian kills and ward break must not grant the Death Stalker badge");
 c.damageEnemy(pair.death,999,"energy",c.p1);
 assert.equal(pair.death.alive,false);
+assert.deepEqual(earnedBadges,["LS_STALKER_BANISHED"],"The actual Death Stalker defeat must grant the existing achievement");
 assert.equal(pair.death.v142WardenDefeated,true);
 assert.equal(c.run.stats.kills,2);
 assert.deepEqual(Array.from(c.host.defeatedDeathStalkers),[pair.death.id]);
@@ -171,6 +175,14 @@ assert.equal(c.run.stats.kills,2,"Repeated combat/ticks must not revive or re-re
 assert.equal(c.host.chests.length,1);
 assert.equal(c.score,8400);
 assert.equal(c.p1.banishmentEssence,1);
+assert.deepEqual(earnedBadges,["LS_STALKER_BANISHED"],"Repeated impacts must not grant the badge again");
+
+const countOnly=soloEncounter(),countBadges=[];
+countOnly.ctx.window.CCGLostSizzlerAchievementsV129={award:key=>countBadges.push(key)};
+assert.equal(countOnly.ctx.permanentlyBanish(countOnly.count,countOnly.ctx.p1),true);
+assert.equal(countOnly.ctx.hitStalker({x:countOnly.count.x,y:countOnly.count.y,power:999,owner:"p1"}),true);
+assert.equal(countOnly.count.v142WardenDefeated,true);
+assert.deepEqual(countBadges,[],"Count Loadula must not grant the Death Stalker achievement");
 
 function killAtOccupiedCell(kind){
   const fixture=soloEncounter(),{ctx,death}=fixture;

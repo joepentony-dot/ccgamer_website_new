@@ -1,3 +1,10 @@
+## 11 November 2026 — R161 Death Stalker achievement candidate
+
+- R160 #3055 merged at `3fb382476d9f46930d98876f12b491b7d7a49e58` after 12/12 PR workflows and independent review passed. Pages, production smoke and live navigation verified deployment; the closed Round 2 member gate was confirmed.
+- R161 restores No More Stalking through the authoritative Death Stalker defeat path, preserving the existing badge key and earned history. The current ward break and subsequent kill no longer depend on the old instant-banishment toast for badge eligibility. The in-game description explains the current sequence.
+- `node arcade/lost-sizzler/tests/v10-42-warden-essence-ownership-contract.mjs` failed on R160 with no award after the real kill and passed with the fix. The same test rejects an award for ward break alone, ordinary Guardian or Count Loadula defeat, and duplicate hits. The achievement/profile, public route and Tutorial contracts passed locally.
+- Require exact-head GitHub qualification and independent review before merge, then verify deployment. Original Windows Floor 5 reports still require the matching owner save or seed and incident report.
+
 ## 11 November 2026 — R160 Tutorial ward-break candidate
 
 - Continued from main `c73dc89b2808d5096b6bd275873859e6d63e6fcd`, after R159 #3050 merged at `35b406038da3063a6b7cc1275c06f5dca9676ae7` with all 11 PR workflow groups successful. R159 corrected static help. The playable Tutorial still said Banishment permanently destroys the Death Stalker.

@@ -1,3 +1,8 @@
+## 11 November 2026 — Dungeon R161 Death Stalker achievement candidate
+
+- R160 #3055 merged at `3fb382476d9f46930d98876f12b491b7d7a49e58` after 12/12 PR workflows and independent review passed. Pages, production smoke and public navigation confirmed the release.
+- R161 connects the existing No More Stalking badge to the actual Death Stalker kill. [Runtime checkpoint](ai-work/dungeon-carnage-runtime.md) records the failed-before/passed-after regression and qualification criteria.
+
 ## 11 November 2026 — Dungeon R160 Tutorial ward-break candidate
 
 - R159 #3050 merged at `35b406038da3063a6b7cc1275c06f5dca9676ae7`; all 11 PR workflow groups passed on `5618dc44a82b1766e4e2ebf8bd8df28314fc7af9`. Current main `c73dc89b2808d5096b6bd275873859e6d63e6fcd` retains that release.
