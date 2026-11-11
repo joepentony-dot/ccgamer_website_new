@@ -22,9 +22,7 @@ assert.match(main,/title:"C64 Dungeon Carnage"/,"share metadata must use the cur
 assert.match(main,/C64 Dungeon Carnage link copied/,"clipboard feedback must use the current game title");
 assert.doesNotMatch(main,/Cheeky's Commodore Quest/,"retired game title must not remain in the active share path");
 
-assert.match(finalUi,/run\?\.runComplete/,"completion credits must require the authoritative successful-run completion latch");
-assert.match(finalUi,/!run\.xpGameOver/,"Floor 15 XP game-over must never receive victory credits");
-assert.match(finalUi,/Number\(run\.floor\|\|0\)>=Number\(window\.CCG_CONFIG\?\.maxFloors\|\|15\)/,"victory credits must remain gated to the configured final floor");
+assert.match(finalUi,/run\?\.campaignComplete===true/,"Credits must follow the authoritative campaign result");
 assert.match(finalUi,/CAMPAIGN COMPLETE — BLOOD CITADEL CLEARED/,"full campaign completion must receive a distinct credits finale");
 assert.match(finalUi,/AZALEA and CPU/,"special acknowledgements must include long-term supporters AZALEA and CPU");
 assert.match(finalUi,/info@cheekycommodoregamer\.co\.uk/,"completion credits must expose the requested feedback email");
@@ -48,7 +46,7 @@ assert.match(finaleSource,/if\(existing\)return/,"asynchronous game-slug enrichm
 assert.doesNotMatch(finaleSource,/setInterval\(/,"finale must never install a new persistent timer");
 assert.match(finaleSource,/insertAdjacentHTML\("afterbegin"/,"finale belongs before the long bestiary and retro game roll");
 
-function exerciseFinale({floor=15,complete=true,xpGameOver=false,dailyFailed=false,shareMode="native",rewardStorage=new Map()}={}){
+function exerciseFinale({floor=15,exitCleared=true,xpGameOver=false,dailyFailed=false,shareMode="native",rewardStorage=new Map()}={}){
   const nodes=new Map(),inserts=[],music=[],styles=[],visited=[],shares=[],copied=[],toasts=[],rewardWrites=[];
   const node=id=>{
     const value={id,events:new Map(),remove(){nodes.delete(id)},addEventListener(event,handler){this.events.set(event,handler)},
@@ -59,25 +57,40 @@ function exerciseFinale({floor=15,complete=true,xpGameOver=false,dailyFailed=fal
     inserts.push({where,html});
     for(const found of html.matchAll(/id="([^"]+)"/g))node(found[1]);
   }};
-  const runState={floor,runComplete:complete,dailyFailed,xpGameOver,elapsed:123000,
+  const runState={floor,deepest:floor,floorComplete:exitCleared,dailyFailed,xpGameOver,elapsed:123000,
     stats:{kills:27,secrets:4},enemyDefeats:[],bankedGames:[],floorGames:[]};
-  const ctx={run:runState,UI:{endText},p1:{level:9},score:1234,esc:x=>String(x),endRun:()=>true,
+  const ctx={run:runState,playMode:"solo",mode:exitCleared?"floorcomplete":"playing",C:{maxFloors:15},
+    UI:{endText,endTitle:{},end:{classList:{remove(){}}}},p1:{level:9},score:1234,esc:x=>String(x),pad:String,
+    S:{setStalkerNear(){},stopMusic(){}},PGR:{clearCheckpoint(){},persistentCollection:()=>[]},
+    updateSavedRunButton(){},refreshCollection(){},
     window:{CCG_CONFIG:{maxFloors:15},CCGEndCreditsMusic:{play(arg){music.push(arg)}}},
-    document:{getElementById:id=>nodes.get(id)||null,querySelectorAll:()=>[],
+    document:{getElementById:id=>nodes.get(id)||null,querySelector:()=>null,querySelectorAll:()=>[],dispatchEvent(){},
       createElement:tag=>({tag}),head:{appendChild:style=>styles.push(style)}},
     navigator:shareMode==="native"?{share:async data=>{shares.push(data)}}:
       shareMode==="clipboard"?{clipboard:{writeText:async value=>{copied.push(value)}}}:{},
     location:{href:"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/"},
-    localStorage:{getItem:key=>rewardStorage.get(key)||null,setItem:(key,value)=>{rewardWrites.push(key);rewardStorage.set(key,String(value))}},
-    showToast:(...args)=>toasts.push(args),
+    localStorage:{getItem:key=>rewardStorage.get(key)||null,setItem:(key,value)=>{if(key==="ccg-dungeon-carnage-crimson-dungeonheart-v1")rewardWrites.push(key);rewardStorage.set(key,String(value))}},
+    showToast:(...args)=>toasts.push(args),setInterval:()=>1,CustomEvent:class {},
     fetch:()=>Promise.resolve({ok:true,json:()=>Promise.resolve([])}),
     console:{warn:()=>{}}
   };
-  vm.runInNewContext(finaleSource,ctx,{timeout:1000});
+  vm.createContext(ctx);
+  vm.runInContext(core.slice(core.indexOf("function descendFloor()")),ctx,{timeout:1000});
+  ctx.window.addEventListener=()=>{};
+  vm.runInContext(read("arcade/lost-sizzler/js/v10-29-achievements.js"),ctx,{timeout:1000});
+  vm.runInContext(finaleSource,ctx,{timeout:1000});
+  if(!exitCleared){
+    assert.equal(ctx.extractRun(),false,"Extraction must wait until the exit is cleared");
+    assert.equal(ctx.descendFloor(),false,"Descent must wait until the exit is cleared");
+    assert.equal(ctx.mode,"playing");
+  }
   ctx.endRun("Citadel cleared");
   return{ctx,runState,inserts,nodes,music,styles,visited,shares,copied,toasts,rewardStorage,rewardWrites};
 }
 const victory=exerciseFinale();
+assert.equal(victory.ctx.weeklyResultPayload().completed,true);
+assert.equal(victory.ctx.window.CCGLostSizzlerAchievementsV129.earned("LS_CITADEL_PLATINUM"),true);
+assert.equal(victory.ctx.UI.endTitle.textContent,"CITADEL CLEARED");
 assert.equal(victory.rewardWrites.length,1,"first legitimate win must persist one permanent reward");
 const crimson=JSON.parse(victory.rewardStorage.get("ccg-dungeon-carnage-crimson-dungeonheart-v1"));
 assert.equal(crimson.id,"crimson-dungeonheart");
@@ -107,11 +120,11 @@ await clipboardVictory.nodes.get("v108-end-share").events.get("click")();
 assert.equal(clipboardVictory.shares.length,0);
 assert.equal(clipboardVictory.copied.length,1,"desktop clipboard fallback must copy the full result once");
 assert.match(clipboardVictory.copied[0],/1,234 points[\s\S]*cheekycommodoregamer\.co\.uk/);
-assert.equal(clipboardVictory.toasts[0][0],"COMPLETION COPIED");
+assert.equal(clipboardVictory.toasts.at(-1)[0],"COMPLETION COPIED");
 const plainVictory=exerciseFinale({shareMode:"none"});
 await plainVictory.nodes.get("v108-end-share").events.get("click")();
-assert.equal(plainVictory.toasts[0][0],"SHARE COMPLETION","unavailable sharing APIs must retain visible result text");
-assert.match(plainVictory.toasts[0][1],/1,234 points/);
+assert.equal(plainVictory.toasts.at(-1)[0],"SHARE COMPLETION","unavailable sharing APIs must retain visible result text");
+assert.match(plainVictory.toasts.at(-1)[1],/1,234 points/);
 assert.equal(victory.music.length,1,"end music hook should be called once per winning run");
 assert.match(ceremony[0].html,/Windows \/ itch.io edition is not yet released/,"unverified purchase URL must not be invented");
 assert.match(ceremony[0].html,/v155-skip-credits/,"credits must provide an explicit exit");
@@ -120,7 +133,7 @@ victory.nodes.set("again-btn",{click(){returnedToMenu++}});
 victory.nodes.get("v155-skip-credits").events.get("click")();
 assert.equal(returnedToMenu,1,"Skip Credits must invoke the established Return to Menu owner");
 assert.equal(victory.music[0].reason,"campaign-complete");
-assert.equal(victory.styles.length,1,"finale must reuse existing single stylesheet owner");
+assert.equal(victory.styles.filter(style=>style.id!=="lost-sizzler-achievements-style").length,1,"finale must reuse existing single stylesheet owner");
 victory.nodes.get("v130-jump-bestiary").events.get("click")();
 assert.deepEqual(victory.visited,["v106-enemy-credits","v106-enemy-credits:focus"],"skip must focus existing actual bestiary");
 victory.nodes.get("v130-jump-pickups").events.get("click")();
@@ -135,10 +148,12 @@ await new Promise(resolve=>setImmediate(resolve));
 assert.strictEqual(victory.nodes.get("v106-enemy-credits"),originalBestiaryTarget,"late catalogue Promise must retain enemy credits node");
 assert.strictEqual(victory.nodes.get("v104-retro-credits"),originalGamesTarget,"late catalogue Promise must retain C64 game credits node");
 assert.equal(victory.music.length,1,"re-entry must not replay the owner-supplied end music");
-for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver:true},{floor:15,dailyFailed:true}]){
+for(const scenario of [{floor:14},{floor:15,exitCleared:false},{floor:15,xpGameOver:true},{floor:15,dailyFailed:true}]){
   const sample=exerciseFinale(scenario);
   assert.equal(sample.inserts.some(x=>x.html.includes('id="v108-completion-credits"')),false,
     "non-winning and failed runs must never receive victory credits: "+JSON.stringify(scenario));
+  assert.equal(sample.ctx.weeklyResultPayload().completed,false);
+  assert.equal(sample.ctx.window.CCGLostSizzlerAchievementsV129.earned("LS_CITADEL_PLATINUM"),false);
   assert.equal(sample.music.length,0,"non-winning runs must not play completion music");
   assert.equal(sample.rewardWrites.length,0,"nonwinning and failed runs must never award the permanent title");
 }

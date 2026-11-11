@@ -1,3 +1,8 @@
+## 11 November 2026 — Dungeon R162 campaign completion
+
+- R161 #3057 merged at `d1caeb90ef83e520d3913fec0600cfe2f96a2a85` and production smoke verified `V10.42 r161`.
+- R162 groups the final exit, campaign result, credits, permanent title and badge eligibility around one canonical victory result. Existing five-slot equipment and the Crimson Dungeonheart presentation are implemented. [Runtime checkpoint](ai-work/dungeon-carnage-runtime.md) records the scope and release criteria.
+
 ## 11 November 2026 — Dungeon R161 Death Stalker achievement candidate
 
 - R160 #3055 merged at `3fb382476d9f46930d98876f12b491b7d7a49e58` after 12/12 PR workflows and independent review passed. Pages, production smoke and public navigation confirmed the release.
