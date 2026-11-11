@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage } from '../admin/js/content-publisher-recovery-state.mjs';
+import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage, latestPublicationLogTransition } from '../admin/js/content-publisher-recovery-state.mjs';
 
 test('unfinished generated PR is diagnosed as review-blocked with durable instructions', () => {
   const issue = classifyGeneratedOutputFailure({
@@ -48,4 +48,22 @@ test('non-review workflow failures and long-running review statuses remain usefu
   assert.equal(pending.error, false);
   assert.match(pending.text, /awaiting independent review and merge/);
   assert.equal(storedPublicationMessage(null).error, false);
+});
+
+test('historical failed build cannot overwrite a later verified live publication', () => {
+  const log = [
+    '[17:43:35] Preparing new game: Gloom (gloom)',
+    '[17:43:41] Source commit created: 7e495c0983c38a0b0f9c5d8fd421b6d472787798',
+    '[17:45:46] ERROR: Automated publishing check failed: Reliable Games Publishing finished with failure.',
+    '[18:31:00] Live canonical game page confirmed from a previously saved publication: https://www.cheekycommodoregamer.co.uk/games/gloom/'
+  ].join('\\n');
+  assert.equal(latestPublicationLogTransition(log).status, 'live');
+  assert.equal(latestPublicationLogTransition(log.slice(0, log.lastIndexOf('Live canonical'))).status, 'failed');
+});
+
+test('a new unpublished game is not marked live from a previous game log event', () => {
+  const old = '[18:31] Live page confirmed: https://www.cheekycommodoregamer.co.uk/games/gloom/';
+  const next = old + '\\n[19:44] Preparing new game: Another Game (another-game)';
+  assert.equal(latestPublicationLogTransition(next), null);
+  assert.equal(latestPublicationLogTransition(''), null);
 });
