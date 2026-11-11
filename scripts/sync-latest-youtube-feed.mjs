@@ -97,8 +97,8 @@ export async function probeFeed(fetchImpl = fetch) {
         contentType: response.headers?.get?.("content-type") || "",
         expectedChannelId: CHANNEL_ID,
         receivedChannelId: tag(xml, "yt:channelId") || null,
-        xmlFeed: /<feed\\b/i.test(xml),
-        responsePrefix: xml.slice(0, 140).replace(/\\s+/g, " ").replace(/[^\\x20-\\x7e]/g, "")
+        xmlFeed: /<feed\b/i.test(xml),
+        responsePrefix: xml.slice(0, 140).replace(/\s+/g, " ").replace(/[^\x20-\x7e]/g, "")
     };
     console.log("[CCG recent YouTube] RSS diagnostic: " + JSON.stringify(summary));
     return summary;
