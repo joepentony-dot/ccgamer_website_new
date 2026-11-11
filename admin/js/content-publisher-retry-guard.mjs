@@ -39,6 +39,9 @@ export function decideGamePublishingRetry({
   if (generatedPr?.merged === true || generatedPr?.merged_at) {
     return refuse('merged-pr', 'Generated archive output has already merged. Check deployment; do not rebuild it again.');
   }
+  if (generatedPr?.state === 'closed') {
+    return refuse('closed-pr', 'The previous generated-output pull request was closed without merging. Inspect its review and validation history before retrying.');
+  }
   if (generatedPageExists !== false) {
     return refuse('page-present', 'The canonical game page already exists on main, or its status could not be verified. Check deployment instead.');
   }
@@ -51,6 +54,10 @@ export function decideGamePublishingRetry({
   }
   if (sourceRun.status !== 'completed' || sourceRun.conclusion !== 'failure') {
     return refuse('not-failed', 'The original publishing run has not been confirmed as a failed build. Resume monitoring instead.');
+  }
+  if (runs.some((run) => Number(run?.id || 0) > Number(sourceRun.id || 0) &&
+      run?.status === 'completed' && run?.conclusion === 'success')) {
+    return refuse('newer-success', 'A newer publishing workflow succeeded after the original failure. Check its generated output and deployment before requesting another rebuild.');
   }
   return {
     allow: true,
