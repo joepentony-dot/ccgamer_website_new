@@ -518,7 +518,7 @@ test("Games Archive search comes before optional browse destinations and results
 });
 
 
-test("developer detail generator and all published pages retain accurate headings and game-count grammar", () => {
+test("developer detail generator and all 47 published pages retain accurate headings and game-count grammar", () => {
     const { buildDeveloperGroups } = require("../scripts/developer-utils.js");
     const { renderDeveloperPage } = require("../scripts/generate-developer-pages.js");
     const games = JSON.parse(read("games/games.json"));
