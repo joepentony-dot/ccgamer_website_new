@@ -175,7 +175,7 @@
   window.addEventListener?.("pagehide",()=>window.CCGEndCreditsMusic?.stop?.(),{once:true});
 
   function campaignComplete(){
-    return Boolean(run?.runComplete&&!run.dailyFailed&&!run.xpGameOver&&Number(run.floor||0)>=Number(window.CCG_CONFIG?.maxFloors||15));
+    return run?.campaignComplete===true;
   }
 
   // R130 is strictly end-screen presentation, after canonical endRun has

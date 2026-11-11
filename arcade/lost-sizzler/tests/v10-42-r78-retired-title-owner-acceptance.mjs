@@ -24,7 +24,7 @@ assert.match(config,/name:"C64 Dungeon Carnage — Fifteen Floors"/,
 assert.doesNotMatch(config,/name:"(?:The Lost Sizzler — Five Depths|C64 Dungeon Carnage — Five Depths)"/,
   "retired five-floor campaign names must not remain player-facing");
 
-assert.match(core,/run\.floor>=C\.maxFloors&&!run\.dailyFailed\?"CITADEL CLEARED"/,
+assert.match(core,/run\.campaignComplete\?"CITADEL CLEARED"/,
   "full-run completion must use the current Citadel completion banner");
 assert.doesNotMatch(core,/THE LOST SIZZLER RECOVERED/,
   "retired completion banner must not survive");

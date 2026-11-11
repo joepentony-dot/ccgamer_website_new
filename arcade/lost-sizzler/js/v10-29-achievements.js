@@ -9,14 +9,14 @@
     ["LS_FIRST_RUN","Dungeon Door Open","Start a C64 Dungeon Carnage run.","journey","bronze"],
     ["LS_TUTORIAL_GRADUATE","Training Archive Graduate","Complete the Tutorial.","journey","silver"],
     ["LS_FLOOR_1","Threshold Cleared","Clear The Threshold.","journey","bronze"],
-    ["LS_FLOOR_2","Iron Keep Cleared","Clear Iron Keep.","journey","bronze"],
-    ["LS_FLOOR_3","Moss Crypt Cleared","Clear Moss Crypt.","journey","silver"],
-    ["LS_FLOOR_4","Ember Depths Cleared","Clear Ember Depths.","journey","silver"],
-    ["LS_FLOOR_5","Sigil Sanctum Cleared","Clear the Sigil Sanctum.","journey","gold"],
-    ["LS_CITADEL_PLATINUM","Dungeon Carnage Platinum","Complete all five Dungeon Carnage depths, finish the Sigil and escape.","platinum","platinum"],
+    ["LS_FLOOR_2","Driveworks Cleared","Clear 1541 Driveworks.","journey","bronze"],
+    ["LS_FLOOR_3","Iron Keep Cleared","Clear Iron Keep.","journey","silver"],
+    ["LS_FLOOR_4","Budget Vaults Cleared","Clear the Budget Vaults.","journey","silver"],
+    ["LS_FLOOR_5","Cartridge Catacombs Cleared","Clear the Cartridge Catacombs.","journey","gold"],
+    ["LS_CITADEL_PLATINUM","Dungeon Carnage Platinum","Clear all 15 Dungeon Carnage floors and escape the Blood Citadel.","platinum","platinum"],
     ["LS_SOLO_CHAMPION","Solo Dungeon Conqueror","Complete the C64 Dungeon Carnage campaign in Solo mode.","journey","gold"],
     ["LS_SPEEDRUN_45","Fast Loader","Complete the game in under 45 minutes.","journey","gold"],
-    ["LS_NO_DEATH_VICTORY","One Life, Five Depths","Complete all five Dungeon Carnage depths without dying.","journey","gold"],
+    ["LS_NO_DEATH_VICTORY","One Life, Fifteen Floors","Clear all 15 Dungeon Carnage floors without dying.","journey","gold"],
     ["LS_FIRST_KILL","First Blood","Defeat your first enemy in a run.","combat","bronze"],
     ["LS_KILLS_10","Ten Down","Defeat 10 enemies in one run.","combat","bronze"],
     ["LS_KILLS_25","Dungeon Sweeper","Defeat 25 enemies in one run.","combat","silver"],
@@ -37,7 +37,7 @@
     ["LS_VORTEX_KILL","Into the Vortex","Knock an enemy into a rare vortex.","combat","gold"],
     ["LS_STALKER_BANISHED","No More Stalking","Break a Death Stalker’s ward and defeat it in combat.","combat","gold"],
     ["LS_BOUNTY_1","Bounty Claimed","Complete a floor Dungeon Bounty.","combat","silver"],
-    ["LS_BOUNTIES_5","Bounty Grand Slam","Complete the Dungeon Bounty on all five depths in one run.","combat","gold"],
+    ["LS_BOUNTIES_5","Bounty Grand Slam","Complete five Dungeon Bounties in one run.","combat","gold"],
     ["LS_MAIN_KEY_1","Key Claimed","Recover the required campaign Key on a key depth.","objectives","bronze"],
     ["LS_MAIN_KEYS_ALL","Domain Secured","Complete a campaign Key objective and open the route deeper.","objectives","silver"],
     ["LS_EXIT_SIGIL","Sigil Awakened","Complete the final Sigil ritual in the Sigil Sanctum.","objectives","silver"],
@@ -151,7 +151,7 @@
     if(host?.objective?.type==="generators"&&host.objective.complete)award("LS_GENERATORS_ALL");
   }
   function runCompleted(){
-    if(!run||Number(run.floor||0)<Number(C?.maxFloors||5)||run.dailyFailed||run.xpGameOver)return;award("LS_CITADEL_PLATINUM");
+    if(run?.campaignComplete!==true)return;award("LS_CITADEL_PLATINUM");
     if(playMode==="solo")award("LS_SOLO_CHAMPION");
     if(Number(run.elapsed||Infinity)<45*60*1000)award("LS_SPEEDRUN_45");if(Number(run.stats?.deaths||0)===0)award("LS_NO_DEATH_VICTORY");
   }
@@ -174,7 +174,7 @@
     if(state.installed)return;state.installed=true;
     if(typeof beginRun==="function"){const original=beginRun;beginRun=function beginRunV129Achievements(){state.run={floorDamage:0,floorDeaths:0,meleeSwings:0,meleeKills:0,gunKills:0,gamePickups:0,bounties:0,objectiveTypes:new Set()};const result=original.apply(this,arguments);award("LS_FIRST_RUN");return result}}
     if(typeof startWorld==="function"){const original=startWorld;startWorld=function startWorldV129Achievements(){const result=original.apply(this,arguments),s=runState();s.floorDamage=Number(run?.stats?.damageTaken||0);s.floorDeaths=Number(run?.stats?.deaths||0);return result}}
-    if(typeof floorComplete==="function"){const original=floorComplete;floorComplete=function floorCompleteV129Achievements(){floorCleared();return original.apply(this,arguments)}}
+    if(typeof floorComplete==="function"){const original=floorComplete;floorComplete=function floorCompleteV129Achievements(){const before=run,wasCleared=before?.floorComplete,result=original.apply(this,arguments);if(run===before&&!wasCleared&&run?.floorComplete)floorCleared();return result}}
     if(typeof endRun==="function"){const original=endRun;endRun=function endRunV129Achievements(){const result=original.apply(this,arguments);runCompleted();return result}}
     if(typeof firePlayer==="function"){const original=firePlayer;firePlayer=function firePlayerV129Achievements(player,direction){const s=runState(),before=Number(player?._meleeSwingAt||0),melee=!window.CCGLostSizzlerMeleeAmmoV125?.hasGun?.(player)||Number(player?.mana||0)<=0;if(player){player._lsAttackKind=melee?"melee":"gun";player._lsAttackAt=performance.now()}const result=original.apply(this,arguments);if(melee&&Number(player?._meleeSwingAt||0)>before){s.meleeSwings++;if(Number(player?.mana||0)<=0)award("LS_EMPTY_AMMO_BLADE")}return result}}
     if(typeof damageEnemy==="function"){const original=damageEnemy;damageEnemy=function damageEnemyV129Achievements(enemy,power,element,attacker){const was=Boolean(enemy?.alive),result=original.apply(this,arguments);if(was&&enemy&&!enemy.alive){const s=runState(),kind=performance.now()-Number(attacker?._lsAttackAt||0)<5000?attacker?._lsAttackKind:"";if(kind==="melee")s.meleeKills++;if(kind==="gun")s.gunKills++;if(enemy.champion)award("LS_CHAMPION_1");if(enemy.guardian&&!enemy.sigilDefender)award("LS_GUARDIAN_DOWN");if(enemy.exitWarden)award("LS_SIGIL_WARDEN_DOWN");if(enemy.follower||enemy.championName)award("LS_NAMED_ENEMY_1");if(enemy._ccgHazardResolving)award("LS_HAZARD_KILL");if(enemy._ccgVortexKill)award("LS_VORTEX_KILL")}return result}}
