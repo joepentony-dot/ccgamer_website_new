@@ -103,3 +103,14 @@ test("homepage reads the channel feed first, retaining the existing site index f
         assert.deepEqual(timestamps, [...timestamps].sort((a, b) => b - a), "New channel uploads must be newest-first");
     }
 });
+
+test("scheduled channel publishing respects the protected main branch and dispatches Pages", () => {
+    const workflow = fs.readFileSync(new URL("../.github/workflows/ccg-latest-youtube-feed.yml", import.meta.url), "utf8");
+    assert.match(workflow, /cron: "17 \* \* \* \*"/);
+    assert.match(workflow, /git push origin "\$branch"/);
+    assert.match(workflow, /gh pr create --base main/);
+    assert.match(workflow, /gh pr merge "\$pr_url" --squash --delete-branch/);
+    assert.match(workflow, /gh workflow run deploy-github-pages-omega-stable\.yml --ref main/);
+    assert.doesNotMatch(workflow, /git push origin HEAD:main/);
+    assert.match(workflow, /Verify generated feed before publication/);
+});
