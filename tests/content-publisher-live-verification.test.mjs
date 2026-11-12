@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { publishedGamePageMatches, savedRevisionMatchesLive } from '../admin/js/content-publisher-live-verification.mjs';
+import { publishedGamePageMatches, savedRevisionMatchesLive, normaliseDeployedGameHtml } from '../admin/js/content-publisher-live-verification.mjs';
 
 const url = 'https://www.cheekycommodoregamer.co.uk/games/gloom/';
 const published = `<!doctype html><html lang="en"><head>
@@ -69,5 +69,38 @@ test('existing-game recovery requires current-main ancestry and exact deployed b
     liveHtml: published,
     repositoryHtml: published,
     comparison: { status: 'diverged', behind_by: 2 }
+  }), false);
+});
+
+test('deployed first-paint 3D box prefill is reversible without weakening exact page comparison', () => {
+  const repositoryHtml = published.replace('<h1>Gloom</h1>',
+    '<section class="game-hero"><div class="game-hero__box3d" hidden><img class="game-hero__box3d-img" alt=""></div></section><h1>Gloom</h1>');
+  const deployedHtml = repositoryHtml
+    .replace('<section class="game-hero">',
+      '<section class="game-hero game-hero--has-box3d" data-ccg-box3d-prefilled="true">')
+    .replace('class="game-hero__box3d" hidden', 'class="game-hero__box3d"')
+    .replace('<img class="game-hero__box3d-img" alt="">',
+      '<img class="game-hero__box3d-img" src="/resources/images/games/boxes-3d/gloom.webp" alt="3D box artwork for gloom">');
+  const verified = {
+    repositoryHtml, slug: 'gloom',
+    comparison: { status: 'ahead', behind_by: 0 },
+    pageCommitComparison: { status: 'ahead', behind_by: 0, ahead_by: 1 }
+  };
+  assert.equal(normaliseDeployedGameHtml(deployedHtml, 'gloom'), repositoryHtml);
+  assert.equal(savedRevisionMatchesLive({ ...verified, liveHtml: deployedHtml }), true);
+  assert.equal(savedRevisionMatchesLive({ ...verified, liveHtml: repositoryHtml }), true);
+
+  // Altering the published game, artwork, or prefill marker must not pass.
+  assert.equal(savedRevisionMatchesLive({
+    ...verified, liveHtml: deployedHtml.replace('Gloom (1995)', 'Gloom Deluxe (1996)')
+  }), false);
+  assert.equal(savedRevisionMatchesLive({
+    ...verified, liveHtml: deployedHtml.replace('boxes-3d/gloom.webp', 'boxes-3d/other.webp')
+  }), false);
+  assert.equal(savedRevisionMatchesLive({
+    ...verified, liveHtml: deployedHtml.replace('data-ccg-box3d-prefilled="true"', 'data-ccg-box3d-prefilled="false"')
+  }), false);
+  assert.equal(savedRevisionMatchesLive({
+    ...verified, liveHtml: deployedHtml, slug: 'heimdall'
   }), false);
 });
