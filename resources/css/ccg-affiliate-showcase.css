@@ -341,6 +341,38 @@
     box-shadow: 0 0 22px rgba(var(--ccg-a1200-magenta), 0.13);
 }
 
+/* Secondary Amazon shop action: quieter than the THEA1200 pre-order CTA. */
+.ccg-home-affiliate-spotlight__shop-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px clamp(15px, 2vw, 22px);
+    border: 1px solid rgba(var(--ccg-a1200-cyan), 0.30);
+    border-radius: 7px;
+    background: rgba(var(--ccg-a1200-cyan), 0.045);
+    color: rgba(225, 241, 251, 0.84);
+    font-size: 0.73rem;
+    font-weight: 750;
+    letter-spacing: 0.07em;
+    line-height: 1.25;
+    text-align: center;
+    text-decoration: none;
+    transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+}
+
+.ccg-home-affiliate-spotlight__shop-link:hover,
+.ccg-home-affiliate-spotlight__shop-link:focus-visible {
+    color: #fff;
+    border-color: rgba(var(--ccg-a1200-cyan), 0.70);
+    background: rgba(var(--ccg-a1200-cyan), 0.12);
+}
+
+.ccg-home-affiliate-spotlight__shop-link:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
 .ccg-home-affiliate-spotlight__legal {
     max-width: 70ch;
     margin: 13px 0 0;

@@ -399,6 +399,17 @@
         if (!cta) return null;
         actions.appendChild(cta);
 
+        // Quiet, external storefront link beside the product-specific primary CTA.
+        const shopLink = document.createElement("a");
+        shopLink.className = "ccg-home-affiliate-spotlight__shop-link";
+        shopLink.href = "https://www.amazon.co.uk/shop/cheekycommodoregamer";
+        shopLink.target = "_blank";
+        shopLink.rel = "sponsored nofollow noopener noreferrer";
+        shopLink.setAttribute("aria-label", "More from Amazon: visit the Cheeky Commodore Gamer shop (opens in a new tab)");
+        shopLink.setAttribute("data-ccg-revenue-link", "amazon-influencer-storefront");
+        shopLink.textContent = "MORE FROM AMAZON";
+        actions.appendChild(shopLink);
+
         const legal = createDisclosure(config, "ccg-home-affiliate-spotlight__legal");
         copy.append(eyebrow, heading, body, actions, legal);
 

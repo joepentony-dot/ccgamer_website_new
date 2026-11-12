@@ -21,6 +21,15 @@ assert.match(game, /data-ccg-retro-shop-link/);
 assert.match(game, /header && !header\.querySelector/);
 assert.match(sharedCss, /ccg-retro-shop-game-link/);
 assert.match(css, /prefers-reduced-motion/);
+
+// The THEA1200 spotlight must keep its main CTA and expose one discreet storefront link.
+assert.match(game, /actions\.appendChild\(cta\)/);
+assert.match(game, /shopLink\.href = "https:\/\/www\.amazon\.co\.uk\/shop\/cheekycommodoregamer"/);
+assert.match(game, /shopLink\.textContent = "MORE FROM AMAZON"/);
+assert.match(game, /shopLink\.target = "_blank"/);
+assert.match(game, /shopLink\.rel = "sponsored nofollow noopener noreferrer"/);
+assert.match(game, /actions\.appendChild\(shopLink\)/);
+assert.match(sharedCss, /\.ccg-home-affiliate-spotlight__shop-link:focus-visible/);
 assert.ok(manifest.includes("retro-shop.html"), "Shop must be in the static sitemap source");
 assert.match(sitemap, /https:\/\/www\.cheekycommodoregamer\.co\.uk\/retro-shop\.html/);
 
