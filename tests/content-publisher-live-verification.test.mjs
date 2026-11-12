@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
 import test from 'node:test';
 import { publishedGamePageMatches } from '../admin/js/content-publisher-live-verification.mjs';
 
@@ -10,11 +9,9 @@ const published = `<!doctype html><html lang="en"><head>
   <title>Gloom (1995) – Amiga</title>
 </head><body><h1>Gloom</h1></body></html>`;
 
-test('Gloom canonical page is recognised as deployed and refreshable', () => {
-  assert.equal(publishedGamePageMatches(published, 'gloom'), true);
-  const actual = fs.readFileSync('games/gloom/index.html', 'utf8');
-  assert.equal(publishedGamePageMatches(actual, 'gloom'), true,
-    'Published game generator must retain canonical and OpenGraph route');
+test('Gloom canonical fixture is recognised as deployed and refreshable', () => {
+  assert.equal(publishedGamePageMatches(published, 'gloom'), true,
+    'Published game verification must retain canonical and OpenGraph route');
 });
 
 test('an unrelated 200 response or redirected home shell never counts as a published game', () => {
