@@ -1,3 +1,8 @@
+## R165 full campaign surface detail — 12 November 2026
+
+- Completes the surface-detail pass with cartridge contacts on Floor 5, broken raster patterns on Floor 8, terminal sockets on Floor 9 and casting-die outlines on Floor 12. Floor 1 already has its own stone relief and Floors 2–15 now have floor-specific surface marks.
+- The visual workflow captures all 15 floors on desktop and reduced-motion mobile before and after, and verifies matching seeds, canvas dimensions and motion settings. The renderer contract exercises deterministic bounds and generated coverage. Qualification is pending.
+
 ## R164 iron, tape and score-table surface art — 12 November 2026
 
 - Adds seeded riveted ironwork on Floor 3, inset cassette reels on Floor 6, and faded score-table etchings on Floor 13 using the existing rich tile painter. Protected rooms and severe rendering retain their existing treatment.

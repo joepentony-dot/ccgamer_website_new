@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   visual-baseline:
-    name: Eleven-floor desktop and mobile evidence
+    name: Full campaign desktop and mobile evidence
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -67,10 +67,22 @@ jobs:
           import path from 'node:path';
           const dir=process.env.CCG_DUNGEON_VISUAL_BASELINE_DIR;
           const cases=JSON.parse(fs.readFileSync(path.join(dir,'frame-baseline.json'),'utf8')).cases;
-          assert.equal(cases.length,22,'expected 22 authentic floor/device samples');
+          const beforeDir=path.join(path.dirname(dir),'dungeon-r125-visual-before');
+          if(process.env.GITHUB_EVENT_NAME==='pull_request'){
+            const before=JSON.parse(fs.readFileSync(path.join(beforeDir,'frame-baseline.json'),'utf8')).cases;
+            const identity=row=>[row.device,row.floor,row.seed,row.canvas,row.prefersReducedMotion];
+            assert.deepEqual(before.map(identity),cases.map(identity),'before and after must use matching floor, seed, canvas and motion settings');
+            for(const row of before){
+              assert.equal(row.frameIntervalsMs.count,45);
+              for(const kind of ['canvas','hud']){
+                assert.ok(fs.statSync(path.join(beforeDir,row.device+'-floor-'+row.floor+'-'+kind+'.png')).size>1024);
+              }
+            }
+          }
+          assert.equal(cases.length,30,'expected 30 authentic floor/device samples');
           for(const device of ['desktop','mobile-reduced-motion']){
             const rows=cases.filter(v=>v.device===device);
-            assert.deepEqual(rows.map(v=>v.floor),[1,2,3,4,6,7,10,11,13,14,15]);
+            assert.deepEqual(rows.map(v=>v.floor),Array.from({length:15},(_,i)=>i+1));
             for(const row of rows){
               assert.equal(row.frameIntervalsMs.count,45);
               assert.ok(row.canvas.width>0&&row.canvas.height>0&&row.generated.rooms>0);
@@ -81,7 +93,7 @@ jobs:
             }
           }
           assert.ok(cases.filter(v=>v.device==='mobile-reduced-motion').every(v=>v.prefersReducedMotion));
-          console.log('Verified 22 floor/device cases, 44 screenshots and 990 RAF intervals.');
+          console.log('Verified 30 floor/device cases, 60 screenshots and 1,350 RAF intervals.');
           NODE
 
       - name: Upload PNG frames and metrics even when capture fails
