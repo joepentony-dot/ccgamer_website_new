@@ -22,3 +22,13 @@ export function publishedGamePageMatches(html, slug, siteOrigin = 'https://www.c
     .some((attrs) => attrs.property?.toLowerCase() === 'og:url' && attrs.content === expected);
   return canonical && social;
 }
+
+
+// Existing-game recovery must prove the deployed bytes are the current main output
+// and that the saved source revision is an ancestor of that main commit.
+export function savedRevisionMatchesLive({ liveHtml = '', repositoryHtml = '', comparison = null } = {}) {
+  const status = String(comparison?.status || '').toLowerCase();
+  const behindBy = Number(comparison?.behind_by);
+  const sourceIsInMain = (status === 'ahead' || status === 'identical') && behindBy === 0;
+  return sourceIsInMain && String(liveHtml) === String(repositoryHtml);
+}
