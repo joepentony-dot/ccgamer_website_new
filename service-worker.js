@@ -2,7 +2,7 @@
 "use strict";
 
 const CACHE_VERSION = "2026-08-25-public-release-v10";
-const CODE_CACHE_VERSION = "2026-11-12-public-code-v233";
+const CODE_CACHE_VERSION = "2026-11-12-public-code-v234";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}-${CODE_CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}-${CODE_CACHE_VERSION}`;
 const CODE_CACHE = `ccg-code-${CODE_CACHE_VERSION}`;
