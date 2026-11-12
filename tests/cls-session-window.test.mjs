@@ -38,6 +38,11 @@ test('CLS splits on an exact one-second gap', () => {
 test('CLS splits when a shift lands exactly five seconds after session start', () => {
   assert.equal(largestSessionWindow([
     { start_time: 100, value: 0.1 },
-    { start_time: 5100, value: 0.2 },
-  ]), 0.2);
+    { start_time: 900, value: 0.1 },
+    { start_time: 1700, value: 0.1 },
+    { start_time: 2500, value: 0.1 },
+    { start_time: 3300, value: 0.1 },
+    { start_time: 4100, value: 0.1 },
+    { start_time: 5100, value: 0.25 },
+  ]), 0.6);
 });
