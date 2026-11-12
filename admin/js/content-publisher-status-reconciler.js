@@ -798,13 +798,20 @@ async function verifySavedRevisionLive(config, job, liveHtml) {
   const mainRef = await githubRequest(config, '/git/ref/heads/main');
   const mainSha = mainRef?.object?.sha;
   if (!mainSha) return false;
-  const [repositoryPage, comparison] = await Promise.all([
-    githubRequest(config, `/contents/games/${encodePath(job.slug)}/index.html?ref=main`),
-    githubRequest(config, `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(mainSha)}`)
+  const gamePagePath = `games/${job.slug}/index.html`;
+  const [repositoryPage, comparison, pageHistory] = await Promise.all([
+    githubRequest(config, `/contents/${encodePath(gamePagePath)}?ref=main`),
+    githubRequest(config, `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(mainSha)}`),
+    githubRequest(config, `/commits?sha=${encodeURIComponent(mainSha)}&path=${encodeURIComponent(gamePagePath)}&per_page=1`)
   ]);
-  if (!repositoryPage?.content) return false;
+  if (!repositoryPage?.content || !Array.isArray(pageHistory) || !pageHistory[0]?.sha) return false;
+  // A source edit can commit successfully while the old public page is still
+  // on main. Confirm that the page itself was rebuilt after that edit.
+  const latestPageCommitSha = pageHistory[0].sha;
+  const pageCommitComparison = await githubRequest(config,
+    `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(latestPageCommitSha)}`);
   const repositoryHtml = decodeBase64Utf8(repositoryPage.content);
-  return savedRevisionMatchesLive({ liveHtml, repositoryHtml, comparison });
+  return savedRevisionMatchesLive({ liveHtml, repositoryHtml, comparison, pageCommitComparison });
 }
 
 async function waitForLiveUrl(url, config = null, job = null) {
