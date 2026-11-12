@@ -33,8 +33,28 @@ test('existing-game recovery requires current-main ancestry and exact deployed b
   assert.equal(savedRevisionMatchesLive({
     liveHtml: published,
     repositoryHtml: published,
-    comparison: { status: 'ahead', behind_by: 0 }
+    comparison: { status: 'ahead', behind_by: 0 },
+    pageCommitComparison: { status: 'ahead', behind_by: 0, ahead_by: 1 }
   }), true);
+  // The edit's source commit is on main, but its page still comes from a
+  // pre-edit commit. That must not be mistaken for a published revision.
+  assert.equal(savedRevisionMatchesLive({
+    liveHtml: published,
+    repositoryHtml: published,
+    comparison: { status: 'ahead', behind_by: 0 },
+    pageCommitComparison: { status: 'behind', behind_by: 1, ahead_by: 0 }
+  }), false);
+  assert.equal(savedRevisionMatchesLive({
+    liveHtml: published,
+    repositoryHtml: published,
+    comparison: { status: 'ahead', behind_by: 0 }
+  }), false);
+  assert.equal(savedRevisionMatchesLive({
+    liveHtml: published,
+    repositoryHtml: published,
+    comparison: { status: 'ahead', behind_by: 0 },
+    pageCommitComparison: { status: 'identical', behind_by: 0, ahead_by: 0 }
+  }), false);
   assert.equal(savedRevisionMatchesLive({
     liveHtml: published,
     repositoryHtml: published + ' stale',
