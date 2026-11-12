@@ -795,16 +795,16 @@ async function verifyCanonicalLiveGame(slug, config = null, job = null) {
 
 async function verifySavedRevisionLive(config, job, liveHtml) {
   if (!job?.sourceSha || !job?.slug || !config) return false;
-  const [mainRef, repositoryPage, comparison] = await Promise.all([
-    githubRequest(config, '/git/ref/heads/main'),
-    githubRequest(config, `/contents/games/${encodePath(job.slug)}/index.html?ref=main`),
-    githubRequest(config, `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(mainRefPlaceholder)}`)
-  ]);
+  const mainRef = await githubRequest(config, '/git/ref/heads/main');
   const mainSha = mainRef?.object?.sha;
-  if (!mainSha || !repositoryPage?.content) return false;
-  const finalComparison = comparison;
+  if (!mainSha) return false;
+  const [repositoryPage, comparison] = await Promise.all([
+    githubRequest(config, `/contents/games/${encodePath(job.slug)}/index.html?ref=main`),
+    githubRequest(config, `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(mainSha)}`)
+  ]);
+  if (!repositoryPage?.content) return false;
   const repositoryHtml = decodeBase64Utf8(repositoryPage.content);
-  return savedRevisionMatchesLive({ liveHtml, repositoryHtml, comparison: finalComparison });
+  return savedRevisionMatchesLive({ liveHtml, repositoryHtml, comparison });
 }
 
 async function waitForLiveUrl(url, config = null, job = null) {
