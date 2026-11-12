@@ -1,3 +1,8 @@
+## 12 November 2026 — Dungeon R166 source qualification
+
+- Main `7c0aec8d8e3e11e2b5c6ea4ff5d3c1360b05f298` still carries merged R165 #3076; both live version endpoints serve `V10.42 r165 / 20261112r165`. No compatible open Dungeon implementation PR exists.
+- Sole R166 branch `fix/dungeon-r166-count-loadula-accessibility` applies the supplied patch cleanly. Local canonical Node/syntax, accessibility negative control, desktop/mobile Canvas and full-game Count verification, performance contracts and itch staging are recorded in the [runtime checkpoint](ai-work/dungeon-carnage-runtime.md). Exact-head CI and independent APPROVED review are required before merge; no R166 live or owner acceptance claim.
+
 ## 11 November 2026 — Dungeon R162 campaign completion
 
 - R161 #3057 merged at `d1caeb90ef83e520d3913fec0600cfe2f96a2a85` and production smoke verified `V10.42 r161`.

@@ -534,6 +534,8 @@ const wardRender={
 };
 vm.createContext(wardRender);
 vm.runInContext(
+  "const dungeonRenderPerformance={quality:\"rich\"};\n"+
+  rendererSection("function dungeonRenderQuality(){","window.CCGLostSizzlerV142R70RenderPerformance=")+
   rendererSection("function drawEnemy(e){","function drawStalker(){")+
   rendererSection("function drawStalker(){","function drawPlayerResources(")+
   ";this.renderEnemy=drawEnemy;this.renderCount=drawStalker;",
