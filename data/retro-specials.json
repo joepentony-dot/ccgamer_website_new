@@ -1447,6 +1447,7 @@
     "type": "retro-specials",
     "title": "Friday the 13th (1986) – Commodore 64 Horror Sound Effects Quiz",
     "youtubeId": "GMH3zjOMvWI",
+    "deferYouTubePlayer": true,
     "thumbnail": "https://img.youtube.com/vi/GMH3zjOMvWI/hqdefault.jpg",
     "membersOnly": false,
     "order": 30,
