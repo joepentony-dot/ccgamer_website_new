@@ -73,6 +73,10 @@ try {
         } catch (error) { window.__ccgDesktopObserverError = String(error.message || error); }
       });
       const page = await context.newPage();
+      let documentNavigationCount = 0;
+      page.on('framenavigated', (frame) => {
+        if (frame === page.mainFrame()) documentNavigationCount += 1;
+      });
       const failedRequests = [];
       page.on('requestfailed', (request) => {
         if (failedRequests.length < 20) failedRequests.push({
@@ -81,6 +85,7 @@ try {
       });
       for (const pass of ['cold', 'warm']) {
         const start = Date.now();
+        const navigationCountBefore = documentNavigationCount;
         try {
           failedRequests.length = 0;
           const response = await page.goto(origin + route.path, {
@@ -91,6 +96,9 @@ try {
           }
           await page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
           await page.waitForTimeout(6000);
+          const navigationCount = documentNavigationCount - navigationCountBefore;
+          const bootstrapReloadDetected = route.path === '/emulator/c64/' &&
+            pass === 'cold' && navigationCount > 1;
           const evidence = await page.evaluate(() => ({
             shifts: window.__ccgDesktopShifts || [],
             observerError: window.__ccgDesktopObserverError,
@@ -115,6 +123,9 @@ try {
           await page.screenshot({ path: path.join(screenshots, filename), fullPage: false });
           rows.push({
             url: origin + route.path, label: route.label, mode, pass,
+            measurement_label: bootstrapReloadDetected ? 'cold-post-bootstrap' : pass,
+            bootstrap_reload_detected: bootstrapReloadDetected,
+            document_navigations: navigationCount,
             status: response.status(), viewport: '1440x900',
             cls_largest_session_window: cls,
             lifetime_shift_sum: relevant.reduce((sum, entry) => sum + entry.value, 0),
@@ -127,6 +138,8 @@ try {
           console.log(route.label + ' ' + mode + ' ' + pass + ' desktop CLS ' + cls.toFixed(5));
         } catch (error) {
           rows.push({ url: origin + route.path, label: route.label, mode, pass,
+            measurement_label: (route.path === '/emulator/c64/' && pass === 'cold') ? 'cold-post-bootstrap-unknown' : pass,
+            document_navigations: documentNavigationCount - navigationCountBefore,
             error: String(error.message || error), elapsed_ms: Date.now() - start,
             request_failures: [...failedRequests] });
           console.error(route.label + ' ' + mode + ' ' + pass + ': ' + error.message);
@@ -140,7 +153,8 @@ try {
 }
 const payload = {
   generated_at: new Date().toISOString(),
-  commit_sha: process.env.GITHUB_SHA || null,
+  commit_sha: process.env.CCG_CHECKED_OUT_SHA || null,
+  workflow_event_sha: process.env.GITHUB_SHA || null,
   methodology: 'Live canonical routes, real Chromium desktop 1440x900, 6s after load, fresh context then warm repeat, saved C64/Amiga modes. CLS is the largest 1s-gap/5s session window. Lab only; not Search Console field data.',
   routes, rows,
 };
