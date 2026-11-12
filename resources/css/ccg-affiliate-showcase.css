@@ -373,6 +373,82 @@
     outline-offset: 3px;
 }
 
+/* From 4 December 2026 the same homepage slot becomes the CCG Retro Shop. */
+.ccg-home-affiliate-spotlight--retro-shop::after {
+    content: "RETRO";
+}
+
+.ccg-home-affiliate-spotlight--retro-shop .ccg-home-affiliate-spotlight__inner {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.ccg-home-affiliate-spotlight--retro-shop .ccg-home-affiliate-spotlight__copy {
+    width: 100%;
+    align-items: stretch;
+}
+
+.ccg-home-affiliate-spotlight--retro-shop .ccg-home-affiliate-spotlight__title {
+    max-width: 22ch;
+}
+
+.ccg-home-retro-shop__links {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: clamp(20px, 3vw, 30px);
+}
+
+.ccg-home-retro-shop__collection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 74px;
+    padding: 14px 16px;
+    border: 1px solid rgba(var(--ccg-a1200-cyan), 0.38);
+    border-radius: 12px;
+    background: rgba(28, 66, 90, 0.25);
+    color: #e7f8ff;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.4;
+    transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.ccg-home-retro-shop__collection:hover,
+.ccg-home-retro-shop__collection:focus-visible {
+    border-color: rgba(var(--ccg-a1200-cyan), 0.82);
+    background: rgba(var(--ccg-a1200-cyan), 0.14);
+}
+
+.ccg-home-retro-shop__collection:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.ccg-home-retro-shop__browse {
+    align-self: flex-start;
+    margin-top: 16px;
+}
+
+@media (max-width: 760px) {
+    .ccg-home-retro-shop__links {
+        grid-template-columns: 1fr;
+    }
+    .ccg-home-retro-shop__collection {
+        min-height: 52px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-home-retro-shop__collection {
+        transition: none;
+    }
+}
+
 .ccg-home-affiliate-spotlight__legal {
     max-width: 70ch;
     margin: 13px 0 0;
