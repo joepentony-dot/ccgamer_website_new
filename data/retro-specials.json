@@ -1440,5 +1440,45 @@
         }
       ]
     }
+  },
+  {
+    "id": "friday-the-13th-c64-horror-audio-quiz",
+    "slug": "friday-the-13th-c64-horror-audio-quiz",
+    "type": "retro-specials",
+    "title": "Friday the 13th (1986) – Commodore 64 Horror Sound Effects Quiz",
+    "youtubeId": "GMH3zjOMvWI",
+    "thumbnail": "https://img.youtube.com/vi/GMH3zjOMvWI/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 30,
+    "summary": "Can you identify ten gruesome horror sounds from Domark’s original 1986 Friday the 13th C64 cassette competition? Five Eureka colour monitors were at stake.",
+    "description": "Friday the 13th: The Computer Game was released for Commodore 64 (C64) by Domark in 1986. The original cassette included ten grisly BBC Enterprises sound effects as part of a horror audio competition. Match the noises to the clues, revisit Camp Crystal Lake and Jason Voorhees, and find out how a home-computer game offered five Eureka colour monitors as prizes. The historical contest is closed, but the ten-sound challenge lives on in this Cheeky Commodore Gamer video.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Friday the 13th C64 Horror Sound Quiz (1986) | CCG",
+      "description": "Try the Friday the 13th Commodore 64 horror audio quiz: ten BBC sound effects from Domark’s 1986 cassette competition, with five Eureka colour monitors as prizes."
+    },
+    "created_at": "2026-11-12T00:00:00.000Z",
+    "tags": [
+      "Friday the 13th",
+      "Friday 13th",
+      "Friday the 13th The Computer Game",
+      "Commodore 64",
+      "C64",
+      "Domark",
+      "1986",
+      "Jason Voorhees",
+      "horror sound effects quiz",
+      "BBC Enterprises",
+      "Eureka colour monitor"
+    ],
+    "platforms": [
+      "Commodore 64",
+      "C64"
+    ],
+    "relatedSlugs": [
+      "retro-games-real-prizes-porsche-swords-25000",
+      "banned-c64-games-they-didnt-want-you-to-see",
+      "50-commodore-64-games-can-you-identify-them"
+    ]
   }
 ]
