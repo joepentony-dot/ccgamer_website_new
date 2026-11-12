@@ -14,7 +14,7 @@ export function largestSessionWindow(entries) {
   let total = 0;
   let active = false;
   for (const shift of shifts) {
-    if (!active || shift.time - previous > 1000 || shift.time - sessionStart > 5000) {
+    if (!active || shift.time - previous >= 1000 || shift.time - sessionStart >= 5000) {
       sessionStart = shift.time;
       total = 0;
       active = true;
