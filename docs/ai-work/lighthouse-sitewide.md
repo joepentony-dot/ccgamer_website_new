@@ -1,3 +1,11 @@
+## 12 November 2026 — desktop CLS measurement coverage (DRAFT / NO WEBSITE FIX)
+
+- Owner Google Search Console report identifies 106 desktop URLs in a poor CLS group (0.89), including Combat School, Games archive, the C64 emulator, Emulation guide and 50 Essential Amiga Games. Grouped 28-day field data cannot by itself establish a current first-paint regression or identify its element.
+- Previous sitewide #2896 and first-paint Amiga safeguard #2964 are already merged; do not redo them or interpret a past pass as all URLs fixed.
+- Candidate branch `fix/desktop-cls-evidence-20261112` adds a read-only live Chromium desktop (1440x900) five-route, C64/Amiga where applicable, cold/warm measurement with attributed DOM rectangles, screenshots and raw artifacts to the existing Phase 8A workflow. It also corrects Phase 8A's mobile browser CLS calculation from lifetime sum to the Core Web Vitals largest 1s-gap/5s session window, with focused unit tests.
+- This is diagnostic instrumentation only: no public HTML/CSS/JS, publisher, admin, catalogue, game, emulator, Supabase, cache or deployment change. No claim of a measured before/after result until exact-head GitHub execution publishes artifacts.
+- Require current-head CI, inspect actual shift elements for repeatability, then isolate one source-backed repair and test representative desktop/mobile nonregression. No merge of this diagnostic or subsequent website fix without normal review and safeguards. PR #3069 is a separate parked draft.
+
 ## 3 November 2026 — isolate and revert the 15-page loading-hint regression (BRANCH ONLY)
 
 - Measured exact-head #2964 Category Omega run 41567494667 PASSED its existing numeric gate **when the Role-Playing representative page was restored byte-for-byte to main HTML**, with the separate first-paint Amiga-mode overlay safeguard preserved: mobile CLS baseline 0.77764 vs candidate 0.06190; desktop CLS baseline 1.10339 vs candidate 0.20746. Mobile LCP 21476ms vs 16451ms, desktop LCP 3989ms vs 3959ms. Results vary substantially between runs; not a sitewide win or evidence of live improvement.

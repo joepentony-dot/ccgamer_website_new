@@ -1,3 +1,9 @@
+## 12 November 2026 — desktop CLS evidence checkpoint
+
+- The owner-reported 106 desktop CLS-poor URLs (group 0.89) are under fresh investigation. Historical sitewide #2896 and mode first-paint #2964 were merged; neither alone establishes the current field verdict.
+- Existing Phase 8A mobile CLS report was based on a lifetime sum instead of the largest session window and did not cover the five reported desktop page families. A bounded diagnostic candidate adds targeted live desktop shift-source capture and fixes the mobile browser metric method without changing public-site behavior. Details: [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md).
+- The Content Publisher #3062 is merged; Friday the 13th PR #3069 remains a deliberately parked draft. Never merge any unqualified candidate or claim a Search Console validation pass based on lab results.
+
 ## 11 November 2026 — Dungeon R162 campaign completion
 
 - R161 #3057 merged at `d1caeb90ef83e520d3913fec0600cfe2f96a2a85` and production smoke verified `V10.42 r161`.

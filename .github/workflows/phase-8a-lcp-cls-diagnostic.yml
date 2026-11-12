@@ -8,6 +8,9 @@ on:
       - ".github/workflows/phase-8a-lcp-cls-diagnostic.yml"
       - "scripts/phase8a_lcp_cls_diagnostic.mjs"
       - "scripts/phase8a_lcp_cls_report.py"
+      - "scripts/phase8a_desktop_cls_diagnostic.mjs"
+      - "scripts/lib/cls-session-window.mjs"
+      - "tests/cls-session-window.test.mjs"
   workflow_dispatch:
 
 permissions:
@@ -66,6 +69,8 @@ jobs:
         run: |
           node --check scripts/phase8a_lcp_cls_diagnostic.mjs
           python -m py_compile scripts/phase8a_lcp_cls_report.py
+          node --check scripts/phase8a_desktop_cls_diagnostic.mjs
+          node --test tests/cls-session-window.test.mjs
 
       - name: Capture LCP, request and layout-shift evidence
         run: |
@@ -73,6 +78,13 @@ jobs:
           node scripts/phase8a_lcp_cls_diagnostic.mjs \
             --output "$RUNNER_TEMP/phase8a-diagnostic.json" \
             --raw-dir "$RUNNER_TEMP/phase8a-raw"
+
+      - name: Capture live desktop CLS sources for owner-reported page families
+        run: |
+          mkdir -p "$RUNNER_TEMP/phase8a-desktop-screenshots"
+          node scripts/phase8a_desktop_cls_diagnostic.mjs \
+            --output "$RUNNER_TEMP/phase8a-desktop-cls.json" \
+            --screenshots "$RUNNER_TEMP/phase8a-desktop-screenshots"
 
       - name: Compose Phase 8A report
         run: |
@@ -139,6 +151,8 @@ jobs:
           name: phase-8a-lcp-cls-diagnostic
           path: |
             ${{ runner.temp }}/phase8a-diagnostic.json
+            ${{ runner.temp }}/phase8a-desktop-cls.json
+            ${{ runner.temp }}/phase8a-desktop-screenshots
             ${{ runner.temp }}/phase8a-raw
             docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md
             docs/seo-baseline/phase-8a-lcp-cls-evidence.json
