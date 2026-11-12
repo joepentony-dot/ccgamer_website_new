@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { publishedGamePageMatches } from '../admin/js/content-publisher-live-verification.mjs';
+import { publishedGamePageMatches, savedRevisionMatchesLive } from '../admin/js/content-publisher-live-verification.mjs';
 
 const url = 'https://www.cheekycommodoregamer.co.uk/games/gloom/';
 const published = `<!doctype html><html lang="en"><head>
@@ -26,4 +26,28 @@ test('canonical parser accepts attribute ordering without accepting the wrong UR
   const reordered = '<HTML><html><link href="'+url+'" rel="canonical"><meta content="'+url+'" property="og:url"></html>';
   assert.equal(publishedGamePageMatches(reordered,'gloom'),true);
   assert.equal(publishedGamePageMatches(reordered.replaceAll('/games/gloom/','/games/gloom-deluxe/'),'gloom'),false);
+});
+
+
+test('existing-game recovery requires current-main ancestry and exact deployed bytes', () => {
+  assert.equal(savedRevisionMatchesLive({
+    liveHtml: published,
+    repositoryHtml: published,
+    comparison: { status: 'ahead', behind_by: 0 }
+  }), true);
+  assert.equal(savedRevisionMatchesLive({
+    liveHtml: published,
+    repositoryHtml: published + ' stale',
+    comparison: { status: 'ahead', behind_by: 0 }
+  }), false);
+  assert.equal(savedRevisionMatchesLive({
+    liveHtml: published,
+    repositoryHtml: published,
+    comparison: { status: 'behind', behind_by: 0 }
+  }), false);
+  assert.equal(savedRevisionMatchesLive({
+    liveHtml: published,
+    repositoryHtml: published,
+    comparison: { status: 'diverged', behind_by: 2 }
+  }), false);
 });
