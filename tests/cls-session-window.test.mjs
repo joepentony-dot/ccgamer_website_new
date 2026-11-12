@@ -29,9 +29,9 @@ test('CLS caps a continuous session at five seconds', () => {
 });
 
 test('CLS treats exactly one-second gaps as the same session', () => {
-  assert.equal(largestSessionWindow([
+  assert.ok(Math.abs(largestSessionWindow([
     { start_time: 100, value: 0.1 },
     { start_time: 1100, value: 0.2 },
     { start_time: 2201, value: 0.3 },
-  ]), 0.3);
+  ]) - 0.3) < 1e-9);
 });
