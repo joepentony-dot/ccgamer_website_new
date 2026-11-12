@@ -264,6 +264,30 @@ function buildPlayAlongEditorial(entry) {
       escapeHtml(link.title) + '</a></li>').join('') + '</ul></section>';
 }
 
+function buildEditorialSections(entry) {
+  const sections = Array.isArray(entry?.editorialSections) ? entry.editorialSections : [];
+  return sections.map((section, index) => {
+    const title = String(section?.title || '').trim();
+    if (!title) return '';
+    const id = 'retro-editorial-' + String(index + 1) + '-' + normalizeKebab(title).slice(0, 48);
+    const paragraphs = Array.isArray(section?.paragraphs) ? section.paragraphs
+      .filter((paragraph) => typeof paragraph === 'string' && paragraph.trim())
+      .map((paragraph) => '<p class="retro-video-page__description">' + escapeHtml(paragraph) + '</p>')
+      .join('') : '';
+    const links = Array.isArray(section?.links) ? section.links.filter((link) =>
+      typeof link?.url === 'string' && /^\\/(?!\\/)[a-z0-9/_-]+\\/$/i.test(link.url) &&
+      typeof link?.title === 'string' && link.title.trim()
+    ) : [];
+    const linksHtml = links.length
+      ? '<ul class="retro-video-page__editorial-links">' + links.map((link) =>
+        '<li><a href="' + escapeHtml(link.url) + '">' + escapeHtml(link.title) + '</a></li>'
+      ).join('') + '</ul>'
+      : '';
+    return '<section class="retro-video-page__description-block" aria-labelledby="' + id + '">' +
+      '<h2 id="' + id + '">' + escapeHtml(title) + '</h2>' + paragraphs + linksHtml + '</section>';
+  }).filter(Boolean).join('\\n');
+}
+
 function buildRelatedItems(items, currentSlug, pagePrefix) {
   const current = items.find((item) => item.slug === currentSlug);
   const bySlug = new Map(items.map((item) => [item.slug, item]));
@@ -405,6 +429,7 @@ function generateDatasetPages(config, template) {
     const relatedItemsHtml = buildRelatedItems(normalizedItems, slug, config.pagePrefix);
     const playAlongGuideHtml = buildPlayAlongGuide(entry, config.pagePrefix);
     const playAlongEditorialHtml = buildPlayAlongEditorial(entry);
+    const editorialSectionsHtml = buildEditorialSections(entry);
     const deferredPlayer = entry.deferYouTubePlayer === true;
     const playerUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
     const playerFacadeHtml = deferredPlayer
