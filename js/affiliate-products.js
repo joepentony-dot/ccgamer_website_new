@@ -9,6 +9,8 @@
     let configPromise = null;
     let renderTimer = null;
     let lastRenderedContextKey = "";
+    let lastHomeConfig = null;
+    let homeSwitchTimer = null;
 
     function toSafeString(value) {
         return typeof value === "string" ? value.trim() : "";
@@ -399,14 +401,11 @@
         if (!cta) return null;
         actions.appendChild(cta);
 
-        // Quiet, external storefront link beside the product-specific primary CTA.
+        // First-party destination for all CCG Amazon collections and game-page picks.
         const shopLink = document.createElement("a");
         shopLink.className = "ccg-home-affiliate-spotlight__shop-link";
-        shopLink.href = "https://www.amazon.co.uk/shop/cheekycommodoregamer";
-        shopLink.target = "_blank";
-        shopLink.rel = "sponsored nofollow noopener noreferrer";
-        shopLink.setAttribute("aria-label", "More from Amazon: visit the Cheeky Commodore Gamer shop (opens in a new tab)");
-        shopLink.setAttribute("data-ccg-revenue-link", "amazon-influencer-storefront");
+        shopLink.href = resolveSiteUrl("retro-shop.html");
+        shopLink.setAttribute("aria-label", "Browse the Cheeky Commodore Gamer Retro Shop");
         shopLink.textContent = "MORE FROM AMAZON";
         actions.appendChild(shopLink);
 
@@ -441,10 +440,102 @@
         return section;
     }
 
+    function getShopCollectionUrl(entry, config) {
+        const source = toSafeString(entry?.url);
+        const approvedTag = toSafeString(config?.homepageRetroShop?.activeTag);
+        if (!source || !approvedTag) return "";
+
+        try {
+            const url = new URL(source);
+            if (url.protocol !== "https:" || url.hostname !== "www.amazon.co.uk") return "";
+            if (!/^\/shop\/cheekycommodoregamer\/list\/[A-Z0-9]+$/.test(url.pathname)) return "";
+            if (url.searchParams.get("tag") !== approvedTag) return "";
+            return url.toString();
+        } catch (_error) {
+            return "";
+        }
+    }
+
+    function createHomeRetroShop(config) {
+        const promo = config?.homepageRetroShop;
+        if (!Array.isArray(promo?.collections) || promo.collections.length !== 3) return null;
+
+        const links = promo.collections.map((entry) => ({
+            label: toSafeString(entry?.label),
+            url: getShopCollectionUrl(entry, config)
+        }));
+        if (links.some((entry) => !entry.label || !entry.url)) return null;
+        if (new Set(links.map((entry) => entry.url)).size !== links.length) return null;
+
+        const section = document.createElement("section");
+        section.className = "ccg-home-affiliate-spotlight ccg-home-affiliate-spotlight--retro-shop ccg-chapter";
+        section.setAttribute("data-ccg-home-affiliate-spotlight", "true");
+        section.setAttribute("data-ccg-home-spotlight-kind", "retro-shop");
+        section.setAttribute("aria-labelledby", "ccg-home-retro-shop-title");
+
+        const inner = document.createElement("div");
+        inner.className = "ccg-home-affiliate-spotlight__inner";
+
+        const copy = document.createElement("div");
+        copy.className = "ccg-home-affiliate-spotlight__copy";
+
+        const eyebrow = document.createElement("p");
+        eyebrow.className = "ccg-home-affiliate-spotlight__eyebrow";
+        eyebrow.textContent = "CCG AMAZON RETRO SHOP";
+
+        const heading = document.createElement("h2");
+        heading.id = "ccg-home-retro-shop-title";
+        heading.className = "ccg-home-affiliate-spotlight__title";
+        heading.textContent = "Explore the CCG Retro Shop";
+
+        const description = document.createElement("p");
+        description.className = "ccg-home-affiliate-spotlight__text";
+        description.textContent = "Browse my selected Evercade games, retro hardware and Bitmap Books on Amazon UK, or explore all my recommended picks in the CCG Retro Shop.";
+
+        const collections = document.createElement("div");
+        collections.className = "ccg-home-retro-shop__links";
+        links.forEach((entry) => {
+            const link = document.createElement("a");
+            link.className = "ccg-home-retro-shop__collection";
+            link.href = entry.url;
+            link.target = "_blank";
+            link.rel = "sponsored nofollow noopener noreferrer";
+            link.setAttribute("data-ccg-revenue-link", "amazon-influencer");
+            link.setAttribute("aria-label", entry.label + " on Amazon UK (affiliate link, opens in a new tab)");
+            link.textContent = entry.label;
+            collections.appendChild(link);
+        });
+
+        const shopLink = document.createElement("a");
+        shopLink.className = "ccg-home-affiliate-spotlight__shop-link ccg-home-retro-shop__browse";
+        shopLink.href = resolveSiteUrl("retro-shop.html");
+        shopLink.textContent = "BROWSE ALL CCG PICKS";
+
+        copy.append(eyebrow, heading, description, collections, shopLink, createDisclosure(config, "ccg-home-affiliate-spotlight__legal"));
+        inner.appendChild(copy);
+        section.appendChild(inner);
+        return section;
+    }
+
     function renderHomeSpotlight(config) {
         if (document.documentElement.getAttribute("data-ccg-page") !== "home") return;
+        lastHomeConfig = config;
 
         const existing = document.querySelector(HOME_SPOTLIGHT_SELECTOR);
+        const hero = document.querySelector(".home-hero");
+        const promo = config?.homepageRetroShop;
+        const switchAt = Date.parse(toSafeString(promo?.start));
+
+        // Explicit UTC boundary: 00:00 GMT on 4 December 2026.
+        // Never reinstate the A1200 promotion after the shop switch.
+        if (Number.isFinite(switchAt) && Date.now() >= switchAt) {
+            if (existing?.getAttribute("data-ccg-home-spotlight-kind") === "retro-shop") return;
+            const replacement = promo?.enabled ? createHomeRetroShop(config) : null;
+            existing?.remove();
+            if (replacement && hero?.parentElement) hero.insertAdjacentElement("afterend", replacement);
+            return;
+        }
+
         const spotlight = config?.homepageSpotlight;
         if (!spotlight?.enabled || !isWithinWindow(spotlight.start, spotlight.end)) {
             existing?.remove();
@@ -456,14 +547,28 @@
             existing?.remove();
             return;
         }
-
         if (existing) return;
 
         const section = createHomeSpotlight(config, spotlight, product);
-        const hero = document.querySelector(".home-hero");
-        if (!section || !hero || !hero.parentElement) return;
-
+        if (!section || !hero?.parentElement) return;
         hero.insertAdjacentElement("afterend", section);
+    }
+
+    function armHomeShopSwitch(config) {
+        if (document.documentElement.getAttribute("data-ccg-page") !== "home") return;
+        if (homeSwitchTimer !== null) window.clearTimeout(homeSwitchTimer);
+        homeSwitchTimer = null;
+
+        const switchAt = Date.parse(toSafeString(config?.homepageRetroShop?.start));
+        const remaining = switchAt - Date.now();
+        if (!Number.isFinite(switchAt) || remaining <= 0) return;
+
+        // Check daily rather than relying on a multi-week browser timer.
+        homeSwitchTimer = window.setTimeout(() => {
+            homeSwitchTimer = null;
+            renderHomeSpotlight(config);
+            armHomeShopSwitch(config);
+        }, Math.min(remaining + 25, 24 * 60 * 60 * 1000));
     }
 
     function getRenderContextKey() {
@@ -494,6 +599,7 @@
             const config = await loadConfig();
             renderGameShowcase(config);
             renderHomeSpotlight(config);
+            armHomeShopSwitch(config);
             lastRenderedContextKey = renderContextKey;
         } catch (_error) {
             hideGameSection(document.getElementById(GAME_SECTION_ID));
@@ -516,4 +622,14 @@
 
     window.addEventListener("load", scheduleRender, { once: true });
     window.addEventListener("ccg:game-loaded", scheduleRender);
+    // Resynchronise a tab returning from sleep or the back/forward cache.
+    function refreshHomeShopAfterResume() {
+        if (!lastHomeConfig) return;
+        renderHomeSpotlight(lastHomeConfig);
+        armHomeShopSwitch(lastHomeConfig);
+    }
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) refreshHomeShopAfterResume();
+    });
+    window.addEventListener("pageshow", refreshHomeShopAfterResume);
 })();
