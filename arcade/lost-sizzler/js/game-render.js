@@ -301,8 +301,41 @@ function drawCorridorDetail(s,x,y,h,th){
 // Deliberately decorative only: no new collision, light, world or save owner.
 function drawCampaignSurfaceWear(s,h,wall,room,theme){
   const floor=Number(run?.floor)||1,k=h>>>0;
-  if(floor!==4&&floor!==7&&floor!==11&&floor!==15)return;
+  if(floor!==2&&floor!==4&&floor!==7&&floor!==10&&floor!==11&&floor!==14&&floor!==15)return;
   if(room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return;
+  // Technology floors use sparse inlaid marks. These are static surface
+  // details, drawn beneath traps, furniture, actors and other gameplay cues.
+  if(floor===2||floor===10||floor===14){
+    const drive=floor===2,sid=floor===10;
+    const core=theme===(drive?"1541_WORKSHOP":sid?"SID_REACTOR":"CRT_MAZE");
+    if(k%(core?(wall?5:7):(wall?11:17))!==0)return;
+    const x=s.x,y=s.y;
+    ctx.fillStyle="rgba(8,11,17,.55)";
+    ctx.fillRect(x+8,y+(wall?10:26),26,wall?22:7);
+    ctx.fillStyle=drive?"rgba(130,103,60,.65)":sid?"rgba(110,72,124,.65)":"rgba(49,116,90,.65)";
+    ctx.fillRect(x+9,y+(wall?11:27),24,2);
+    ctx.fillRect(x+9,y+(wall?29:31),24,1);
+    ctx.fillStyle=drive?"rgba(201,160,85,.58)":sid?"rgba(188,111,194,.58)":"rgba(99,183,131,.58)";
+    if(drive){
+      // Drive vents and short alignment scratches.
+      ctx.fillRect(x+12,y+(wall?16:29),wall?18:5,1);
+      if(wall){ctx.fillRect(x+12,y+20,18,1);ctx.fillRect(x+12,y+24,18,1)}
+      ctx.fillRect(x+25,y+(wall?26:29),5,1);
+    }else if(sid){
+      // Broken traces with a small square-wave pattern.
+      ctx.fillRect(x+12,y+(wall?22:30),6,1);
+      ctx.fillRect(x+17,y+(wall?17:28),1,wall?6:3);
+      ctx.fillRect(x+18,y+(wall?17:28),7,1);
+      ctx.fillRect(x+24,y+(wall?17:28),1,wall?6:3);
+      ctx.fillRect(x+25,y+(wall?22:30),5,1);
+    }else{
+      // Phosphor scanlines confined to the inset, never the whole screen.
+      ctx.fillRect(x+12,y+(wall?16:28),18,1);
+      ctx.fillRect(x+14,y+(wall?20:29),14,1);
+      ctx.fillRect(x+12,y+(wall?24:30),18,1);
+    }
+    return;
+  }
   // R129: late-floor inscriptions and burn damage belong to the campaign floor,
   // not to a generated room theme. No animation or Canvas/image allocation.
   if(floor===11){

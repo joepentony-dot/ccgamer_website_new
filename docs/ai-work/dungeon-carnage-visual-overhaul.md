@@ -1,3 +1,8 @@
+## R163 technology-floor surface art — 12 November 2026
+
+- The rich tile painter adds seeded drive vents and alignment marks on Floor 2, circuit traces on Floor 10, and inset phosphor scanlines on Floor 14. These are static marks beneath gameplay cues. Protected rooms and the severe renderer keep their existing presentation.
+- The source test exercises deterministic bounds, sparse placement and actual seeded worlds. The visual workflow captures matching before/after desktop and reduced-motion mobile scenes for eight floors. Visual acceptance and full qualification remain pending.
+
 ## R131 Charger charge-wind-up warning — 11 October 2026 (source candidate, unqualified)
 
 - Source branch `fix/dungeon-r131-charger-warning-all-sprites-20261011` was created from `main` `47ce0891f25198fa87c24c94ea4bd8df1c033241` after the R122 Flask QA-only PR #2642 successfully merged and passed post-merge Pages, Cloudflare Workers, live public navigation, SEO and Site Safety.
