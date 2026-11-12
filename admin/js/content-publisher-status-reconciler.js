@@ -811,7 +811,7 @@ async function verifySavedRevisionLive(config, job, liveHtml) {
   const pageCommitComparison = await githubRequest(config,
     `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(latestPageCommitSha)}`);
   const repositoryHtml = decodeBase64Utf8(repositoryPage.content);
-  return savedRevisionMatchesLive({ liveHtml, repositoryHtml, comparison, pageCommitComparison });
+  return savedRevisionMatchesLive({ liveHtml, repositoryHtml, comparison, pageCommitComparison, slug: job.slug });
 }
 
 async function waitForLiveUrl(url, config = null, job = null) {
