@@ -1440,5 +1440,67 @@
         }
       ]
     }
+  },
+  {
+    "id": "friday-the-13th-commodore-64-horror-quiz",
+    "slug": "friday-the-13th-commodore-64-horror-quiz",
+    "type": "retro-specials",
+    "title": "Friday the 13th (1986) Commodore 64 – Can You Solve the Forgotten Horror Sound Quiz?",
+    "youtubeId": "GMH3zjOMvWI",
+    "thumbnail": "https://img.youtube.com/vi/GMH3zjOMvWI/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 0,
+    "summary": "Friday the 13th on the Commodore 64 had a forgotten 1986 cassette sound-effects competition. Can you identify all ten horror noises?",
+    "description": "Revisit Domark's Friday the 13th (1986) for the Commodore 64 and its unusual ten-sound cassette competition. Sound effects supplied by BBC Enterprises were matched to gruesome descriptions, with five Eureka colour monitors offered as prizes. Listen to the horror audio quiz, test your answers and share your score.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Friday the 13th C64 (1986) Horror Sound Quiz | Commodore 64",
+      "description": "Friday the 13th Commodore 64 (1986) by Domark: hear its forgotten ten-sound horror cassette competition, test your answers and discover the original prizes."
+    },
+    "created_at": "2026-11-12T00:00:00Z",
+    "tags": [
+      "Friday the 13th",
+      "Friday 13th",
+      "Friday the 13th C64",
+      "Friday the 13th Commodore 64",
+      "Friday the 13th 1986",
+      "Domark",
+      "C64 horror games",
+      "Commodore 64 horror quiz",
+      "retro-history"
+    ],
+    "platforms": [
+      "Commodore 64",
+      "C64"
+    ],
+    "relatedSlugs": [
+      "retro-games-real-prizes-porsche-swords-25000",
+      "banned-c64-games-they-didnt-want-you-to-see"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true,
+    "featureEditorial": {
+      "title": "Friday the 13th (1986) – The Commodore 64 horror cassette competition",
+      "paragraphs": [
+        "Domark's Friday the 13th on the Commodore 64 included a promotional cassette competition with ten gruesome sound effects supplied by BBC Enterprises. Players listened to the sounds and matched them to a list of unusual descriptions.",
+        "Among the clues were “Jason has a meaty meal” and “Madam La Guillotine makes her mark”. There were five Eureka colour monitors to be won. It was an unusual promotion even by 1986 home-computer standards.",
+        "The original competition has closed, but you can still take the challenge: listen carefully to the ten mystery sounds in the video, write down which description you think matches each one and see how many you get right.",
+        "How did you do out of ten? Share your score in the video's comments, and let me know if you remember entering the original Friday the 13th competition."
+      ],
+      "links": [
+        {
+          "title": "Watch the original Friday the 13th sound quiz on YouTube",
+          "url": "https://www.youtube.com/watch?v=GMH3zjOMvWI"
+        },
+        {
+          "title": "Friday the 13th C64 game information, reviews and manual",
+          "url": "/games/friday-the-13th/"
+        },
+        {
+          "title": "Browse more Commodore 64 and Amiga Retro Specials",
+          "url": "/games/collections/retro-specials.html"
+        }
+      ]
+    }
   }
 ]

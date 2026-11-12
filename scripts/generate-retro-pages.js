@@ -264,6 +264,30 @@ function buildPlayAlongEditorial(entry) {
       escapeHtml(link.title) + '</a></li>').join('') + '</ul></section>';
 }
 
+// Source-owned editorial for one-off retro features. Rendered during every
+// GitHub Pages build, rather than maintaining a page that staging overwrites.
+function buildFeatureEditorial(entry) {
+  const data = entry?.featureEditorial;
+  if (!data) return '';
+  const paragraphs = Array.isArray(data.paragraphs) ? data.paragraphs : [];
+  const rawLinks = Array.isArray(data.links) ? data.links : [];
+  const links = rawLinks.filter((item) =>
+    typeof item.title === 'string' &&
+    typeof item.url === 'string' &&
+    (/^\/(?!\/)[a-z0-9/_-]+(?:\.html)?\/?$/i.test(item.url) ||
+     /^https:\/\/www\.youtube\.com\/watch\?v=[A-Za-z0-9_-]{11}$/.test(item.url))
+  );
+  if (!String(data.title || '').trim() || !paragraphs.length) {
+    throw new Error('Feature editorial needs a heading and paragraphs for ' + entry.slug);
+  }
+  return '<section class="retro-video-page__editorial" data-ccg-feature-editorial="' +
+    escapeHtml(entry.slug) + '"><h2>' + escapeHtml(data.title) + '</h2>' +
+    paragraphs.map((p) => '<p>' + escapeHtml(p) + '</p>').join('') +
+    '<ul class="retro-video-page__editorial-links">' +
+    links.map((item) => '<li><a href="' + escapeHtml(item.url) + '">' +
+      escapeHtml(item.title) + '</a></li>').join('') + '</ul></section>';
+}
+
 function buildRelatedItems(items, currentSlug, pagePrefix) {
   const current = items.find((item) => item.slug === currentSlug);
   const bySlug = new Map(items.map((item) => [item.slug, item]));
@@ -405,6 +429,7 @@ function generateDatasetPages(config, template) {
     const relatedItemsHtml = buildRelatedItems(normalizedItems, slug, config.pagePrefix);
     const playAlongGuideHtml = buildPlayAlongGuide(entry, config.pagePrefix);
     const playAlongEditorialHtml = buildPlayAlongEditorial(entry);
+    const featureEditorialHtml = buildFeatureEditorial(entry);
     const deferredPlayer = entry.deferYouTubePlayer === true;
     const playerUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
     const playerFacadeHtml = deferredPlayer
@@ -440,7 +465,7 @@ function generateDatasetPages(config, template) {
         ? `,\n      "duration": "${escapeJsonTemplateValue(entry.duration)}"`
         : '',
       MEMBERS_BADGE: entry.membersOnly ? '<p class="game-tag">Members only</p>' : '',
-      RELATED_ITEMS: [manualsHtml, playAlongEditorialHtml, relatedItemsHtml].filter(Boolean).join('\n\n')
+      RELATED_ITEMS: [manualsHtml, playAlongEditorialHtml, featureEditorialHtml, relatedItemsHtml].filter(Boolean).join('\n\n')
     });
 
     if (playAlongGuideHtml) {
@@ -478,6 +503,9 @@ function generateDatasetPages(config, template) {
       if (!html.includes('data-ccg-seo-editorial="' + escapeHtml(slug) + '"')) {
         htmlProblems.push('showdown editorial disappeared from generated HTML');
       }
+    }
+    if (featureEditorialHtml && !html.includes('data-ccg-feature-editorial="' + escapeHtml(slug) + '"')) {
+      htmlProblems.push('feature editorial disappeared from generated HTML');
     }
     if (htmlProblems.length) {
       skippedCount += 1;
