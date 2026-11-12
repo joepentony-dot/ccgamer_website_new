@@ -301,7 +301,7 @@ function drawCorridorDetail(s,x,y,h,th){
 // Deliberately decorative only: no new collision, light, world or save owner.
 function drawCampaignSurfaceWear(s,h,wall,room,theme){
   const floor=Number(run?.floor)||1,k=h>>>0;
-  if(floor!==2&&floor!==4&&floor!==7&&floor!==10&&floor!==11&&floor!==14&&floor!==15)return;
+  if(floor!==2&&floor!==3&&floor!==4&&floor!==6&&floor!==7&&floor!==10&&floor!==11&&floor!==13&&floor!==14&&floor!==15)return;
   if(room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return;
   // Technology floors use sparse inlaid marks. These are static surface
   // details, drawn beneath traps, furniture, actors and other gameplay cues.
@@ -333,6 +333,35 @@ function drawCampaignSurfaceWear(s,h,wall,room,theme){
       ctx.fillRect(x+12,y+(wall?16:28),18,1);
       ctx.fillRect(x+14,y+(wall?20:29),14,1);
       ctx.fillRect(x+12,y+(wall?24:30),18,1);
+    }
+    return;
+  }
+  if(floor===3||floor===6||floor===13){
+    const iron=floor===3,tape=floor===6;
+    const core=theme===(iron?"IRON_KEEP":tape?"TAPE_STORE":"HIGH_SCORE_CRYPT");
+    if(k%(core?(wall?5:7):(wall?11:17))!==0)return;
+    const x=s.x,y=s.y+(wall?11:26);
+    ctx.fillStyle="rgba(12,9,16,.50)";
+    ctx.fillRect(x+7,y,28,wall?20:8);
+    ctx.fillStyle=iron?"rgba(113,122,137,.58)":tape?"rgba(126,88,47,.56)":"rgba(101,68,132,.56)";
+    ctx.fillRect(x+9,y+1,24,2);
+    ctx.fillRect(x+9,y+(wall?17:6),24,1);
+    ctx.fillStyle=iron?"rgba(169,177,188,.58)":tape?"rgba(179,133,73,.58)":"rgba(166,119,192,.57)";
+    if(iron){
+      // Riveted iron straps and the remnants of a worn threshold.
+      ctx.fillRect(x+12,y+3,2,wall?13:2);
+      ctx.fillRect(x+28,y+3,2,wall?13:2);
+      ctx.fillRect(x+17,y+(wall?9:4),8,1);
+    }else if(tape){
+      // Square reel hubs set into a cassette-shaped recess.
+      ctx.fillRect(x+13,y+(wall?6:3),wall?5:3,wall?6:2);
+      ctx.fillRect(x+25,y+(wall?6:3),wall?5:3,wall?6:2);
+      ctx.fillRect(x+18,y+(wall?13:5),7,1);
+    }else{
+      // Partial score-table rows etched into old stone.
+      ctx.fillRect(x+12,y+(wall?5:3),7,1);
+      ctx.fillRect(x+23,y+(wall?5:3),6,1);
+      ctx.fillRect(x+15,y+(wall?10:5),14,1);
     }
     return;
   }
