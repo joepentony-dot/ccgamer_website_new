@@ -9,6 +9,14 @@ on:
       - "admin/content-publisher.html"
       - "admin/help.html"
       - "admin/js/content-publisher.js"
+      - "admin/js/content-publisher-asset-preflight.mjs"
+      - "admin/js/content-publisher-recovery-state.mjs"
+      - "admin/js/content-publisher-retry-guard.mjs"
+      - "admin/js/content-publisher-live-verification.mjs"
+      - "tests/content-publisher-recovery-state.test.mjs"
+      - "tests/content-publisher-retry-guard.test.mjs"
+      - "tests/content-publisher-live-verification.test.mjs"
+      - "tests/content-publisher-asset-preflight.test.mjs"
       - "admin/js/content-publisher-image-optimizer.js"
       - "admin/js/content-publisher-existing-game-update.js"
       - "admin/js/content-publisher-status-reconciler.js"
@@ -50,6 +58,14 @@ on:
       - "admin/content-publisher.html"
       - "admin/help.html"
       - "admin/js/content-publisher.js"
+      - "admin/js/content-publisher-asset-preflight.mjs"
+      - "admin/js/content-publisher-recovery-state.mjs"
+      - "admin/js/content-publisher-retry-guard.mjs"
+      - "admin/js/content-publisher-live-verification.mjs"
+      - "tests/content-publisher-recovery-state.test.mjs"
+      - "tests/content-publisher-retry-guard.test.mjs"
+      - "tests/content-publisher-live-verification.test.mjs"
+      - "tests/content-publisher-asset-preflight.test.mjs"
       - "admin/js/content-publisher-image-optimizer.js"
       - "admin/js/content-publisher-existing-game-update.js"
       - "admin/js/content-publisher-status-reconciler.js"
@@ -104,6 +120,10 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check admin/js/content-publisher.js
+          node --check admin/js/content-publisher-asset-preflight.mjs
+          node --check admin/js/content-publisher-recovery-state.mjs
+          node --check admin/js/content-publisher-retry-guard.mjs
+          node --check admin/js/content-publisher-live-verification.mjs
           node --check admin/js/content-publisher-image-optimizer.js
           node --check admin/js/content-publisher-existing-game-update.js
           node --check admin/js/content-publisher-status-reconciler.js
@@ -126,6 +146,10 @@ jobs:
       - name: Run publisher and collection regression tests
         run: |
           node --test tests/content-publisher.test.mjs
+          node --test tests/content-publisher-asset-preflight.test.mjs
+          node --test tests/content-publisher-recovery-state.test.mjs
+          node --test tests/content-publisher-retry-guard.test.mjs
+          node --test tests/content-publisher-live-verification.test.mjs
           node --test tests/goatcounter-sitewide.test.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
           node --test tests/game-seo-snippet-quality.test.mjs

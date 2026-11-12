@@ -1,3 +1,7 @@
+import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage, latestPublicationLogTransition } from './content-publisher-recovery-state.mjs';
+import { decideGamePublishingRetry, selectSourceWorkflowRun } from './content-publisher-retry-guard.mjs';
+import { publishedGamePageMatches, savedRevisionMatchesLive } from './content-publisher-live-verification.mjs';
+
 const DEFAULT_OWNER = 'joepentony-dot';
 const DEFAULT_REPO = 'ccgamer_website_new';
 const DEFAULT_BRANCH = 'main';
@@ -6,8 +10,10 @@ const SOURCE_PATH = 'games/games.json';
 const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const STORAGE_KEY = 'ccg_publisher_last_game_publication_v2';
 const SOURCE_MIN_WORDS = 40;
-const WORKFLOW_POLL_MS = 6000;
-const WORKFLOW_TIMEOUT_MS = 240000;
+const WORKFLOW_POLL_MS = 12000;
+// Generated-output qualification can wait up to 45 minutes for an independent
+// review, followed by deployment. A four-minute timeout was a false failure.
+const WORKFLOW_TIMEOUT_MS = 75 * 60 * 1000;
 
 const log = document.querySelector('[data-publisher-log]');
 const gameForm = document.querySelector('[data-game-form]');
@@ -18,6 +24,7 @@ const recoveryState = {
   originalLemonValue: '',
   originalZzapValue: '',
   monitorBusy: false,
+  retryBusy: false,
 };
 
 if (log && typeof MutationObserver === 'function') {
@@ -31,6 +38,21 @@ if (gameForm) {
   installRecoveryControls();
   void refreshEditableGames();
   restoreStoredPublication();
+  // The browser may have been closed while GitHub completed the publication.
+  // Reconcile the public page when the admin returns without requiring a retry.
+  let lastLiveCheck = 0;
+  const refreshOnReturn = () => {
+    const job = readStoredJob();
+    if (!job?.slug || job.status === 'live' || Date.now() - lastLiveCheck < 30000) return;
+    let config = null;
+    try { config = getGithubConfig(); } catch (_error) { return; }
+    lastLiveCheck = Date.now();
+    void refreshStoredLivePublication(job, config);
+  };
+  window.addEventListener('focus', refreshOnReturn);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshOnReturn();
+  });
 }
 
 function installPublishingStatusReconciler(logNode) {
@@ -220,7 +242,7 @@ function installRecoveryControls() {
       <button class="ccg-btn ccg-btn--secondary" type="button" data-action="resume-game-publication">Resume last publication</button>
       <button class="ccg-btn ccg-btn--secondary" type="button" data-action="retry-games-publishing">Retry game publishing on current main</button>
     </div>
-    <small>Retry rebuilds the existing games.json source. It does not add the game again.</small>`;
+    <small>A retry is allowed only for a traceable failed build after verifying that no game page, active publishing run or unresolved output PR already exists. It never creates another game record.</small>`;
   pipeline.insertAdjacentElement('beforebegin', card);
 
   card.querySelector('[data-action="resume-game-publication"]')?.addEventListener('click', () => void resumeStoredPublication());
@@ -228,14 +250,17 @@ function installRecoveryControls() {
 }
 
 function installPublicationPersistence(logNode) {
+  let lastHandledTransitionIndex = -1;
   const reconcile = () => {
     const text = String(logNode.textContent || '');
     const starts = [...text.matchAll(/Preparing new game:\s*(.+?)\s*\(([^)]+)\)/g)];
     const sourceMatches = [...text.matchAll(/Source commit created:\s*([0-9a-f]{40})/gi)];
     const latestStart = starts.at(-1);
-    const sourceSha = sourceMatches.at(-1)?.[1] || '';
+    const latestCommit = sourceMatches.at(-1);
+    const sourceSha = latestCommit?.[1] || '';
 
-    if (latestStart && sourceSha) {
+    // Never associate an old game's commit with a new form submission.
+    if (latestStart && sourceSha && latestCommit.index > latestStart.index) {
       const current = readStoredJob();
       if (!current || current.sourceSha !== sourceSha) {
         saveStoredJob({
@@ -250,8 +275,16 @@ function installPublicationPersistence(logNode) {
       }
     }
 
-    if (/Automated publishing check failed:/i.test(text)) updateStoredJob({ status: 'failed', updatedAt: new Date().toISOString() });
-    if (/Live page confirmed:/i.test(text)) updateStoredJob({ status: 'live', updatedAt: new Date().toISOString() });
+    const transition = latestPublicationLogTransition(text);
+    if (!transition) lastHandledTransitionIndex = -1;
+    else if (transition.index !== lastHandledTransitionIndex) {
+      lastHandledTransitionIndex = transition.index;
+      updateStoredJob({
+        status: transition.status,
+        recoveryMessage: '',
+        updatedAt: new Date().toISOString()
+      });
+    }
     if (/YouTube did not provide verified metadata for\s+[A-Za-z0-9_-]{11}/i.test(text)) {
       setPublisherPipelineStep('metadata', 'running', 'Unavailable / withheld');
     }
@@ -505,11 +538,24 @@ function validateEditedEntry(entry) {
 async function resumeStoredPublication() {
   const job = readStoredJob();
   if (!job?.sourceSha) {
-    setRecoveryMessage('No stored source commit is available. Use “Retry game publishing on current main” for an older stranded record.', true);
+    setRecoveryMessage('No saved source commit is available in this browser. Recovery requires the original committed game record; do not add it again.', true);
+    return;
+  }
+  if (job.status === 'live') {
+    setPublisherPipelineStep('live', 'ok', 'Verified live');
+    setRecoveryMessage(`The saved game ${job.title || job.slug} is already confirmed live. No rebuilding is necessary.`, false);
     return;
   }
   try {
     const config = getGithubConfig();
+    // A closed browser can miss the successful merge and deployment. Verify
+    // the actual canonical page and exact saved revision before replaying old
+    // failed-run status.
+    await refreshStoredLivePublication(job, config);
+    if (readStoredJob()?.status === 'live') {
+      setRecoveryMessage(`The saved game ${job.title || job.slug} has already been published. No rebuild is necessary.`, false);
+      return;
+    }
     activateStatusTab();
     setPublisherPipelineStep('source', 'ok', 'Source saved');
     await monitorPublication(config, job);
@@ -519,27 +565,60 @@ async function resumeStoredPublication() {
 }
 
 async function retryCurrentGamesPublishing() {
-  if (recoveryState.monitorBusy) return;
+  if (recoveryState.monitorBusy || recoveryState.retryBusy) return;
+  recoveryState.retryBusy = true;
   const button = document.querySelector('[data-action="retry-games-publishing"]');
   try {
     const config = getGithubConfig();
-    setButtonBusy(button, true, 'Starting retry…');
+    setButtonBusy(button, true, 'Checking existing publication…');
     activateStatusTab();
+    const decision = await preflightGamePublishingRetry(config, readStoredJob());
+    if (!decision.allow) {
+      writePublisherLog(`Publishing retry avoided: ${decision.message}`);
+      setRecoveryMessage(decision.message, false);
+      return;
+    }
     resetPipeline();
     setPublisherPipelineStep('source', 'ok', 'Already saved');
     ['metadata', 'pages', 'library', 'sitemaps', 'validation'].forEach((step) => setPublisherPipelineStep(step, 'running', 'Retry queued'));
     setPublisherPipelineStep('live', 'running', 'Waiting');
     const startedAt = Date.now();
     await githubRequest(config, '/actions/workflows/games-publishing.yml/dispatches', { method: 'POST', body: { ref: config.branch } });
-    writePublisherLog('Manual Reliable Games Publishing retry requested. Existing games.json will be rebuilt without adding another game record.');
+    writePublisherLog('Verified failed source rebuild re-dispatched. The existing games.json record is reused without creating another game.');
     const run = await waitForDispatchedRun(config, startedAt);
     await monitorWorkflowRun(config, run.id, readStoredJob());
   } catch (error) {
-    writePublisherLog(`Manual publishing retry failed: ${error.message}`, true);
-    setRecoveryMessage(`Retry failed: ${error.message}`, true);
+    writePublisherLog(`Publishing recovery could not be safely started: ${error.message}`, true);
+    setRecoveryMessage(`Recovery preflight failed: ${error.message}. No new game record was created.`, true);
   } finally {
+    recoveryState.retryBusy = false;
     setButtonBusy(button, false, 'Retry game publishing on current main');
   }
+}
+
+async function preflightGamePublishingRetry(config, job) {
+  if (!job?.sourceSha || !job?.slug) {
+    return decideGamePublishingRetry({ branch: config.branch, job });
+  }
+  if (config.branch !== 'main') return decideGamePublishingRetry({ branch: config.branch, job });
+  const [source, runsPayload, generatedPageExists] = await Promise.all([
+    fetchGithubJsonFile(config, SOURCE_PATH),
+    githubRequest(config, '/actions/workflows/games-publishing.yml/runs?branch=main&per_page=100'),
+    githubFileExists(config, `games/${job.slug}/index.html`)
+  ]);
+  const record = Array.isArray(source.data) ? source.data.find((item) =>
+    String(item?.slug || '') === job.slug &&
+    (!job.videoId || String(item?.videoid || '') === job.videoId)
+  ) : null;
+  const runs = Array.isArray(runsPayload?.workflow_runs) ? runsPayload.workflow_runs : null;
+  const sourceRun = selectSourceWorkflowRun(runs, job.sourceSha);
+  const generatedPr = sourceRun ? await lookupGeneratedOutputPr(config, sourceRun) : null;
+  return decideGamePublishingRetry({
+    branch: config.branch, job, runs,
+    sourceExists: Boolean(record),
+    generatedPageExists,
+    generatedPr
+  });
 }
 
 async function monitorPublication(config, job) {
@@ -551,8 +630,10 @@ async function monitorPublication(config, job) {
     const run = await waitForWorkflowBySha(config, job.sourceSha);
     await monitorWorkflowRun(config, run.id, job);
   } catch (error) {
-    updateStoredJob({ status: 'failed', updatedAt: new Date().toISOString() });
-    setRecoveryMessage(`Publication check failed: ${error.message}`, true);
+    if (readStoredJob()?.status !== 'live') {
+      updateStoredJob({ status: 'failed', recoveryMessage: `Publication check failed: ${error.message}`, updatedAt: new Date().toISOString() });
+      setRecoveryMessage(`Publication check failed: ${error.message}`, true);
+    }
   } finally {
     recoveryState.monitorBusy = false;
     updateRecoveryCard();
@@ -561,6 +642,9 @@ async function monitorPublication(config, job) {
 
 async function monitorWorkflowRun(config, runId, job) {
   const run = await waitForRunCompletion(config, runId);
+  // Deployment may have finished in another tab while GitHub status was
+  // being polled. Never replace verified live state with an older failure.
+  if (readStoredJob()?.status === 'live' && readStoredJob()?.sourceSha === job?.sourceSha) return;
   const payload = await githubRequest(config, `/actions/runs/${runId}/jobs?per_page=100`);
   const steps = (payload?.jobs || []).flatMap((item) => item?.steps || []);
   const metadata = steps.find((step) => step?.name === 'Sync verified YouTube metadata');
@@ -595,20 +679,49 @@ async function monitorWorkflowRun(config, runId, job) {
   setPublisherPipelineStep('validation', validationPassed ? 'ok' : 'running', validationPassed ? 'Passed' : 'Not confirmed');
 
   if (run.conclusion !== 'success') {
-    updateStoredJob({ status: 'failed', runId, updatedAt: new Date().toISOString() });
-    setRecoveryMessage(`Reliable Games Publishing finished with ${run.conclusion || 'an unknown result'}.`, true);
+    const failedStep = steps.find((step) => step?.conclusion === 'failure');
+    let generatedPr = null;
+    if (failedStep?.name === GENERATED_OUTPUT_STEP) {
+      try { generatedPr = await lookupGeneratedOutputPr(config, run); }
+      catch (_error) { /* Unknown merge state must not be guessed. */ }
+    }
+    const diagnosis = classifyGeneratedOutputFailure({
+      failedStep: failedStep?.name || '',
+      pullRequest: generatedPr,
+      runId
+    });
+    updateStoredJob({
+      status: diagnosis.status,
+      runId,
+      recoveryMessage: diagnosis.message,
+      reviewUrl: generatedPr?.html_url || '',
+      updatedAt: new Date().toISOString()
+    });
+    setPublisherPipelineStep(diagnosis.stage, 'error', diagnosis.label);
+    if (diagnosis.stage !== 'live') {
+      setPublisherPipelineStep('live', 'running', 'Not confirmed');
+    }
+    setRecoveryMessage(diagnosis.message, true);
     return;
   }
 
   updateStoredJob({ status: 'published', runId, updatedAt: new Date().toISOString() });
   if (job?.slug) {
-    const live = await waitForLiveUrl(`${SITE_ORIGIN}/games/${job.slug}/`);
+    const live = await waitForLiveUrl(`${SITE_ORIGIN}/games/${job.slug}/`, config, job);
     setPublisherPipelineStep('live', live ? 'ok' : 'running', live ? 'Live' : 'Deploy pending');
     if (live) updateStoredJob({ status: 'live', updatedAt: new Date().toISOString() });
   } else {
     setPublisherPipelineStep('live', 'running', 'Check live site');
   }
   setRecoveryMessage('Publishing rebuild completed from the existing source record.', false);
+}
+
+async function lookupGeneratedOutputPr(config, run) {
+  const attempt = Number.isSafeInteger(run?.run_attempt) && run.run_attempt > 0 ? run.run_attempt : 1;
+  const branch = `automation/games-publishing-${run.id}-${attempt}`;
+  const head = `${config.owner}:${branch}`;
+  const result = await githubRequest(config, `/pulls?state=all&head=${encodeURIComponent(head)}&per_page=10`);
+  return Array.isArray(result) ? result.find((pr) => pr?.head?.ref === branch) || null : null;
 }
 
 async function waitForWorkflowBySha(config, sourceSha) {
@@ -619,7 +732,7 @@ async function waitForWorkflowBySha(config, sourceSha) {
     if (run) return run;
     await sleep(WORKFLOW_POLL_MS);
   }
-  throw new Error(`Reliable Games Publishing was not found for source ${sourceSha.slice(0, 8)} within four minutes.`);
+  throw new Error(`Reliable Games Publishing was not found for source ${sourceSha.slice(0, 8)}. Check GitHub Actions before attempting another publication.`);
 }
 
 async function waitForDispatchedRun(config, startedAt) {
@@ -630,7 +743,7 @@ async function waitForDispatchedRun(config, startedAt) {
     if (run) return run;
     await sleep(WORKFLOW_POLL_MS);
   }
-  throw new Error('The manual Reliable Games Publishing run was not found within four minutes.');
+  throw new Error('The requested Reliable Games Publishing run could not be located. Check GitHub Actions before starting another run.');
 }
 
 async function waitForRunCompletion(config, runId) {
@@ -638,9 +751,25 @@ async function waitForRunCompletion(config, runId) {
   while (Date.now() - started < WORKFLOW_TIMEOUT_MS) {
     const run = await githubRequest(config, `/actions/runs/${runId}`);
     if (run?.status === 'completed') return run;
+    // Report the lengthy, legitimate independent-review stage as pending.
+    if (Date.now() - started > 60000 && Date.now() - started < WORKFLOW_TIMEOUT_MS) {
+      try {
+        const payload = await githubRequest(config, `/actions/runs/${runId}/jobs?per_page=100`);
+        const steps = (payload?.jobs || []).flatMap((item) => item?.steps || []);
+        if (steps.some((step) => step.name === 'Open and merge generated output pull request' && step.status === 'in_progress')) {
+          setPublisherPipelineStep('pages', 'ok', 'Generated');
+          setPublisherPipelineStep('validation', 'running', 'Independent review');
+          setPublisherPipelineStep('live', 'running', 'Awaiting merge');
+          setRecoveryMessage('Page generation completed. Independent validation and Codex review are running; the game has not deployed yet.', false);
+          updateStoredJob({ status: 'awaiting-review', runId, updatedAt: new Date().toISOString() });
+        }
+      } catch (_error) {
+        // A status lookup should not fail an otherwise healthy publishing run.
+      }
+    }
     await sleep(WORKFLOW_POLL_MS);
   }
-  throw new Error('Reliable Games Publishing did not finish within four minutes.');
+  throw new Error('Reliable Games Publishing is still pending after 75 minutes. Check the GitHub Actions run; the saved game record must not be submitted again.');
 }
 
 async function fetchVerifiedVideo(videoId) {
@@ -653,17 +782,65 @@ async function fetchVerifiedVideo(videoId) {
   }
 }
 
-async function waitForLiveUrl(url) {
+async function verifyCanonicalLiveGame(slug, config = null, job = null) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(slug || ''))) return false;
+  const url = `${SITE_ORIGIN}/games/${slug}/?publisher_recovery=${Date.now()}`;
+  const response = await fetch(url, { cache: 'no-store' });
+  if (!response.ok) return false;
+  const liveHtml = await response.text();
+  if (!publishedGamePageMatches(liveHtml, slug, SITE_ORIGIN)) return false;
+  if (!job?.sourceSha || !config) return true;
+  return verifySavedRevisionLive(config, job, liveHtml);
+}
+
+async function verifySavedRevisionLive(config, job, liveHtml) {
+  if (!job?.sourceSha || !job?.slug || !config) return false;
+  const mainRef = await githubRequest(config, '/git/ref/heads/main');
+  const mainSha = mainRef?.object?.sha;
+  if (!mainSha) return false;
+  const gamePagePath = `games/${job.slug}/index.html`;
+  const [repositoryPage, comparison, pageHistory] = await Promise.all([
+    githubRequest(config, `/contents/${encodePath(gamePagePath)}?ref=main`),
+    githubRequest(config, `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(mainSha)}`),
+    githubRequest(config, `/commits?sha=${encodeURIComponent(mainSha)}&path=${encodeURIComponent(gamePagePath)}&per_page=1`)
+  ]);
+  if (!repositoryPage?.content || !Array.isArray(pageHistory) || !pageHistory[0]?.sha) return false;
+  // A source edit can commit successfully while the old public page is still
+  // on main. Confirm that the page itself was rebuilt after that edit.
+  const latestPageCommitSha = pageHistory[0].sha;
+  const pageCommitComparison = await githubRequest(config,
+    `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(latestPageCommitSha)}`);
+  const repositoryHtml = decodeBase64Utf8(repositoryPage.content);
+  return savedRevisionMatchesLive({ liveHtml, repositoryHtml, comparison, pageCommitComparison, slug: job.slug });
+}
+
+async function waitForLiveUrl(url, config = null, job = null) {
+  const match = String(url || '').match(/\/games\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?(?:\?|$)/);
+  if (!match) return false;
   for (let attempt = 0; attempt < 8; attempt += 1) {
     try {
-      const response = await fetch(`${url}?publisher_recovery=${Date.now()}`, { cache: 'no-store' });
-      if (response.ok) return true;
+      if (await verifyCanonicalLiveGame(match[1], config, job)) return true;
     } catch (_error) {
       // Deployment may still be catching up.
     }
     await sleep(5000);
   }
   return false;
+}
+
+async function refreshStoredLivePublication(job, config = null) {
+  if (!job?.slug || job.status === 'live') return;
+  try {
+    if (!(await verifyCanonicalLiveGame(job.slug, config, job))) return;
+    const current = readStoredJob();
+    if (!current || current.slug !== job.slug || current.sourceSha !== job.sourceSha) return;
+    updateStoredJob({ status: 'live', recoveryMessage: '', updatedAt: new Date().toISOString() });
+    setPublisherPipelineStep('pages', 'ok', 'Deployed');
+    setPublisherPipelineStep('live', 'ok', 'Verified live');
+    writePublisherLog(`Live canonical game page confirmed from a previously saved publication: ${SITE_ORIGIN}/games/${job.slug}/`);
+  } catch (_error) {
+    // A temporary network error must not erase the original recovery state.
+  }
 }
 
 function restoreStoredPublication() {
@@ -676,15 +853,16 @@ function restoreStoredPublication() {
     setLaterStagesNotConfirmed();
   }
   if (job.status === 'live') setPublisherPipelineStep('live', 'ok', 'Live');
+  else {
+    let config = null;
+    try { config = getGithubConfig(); } catch (_error) { /* token may not be hydrated yet */ }
+    if (config) void refreshStoredLivePublication(job, config);
+  }
 }
 
 function updateRecoveryCard() {
-  const job = readStoredJob();
-  if (!job?.sourceSha) {
-    setRecoveryMessage('No recent source commit is stored in this browser. Older stranded games can still use “Retry game publishing on current main”.', false);
-    return;
-  }
-  setRecoveryMessage(`${job.title || job.slug || 'Game'} · source ${job.sourceSha.slice(0, 8)} · ${job.status || 'pending'}. Source data is saved separately from generated site output.`, job.status === 'failed');
+  const message = storedPublicationMessage(readStoredJob());
+  setRecoveryMessage(message.text, message.error);
 }
 
 function saveStoredJob(job) {
