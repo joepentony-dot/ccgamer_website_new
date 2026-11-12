@@ -82,7 +82,7 @@ jobs:
       - name: Capture live desktop CLS sources for owner-reported page families
         run: |
           mkdir -p "$RUNNER_TEMP/phase8a-desktop-screenshots"
-          node scripts/phase8a_desktop_cls_diagnostic.mjs \
+          CCG_CHECKED_OUT_SHA="$(git rev-parse HEAD)" node scripts/phase8a_desktop_cls_diagnostic.mjs \
             --output "$RUNNER_TEMP/phase8a-desktop-cls.json" \
             --screenshots "$RUNNER_TEMP/phase8a-desktop-screenshots"
 
