@@ -312,6 +312,18 @@
         }
         if (intro) intro.textContent = toSafeString(group.intro) || "Optional Amazon affiliate recommendations matched to this system.";
 
+        // Link to the curated shop rather than injecting extra product offers into every game.
+        // Idempotent across repeated ccg:game-loaded events; existing accordion ownership stays unchanged.
+        const header = section.querySelector(".ccg-hardware-accordion__header");
+        if (header && !header.querySelector("[data-ccg-retro-shop-link]")) {
+            const shop = document.createElement("a");
+            shop.href = resolveSiteUrl("retro-shop.html");
+            shop.className = "ccg-retro-shop-game-link";
+            shop.setAttribute("data-ccg-retro-shop-link", "true");
+            shop.textContent = "Browse more retro books, hardware & Evercade games";
+            header.appendChild(shop);
+        }
+
         section.querySelectorAll(".affiliate-products-legal").forEach((node) => node.remove());
         panel.appendChild(createDisclosure(config, "affiliate-products-legal"));
 
@@ -386,6 +398,17 @@
         const cta = createAffiliateLink(product, config, "ccg-btn ccg-btn--neon ccg-home-affiliate-spotlight__cta");
         if (!cta) return null;
         actions.appendChild(cta);
+
+        // Quiet, external storefront link beside the product-specific primary CTA.
+        const shopLink = document.createElement("a");
+        shopLink.className = "ccg-home-affiliate-spotlight__shop-link";
+        shopLink.href = "https://www.amazon.co.uk/shop/cheekycommodoregamer";
+        shopLink.target = "_blank";
+        shopLink.rel = "sponsored nofollow noopener noreferrer";
+        shopLink.setAttribute("aria-label", "More from Amazon: visit the Cheeky Commodore Gamer shop (opens in a new tab)");
+        shopLink.setAttribute("data-ccg-revenue-link", "amazon-influencer-storefront");
+        shopLink.textContent = "MORE FROM AMAZON";
+        actions.appendChild(shopLink);
 
         const legal = createDisclosure(config, "ccg-home-affiliate-spotlight__legal");
         copy.append(eyebrow, heading, body, actions, legal);

@@ -5,6 +5,14 @@ const compact = value => String(value).replace(/\s+/g, ' ').trim();
 const digest = value => createHash('sha256').update(compact(value)).digest('hex');
 // Exact reviewed static fallback component; edits require a new reviewed hash.
 const PULSE_SHA256 = 'f125e2a144edc1eaf5bc603401b548afc2468ddec22a16a6a019511d2d90adf2';
+// Exact owner-approved retro-shop home feature. Any content or style-tag change must be reviewed.
+const REVIEWED_RETRO_SHOP_PROMO = "<section class=\"ccg-amazon-home-promo\" aria-labelledby=\"ccg-amazon-home-promo-title\">\n                <div class=\"ccg-amazon-home-promo__copy\">\n                    <p class=\"ccg-amazon-home-promo__kicker\">Retro Gaming Shop · Amazon UK</p>\n                    <h2 id=\"ccg-amazon-home-promo-title\">Retro books, Evercade games &amp; classic hardware</h2>\n                    <p>Have a browse through my selected Bitmap Books, Evercade collections and C64/Amiga accessories. Some links earn a commission which helps support the channel.</p>\n                </div>\n                <a class=\"ccg-amazon-home-promo__link\" href=\"/retro-shop.html\">Explore the Retro Shop</a>\n            </section>";
+const REVIEWED_RETRO_SHOP_COMMENT = '<!-- CCG RETRO SHOP: NON-INTRUSIVE LINK TO CURATED COLLECTIONS -->';
+const REVIEWED_RETRO_SHOP_CSS_TAGS = [
+  "<link rel=\"preload\" href=\"/resources/css/retro-shop.css\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\">",
+  "<noscript><link rel=\"stylesheet\" href=\"/resources/css/retro-shop.css\" /></noscript>"
+];
+
 
 function stripApprovedHomeCls(html) {
   let output = String(html);
@@ -32,6 +40,18 @@ function stripApprovedHomeCls(html) {
   if (bootstrap) {
     if (bootstrap !== MODE_BODY_BOOTSTRAP) throw Error('Unapproved Home mode bootstrap');
     output = output.replace(bootstrap, '');
+  }
+  const approvedShop = output.match(/<section class="ccg-amazon-home-promo"[\s\S]*?<\/section>/)?.[0];
+  if (approvedShop) {
+    if (compact(approvedShop) !== compact(REVIEWED_RETRO_SHOP_PROMO)) throw Error('Unapproved CCG shop homepage content');
+    if (!output.includes(REVIEWED_RETRO_SHOP_COMMENT)) throw Error('Missing CCG shop marker');
+    for (const tag of REVIEWED_RETRO_SHOP_CSS_TAGS) {
+      if (!output.includes(tag)) throw Error('Missing reviewed CCG shop CSS');
+      output = output.replace(tag, '');
+    }
+    output = output.replace(REVIEWED_RETRO_SHOP_COMMENT, '').replace(approvedShop, '');
+  } else if (REVIEWED_RETRO_SHOP_CSS_TAGS.some(tag => output.includes(tag))) {
+    throw Error('Unpaired CCG shop CSS tag');
   }
   for (const tag of [
     '<link rel="stylesheet" href="/resources/css/ccg-archive-pulse-thumbnails.css">',
