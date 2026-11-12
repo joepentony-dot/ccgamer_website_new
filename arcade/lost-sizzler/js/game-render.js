@@ -1212,16 +1212,29 @@ function drawEnemy(e){
   if(e.champion||e.guardian){const pct=Math.max(0,e.hp/e.maxHp);ctx.fillStyle="#1a0b12";ctx.fillRect(s.x+3,s.y+C.tile+2,C.tile-6,3);ctx.fillStyle=e.guardian?P.red:P.cyan;ctx.fillRect(s.x+3,s.y+C.tile+2,(C.tile-6)*pct,3)}
 }
 function drawStalker(){
-  const s=host.stalker;if(!s?.awake||!visibleTo(focus,s.x,s.y))return;const q=ws(s.x,s.y),cx=q.x+C.tile/2,cy=q.y+C.tile/2,now=performance.now(),t=now/260,pulse=.68+.32*Math.sin(t),v=s.vulnerableMs>0||Boolean(s.v142WardBroken&&s.v142WardState!=="defeated"),col=v?P.purple:"#ff314f";ctx.save();ctx.translate(cx,cy+Math.sin(t*.55)*2);ctx.imageSmoothingEnabled=false;
-  ctx.fillStyle="rgba(0,0,0,.58)";ctx.beginPath();ctx.ellipse(0,18,21,6,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=v?30:23;
+  const s=host.stalker;
+  if(!s?.awake||!visibleTo(focus,s.x,s.y))return;
+  const severe=dungeonRenderSevere();
+  const t=severe||dungeonReducedMotion()?0:performance.now()/260;
+  const pulse=.68+.32*Math.sin(t);
+  const q=ws(s.x,s.y),cx=q.x+C.tile/2,cy=q.y+C.tile/2;
+  const v=s.vulnerableMs>0||Boolean(s.v142WardBroken&&s.v142WardState!=="defeated");
+  const col=v?P.purple:"#ff314f";
+  ctx.save();ctx.translate(cx,cy+Math.sin(t*.55)*2);ctx.imageSmoothingEnabled=false;
+  ctx.fillStyle="rgba(0,0,0,.58)";ctx.beginPath();ctx.ellipse(0,18,21,6,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=severe?0:v?30:23;
   // Orbiting clock fragments reinforce Count Loadula's unnatural persistence.
-  ctx.save();ctx.globalAlpha=.45+.2*pulse;ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.rotate(t*.16);for(let n=0;n<8;n++){ctx.rotate(Math.PI/4);ctx.strokeRect(22,-2,5,4)}ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke();ctx.restore();
-  // High-collared cloak with animated split tails and armoured shoulders.
+  if(!severe){
+    ctx.save();ctx.globalAlpha=.45+.2*pulse;ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.rotate(t*.16);for(let n=0;n<8;n++){ctx.rotate(Math.PI/4);ctx.strokeRect(22,-2,5,4)}ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke();ctx.restore();
+  }
+  // High-collared cloak with split tails and armoured shoulders.
   ctx.fillStyle="#09050c";ctx.beginPath();ctx.moveTo(-18,17);ctx.lineTo(-15,-5);ctx.lineTo(-10,-15);ctx.lineTo(0,-9);ctx.lineTo(10,-15);ctx.lineTo(15,-5);ctx.lineTo(18,17);ctx.lineTo(10,12);ctx.lineTo(5,20);ctx.lineTo(0,13);ctx.lineTo(-6,21);ctx.lineTo(-11,12);ctx.closePath();ctx.fill();ctx.strokeStyle=v?"#9651d5":"#5c172c";ctx.lineWidth=3;ctx.stroke();
   px(0,0,-20,-5,8,10,"#2b1324");px(0,0,12,-5,8,10,"#2b1324");px(0,0,-18,-7,6,4,col);px(0,0,12,-7,6,4,col);px(0,0,-12,-16,24,8,"#160a16");px(0,0,-9,-20,18,12,"#eee6ef");px(0,0,-7,-17,14,6,"#b8aebb");px(0,0,-6,-15,4,3,col);px(0,0,2,-15,4,3,col);px(0,0,-5,-14,2,1,"#fff");px(0,0,3,-14,2,1,"#fff");
   // Crown and chest hourglass.
   ctx.fillStyle="#7e6432";ctx.beginPath();ctx.moveTo(-9,-21);ctx.lineTo(-7,-28);ctx.lineTo(-2,-23);ctx.lineTo(0,-30);ctx.lineTo(3,-23);ctx.lineTo(8,-28);ctx.lineTo(9,-21);ctx.closePath();ctx.fill();ctx.strokeStyle=P.gold;ctx.lineWidth=1;ctx.stroke();px(0,0,-5,-2,10,13,"#211226");ctx.strokeStyle=col;ctx.strokeRect(-5,-2,10,13);ctx.beginPath();ctx.moveTo(-3,0);ctx.lineTo(3,0);ctx.lineTo(-3,9);ctx.lineTo(3,9);ctx.closePath();ctx.stroke();px(0,0,-1,4,2,3,P.gold);
-  for(let n=0;n<8;n++){const a=t*.45+n*.91,r=19+n%3*3;ctx.globalAlpha=.35+.45*((n+Math.floor(t))%3)/2;px(0,0,Math.cos(a)*r,Math.sin(a*1.2)*14,2+n%2,2+n%2,n%2?col:"#d9c3f0")}ctx.globalAlpha=1;
+  if(!severe){
+    for(let n=0;n<8;n++){const a=t*.45+n*.91,r=19+n%3*3;ctx.globalAlpha=.35+.45*((n+Math.floor(t))%3)/2;px(0,0,Math.cos(a)*r,Math.sin(a*1.2)*14,2+n%2,2+n%2,n%2?col:"#d9c3f0")}
+    ctx.globalAlpha=1;
+  }
   if(v){ctx.save();ctx.globalAlpha=.45+.3*pulse;ctx.strokeStyle=P.purple;ctx.lineWidth=2;ctx.rotate(-t*.3);ctx.strokeRect(-17,-17,34,34);ctx.rotate(Math.PI/4);ctx.strokeRect(-12,-12,24,24);ctx.restore()}ctx.restore();label(v?`${C.stalker.name.toUpperCase()} — VULNERABLE`:C.stalker.name.toUpperCase(),q,v?P.purple:P.red);if(v)drawTransientHealth(s,q,P.purple)
 }
 function drawPlayerResources(p,s,col,kind){if(kind==="remote"||!p||!(p.ammoFlashMs>0))return;ctx.save();ctx.font='bold 13px Consolas, "Courier New"';ctx.textAlign="center";ctx.fillStyle=P.gold;ctx.shadowColor="#000";ctx.shadowBlur=4;ctx.fillText(`AMMO ${Math.max(0,p.mana)}`,s.x+C.tile/2,s.y-30);ctx.restore()}
