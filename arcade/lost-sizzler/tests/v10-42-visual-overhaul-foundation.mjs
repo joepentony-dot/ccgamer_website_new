@@ -272,7 +272,7 @@ const wearCase=(floor,hash,wall,theme,room=null)=>{
   vm.runInContext(`drawCampaignSurfaceWear({x:12,y:24},${hash},${wall},${JSON.stringify(room)},${JSON.stringify(theme)})`,stoneSandbox);
   return wearPixels.map(rect=>[...rect]);
 };
-for(const [floor,h,wall,theme] of [[2,35,true,"1541_WORKSHOP"],[2,35,false,"1541_WORKSHOP"],[10,35,true,"SID_REACTOR"],[10,35,false,"SID_REACTOR"],[14,35,true,"CRT_MAZE"],[14,35,false,"CRT_MAZE"],[4,35,true,"BUDGET_BIN"],[4,35,false,"BUDGET_BIN"],[7,35,true,"MOSS_CRYPT"],[7,35,false,"MOSS_CRYPT"],[11,40,true,"EMBER_DUNGEON"],[11,40,false,"EMBER_DUNGEON"],[15,40,true,"BLOOD_CITADEL"],[15,40,false,"BLOOD_CITADEL"]]){
+for(const [floor,h,wall,theme] of [[3,35,true,"IRON_KEEP"],[3,35,false,"IRON_KEEP"],[6,35,true,"TAPE_STORE"],[6,35,false,"TAPE_STORE"],[13,35,true,"HIGH_SCORE_CRYPT"],[13,35,false,"HIGH_SCORE_CRYPT"],[2,35,true,"1541_WORKSHOP"],[2,35,false,"1541_WORKSHOP"],[10,35,true,"SID_REACTOR"],[10,35,false,"SID_REACTOR"],[14,35,true,"CRT_MAZE"],[14,35,false,"CRT_MAZE"],[4,35,true,"BUDGET_BIN"],[4,35,false,"BUDGET_BIN"],[7,35,true,"MOSS_CRYPT"],[7,35,false,"MOSS_CRYPT"],[11,40,true,"EMBER_DUNGEON"],[11,40,false,"EMBER_DUNGEON"],[15,40,true,"BLOOD_CITADEL"],[15,40,false,"BLOOD_CITADEL"]]){
   const first=wearCase(floor,h,wall,theme);
   assert.ok(first.length>=4,`floor ${floor} must add tangible ${wall?"wall":"floor"} detail`);
   for(const [x,y,w,hgt] of first)assert.ok(x>=12&&y>=24&&w>0&&hgt>0&&x+w<=54&&y+hgt<=66,"wear must stay inside its tile");
@@ -284,6 +284,11 @@ assert.equal(wearCase(7,35,true,"IRON_KEEP",{variant:0}).length,0,"room-specific
 for(const [floor,theme] of [[2,"1541_WORKSHOP"],[10,"SID_REACTOR"],[14,"CRT_MAZE"]]){
   assert.ok(wearCase(floor,17,false,"WARP_GALLERY").length>0,"technology-floor wear must reach corridors");
   assert.equal(wearCase(floor,35,true,theme,{sigilRoom:true}).length,0,"objective rooms must stay clear");
+  assert.equal(wearCase(floor,36,true,theme).length,0,"wall marks must stay sparse");
+}
+for(const [floor,theme] of [[3,"IRON_KEEP"],[6,"TAPE_STORE"],[13,"HIGH_SCORE_CRYPT"]]){
+  assert.ok(wearCase(floor,17,false,"WARP_GALLERY").length>0,"new floor identity must reach corridors");
+  assert.equal(wearCase(floor,35,true,theme,{traderRoom:true}).length,0,"trader rooms must stay clear");
   assert.equal(wearCase(floor,36,true,theme).length,0,"wall marks must stay sparse");
 }
 assert.match(renderer,/drawCampaignSurfaceWear\(s,h,true,room,theme\)/,"rich walls must own wear");
@@ -299,7 +304,7 @@ vm.runInContext(readFileSync(new URL("../js/world.js",import.meta.url),"utf8"),w
 const generatedWorld=worldFixture.window.CCGWorld;
 const wearPainter=vm.runInContext("drawCampaignSurfaceWear",stoneSandbox);
 const actualHash=vm.runInContext("tileHash",stoneSandbox);
-for(const floor of [2,4,7,10,11,14,15]){
+for(const floor of [2,3,4,6,7,10,11,13,14,15]){
   stoneSandbox.run.floor=floor;
   const generated=generatedWorld.generate(`ccg-premium-visual-baseline-2026-10-09-F${floor}`);
   let decorated=0,starting=0,wallMarks=0,floorMarks=0;
