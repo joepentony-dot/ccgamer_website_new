@@ -22,16 +22,22 @@ test('CLS uses the largest separated session rather than the lifetime sum', () =
   assert.equal(largestSessionWindow(entries), 0.4);
 });
 
-test('CLS caps a continuous session at five seconds', () => {
-  const entries = [0, 1000, 2000, 3000, 4000, 5000, 6000]
+test('CLS keeps sub-second gaps within a session and caps at five seconds', () => {
+  const entries = [0, 900, 1800, 2700, 3600]
     .map((startTime) => ({ startTime, value: 0.1 }));
-  assert.ok(Math.abs(largestSessionWindow(entries) - 0.6) < 1e-9);
+  assert.ok(Math.abs(largestSessionWindow(entries) - 0.5) < 1e-9);
 });
 
-test('CLS treats exactly one-second gaps as the same session', () => {
-  assert.ok(Math.abs(largestSessionWindow([
+test('CLS splits on an exact one-second gap', () => {
+  assert.equal(largestSessionWindow([
     { start_time: 100, value: 0.1 },
     { start_time: 1100, value: 0.2 },
-    { start_time: 2201, value: 0.3 },
-  ]) - 0.3) < 1e-9);
+  ]), 0.2);
+});
+
+test('CLS splits when a shift lands exactly five seconds after session start', () => {
+  assert.equal(largestSessionWindow([
+    { start_time: 100, value: 0.1 },
+    { start_time: 5100, value: 0.2 },
+  ]), 0.2);
 });
