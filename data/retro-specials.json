@@ -1453,8 +1453,7 @@
     "order": 30,
     "summary": "Can you identify ten gruesome horror sounds from Domark’s original 1986 Friday the 13th C64 cassette competition? Five Eureka colour monitors were at stake.",
     "description": "Friday the 13th: The Computer Game was released for Commodore 64 (C64) by Domark in 1986. The original cassette included ten grisly BBC Enterprises sound effects as part of a horror audio competition. Match the noises to the clues, revisit Camp Crystal Lake and Jason Voorhees, and find out how a home-computer game offered five Eureka colour monitors as prizes. The historical contest is closed, but the ten-sound challenge lives on in this Cheeky Commodore Gamer video.",,
-    {
-      "editorialSections": [
+    "editorialSections": [
         {
           "title": "Friday the 13th on the Commodore 64: the forgotten 1986 sound effects competition",
           "paragraphs": [
@@ -1486,8 +1485,7 @@
             "It was a ten-sound cassette competition bundled with the original Domark editions of Friday the 13th. Players matched audio effects to printed captions for a chance to win one of five Eureka colour monitors. This video lets C64 fans revisit those sounds without revealing the answers in advance."
           ]
         }
-      ]
-    }
+      ],
     "collection": "retro-specials",
     "seo": {
       "title": "Friday the 13th C64 Horror Sound Quiz (1986) | CCG",
