@@ -66,6 +66,17 @@
     "url": "/games/developers/binary-vision/"
   },
   {
+    "name": "Black Magic",
+    "slug": "black-magic",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1995,
+    "lastYear": 1995,
+    "indexable": true,
+    "url": "/games/developers/black-magic/"
+  },
+  {
     "name": "Broderbund",
     "slug": "broderbund",
     "count": 6,

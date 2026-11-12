@@ -1,3 +1,10 @@
+## 11 November 2026 — R162 campaign completion increment
+
+- The owner directed development to move beyond Floor 5 incident investigation. Reconciled the completion audit against current main: the five wearable slots and the Crimson Dungeonheart title, skippable credits and bundled credits cue are already implemented.
+- R162 makes clearing the final exit the source of truth for a campaign victory. Extraction and descent require the cleared-floor screen. The final results, credits, permanent title, Platinum and other victory badges, and Weekly Vault completion flag follow the canonical result. Floor badges follow the actual clear transition. Existing badge keys remain stable and in-game names and descriptions reflect the 15-floor campaign.
+- The endgame contract executes canonical run completion, badge and credits code together, covering victory, early extraction, an uncleared final floor, XP game-over and failed Weekly Vault. The achievement and public-route contracts and changed-script syntax pass locally. Browser qualification must cover the real extraction entry point on desktop and mobile.
+- Require exact-head CI and independent review before a guarded merge, then verify the deployed version. Additional documented development remains in environmental art and voiced NPC coverage. Profile catalogue text is stored separately from the in-game badge descriptions.
+
 ## 11 November 2026 — R161 Death Stalker achievement candidate
 
 - R160 #3055 merged at `3fb382476d9f46930d98876f12b491b7d7a49e58` after 12/12 PR workflows and independent review passed. Pages, production smoke and live navigation verified deployment; the closed Round 2 member gate was confirmed.

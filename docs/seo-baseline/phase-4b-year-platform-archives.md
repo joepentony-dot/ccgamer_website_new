@@ -4,7 +4,7 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **666** |
+| Game records scanned | **667** |
 | Year hub pages | **1** |
 | Platform hub pages | **1** |
 | Static year routes | **15** |
@@ -12,7 +12,7 @@
 | No-credit noindex year routes | **0** |
 | Static platform routes | **2** |
 | C64 games | **563** |
-| Amiga games | **103** |
+| Amiga games | **104** |
 
 ## Routes created
 
@@ -30,11 +30,11 @@
 - `/games/years/1992/` — 31 games — `index,follow`
 - `/games/years/1993/` — 15 games — `index,follow`
 - `/games/years/1994/` — 14 games — `index,follow`
-- `/games/years/1995/` — 4 games — `index,follow`
+- `/games/years/1995/` — 5 games — `index,follow`
 - `/games/years/2023/` — 1 game — `index,follow`
 - `/games/platforms/`
 - `/games/platforms/c64/` — 563 games
-- `/games/platforms/amiga/` — 103 games
+- `/games/platforms/amiga/` — 104 games
 
 ## Generated features
 

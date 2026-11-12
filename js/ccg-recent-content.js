@@ -6,6 +6,7 @@
     window.CCG_RECENT_CONTENT_READY = true;
 
     const CSS_PATH = "/resources/css/recent-content.css";
+    const RECENT_FEED_PATH = "/data/latest-youtube-videos.json";
     const VIDEO_INDEX_PATH = "/videos/video-index.json";
     const MAX_VIDEOS = 3;
 
@@ -45,7 +46,7 @@
 
         for (const item of Array.isArray(items) ? items : []) {
             const id = String(item?.id || "").trim();
-            if (!id || seen.has(id)) continue;
+            if (!/^[A-Za-z0-9_-]{11}$/.test(id) || seen.has(id)) continue;
             seen.add(id);
             videos.push(item);
             if (videos.length >= MAX_VIDEOS) break;
@@ -117,13 +118,29 @@
         if (!isHome()) return;
         ensureCss();
 
-        try {
-            const response = await fetch(VIDEO_INDEX_PATH, { cache: "no-cache" });
-            if (!response.ok) return;
+        // The independently refreshed channel feed is the authoritative
+        // source for this section. The existing site library is only a fallback.
+        async function getVideos(url, key) {
+            const response = await fetch(url, { cache: "no-store" });
+            if (!response.ok) throw new Error(`HTTP ${response.status} loading ${url}`);
             const data = await response.json();
-            render(data?.items);
+            return Array.isArray(data?.[key]) ? data[key] : [];
+        }
+
+        try {
+            const latest = await getVideos(RECENT_FEED_PATH, "videos");
+            if (latestUniqueVideos(latest).length) {
+                render(latest);
+                return;
+            }
         } catch (error) {
-            console.error("[CCG-RECENT-VIDEOS] Failed to load latest videos", error);
+            console.warn("[CCG-RECENT-VIDEOS] Channel feed unavailable; using site video library", error);
+        }
+
+        try {
+            render(await getVideos(VIDEO_INDEX_PATH, "items"));
+        } catch (error) {
+            console.error("[CCG-RECENT-VIDEOS] Failed to load fallback video library", error);
         }
     }
 

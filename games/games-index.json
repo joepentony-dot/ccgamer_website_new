@@ -1416,6 +1416,12 @@
     "thumbnail": "resources/images/thumbnails/all/give_my_regards_to_broad_street.jpg"
   },
   {
+    "slug": "gloom",
+    "title": "Gloom",
+    "year": 1995,
+    "thumbnail": "resources/images/thumbnails/all/gloom.webp"
+  },
+  {
     "slug": "go-for-the-gold",
     "title": "Go For The Gold",
     "year": 1986,

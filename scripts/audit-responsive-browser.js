@@ -48,6 +48,8 @@ const VIEWPORTS = [
     { width: 360, height: 800, label: "phone-360" },
     { width: 768, height: 1024, label: "tablet-768" },
     { width: 956, height: 900, label: "problem-width-956" },
+    { width: 1024, height: 900, label: "tablet-1024" },
+    { width: 1199, height: 900, label: "tablet-1199-boundary" },
     { width: 1440, height: 1000, label: "desktop-1440" }
 ];
 

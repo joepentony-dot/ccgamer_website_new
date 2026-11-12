@@ -10,7 +10,7 @@
 | Archive hubs registered | **2** |
 | Platform routes registered | **2** |
 | Total archive entries managed in static registry | **19** |
-| Existing non-archive registry entries preserved in order | **574** |
+| Existing non-archive registry entries preserved in order | **577** |
 
 ## Discovery integration
 
