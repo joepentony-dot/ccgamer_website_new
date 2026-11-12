@@ -26,9 +26,22 @@ export function publishedGamePageMatches(html, slug, siteOrigin = 'https://www.c
 
 // Existing-game recovery must prove the deployed bytes are the current main output
 // and that the saved source revision is an ancestor of that main commit.
-export function savedRevisionMatchesLive({ liveHtml = '', repositoryHtml = '', comparison = null } = {}) {
+export function savedRevisionMatchesLive({
+  liveHtml = '',
+  repositoryHtml = '',
+  comparison = null,
+  pageCommitComparison = null
+} = {}) {
   const status = String(comparison?.status || '').toLowerCase();
   const behindBy = Number(comparison?.behind_by);
   const sourceIsInMain = (status === 'ahead' || status === 'identical') && behindBy === 0;
-  return sourceIsInMain && String(liveHtml) === String(repositoryHtml);
+  // Existing-game edits already have a page at the canonical URL. Its last
+  // committed generated revision must be *after* the saved source commit.
+  // Comparing only current-main HTML to live HTML can otherwise match the
+  // old version even though the edit has not been published.
+  const pageStatus = String(pageCommitComparison?.status || '').toLowerCase();
+  const pageBehind = Number(pageCommitComparison?.behind_by);
+  const pageAhead = Number(pageCommitComparison?.ahead_by);
+  const pageRebuiltAfterSource = pageStatus === 'ahead' && pageBehind === 0 && pageAhead >= 1;
+  return sourceIsInMain && pageRebuiltAfterSource && String(liveHtml) === String(repositoryHtml);
 }
