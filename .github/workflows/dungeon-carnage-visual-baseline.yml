@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   visual-baseline:
-    name: Eight-floor desktop and mobile evidence
+    name: Eleven-floor desktop and mobile evidence
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -67,10 +67,10 @@ jobs:
           import path from 'node:path';
           const dir=process.env.CCG_DUNGEON_VISUAL_BASELINE_DIR;
           const cases=JSON.parse(fs.readFileSync(path.join(dir,'frame-baseline.json'),'utf8')).cases;
-          assert.equal(cases.length,16,'expected 16 authentic floor/device samples');
+          assert.equal(cases.length,22,'expected 22 authentic floor/device samples');
           for(const device of ['desktop','mobile-reduced-motion']){
             const rows=cases.filter(v=>v.device===device);
-            assert.deepEqual(rows.map(v=>v.floor),[1,2,4,7,10,11,14,15]);
+            assert.deepEqual(rows.map(v=>v.floor),[1,2,3,4,6,7,10,11,13,14,15]);
             for(const row of rows){
               assert.equal(row.frameIntervalsMs.count,45);
               assert.ok(row.canvas.width>0&&row.canvas.height>0&&row.generated.rooms>0);
@@ -81,7 +81,7 @@ jobs:
             }
           }
           assert.ok(cases.filter(v=>v.device==='mobile-reduced-motion').every(v=>v.prefersReducedMotion));
-          console.log('Verified 16 floor/device cases, 32 screenshots and 720 RAF intervals.');
+          console.log('Verified 22 floor/device cases, 44 screenshots and 990 RAF intervals.');
           NODE
 
       - name: Upload PNG frames and metrics even when capture fails

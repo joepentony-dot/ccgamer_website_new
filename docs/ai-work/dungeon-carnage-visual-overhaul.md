@@ -1,3 +1,8 @@
+## R164 iron, tape and score-table surface art — 12 November 2026
+
+- Adds seeded riveted ironwork on Floor 3, inset cassette reels on Floor 6, and faded score-table etchings on Floor 13 using the existing rich tile painter. Protected rooms and severe rendering retain their existing treatment.
+- The real-painter contract checks bounded and deterministic coverage in generated worlds. The browser evidence workflow now covers eleven floors per device and compares the base renderer with the candidate using the same seeds. Exact-head visual review and qualification are pending.
+
 ## R163 technology-floor surface art — 12 November 2026
 
 - The rich tile painter adds seeded drive vents and alignment marks on Floor 2, circuit traces on Floor 10, and inset phosphor scanlines on Floor 14. These are static marks beneath gameplay cues. Protected rooms and the severe renderer keep their existing presentation.
