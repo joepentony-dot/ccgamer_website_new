@@ -30,7 +30,8 @@ concurrency:
 jobs:
   package:
     name: Build itch.io HTML5 release (browser verify on main/manual)
-    runs-on: ubuntu-latest
+    # Main/manual browser smoke also requires Playwright 1.55-compatible OS.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - name: Checkout repository

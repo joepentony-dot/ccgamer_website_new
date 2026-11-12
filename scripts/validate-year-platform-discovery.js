@@ -60,7 +60,11 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         // Two source-backed, self-canonical Retro Specials quizzes approved by the site owner.
         // Keep the foreign-sitemap allowlist exact; do not relax archive baseline checks.
         `${SITE_ORIGIN}/retro-specials/50-amiga-games-can-you-identify-them/`,
-        `${SITE_ORIGIN}/retro-specials/50-zx-spectrum-games-can-you-identify-them/`
+        `${SITE_ORIGIN}/retro-specials/50-zx-spectrum-games-can-you-identify-them/`,
+        // Owner-published Arcade 50 quiz: real indexable, self-canonical watch page.
+        `${SITE_ORIGIN}/retro-specials/50-arcade-games-can-you-identify-them/`,
+        // Owner-authorised C64 vs Amiga 100-game watch page; exact self-canonical route only.
+        `${SITE_ORIGIN}/retro-specials/c64-vs-amiga-100-games-compared/`
     ])]
 ]);
 const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
@@ -299,7 +303,10 @@ function validateCanonicalGameRoutes(games, problems) {
 // publisher archives. Admit only materialized, self-canonical, indexable
 // routes that also appear exactly once in the generated page sitemap.
 function validateNewForeignArchive(entry, sitemapPageLocs, problems) {
-    if (!/^(?:music|games\/(?:publishers|developers))\/[a-z0-9-]+\/index\.html$/.test(entry)) return "";
+    // The owner's shareable Ice Cream page is a single reviewed, indexable route.
+    // Keep it behind the same materialized/canonical/robots/sitemap checks below.
+    if (!/^(?:music|games\/(?:publishers|developers))\/[a-z0-9-]+\/index\.html$/.test(entry) &&
+        entry !== "ice-cream/index.html") return "";
     const url = `${SITE_ORIGIN}/${entry.slice(0, -"index.html".length)}`;
     const filePath = path.join(repoRoot, entry);
     if (!fs.existsSync(filePath)) {
@@ -358,6 +365,21 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems, autho
     const newlyIndexableOwned = label === "sitemap-pages.xml"
         ? new Set([...authoritativeArchiveUrls].filter((url) => !baselineLocs.includes(url)))
         : new Set();
+    // The exact Arcade quiz exception is allowed only while its real published
+    // page remains unique, indexable and self-canonical. Not a wildcard.
+    if (label === "sitemap-pages.xml") {
+        const arcadeQuizUrl = `${SITE_ORIGIN}/retro-specials/50-arcade-games-can-you-identify-them/`;
+        if (currentLocs.includes(arcadeQuizUrl)) {
+            const quizHtml = readRequired(path.join(repoRoot, "retro-specials", "50-arcade-games-can-you-identify-them", "index.html"));
+            const canonicals = extractCanonicalUrls(quizHtml);
+            const robots = extractRobotsDirectives(quizHtml);
+            if (currentLocs.filter((loc) => loc === arcadeQuizUrl).length !== 1 ||
+                canonicals.length !== 1 || canonicals[0] !== arcadeQuizUrl ||
+                robots.length !== 1 || !/^index,follow(?:,|$)/i.test(robots[0])) {
+                problems.push("Arcade 50 quiz sitemap exception requires one self-canonical, indexable page");
+            }
+        }
+    }
     const reviewedRemovals = REVIEWED_FOREIGN_SITEMAP_REMOVALS.get(label) || new Set();
     const expectedLocs = baselineLocs.filter((url) => (
         url !== PHASE5B_EXCLUDED_SITEMAP_URL &&

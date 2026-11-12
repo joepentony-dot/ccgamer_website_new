@@ -12,8 +12,8 @@
     "description": "Cheeky Commodore Gamer counts down fifty essential Commodore 64 games, celebrating the titles that helped shape one of the most beloved home computers of all time. Covering arcade action, adventure, racing, platformers and long-standing favourites from the C64 era, this retrospective highlights the games that remain most influential, memorable and worth revisiting today.",
     "collection": "retro-specials",
     "seo": {
-      "title": "50 Essential Commodore 64 Games – Best C64 Games Ever | Retro Special | Cheeky Commodore Gamer",
-      "description": "Explore 50 essential Commodore 64 games in this Retro Special, covering iconic C64 classics that shaped one of the most beloved home computers ever."
+      "title": "Best C64 Games – 50 Essential Commodore 64 Games | CCG",
+      "description": "Discover 50 of the best Commodore 64 games ever made, covering essential C64 classics across arcade action, adventure, strategy, racing and more."
     },
     "created_at": "2026-03-30T22:46:27.285Z",
     "relatedSlugs": [
@@ -36,8 +36,8 @@
     "description": "This countdown explores 50 essential Amiga games across multiple genres, from arcade action and strategy to adventure and simulation. Featuring classics such as Lotus Turbo Challenge 2, Cannon Fodder, Syndicate, Another World and The Secret of Monkey Island, this video highlights why the Amiga remains one of the most beloved gaming platforms of all time.",
     "collection": "retro-specials",
     "seo": {
-      "title": "50 Essential Amiga Games – Best Amiga Games Ever | Retro Special | Cheeky Commodore Gamer",
-      "description": "Celebrate 50 essential Amiga games in this Retro Special, covering memorable arcade, strategy, adventure and simulation classics from Amiga history."
+      "title": "Best Amiga Games – 50 Essential Amiga Games | CCG",
+      "description": "Discover 50 of the best Amiga games ever made, from arcade action and strategy to adventures, simulations and essential Commodore Amiga classics."
     },
     "created_at": "2026-04-21T00:00:00.000Z",
     "relatedSlugs": [
@@ -274,8 +274,8 @@
     "collection": "retro-specials",
     "created_at": "2026-03-30T22:46:23.085Z",
     "seo": {
-      "title": "C64 vs ZX Spectrum — Version Comparison | Retro Special | Cheeky Commodore Gamer",
-      "description": "Compare C64 vs ZX Spectrum game versions in this Retro Special, examining how classic titles differed across two legendary 8-bit home computers."
+      "title": "C64 vs ZX Spectrum – Commodore 64 vs Spectrum | CCG",
+      "description": "C64 vs ZX Spectrum: compare the Commodore 64 and Sinclair ZX Spectrum through their games, strengths, differences and enduring 8-bit rivalry."
     },
     "relatedSlugs": [
       "zx-spectrum-memories-hodgy",
@@ -705,7 +705,7 @@
     "description": "Test your Commodore 64 knowledge with 50 games to identify across five themed rounds. Watch a ten-second gameplay clip, guess the title before the answer is revealed, and award yourself one point for each correct answer. The challenge covers arcade conversions, isometric adventures, budget releases, film and television licences, and some lesser-known C64 titles. A few clips deliberately have their sound removed to make recognition that little bit harder. How many can you name out of 50?",
     "collection": "retro-specials",
     "seo": {
-      "title": "50 Commodore 64 Games – Can You Identify Them? | C64 Video Quiz | Cheeky Commodore Gamer",
+      "title": "Commodore 64 Quiz – Name 50 Games | Cheeky Commodore Gamer",
       "description": "Identify 50 Commodore 64 games from ten-second gameplay clips in five themed rounds. Test your C64 knowledge with this retro game recognition challenge."
     },
     "created_at": "2026-10-26T00:00:00.000Z",
@@ -720,13 +720,43 @@
       "C64"
     ],
     "relatedSlugs": [
-      "50-essential-commodore-64-games",
-      "hardest-commodore-64-games",
-      "top-15-commodore-64-games",
-      "commodore-64-budget-games-under-3"
+      "50-arcade-games-can-you-identify-them",
+      "50-amiga-games-can-you-identify-them",
+      "50-zx-spectrum-games-can-you-identify-them",
+      "50-essential-commodore-64-games"
     ],
     "deferYouTubePlayer": true,
-    "disableAutoFeaturedGames": true
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "🕹️ The 50-Game C64 Identification Challenge"
+      },
+      {
+        "time": "00:30",
+        "title": "👾 Round 1 – Arcade Deep Cuts"
+      },
+      {
+        "time": "05:12",
+        "title": "🧊 Round 2 – Isometric Icons"
+      },
+      {
+        "time": "10:00",
+        "title": "📼 Round 3 – Budget Brain-Burners"
+      },
+      {
+        "time": "14:44",
+        "title": "🎬 Round 4 – Movie & Licence Oddities"
+      },
+      {
+        "time": "19:30",
+        "title": "🏆 Round 5 – Veteran's Vault"
+      },
+      {
+        "time": "24:13",
+        "title": "How Many Did You Get?"
+      }
+    ]
   },
   {
     "id": "50-amiga-games-can-you-identify-them",
@@ -741,7 +771,7 @@
     "description": "How many Commodore Amiga games can you name? Watch short gameplay clips, identify each game before the answer appears, and give yourself one point for each correct answer. The challenge includes well-known favourites alongside less familiar Amiga titles, so even long-time players might discover something they missed. Keep track of your score out of 50 and share your result in the comments.",
     "collection": "retro-specials",
     "seo": {
-      "title": "Commodore Amiga Quiz – Can You Name 50 Games? | Cheeky Commodore Gamer",
+      "title": "Amiga Games Quiz – Name 50 Games | Cheeky Commodore Gamer",
       "description": "Test your Commodore Amiga knowledge in this 50-game identification quiz. Watch short gameplay clips and see how many classic Amiga games you can recognise."
     },
     "created_at": "2026-10-30T00:00:00.000Z",
@@ -755,13 +785,43 @@
       "Amiga"
     ],
     "relatedSlugs": [
+      "50-arcade-games-can-you-identify-them",
       "50-commodore-64-games-can-you-identify-them",
       "50-zx-spectrum-games-can-you-identify-them",
-      "50-essential-amiga-games",
-      "x-copy-amiga-history"
+      "50-essential-amiga-games"
     ],
     "deferYouTubePlayer": true,
-    "disableAutoFeaturedGames": true
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "🕹️ The 50-Game Amiga Identification Challenge"
+      },
+      {
+        "time": "00:25",
+        "title": "👾 Round 1 – Arcade Deep Cuts"
+      },
+      {
+        "time": "04:48",
+        "title": "🕹️ Round 2 – Platform Heroes & Oddballs"
+      },
+      {
+        "time": "09:16",
+        "title": "💾 Round 3 – Workbench Wildcards"
+      },
+      {
+        "time": "13:42",
+        "title": "🎬 Round 4 – Lights, Camera, Amiga!"
+      },
+      {
+        "time": "18:11",
+        "title": "🏆 Round 5 – Veteran's Vault"
+      },
+      {
+        "time": "22:38",
+        "title": "How Many Did You Get?"
+      }
+    ]
   },
   {
     "id": "50-zx-spectrum-games-can-you-identify-them",
@@ -773,10 +833,10 @@
     "membersOnly": false,
     "order": 25,
     "summary": "Think you know your ZX Spectrum games? Try to identify 50 titles from ten-second gameplay clips across five rounds, from familiar favourites to lesser-known games.",
-    "description": "ZX Spectrum fans, how many games do you still recognise? Across five rounds, there are 50 games to identify from ten-second gameplay clips before their titles are revealed. Expect a mixture of familiar classics and less obvious choices, rather than fifty easy questions. Award yourself one point for each correct answer and let me know your total out of 50. You might also discover a few games worth returning to. The video may not play until its scheduled YouTube premiere is public.",
+    "description": "ZX Spectrum fans, how many games do you still recognise? Across five rounds, there are 50 games to identify from ten-second gameplay clips before their titles are revealed. Expect a mixture of familiar classics and less obvious choices, rather than fifty easy questions. Award yourself one point for each correct answer and let me know your total out of 50. You might also discover a few games worth returning to.",
     "collection": "retro-specials",
     "seo": {
-      "title": "ZX Spectrum Quiz – Can You Name 50 Games? | Cheeky Commodore Gamer",
+      "title": "ZX Spectrum Quiz – Name 50 Games | Cheeky Commodore Gamer",
       "description": "Take the ZX Spectrum 50-game quiz. Recognise classic Speccy games from ten-second gameplay clips across five rounds and see how many titles you can name."
     },
     "created_at": "2026-10-30T00:00:00.000Z",
@@ -790,12 +850,657 @@
       "ZX Spectrum"
     ],
     "relatedSlugs": [
+      "50-arcade-games-can-you-identify-them",
       "50-commodore-64-games-can-you-identify-them",
       "50-amiga-games-can-you-identify-them",
-      "c64-vs-zx-spectrum",
-      "zx-spectrum-memories-hodgy"
+      "c64-vs-zx-spectrum"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "🎬 Introduction – 50 ZX Spectrum Games Challenge!"
+      },
+      {
+        "time": "00:47",
+        "title": "🌈 Round 1 – Spectrum Legends (Games 1–10)"
+      },
+      {
+        "time": "05:18",
+        "title": "🕹️ Round 2 – Platformers & Peculiar Characters (Games 11–20)"
+      },
+      {
+        "time": "09:53",
+        "title": "🏎️ Round 3 – Arcade Action & Racing (Games 21–30)"
+      },
+      {
+        "time": "14:25",
+        "title": "🏰 Round 4 – Fantasy, Exploration & Isometric Adventures (Games 31–40)"
+      },
+      {
+        "time": "18:57",
+        "title": "🧠 Round 5 – The Spectrum Expert's Challenge (Games 41–50)"
+      },
+      {
+        "time": "23:32",
+        "title": "🏆 Final Scores & Outro – How Many Did You Recognise?"
+      }
+    ]
+  },
+  {
+    "id": "50-arcade-games-can-you-identify-them",
+    "slug": "50-arcade-games-can-you-identify-them",
+    "type": "retro-specials",
+    "title": "Think You Know Arcade Games? Name These 50 Classics!",
+    "youtubeId": "cNv9J-MhMA0",
+    "thumbnail": "https://img.youtube.com/vi/cNv9J-MhMA0/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 26,
+    "summary": "Can you recognise 50 arcade games from just ten seconds of gameplay? Five rounds of coin-op classics, difficult favourites and a bonus soundtrack challenge.",
+    "description": "Fifty classic arcade games from the 1980s and early 1990s, spread across five themed rounds. You get ten seconds of gameplay to identify each game before the answer appears, with a point for each correct answer. The rounds cover arcade favourites, shoot-'em-ups, beat 'em ups, monsters and magic, and iconic arcade machines. There is also a bonus challenge: can you recognise the arcade music playing during the question sequences? Share your score out of fifty and the tunes you spotted.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Arcade Games Quiz – Name 50 Classics | Cheeky Commodore Gamer",
+      "description": "Test your arcade knowledge with 50 classic 1980s and 1990s coin-op games to identify from ten-second gameplay clips across five rounds."
+    },
+    "created_at": "2026-11-03T00:00:00.000Z",
+    "tags": [
+      "Arcade",
+      "retro gaming quiz",
+      "name that game",
+      "50 games",
+      "1980s arcade games",
+      "1990s arcade games"
+    ],
+    "platforms": [
+      "Arcade"
+    ],
+    "relatedSlugs": [
+      "50-commodore-64-games-can-you-identify-them",
+      "50-amiga-games-can-you-identify-them",
+      "50-zx-spectrum-games-can-you-identify-them",
+      "favourite-arcade-games-c64-amiga-ports"
     ],
     "deferYouTubePlayer": true,
     "disableAutoFeaturedGames": true
+  },
+  {
+    "id": "c64-vs-amiga-100-games-compared",
+    "slug": "c64-vs-amiga-100-games-compared",
+    "type": "retro-specials",
+    "title": "C64 vs Amiga: 100 Games Compared – Can You Guess the Winner?",
+    "youtubeId": "ygPOtslHRfk",
+    "thumbnail": "https://img.youtube.com/vi/ygPOtslHRfk/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 27,
+    "summary": "100 C64 vs Amiga game comparisons. Guess which version earned the higher Lemon reader rating, keep score and see which machine wins.",
+    "description": "One hundred games that appeared on both the Commodore 64 and Amiga, shown in 30-second comparisons. Watch 7.5 seconds of C64 gameplay, then 7.5 seconds of Amiga gameplay, compare the two versions side by side and predict which received the higher separate reader average on Lemon64 or Lemon Amiga. The results appear during the final three seconds. Give yourself one point for each correct C64, Amiga or draw prediction and compare your own score out of 100. Machine standings update after every ten games. These are not direct head-to-head review scores: each community rated its version independently, and reader averages can change over time.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "C64 vs Amiga: 100 Games Compared – Can You Guess the Winner? | Cheeky Commodore Gamer",
+      "description": "Compare 100 classic Commodore 64 and Amiga games side by side, predict each Lemon reader-rating winner, and follow the scoreboard in this retro showdown."
+    },
+    "created_at": "2026-11-06T00:00:00.000Z",
+    "tags": [
+      "C64 vs Amiga",
+      "Commodore 64",
+      "Commodore Amiga",
+      "100 games",
+      "Lemon64",
+      "Lemon Amiga",
+      "retro gaming",
+      "play-along challenge"
+    ],
+    "platforms": [
+      "Commodore 64",
+      "Amiga"
+    ],
+    "relatedSlugs": [
+      "50-essential-commodore-64-games",
+      "50-essential-amiga-games",
+      "c64-vs-zx-spectrum"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "Introduction — How to play"
+      },
+      {
+        "time": "00:30",
+        "title": "#100 – Crazy Cars"
+      },
+      {
+        "time": "01:00",
+        "title": "#99 – Buggy Boy"
+      },
+      {
+        "time": "01:30",
+        "title": "#98 – Days of Thunder"
+      },
+      {
+        "time": "02:00",
+        "title": "#97 – James Pond 2: Codename RoboCod"
+      },
+      {
+        "time": "02:30",
+        "title": "#96 – Last Ninja 2"
+      },
+      {
+        "time": "03:00",
+        "title": "#95 – Lotus Esprit Turbo Challenge"
+      },
+      {
+        "time": "03:30",
+        "title": "#94 – Spy vs Spy"
+      },
+      {
+        "time": "04:00",
+        "title": "#93 – 1943: The Battle of Midway"
+      },
+      {
+        "time": "04:30",
+        "title": "#92 – Strider"
+      },
+      {
+        "time": "05:00",
+        "title": "#91 – A.M.C.: Astro Marine Corps"
+      },
+      {
+        "time": "05:30",
+        "title": "Scoreboard — 10 games"
+      },
+      {
+        "time": "05:40",
+        "title": "#90 – Ghosts ’n Goblins"
+      },
+      {
+        "time": "06:10",
+        "title": "#89 – Indiana Jones and the Last Crusade: The Action Game"
+      },
+      {
+        "time": "06:40",
+        "title": "#88 – Pac-Mania"
+      },
+      {
+        "time": "07:10",
+        "title": "#87 – Ferrari Formula One"
+      },
+      {
+        "time": "07:40",
+        "title": "#86 – Wings of Fury"
+      },
+      {
+        "time": "08:10",
+        "title": "#85 – Action Fighter"
+      },
+      {
+        "time": "08:40",
+        "title": "#84 – Ballistix"
+      },
+      {
+        "time": "09:10",
+        "title": "#83 – Dark Castle"
+      },
+      {
+        "time": "09:40",
+        "title": "#82 – Space Crusade"
+      },
+      {
+        "time": "10:10",
+        "title": "#81 – Feud"
+      },
+      {
+        "time": "10:40",
+        "title": "Scoreboard — 20 games"
+      },
+      {
+        "time": "10:50",
+        "title": "#80 – Dan Dare III"
+      },
+      {
+        "time": "11:20",
+        "title": "#79 – Midnight Resistance"
+      },
+      {
+        "time": "11:50",
+        "title": "#78 – Chuckie Egg"
+      },
+      {
+        "time": "12:20",
+        "title": "#77 – Blasteroids"
+      },
+      {
+        "time": "12:50",
+        "title": "#76 – Final Assault"
+      },
+      {
+        "time": "13:20",
+        "title": "#75 – Bubble Ghost"
+      },
+      {
+        "time": "13:50",
+        "title": "#74 – Gettysburg"
+      },
+      {
+        "time": "14:20",
+        "title": "#73 – Zynaps"
+      },
+      {
+        "time": "14:50",
+        "title": "#72 – The Blues Brothers"
+      },
+      {
+        "time": "15:20",
+        "title": "#71 – Blades of Steel"
+      },
+      {
+        "time": "15:50",
+        "title": "Scoreboard — 30 games"
+      },
+      {
+        "time": "16:00",
+        "title": "#70 – 007: Licence to Kill"
+      },
+      {
+        "time": "16:30",
+        "title": "#69 – Silent Service"
+      },
+      {
+        "time": "17:00",
+        "title": "#68 – Arcticfox"
+      },
+      {
+        "time": "17:30",
+        "title": "#67 – Silkworm"
+      },
+      {
+        "time": "18:00",
+        "title": "#66 – Stormlord"
+      },
+      {
+        "time": "18:30",
+        "title": "#65 – 4th & Inches"
+      },
+      {
+        "time": "19:00",
+        "title": "#64 – Batman: The Caped Crusader"
+      },
+      {
+        "time": "19:30",
+        "title": "#63 – Alien Syndrome"
+      },
+      {
+        "time": "20:00",
+        "title": "#62 – Captain Blood"
+      },
+      {
+        "time": "20:30",
+        "title": "#61 – Into the Eagle’s Nest"
+      },
+      {
+        "time": "21:00",
+        "title": "Scoreboard — 40 games"
+      },
+      {
+        "time": "21:10",
+        "title": "#60 – Operation Wolf"
+      },
+      {
+        "time": "21:40",
+        "title": "#59 – Jack Nicklaus’ Greatest 18 Holes"
+      },
+      {
+        "time": "22:10",
+        "title": "#58 – HeroQuest"
+      },
+      {
+        "time": "22:40",
+        "title": "#57 – Ikari Warriors"
+      },
+      {
+        "time": "23:10",
+        "title": "#56 – Jet"
+      },
+      {
+        "time": "23:40",
+        "title": "#55 – Crack Down"
+      },
+      {
+        "time": "24:10",
+        "title": "#54 – Blood Money"
+      },
+      {
+        "time": "24:40",
+        "title": "#53 – Donald Duck’s Playground"
+      },
+      {
+        "time": "25:10",
+        "title": "#52 – Cabal"
+      },
+      {
+        "time": "25:40",
+        "title": "#51 – Carrier Command"
+      },
+      {
+        "time": "26:10",
+        "title": "Scoreboard — 50 games"
+      },
+      {
+        "time": "26:20",
+        "title": "#50 – Blockout"
+      },
+      {
+        "time": "26:50",
+        "title": "#49 – Double Dragon II"
+      },
+      {
+        "time": "27:20",
+        "title": "#48 – Nebulus"
+      },
+      {
+        "time": "27:50",
+        "title": "#47 – Gauntlet II"
+      },
+      {
+        "time": "28:20",
+        "title": "#46 – Kick Off 2"
+      },
+      {
+        "time": "28:50",
+        "title": "#45 – The Games: Summer Edition"
+      },
+      {
+        "time": "29:20",
+        "title": "#44 – Wizball"
+      },
+      {
+        "time": "29:50",
+        "title": "#43 – Fiendish Freddy’s Big Top O’ Fun"
+      },
+      {
+        "time": "30:20",
+        "title": "#42 – Supremacy"
+      },
+      {
+        "time": "30:50",
+        "title": "#41 – The Duel: Test Drive II"
+      },
+      {
+        "time": "31:20",
+        "title": "Scoreboard — 60 games"
+      },
+      {
+        "time": "31:30",
+        "title": "#40 – Castle Master"
+      },
+      {
+        "time": "32:00",
+        "title": "#39 – Impossible Mission II"
+      },
+      {
+        "time": "32:30",
+        "title": "#38 – E-Motion"
+      },
+      {
+        "time": "33:00",
+        "title": "#37 – Battle Chess"
+      },
+      {
+        "time": "33:30",
+        "title": "#36 – Fantasy World Dizzy"
+      },
+      {
+        "time": "34:00",
+        "title": "#35 – SimCity"
+      },
+      {
+        "time": "34:30",
+        "title": "#34 – Ivan ‘Ironman’ Stewart’s Super Off Road"
+      },
+      {
+        "time": "35:00",
+        "title": "#33 – R-Type"
+      },
+      {
+        "time": "35:30",
+        "title": "#32 – Barbarian"
+      },
+      {
+        "time": "36:00",
+        "title": "#31 – Chip’s Challenge"
+      },
+      {
+        "time": "36:30",
+        "title": "Scoreboard — 70 games"
+      },
+      {
+        "time": "36:40",
+        "title": "#30 – Battletech"
+      },
+      {
+        "time": "37:10",
+        "title": "#29 – The New Zealand Story"
+      },
+      {
+        "time": "37:40",
+        "title": "#28 – Arkanoid"
+      },
+      {
+        "time": "38:10",
+        "title": "#27 – Rick Dangerous"
+      },
+      {
+        "time": "38:40",
+        "title": "#26 – California Games"
+      },
+      {
+        "time": "39:10",
+        "title": "#25 – The Chessmaster 2000"
+      },
+      {
+        "time": "39:40",
+        "title": "#24 – Myth"
+      },
+      {
+        "time": "40:10",
+        "title": "#23 – Gateway to the Savage Frontier"
+      },
+      {
+        "time": "40:40",
+        "title": "#22 – The Great Giana Sisters"
+      },
+      {
+        "time": "41:10",
+        "title": "#21 – North & South"
+      },
+      {
+        "time": "41:40",
+        "title": "Scoreboard — 80 games"
+      },
+      {
+        "time": "41:50",
+        "title": "#20 – Death Knights of Krynn"
+      },
+      {
+        "time": "42:20",
+        "title": "#19 – Exile"
+      },
+      {
+        "time": "42:50",
+        "title": "#18 – The Bard’s Tale III"
+      },
+      {
+        "time": "43:20",
+        "title": "#17 – Rainbow Islands"
+      },
+      {
+        "time": "43:50",
+        "title": "#16 – Elvira"
+      },
+      {
+        "time": "44:20",
+        "title": "#15 – Curse of the Azure Bonds"
+      },
+      {
+        "time": "44:50",
+        "title": "#14 – Rodland"
+      },
+      {
+        "time": "45:20",
+        "title": "#13 – Speedball 2"
+      },
+      {
+        "time": "45:50",
+        "title": "#12 – Archon"
+      },
+      {
+        "time": "46:20",
+        "title": "#11 – Stunt Car Racer"
+      },
+      {
+        "time": "46:50",
+        "title": "Scoreboard — 90 games"
+      },
+      {
+        "time": "47:00",
+        "title": "#10 – Defender of the Crown"
+      },
+      {
+        "time": "47:30",
+        "title": "#9 – Lemmings"
+      },
+      {
+        "time": "48:00",
+        "title": "#8 – Elite"
+      },
+      {
+        "time": "48:30",
+        "title": "#7 – Bubble Bobble"
+      },
+      {
+        "time": "49:00",
+        "title": "#6 – Laser Squad"
+      },
+      {
+        "time": "49:30",
+        "title": "#5 – IK+"
+      },
+      {
+        "time": "50:00",
+        "title": "#4 – Zak McKracken"
+      },
+      {
+        "time": "50:30",
+        "title": "#3 – Maniac Mansion"
+      },
+      {
+        "time": "51:00",
+        "title": "#2 – Turrican II: The Final Fight"
+      },
+      {
+        "time": "51:30",
+        "title": "#1 – Pirates!"
+      },
+      {
+        "time": "52:00",
+        "title": "Final scoreboard — 100 games"
+      }
+    ],
+    "playAlong": {
+      "kind": "c64-vs-amiga-lemon-reader-rating",
+      "title": "Play along: 100 C64 vs Amiga predictions",
+      "subtitle": "One point for each correct guess",
+      "instructions": "For each game, choose Commodore 64, Amiga or draw before the winner is revealed. These are separate reader averages from Lemon64 and Lemon Amiga, not a direct head-to-head rating. Keep your own score out of 100 and share it in the YouTube comments.",
+      "timing": "Each 30-second round shows C64 gameplay for 7.5 seconds, Amiga gameplay for 7.5 seconds, both versions side by side for 12 seconds, then the winner and ratings for three seconds. A machine scoreboard appears every ten games.",
+      "editorialTitle": "C64 vs Amiga: 100 classic games, 100 comparisons",
+      "editorialParagraphs": [
+        "This showcase revisits Commodore 64 and Commodore Amiga editions of familiar games, from Crazy Cars and Spy vs Spy through R-Type, Bubble Bobble and Turrican II to Pirates!. See how each title appeared on two generations of Commodore hardware, then find out which edition received the higher community rating.",
+        "The higher-rated version earns one machine point, while equal scores count as a draw. Lemon community scores are snapshots recorded during production and may change as new votes arrive. They do not settle which computer or conversion is objectively better.",
+        "For more Commodore comparisons, countdowns and reviews, follow the related links or browse the game archive."
+      ],
+      "editorialLinks": [
+        {
+          "title": "50 Essential Commodore 64 Games",
+          "url": "/retro-specials/50-essential-commodore-64-games/"
+        },
+        {
+          "title": "50 Essential Amiga Games",
+          "url": "/retro-specials/50-essential-amiga-games/"
+        },
+        {
+          "title": "C64 vs ZX Spectrum Comparison",
+          "url": "/retro-specials/c64-vs-zx-spectrum/"
+        },
+        {
+          "title": "Browse the Games Archive",
+          "url": "/games/"
+        }
+      ]
+    }
+  },
+  {
+    "id": "friday-the-13th-commodore-64-horror-quiz",
+    "slug": "friday-the-13th-commodore-64-horror-quiz",
+    "type": "retro-specials",
+    "title": "Friday the 13th (1986) Commodore 64 – Can You Solve the Forgotten Horror Sound Quiz?",
+    "youtubeId": "GMH3zjOMvWI",
+    "thumbnail": "https://img.youtube.com/vi/GMH3zjOMvWI/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 0,
+    "summary": "Friday the 13th on the Commodore 64 had a forgotten 1986 cassette sound-effects competition. Can you identify all ten horror noises?",
+    "description": "Revisit Domark's Friday the 13th (1986) for the Commodore 64 and its unusual ten-sound cassette competition. Sound effects supplied by BBC Enterprises were matched to gruesome descriptions, with five Eureka colour monitors offered as prizes. Listen to the horror audio quiz, test your answers and share your score.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Friday the 13th C64 (1986) Horror Sound Quiz | Commodore 64",
+      "description": "Friday the 13th Commodore 64 (1986) by Domark: hear its forgotten ten-sound horror cassette competition, test your answers and discover the original prizes."
+    },
+    "created_at": "2026-11-12T00:00:00Z",
+    "tags": [
+      "Friday the 13th",
+      "Friday 13th",
+      "Friday the 13th C64",
+      "Friday the 13th Commodore 64",
+      "Friday the 13th 1986",
+      "Domark",
+      "C64 horror games",
+      "Commodore 64 horror quiz",
+      "retro-history"
+    ],
+    "platforms": [
+      "Commodore 64",
+      "C64"
+    ],
+    "relatedSlugs": [
+      "retro-games-real-prizes-porsche-swords-25000",
+      "banned-c64-games-they-didnt-want-you-to-see"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true,
+    "featureEditorial": {
+      "title": "Friday the 13th (1986) – The Commodore 64 horror cassette competition",
+      "paragraphs": [
+        "Domark's Friday the 13th on the Commodore 64 included a promotional cassette competition with ten gruesome sound effects supplied by BBC Enterprises. Players listened to the sounds and matched them to a list of unusual descriptions.",
+        "Among the clues were “Jason has a meaty meal” and “Madam La Guillotine makes her mark”. There were five Eureka colour monitors to be won. It was an unusual promotion even by 1986 home-computer standards.",
+        "The original competition has closed, but you can still take the challenge: listen carefully to the ten mystery sounds in the video, write down which description you think matches each one and see how many you get right.",
+        "How did you do out of ten? Share your score in the video's comments, and let me know if you remember entering the original Friday the 13th competition."
+      ],
+      "links": [
+        {
+          "title": "Watch the original Friday the 13th sound quiz on YouTube",
+          "url": "https://www.youtube.com/watch?v=GMH3zjOMvWI"
+        },
+        {
+          "title": "Friday the 13th C64 game information, reviews and manual",
+          "url": "/games/friday-the-13th/"
+        },
+        {
+          "title": "Browse more Commodore 64 and Amiga Retro Specials",
+          "url": "/games/collections/retro-specials.html"
+        }
+      ]
+    }
   }
 ]

@@ -130,10 +130,27 @@ function getImageMetadata(filePath) {
         metadata.height = buffer.readUInt16LE(8);
         return metadata;
     }
-    if (isWebp && buffer.toString("ascii", 12, 16) === "VP8X") {
-        metadata.width = 1 + buffer.readUIntLE(24, 3);
-        metadata.height = 1 + buffer.readUIntLE(27, 3);
-        return metadata;
+    if (isWebp) {
+        const chunkType = buffer.toString("ascii", 12, 16);
+        if (chunkType === "VP8X") {
+            metadata.width = 1 + buffer.readUIntLE(24, 3);
+            metadata.height = 1 + buffer.readUIntLE(27, 3);
+            return metadata;
+        }
+        // Ordinary browser-generated WebP files often use the VP8 lossy
+        // bitstream, rather than the extended VP8X container.
+        if (chunkType === "VP8 " && buffer.length >= 30 &&
+            buffer[23] === 0x9d && buffer[24] === 0x01 && buffer[25] === 0x2a) {
+            metadata.width = buffer.readUInt16LE(26) & 0x3fff;
+            metadata.height = buffer.readUInt16LE(28) & 0x3fff;
+            return metadata;
+        }
+        if (chunkType === "VP8L" && buffer.length >= 25 && buffer[20] === 0x2f) {
+            const dimensions = buffer.readUInt32LE(21);
+            metadata.width = 1 + (dimensions & 0x3fff);
+            metadata.height = 1 + ((dimensions >>> 14) & 0x3fff);
+            return metadata;
+        }
     }
     if (isJpeg) {
         let offset = 2;

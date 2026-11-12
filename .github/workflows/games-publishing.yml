@@ -40,6 +40,14 @@ on:
       - "data/seo-opportunity-targets.json"
       - "admin/js/content-publisher-image-optimizer.js"
       - "admin/js/content-publisher.js"
+      - "admin/js/content-publisher-asset-preflight.mjs"
+      - "admin/js/content-publisher-recovery-state.mjs"
+      - "admin/js/content-publisher-retry-guard.mjs"
+      - "admin/js/content-publisher-live-verification.mjs"
+      - "tests/content-publisher-recovery-state.test.mjs"
+      - "tests/content-publisher-retry-guard.test.mjs"
+      - "tests/content-publisher-live-verification.test.mjs"
+      - "tests/content-publisher-asset-preflight.test.mjs"
       - "admin/js/content-publisher-status-reconciler.js"
       - "admin/js/content-publisher-source-preflight.mjs"
       - "admin/js/content-publisher-completion-guard.js"
@@ -163,11 +171,19 @@ jobs:
         run: |
           node --check admin/js/content-publisher-status-reconciler.js
           node --check admin/js/content-publisher-source-preflight.mjs
+          node --check admin/js/content-publisher-asset-preflight.mjs
+          node --check admin/js/content-publisher-recovery-state.mjs
+          node --check admin/js/content-publisher-retry-guard.mjs
+          node --check admin/js/content-publisher-live-verification.mjs
           node --check js/ccg-game-seo-snippet.js
           node --check scripts/prepare-seo-game-routes.js
           node --check admin/js/content-publisher-completion-guard.js
           node --check scripts/validate-new-game-enrichment.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
+          node --test tests/content-publisher-asset-preflight.test.mjs
+          node --test tests/content-publisher-recovery-state.test.mjs
+          node --test tests/content-publisher-retry-guard.test.mjs
+          node --test tests/content-publisher-live-verification.test.mjs
           node --test tests/game-seo-snippet-quality.test.mjs
 
       - name: Validate fail-closed generated publishing merge guard
@@ -287,6 +303,8 @@ jobs:
       - name: Commit generated publishing output
         id: publish_output
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add \
             games \
@@ -309,6 +327,14 @@ jobs:
           if git diff --cached --quiet; then
             echo "Generated publishing output is already current."
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          DUPLICATE_PR=$(node scripts/deduplicate-generated-publishing.mjs)
+          if [ -n "$DUPLICATE_PR" ]; then
+            echo "::notice::Generated output exactly matches existing PR #${DUPLICATE_PR}; retaining that PR and skipping duplicate branch creation."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "duplicate_pr=$DUPLICATE_PR" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 

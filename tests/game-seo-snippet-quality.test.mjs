@@ -416,14 +416,16 @@ test('five independently sourced C64 game summaries retain complete unique SEO s
   }
 });
 
-test('all 666 current enriched game records prefer sourced game-specific snippets over generic boilerplate', () => {
+test('all current enriched game records prefer sourced game-specific snippets over generic boilerplate', () => {
   const { readFileSync } = require('node:fs');
   const { join } = require('node:path');
   const root = join(import.meta.dirname, '..');
   const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
   const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
   const enrichments = payload.games || payload;
-  assert.equal(games.length, 666, 'Unexpected catalogue change; review before regenerating metadata');
+  assert.ok(games.length >= 666, 'Catalogue must not drop below the protected 666-game baseline');
+  assert.equal(new Set(games.map((game) => `${game.system}:${game.slug}`)).size, games.length,
+    'Every catalogue entry must retain a unique platform and slug');
   assert.equal(games.filter((game) => game.slug === 'wasteland' && game.system === 'C64' && game.year === 1988 && game.ccg_rating === 8).length, 1, 'Wasteland addition must remain unique and accurately identified');
   assert.ok(!games.some((game) => game.slug === 'the-happiest-days-of-your-life'), 'Retired video-less game returned to the catalogue');
 
@@ -565,7 +567,7 @@ test('all existing enriched game snippets avoid accidental standalone initials a
   const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
   const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
   const enriched = payload.games || payload;
-  assert.equal(games.length, 666);
+  assert.ok(games.length >= 666, 'Catalogue must not drop below the protected 666-game baseline');
   assert.ok(!games.some((game) => game.slug === 'the-happiest-days-of-your-life'));
   for (const game of games) {
     const record = { ...game, description: enriched[game.slug]?.description || game.description };

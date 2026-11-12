@@ -25,7 +25,10 @@ assert.equal(voiceCtx.state.active,null,"Audio owner must release the old active
 assert.equal(voiceCtx.finish(),false,"Completing an old clip must not pause a new clip");
 assert.match(npc,/if\(host\?\.rescue\?\.following&&!host\.rescue\.rescued\)return args/,"Escort cannot be interrupted by generic keeper greeting");
 assert.doesNotMatch(npc,/else if\(rescue\.following&&withinReach\(player,rescue\)\)present\(rescue,lines\.scout\.following/,"Every step near the scout must not replay the same voice");
-assert.match(npc,/else if\(rescue\.rescued&&withinReach\(player,rescue\)\)present\(rescue,lines\.scout\.rescued/,"Direct interaction with a rescued Scout must retain its safe-state acknowledgement");
+assert.match(npc,/else if\(rescue\.rescued&&withinReach\(player,rescue\)\)present\(rescue,lineForScout\(rescue,"rescued",player\)/,"Direct interaction with a rescued Scout must retain its safe-state acknowledgement through the canonical voiced line");
+assert.match(npc,/const key=stateKey\|\|scoutState\(rescue\),base=lines\.scout\[key\]\|\|lines\.scout\.trapped/,"The contextual Scout line must keep the existing keyed recorded dialogue as its authoritative base");
+assert.match(npc,/const subtitle=`\$\{base\.text\} \$\{scoutEscortGuidance\(rescue,player,key\)\}`\.trim\(\)/,"Scout guidance may extend subtitles without changing the original audio phrase");
+assert.doesNotMatch(npc,/else if\(rescue\.following&&withinReach\(player,rescue\)\)present\(/,"Scout following must not emit a voice line every movement step");
 
 const movement=cut(play,"function solveSequenceTorch(p){","function weightBridgeCell(");
 const puzzle={roomId:4,torches:[{dir:"N",x:2,y:2,lit:false},{dir:"E",x:3,y:2,lit:false}],sequence:["N","E"],progress:0,solved:false};
@@ -64,6 +67,32 @@ assert.equal(voices[0].opts.stateKey,"rescued");
 assert.equal(rescueToasts.length,1,"Completion feedback must not repeat");
 assert.equal(rescueToasts[0][4].ccgDialogueVoiceHandled,true,"Generic sanctuary voice must not replace scout");
 assert.equal(updated.length,1,"Rescue objective must update only once");
+// Execute the REAL updateRescue owner and confirm its lagging UI hook is reachable.
+const lagScout={x:9,y:2,following:true,rescued:false},lagHero={id:"lag-hero",x:2,y:2};
+const lagNotifications=[],lagVoices=[];
+const lagCtx={
+  host:{rescue:lagScout},world:{},performance:{now:()=>10000},
+  localPlayers:()=>[lagHero],md:(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y),
+  SYS:{inSanctuary:()=>false,pathStep:()=>null},
+  window:{
+    CCGLostSizzlerStage8NpcDialogue:{presentScoutEscortHint:(player,rescue,distance)=>lagNotifications.push({player,rescue,distance})},
+    CCGLostSizzlerVoice:{say:key=>lagVoices.push(key)}
+  },
+  showToast(){}
+};
+vm.createContext(lagCtx);
+vm.runInContext(rescueFn+";this.rescueTick=updateRescue;",lagCtx,{timeout:1200});
+lagCtx.rescueTick();
+assert.equal(lagNotifications.length,1,"real updateRescue must dispatch the far-Scout subtitle event");
+assert.equal(lagNotifications[0].distance,7,"actual lagging distance must be forwarded from game-play");
+assert.equal(lagNotifications[0].player,lagHero,"subtitle must target actual nearest player");
+assert.equal(lagNotifications[0].rescue,lagScout,"subtitle must use authoritative rescue object");
+assert.deepEqual(lagVoices,[],"seven-tile subtitle must preserve existing eight-tile recorded-voice threshold");
+lagScout.x=6;
+lagCtx.rescueTick();
+assert.equal(lagNotifications.length,1,"nearby Scout must not dispatch another distance event");
+assert.equal(lagScout.following,true,"hint cannot complete the rescue");
+assert.equal(lagScout.rescued,false,"hint cannot alter rescue state");
 
 
 const countSource=cut(play,"function updateStalker(dt){","function updateBanishment(){");

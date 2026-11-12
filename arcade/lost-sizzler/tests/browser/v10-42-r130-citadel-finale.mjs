@@ -62,12 +62,13 @@ try{
       // last-floor winning fixture. No production save/reward logic is replaced.
       window.__r130MusicCalls=0;
       window.CCGEndCreditsMusic={play(){window.__r130MusicCalls++}};
-      run.floor=15;run.deepest=15;run.dailyFailed=false;run.xpGameOver=false;
+      run.floor=15;run.deepest=15;run.floorComplete=true;run.dailyFailed=false;run.xpGameOver=false;
+      mode="floorcomplete";
       run.elapsed=123000;run.stats.kills=27;run.stats.secrets=4;
       run.enemyDefeats=[{name:"Dustweb Spider",kind:"spider",count:2,floors:[{floor:15,count:2}],killers:[]}];
       run.v104CollectedGameHistory=["Bruce Lee"];
       p1.level=9;score=1234;
-      endRun("Citadel cleared");
+      extractRun();
       return{
         mode:String(mode),runComplete:Boolean(run.runComplete),musicCalls:window.__r130MusicCalls,
         title:document.querySelector("#v130-victory-heading")?.textContent?.trim(),

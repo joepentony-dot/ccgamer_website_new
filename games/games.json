@@ -9514,6 +9514,53 @@
     "publisher": "Argus Press Software"
   },
   {
+    "system": "AMIGA",
+    "id": "gloom",
+    "slug": "gloom",
+    "title": "Gloom",
+    "sorttitle": "Gloom",
+    "year": 1995,
+    "genres": [
+      "shooting"
+    ],
+    "collections": [
+      "top-picks"
+    ],
+    "videoid": "eciifDta8Kk",
+    "thumbnail": "resources/images/thumbnails/all/gloom.webp",
+    "pdf": "https://drive.google.com/file/d/1qeg5QogjyhqjAbJ4kRLrFKMR0WHm2tPm/view?usp=drive_link",
+    "disk": [],
+    "download_status": "",
+    "lemon": [
+      "https://www.lemonamiga.com/game/gloom"
+    ],
+    "zzap": [],
+    "description": "Released in 1995 by Black Magic Software and published by Guildhall Leisure, Gloom is a fast-paced first-person shooter developed for the Commodore Amiga. Programmed by Mark Sibly, the game arrived when Amiga owners were desperate for their own answer to the hugely successful PC game Doom. Combining frantic combat, gruesome violence and maze-based exploration, Gloom became one of the Amiga's most recognisable 3D shooters.  You battle through futuristic spacecraft corridors, Gothic environments and the depths of Hell, fighting soldiers, robots, demons and supernatural enemies while searching for each level's exit. Unlimited ammunition, weapon upgrades and the infamous Meaty and Messy violence settings keep the action relentless, with defeated enemies exploding into bloody body parts.",
+    "ccg_rating": 8,
+    "ccg_rating_reason": "Gloom earns a solid 8/10 for bringing fast, enjoyable Doom-style action to the Amiga at a time when many doubted the machine could deliver it. The excessive gore, satisfying shooting, excellent soundtrack and multiplayer options make it great fun, even today.",
+    "credits": {
+      "publisher": [
+        "Guildhall"
+      ],
+      "producer": "",
+      "coder": [
+        "Mark Sibly"
+      ],
+      "graphics": [
+        "Hans Butler",
+        "Kurt Butler"
+      ],
+      "musician": [
+        "Kevan Stannard"
+      ],
+      "re_releaser": [],
+      "developer": "Black Magic"
+    },
+    "developer": "Black Magic",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
     "system": "C64",
     "id": "go_for_the_gold",
     "slug": "go-for-the-gold",

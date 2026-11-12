@@ -178,6 +178,116 @@ function buildManualsSection(entry) {
   return `<section class="retro-video-page__description-block" aria-labelledby="retro-manuals-title">\n      <h2 id="retro-manuals-title">Toolbox manuals</h2>\n      <p class="retro-video-page__description">Read the original user guides alongside the video.</p>\n      <div class="retro-video-page__actions" aria-label="Toolbox PDF manuals">\n        ${links}\n      </div>\n    </section>`;
 }
 
+// Authoritative, opt-in guide for a timed reader-rating challenge.
+// Data lives in retro-specials.json, so the production _site generator
+// cannot silently replace the published chapter links with a blank guide.
+function parsePlayAlongTime(value) {
+  const match = /^(\d{2}):([0-5]\d)$/.exec(String(value || ''));
+  if (!match) throw new Error('Invalid play-along chapter timestamp: ' + value);
+  return Number(match[1]) * 60 + Number(match[2]);
+}
+
+function buildPlayAlongGuide(entry, pagePrefix) {
+  if (entry?.playAlong?.kind !== 'c64-vs-amiga-lemon-reader-rating') return '';
+  const details = entry.playAlong;
+  const chapters = entry.chapters;
+  if (!Array.isArray(chapters) || chapters.length !== 111) {
+    throw new Error('C64 vs Amiga showdown requires 111 chapter entries');
+  }
+  const offsets = chapters.map((chapter) => parsePlayAlongTime(chapter.time));
+  if (offsets[0] !== 0 || offsets[1] !== 30 || offsets.at(-1) !== 3120 ||
+      offsets.some((offset, i) => i > 0 && offset <= offsets[i - 1])) {
+    throw new Error('C64 vs Amiga showdown chapter timings are invalid');
+  }
+  const games = chapters.filter((chapter) => /^#\d{1,3}\s+[–—-]\s/.test(chapter.title));
+  const scoreboards = chapters.filter((chapter) => /^Scoreboard\s+[–—-]\s/.test(chapter.title));
+  if (games.length !== 100 || scoreboards.length !== 9) {
+    throw new Error('C64 vs Amiga showdown needs 100 game chapters and nine scoreboards');
+  }
+  const link = (chapter) => {
+    const time = parsePlayAlongTime(chapter.time);
+    return '<li><a class="retro-video-page__chapter-link" href="' +
+      escapeHtml(SITE_ORIGIN + pagePrefix + entry.slug + '/?t=' + time + '#watch-video') +
+      '" data-video-chapter="' + time + '"><span class="retro-video-page__chapter-time">' +
+      escapeHtml(chapter.time) + '</span><span class="retro-video-page__chapter-name">' +
+      escapeHtml(chapter.title) + '</span></a></li>';
+  };
+  const blocks = [];
+  let current = [];
+  chapters.slice(1, -1).forEach((chapter) => {
+    current.push(chapter);
+    if (/^Scoreboard\s+[–—-]\s/.test(chapter.title)) {
+      blocks.push(current);
+      current = [];
+    }
+  });
+  if (current.length) blocks.push(current);
+  if (blocks.length !== 10 || blocks.slice(0, 9).some((b) => b.length !== 11) ||
+      blocks[9].length !== 10) {
+    throw new Error('C64 vs Amiga showdown group boundaries are invalid');
+  }
+  const perGroup = blocks.map((block, index) => {
+    const groupFirst = block[0];
+    const rankTop = 100 - index * 10;
+    const rankEnd = rankTop - 9;
+    const scoreboard = index < 9 ? ' · scoreboard ' + escapeHtml(block.at(-1).time) : '';
+    return '<details class="retro-video-page__discovery-panel"' +
+      (index === 0 ? ' open' : '') + '><summary>Games #' + rankTop + '–#' + rankEnd +
+      ' · ' + escapeHtml(groupFirst.time) + scoreboard +
+      '</summary><ol class="retro-video-page__chapters">' +
+      block.map(link).join('\n') + '</ol></details>';
+  }).join('\n');
+  return '<div class="retro-video-page__discovery"><div class="retro-video-page__discovery-panel">' +
+    '<h3 class="retro-video-page__discovery-title">Can you guess the higher reader rating?</h3>' +
+    '<p>' + escapeHtml(details.instructions) + '</p>' +
+    '<p>' + escapeHtml(details.timing) + '</p>' +
+    '<h3 class="retro-video-page__discovery-title">Jump to a game</h3>' +
+    '<ol class="retro-video-page__chapters">' + link(chapters[0]) + '</ol>' +
+    perGroup + '<ol class="retro-video-page__chapters">' + link(chapters.at(-1)) +
+    '</ol></div></div>';
+}
+
+function buildPlayAlongEditorial(entry) {
+  if (entry?.playAlong?.kind !== 'c64-vs-amiga-lemon-reader-rating') return '';
+  const data = entry.playAlong;
+  const paragraphs = Array.isArray(data.editorialParagraphs) ? data.editorialParagraphs : [];
+  const rawLinks = Array.isArray(data.editorialLinks) ? data.editorialLinks : [];
+  const links = rawLinks.filter((link) =>
+    typeof link.url === 'string' && /^\/(?!\/)[a-z0-9/_-]+\/$/i.test(link.url) &&
+    typeof link.title === 'string'
+  );
+  return '<section class="retro-video-page__editorial" data-ccg-seo-editorial="' +
+    escapeHtml(entry.slug) + '"><h2>' + escapeHtml(data.editorialTitle) + '</h2>' +
+    paragraphs.map((p) => '<p>' + escapeHtml(p) + '</p>').join('') +
+    '<ul class="retro-video-page__editorial-links">' +
+    links.map((link) => '<li><a href="' + escapeHtml(link.url) + '">' +
+      escapeHtml(link.title) + '</a></li>').join('') + '</ul></section>';
+}
+
+// Source-owned editorial for one-off retro features. Rendered during every
+// GitHub Pages build, rather than maintaining a page that staging overwrites.
+function buildFeatureEditorial(entry) {
+  const data = entry?.featureEditorial;
+  if (!data) return '';
+  const paragraphs = Array.isArray(data.paragraphs) ? data.paragraphs : [];
+  const rawLinks = Array.isArray(data.links) ? data.links : [];
+  const links = rawLinks.filter((item) =>
+    typeof item.title === 'string' &&
+    typeof item.url === 'string' &&
+    (/^\/(?!\/)[a-z0-9/_-]+(?:\.html)?\/?$/i.test(item.url) ||
+     /^https:\/\/www\.youtube\.com\/watch\?v=[A-Za-z0-9_-]{11}$/.test(item.url))
+  );
+  if (!String(data.title || '').trim() || !paragraphs.length) {
+    throw new Error('Feature editorial needs a heading and paragraphs for ' + entry.slug);
+  }
+  return '<section class="retro-video-page__editorial" data-ccg-feature-editorial="' +
+    escapeHtml(entry.slug) + '"><h2>' + escapeHtml(data.title) + '</h2>' +
+    paragraphs.map((p) => '<p>' + escapeHtml(p) + '</p>').join('') +
+    '<ul class="retro-video-page__editorial-links">' +
+    links.map((item) => '<li><a href="' + escapeHtml(item.url) + '">' +
+      escapeHtml(item.title) + '</a></li>').join('') + '</ul></section>';
+}
+
 function buildRelatedItems(items, currentSlug, pagePrefix) {
   const current = items.find((item) => item.slug === currentSlug);
   const bySlug = new Map(items.map((item) => [item.slug, item]));
@@ -317,6 +427,9 @@ function generateDatasetPages(config, template) {
     const { seoTitle, seoDescription } = buildSeo(entry, entry.title || '', description);
     const manualsHtml = buildManualsSection(entry);
     const relatedItemsHtml = buildRelatedItems(normalizedItems, slug, config.pagePrefix);
+    const playAlongGuideHtml = buildPlayAlongGuide(entry, config.pagePrefix);
+    const playAlongEditorialHtml = buildPlayAlongEditorial(entry);
+    const featureEditorialHtml = buildFeatureEditorial(entry);
     const deferredPlayer = entry.deferYouTubePlayer === true;
     const playerUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
     const playerFacadeHtml = deferredPlayer
@@ -326,7 +439,7 @@ function generateDatasetPages(config, template) {
         </button>`
       : '';
 
-    const renderedHtml = applyTemplate(template, {
+    let renderedHtml = applyTemplate(template, {
       SEO_TITLE: escapeHtml(seoTitle),
       SEO_DESCRIPTION: escapeHtml(seoDescription),
       CANONICAL_URL: canonicalUrl,
@@ -352,8 +465,25 @@ function generateDatasetPages(config, template) {
         ? `,\n      "duration": "${escapeJsonTemplateValue(entry.duration)}"`
         : '',
       MEMBERS_BADGE: entry.membersOnly ? '<p class="game-tag">Members only</p>' : '',
-      RELATED_ITEMS: [manualsHtml, relatedItemsHtml].filter(Boolean).join('\n\n')
+      RELATED_ITEMS: [manualsHtml, playAlongEditorialHtml, featureEditorialHtml, relatedItemsHtml].filter(Boolean).join('\n\n')
     });
+
+    if (playAlongGuideHtml) {
+      const begin = '<!-- CCG_VIDEO_DISCOVERY_START -->';
+      const end = '<!-- CCG_VIDEO_DISCOVERY_END -->';
+      const from = renderedHtml.indexOf(begin);
+      const to = renderedHtml.indexOf(end, from);
+      if (from < 0 || to < 0) {
+        throw new Error('Showdown guide template markers are missing');
+      }
+      renderedHtml = renderedHtml.slice(0, from + begin.length) + '\n' +
+        playAlongGuideHtml + '\n      ' + renderedHtml.slice(to);
+      renderedHtml = renderedHtml
+        .replace('<h2 id="retro-watch-title">Video guide</h2>',
+          '<h2 id="retro-watch-title">' + escapeHtml(entry.playAlong.title) + '</h2>')
+        .replace('<span>Chapters and linked CCG game pages</span>',
+          '<span>' + escapeHtml(entry.playAlong.subtitle) + '</span>');
+    }
 
     const shellResult = normaliseHtml(renderedHtml);
     if (!shellResult.applicable || shellResult.malformed) {
@@ -364,6 +494,19 @@ function generateDatasetPages(config, template) {
     const html = shellResult.html;
 
     const htmlProblems = validateGeneratedHtml(html, canonicalUrl);
+    if (playAlongGuideHtml) {
+      const chapterCount = (html.match(/data-video-chapter="/g) || []).length;
+      if (chapterCount !== entry.chapters.length) {
+        htmlProblems.push('showdown generated chapter count is ' + chapterCount +
+          '; expected ' + entry.chapters.length);
+      }
+      if (!html.includes('data-ccg-seo-editorial="' + escapeHtml(slug) + '"')) {
+        htmlProblems.push('showdown editorial disappeared from generated HTML');
+      }
+    }
+    if (featureEditorialHtml && !html.includes('data-ccg-feature-editorial="' + escapeHtml(slug) + '"')) {
+      htmlProblems.push('feature editorial disappeared from generated HTML');
+    }
     if (htmlProblems.length) {
       skippedCount += 1;
       console.error(`[retro] BLOCKED HTML ${config.label}:${label}: ${htmlProblems.join('; ')}`);
@@ -422,5 +565,7 @@ if (require.main === module) generateRetroPages();
 
 module.exports = {
   buildRelatedItems,
+  buildPlayAlongGuide,
+  buildPlayAlongEditorial,
   youtubeThumbnailIntrinsicAttributes
 };

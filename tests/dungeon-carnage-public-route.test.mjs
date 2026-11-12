@@ -28,6 +28,12 @@ for(const [name,page] of [["source",index],["public",publicEntry]]){
   assert.ok(page.includes(`<meta name="ccg-lost-sizzler-cache" content="${releaseCache}">`),name+" must match version.json cache token");
   assert.ok(page.includes(`<summary>Latest Build Changes · ${releaseLabel}</summary>`),name+" visible changelog must match the release");
   assert.ok(page.includes(`ACTIVE BUILD: ${releaseLabel}`),name+" visible active build must match the release");
+  assert.ok(page.includes("<b>WARD-BREAK READY</b>")&&page.includes("B WARD BREAK • M MAP"),name+" must advertise the real Warden controls");
+  assert.ok(page.includes("Press <b>B</b> near a sealed Warden with clear line of sight to break its immunity"),name+" dossier must explain immunity breaking rather than instant death");
+  assert.ok(page.includes("Each charge removes one sealed Warden's immunity; finish the Warden with weapons."),name+" shop must explain the one-charge purpose");
+  assert.ok(page.includes("Press B within range and line of sight to remove one Warden's immunity, then finish it with weapons"),name+" Guide must cover both Warden defeat stages");
+  assert.ok(page.includes("R159 corrects Warden guidance"),name+" visible release notes must describe the correction");
+  assert.doesNotMatch(page,/destroy it permanently|Permanent banishment awards 15,000 score|Banishment Flasks are not score purchases|B BANISH • M MAP/,name+" must not publish superseded instant-banishment rules");
   assert.ok(page.includes("flickering animated wall torches")&&page.includes("rotating gold-score coins"),name+" changelog must preserve R118 animation notes");
   assert.ok(page.includes("R119 improves permanent sanctuary spacing")&&page.includes("Treasure Goblin"),name+" changelog must preserve the R119 gameplay corrections");
   assert.ok(page.includes("R134 upgrades the visual presentation of spike traps"),name+" must describe the R134 art release");

@@ -10,6 +10,7 @@
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
   const merchantVoiceVisits=new WeakMap();
+  const escortHintTimes=new WeakMap();
   const environmentalSeen=new WeakSet();
   const environmentalFloors=new WeakMap();
   const explorationFloors=new WeakMap();
@@ -20,7 +21,7 @@
     Object.freeze({id:"crossfire-routes",min:6,max:8,cadence:3,maxEncounters:3,squad:2,hpBonus:1,kinds:Object.freeze(["ambusher","scout"]),label:"Crossfire Routes"}),
     Object.freeze({id:"lockdown-depths",min:9,max:Infinity,cadence:2,maxEncounters:4,squad:2,hpBonus:1,kinds:Object.freeze(["ambusher","scout","ambusher"]),label:"Lockdown Depths"})
   ]);
-  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,levelDirectorEncounters:0,levelDirectorEnemies:0,levelDirectorSkips:0,lastLevelProfile:null,last:null,lastMerchantTask:null};
+  const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,scoutEscortHints:0,levelDirectorEncounters:0,levelDirectorEnemies:0,levelDirectorSkips:0,lastLevelProfile:null,last:null,lastMerchantTask:null};
   const lines=Object.freeze({
     scout:Object.freeze({
       trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"Thank God you found me.",tone:"green",duration:6200,voiceKey:"npc.scout.found"}),
@@ -79,7 +80,24 @@
     try{return typeof md==="function"?md(player,entity)<=1:Math.abs(Number(player.x)-Number(entity.x))+Math.abs(Number(player.y)-Number(entity.y))<=1}catch(_){return false}
   }
   function scoutState(rescue){if(rescue?.rescued)return"rescued";if(rescue?.following)return"following";return"trapped"}
-  function lineForScout(rescue,stateKey=""){const key=stateKey||scoutState(rescue);return lines.scout[key]||lines.scout.trapped}
+  // R158: the Scout's authored voice remains the original brief recording.
+  // Add useful rescue directions only to the existing subtitle surface.
+  function scoutEscortGuidance(rescue,player=null,stateKey=""){
+    const key=stateKey||scoutState(rescue);
+    if(key==="rescued")return "Escort complete: the Scout has reached a permanently lit Sanctuary.";
+    if(key==="trapped")return "Escort objective: guide the Scout himself into a permanently lit Sanctuary. Arriving there alone does not finish the rescue.";
+    const px=Number(player?.x),py=Number(player?.y),sx=Number(rescue?.x),sy=Number(rescue?.y);
+    if([px,py,sx,sy].every(Number.isFinite)){
+      const distance=Math.abs(px-sx)+Math.abs(py-sy);
+      if(distance>=6)return "Scout is "+distance+" tiles away. Wait for him to catch up, then enter a permanently lit Sanctuary together.";
+    }
+    return "Keep the Scout nearby and lead him into a permanently lit Sanctuary to finish the rescue.";
+  }
+  function lineForScout(rescue,stateKey="",player=null){
+    const key=stateKey||scoutState(rescue),base=lines.scout[key]||lines.scout.trapped;
+    const subtitle=`${base.text} ${scoutEscortGuidance(rescue,player,key)}`.trim();
+    return {...base,subtitle,duration:Math.min(10000,Math.max(base.duration,2000+subtitle.length*40))};
+  }
   function fieldTaskSnapshot(){
     let games=0,secrets=0,champions=0;
     try{games=Math.max(0,Number(stats?.games||0));secrets=Math.max(0,Number(stats?.secrets||0));champions=Math.max(0,Number(run?.stats?.champions||0))}catch(_){}
@@ -90,12 +108,38 @@
     ];
     return tasks.find(task=>task.progress<task.target)||{id:"complete",label:"All field commissions complete",progress:3,target:3,complete:true}
   }
+  // R157: context-only advice. Keep the existing human-recorded clip keys,
+  // transaction owners and NPC encounter frequency unchanged.
+  function equipmentAdvice(player){
+    const gear=player?.wearables;
+    if(!gear?.body)return "Body slot empty: armour can increase your armour capacity.";
+    if(!gear?.trinket)return "Trinket slot empty: enchanted charms can improve sight.";
+    return "Body and Trinket equipped. Check your supplies before the next floor.";
+  }
+  function alchemistAdvice(essence,required){
+    const have=Math.max(0,Math.floor(Number(essence)||0)),need=Math.max(2,Math.floor(Number(required)||3));
+    return have>=need
+      ? "Essence "+have+"/"+need+": enough to distil one Banishment Flask."
+      : "Essence "+have+"/"+need+": "+(need-have)+" more needed for one Banishment Flask.";
+  }
+  function sanctuaryAdvice(player){
+    const hp=Number(player?.health),maxHp=Number(player?.maxHealth);
+    if(Number.isFinite(hp)&&Number.isFinite(maxHp)&&maxHp>0&&hp/maxHp<=.5)
+      return "You're hurt. Use the marked green square to recover before leaving.";
+    if(!player?.wearables?.body||!player?.wearables?.trinket)
+      return "Check your Body and Trinket slots before the next fight.";
+    return "You've got a safe room here. Check your supplies and route.";
+  }
   function lineForMerchant(shop,task=fieldTaskSnapshot()){
     const visits=Math.max(0,Number(merchantVoiceVisits.get(shop)||0));
-    let base;
-    if(shop?.shopType==="hidden"){
-      let essence=0;try{essence=Math.max(0,Number(p1?.banishmentEssence||0))+Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
-      const need=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
+    let base,essence=0;
+    const hidden=shop?.shopType==="hidden";
+    let need=3;
+    if(hidden){
+      // The Vessel is the sole canonical Essence store. inventoryKindCount("artefact")
+      // aliases this exact value; adding both counts the same Essence twice.
+      try{essence=Math.max(0,Math.floor(Number(p1?.banishmentEssence)||0))}catch(_){}
+      need=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
       if(visits===0)base=lines.merchant.hidden;
       else if(essence>=need)base=lines.merchant.hiddenReady;
       else if(essence>0)base=lines.merchant.hiddenPartial;
@@ -106,8 +150,12 @@
     const briefing=task.complete
       ?"Field board: all three commissions are complete; their normal +350 score reward path remains unchanged."
       :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
-    const essenceNeed=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3)),trade=shop?.shopType==="hidden"?` Distil ${essenceNeed} Banishment Essence into one Banishment Flask.`:"";
-    return{...base,text:`${base.text}${trade} ${briefing}`.trim()}
+    const trade=hidden?` Distil ${need} Banishment Essence into one Banishment Flask.`:"";
+    let owner=null;try{owner=p1}catch(_){}
+    const hint=hidden?alchemistAdvice(essence,need):equipmentAdvice(owner);
+    const text=`${base.text}${trade} ${briefing} ${hint}`.trim();
+    // Longer subtitles do not outlive the existing notification rail.
+    return{...base,text,duration:Math.min(10500,Math.max(Number(base.duration)||5200,2000+text.length*36))}
   }
   function speakDialogueLine(line,{priority=44,cooldown=REPEAT_MS}={}){
     if(!line?.voiceKey||!line?.text)return false;
@@ -129,8 +177,8 @@
     try{
       if(typeof toastTimer==="undefined"||Number(toastTimer)<=0||typeof toastQueue==="undefined"||!Array.isArray(toastQueue))return false;
       const current=String(document.getElementById("pickup-text")?.textContent||"");
-      const text=`${line.speaker}: ${line.text}`;
-      if(!current||current.includes(line.text)||toastQueue.some(entry=>String(entry?.text||"")===text))return false;
+      const displayText=String(line.subtitle||line.text),text=`${line.speaker}: ${displayText}`;
+      if(!current||current.includes(displayText)||toastQueue.some(entry=>String(entry?.text||"")===text))return false;
       toastQueue.push({title:String(line.title),text,tone:line.tone,duration:Math.max(5200,Number(line.duration)||7600),retain:true,ccgDialogueVoiceHandled:Boolean(spoken)});
       state.deferredSubtitles=(state.deferredSubtitles||0)+1;
       return true
@@ -142,16 +190,38 @@
     const now=clockNow(),previous=memory.get(entity);
     if(!force&&previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return false}
     const spoken=speakDialogueLine(line),deferred=queueDialogueSubtitleBehindActiveToast(line,spoken);
-    if(!deferred)try{showToast(line.title,`${line.speaker}: ${line.text}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true,retain:true}:{retain:true})}catch(_){return false}
+    const displayed=String(line.subtitle||line.text);
+    if(!deferred)try{showToast(line.title,`${line.speaker}: ${displayed}`,line.tone,line.duration,spoken?{ccgDialogueVoiceHandled:true,retain:true}:{retain:true})}catch(_){return false}
     memory.set(entity,{key:line.key,at:now});
     state.presentations++;
-    state.last={key:line.key,title:line.title,text:line.text,voiceKey:line.voiceKey,at:now};
+    state.last={key:line.key,title:line.title,text:displayed,voiceKey:line.voiceKey,at:now};
     return true
   }
   function presentScout(player,{force=false,stateKey=""}={}){
     let rescue=null;try{rescue=host?.rescue||null}catch(_){return false}
     if(!rescue)return false;
-    return present(rescue,lineForScout(rescue,stateKey),{player,force})
+    return present(rescue,lineForScout(rescue,stateKey,player),{player,force})
+  }
+  // The original updateRescue step invokes this without another timer or scanner.
+  // Keep the owner's recorded lagging voice separate: this is subtitle-only.
+  function presentScoutEscortHint(player,rescue,distance=null){
+    if(!soloDungeon()||!player||!rescue?.following||rescue.rescued)return false;
+    try{if(host?.rescue!==rescue)return false}catch(_){return false}
+    const px=Number(player.x),py=Number(player.y),sx=Number(rescue.x),sy=Number(rescue.y);
+    const separation=Number.isFinite(distance)?distance:Math.abs(px-sx)+Math.abs(py-sy);
+    if(!Number.isFinite(separation)||separation<6)return false;
+    const now=clockNow(),last=escortHintTimes.get(rescue);
+    if(last!==undefined&&now-last<12000)return false;
+    const line=lineForScout(rescue,"following",player);
+    const deferred=queueDialogueSubtitleBehindActiveToast(line,true);
+    if(!deferred)try{
+      showToast(line.title,line.speaker+": "+line.subtitle,line.tone,line.duration,{ccgDialogueVoiceHandled:true,retain:true});
+    }catch(_){return false}
+    escortHintTimes.set(rescue,now);
+    state.scoutEscortHints++;
+    state.presentations++;
+    state.last={key:line.key,title:line.title,text:line.subtitle,voiceKey:line.voiceKey,at:now};
+    return true
   }
   function presentMerchant(shop,{force=false}={}){
     if(!shop?.active)return false;
@@ -182,7 +252,9 @@
     try{if(host?.rescue?.following&&!host.rescue.rescued)return args}catch(_){}
     const now=clockNow(),previous=memory.get(room);
     if(previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return args}
-    args[1]=`${String(args[1]||"")} ${line.speaker}: ${line.text}`.trim();
+    let keeperPlayer=null;try{keeperPlayer=p1}catch(_){}
+    args[1]=`${String(args[1]||"")} ${line.speaker}: ${line.text} ${sanctuaryAdvice(keeperPlayer)}`.trim();
+    args[3]=Math.min(10500,Math.max(Number(args[3])||0,2000+String(args[1]).length*32));
     const spoken=speakDialogueLine(line,{priority:42,cooldown:REPEAT_MS});
     if(spoken)args[4]={...(args[4]&&typeof args[4]==="object"?args[4]:{}),ccgDialogueVoiceHandled:true};
     memory.set(room,{key:line.key,at:now});
@@ -341,11 +413,11 @@
       if(!before||!soloDungeon())return result;
       try{
         const rescue=host?.rescue;if(!rescue)return result;
-        if(!before.rescued&&!before.following&&rescue.following&&rescue.found)present(rescue,lines.scout.trapped,{player});
+        if(!before.rescued&&!before.following&&rescue.following&&rescue.found)present(rescue,lineForScout(rescue,"trapped",player),{player});
         // The actual hand-off fires from updateRescue(), while a later direct
         // interaction with an already rescued Scout may acknowledge safety.
         // Keep the following-state line disabled during ordinary movement.
-        else if(rescue.rescued&&withinReach(player,rescue))present(rescue,lines.scout.rescued,{player});
+        else if(rescue.rescued&&withinReach(player,rescue))present(rescue,lineForScout(rescue,"rescued",player),{player});
       }catch(_){}
       return result
     };
@@ -416,7 +488,7 @@
     if(hadDialogueOwner)return true;
     try{
       const rescue=host?.rescue||null,player=typeof p1!=="undefined"?p1:null;
-      if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lines.scout.trapped,{player});
+      if(rescue?.following&&rescue?.found&&!rescue?.rescued)present(rescue,lineForScout(rescue,"trapped",player),{player});
     }catch(_){}
     return ancestryHasMarker(window.triggerRescue,"__ccgStage8NpcDialogue")
   }
@@ -483,5 +555,5 @@
   installWhenReady();
   queueMicrotask(installWhenReady);
   if(document.readyState!=="complete")addEventListener("load",installWhenReady,{once:true});
-  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,lineForMerchant,fieldTaskSnapshot,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
+  window.CCGLostSizzlerStage8NpcDialogue={state,lines,LEVEL_PROFILES,soloDungeon,lineForScout,scoutEscortGuidance,lineForMerchant,fieldTaskSnapshot,equipmentAdvice,alchemistAdvice,sanctuaryAdvice,speakDialogueLine,queueDialogueSubtitleBehindActiveToast,present,presentScout,presentScoutEscortHint,presentMerchant,sanctuaryRoom,augmentSanctuaryToast,environmentalEligible,currentFloorNumber,levelProfile,directedEncounterEligible,directedSpawnCells,spawnDirectedEnemy,applyDirectedEncounter,presentEnvironmentalStory,onRoomEntered,explorationFeatureAt,presentExplorationFeature,onMovementBoundary,install,installMerchantDialogue,installWhenReady,installScoutToastBridge,ensureScoutToastObserver,handleScoutFoundBoundary,installRescueAssignmentGate,ancestryHasMarker};
 })();

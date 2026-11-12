@@ -7,6 +7,7 @@ const path = require("path");
 const { youtubeThumbnailCardUrl, youtubeThumbnailIntrinsicAttributes } = require("./lib/youtube-thumbnail-dimensions.js");
 const { applyTemplate, readTemplate } = require("./template-engine");
 const { normalizeRetroSlug, verifiedMetadata } = require("./generate-retro-video-seo");
+const { buildPlayAlongGuide } = require("./generate-retro-pages");
 const { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");
 
 const repoRoot = process.env.CCG_REPO_ROOT
@@ -487,7 +488,11 @@ function enhanceRetroPages(games, metadataById) {
       const featuredGames = entry?.membersOnly === true ? [] : featuredGamesFor(entry, metadata, gamesBySlug, games);
       let html = fs.readFileSync(pagePath, "utf8");
       const before = html;
-      html = replaceDiscoveryMarker(html, buildDiscoveryHtml(chapters, featuredGames, canonicalUrl));
+      const authoredGuide = entry?.membersOnly !== true &&
+        entry?.playAlong?.kind === "c64-vs-amiga-lemon-reader-rating"
+        ? buildPlayAlongGuide(entry, config.pagePrefix) : "";
+      html = replaceDiscoveryMarker(html,
+        authoredGuide || buildDiscoveryHtml(chapters, featuredGames, canonicalUrl));
       html = enhanceVideoObjectClips(html, chapters, canonicalUrl, metadata);
 
       if (html !== before && writeFileIfChanged(pagePath, html)) pagesUpdated += 1;

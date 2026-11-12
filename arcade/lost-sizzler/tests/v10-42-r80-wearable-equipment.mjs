@@ -19,7 +19,7 @@ assert.match(version.build,/^V10\.42 r\d+$/,"feature contract requires the curre
 assert.match(version.cacheToken,/^\d{8}r\d+$/,"feature contract requires a valid current release cache token");
 
 assert.match(bootstrap,/v10-42-r71-equipment-inventory\.js[\s\S]*v10-42-r80-wearable-equipment\.js[\s\S]*v10-42-r72-map-death-feedback\.js/,"R80 wearables must load after the R71 inventory owner and before later presentation modules");
-assert.match(source,/const SLOT_ORDER=\["head","hands","feet"\]/,"wearables must expose genuine Head, Hands and Feet slots");
+assert.match(source,/const SLOT_ORDER=\["head","body","hands","feet","trinket"\]/,"wearables must expose all five requested RPG slots");
 assert.match(source,/function gearTierFor/,"wearables must map the existing loot rarity stream into RPG armour tiers");
 assert.match(source,/armourBonus:3,enchanted:true/,"Enchanted gear must be the best armour tier at +3");
 assert.match(core,/id==="armour"\)\{const before=p1\.armor\|\|0,cap=PGR\.armourCap\?\.\(p1\)\|\|12;p1\.armor=Math\.min\(cap,before\+3\)/,"shop Armour Repair must respect wearable-derived armour capacity instead of hard-coding 12");
@@ -63,9 +63,13 @@ assert.match(css,/\.r80-wearable-strip/,"R80 must render a dedicated wearable lo
 assert.match(css,/\.r80-preview-head/,"equipped Head gear must be represented on the character preview");
 assert.match(css,/\.r80-preview-hands/,"equipped Hands gear must be represented on the character preview");
 assert.match(css,/\.r80-preview-feet/,"equipped Feet gear must be represented on the character preview");
+assert.match(css,/\.r80-preview-body/,"Body gear must be visible on the character portrait");
+assert.match(css,/\.r80-preview-trinket/,"Trinket must be visible on the character portrait");
+assert.match(css,/grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/,"desktop loadout must show five slots");
+assert.match(css,/@media\(max-width:820px\)[\s\S]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,"mobile loadout must stay compact");
 assert.match(source,/function drawLiveWearables/,"R80 must render genuine wearable accents on the live dungeon player");
 assert.match(source,/drawPlayerEquipmentOverlay=function r80DrawPlayerEquipmentOverlay/,"live wearables must extend the established player equipment overlay rather than replace the player renderer");
-assert.match(source,/if\(head\)[\s\S]*if\(hands\)[\s\S]*if\(feet\)/,"live overlay must represent all three genuine wearable slots");
+assert.match(source,/if\(body\)[\s\S]*if\(trinket\)[\s\S]*if\(head\)[\s\S]*if\(hands\)[\s\S]*if\(feet\)/,"live overlay must represent five genuine wearable slots");
 
 const inventoryAdd=(player,item)=>{
   player.inventory=player.inventory||[];
@@ -113,9 +117,11 @@ vm.runInContext(source,context,{filename:"v10-42-r80-wearable-equipment.js"});
 const api=context.window.CCGLostSizzlerV142R80WearableEquipment;
 assert.ok(api,"R80 API must initialise");
 
+const allSlots=new Set(Array.from({length:150},(_,i)=>api.makeWearable({id:"r156-five-slots-"+i,depth:8}).slot));
+assert.equal([...allSlots].sort().join(","),[...api.slots].sort().join(","),"deterministic chest loot must offer all five wearable slots");
 const generated=api.makeWearable({id:"arena-chest-test",depth:5});
 assert.equal(generated.kind,"wearable");
-assert.ok(["head","hands","feet"].includes(generated.slot));
+assert.ok(["head","body","hands","feet","trinket"].includes(generated.slot));
 assert.ok(generated.name);
 assert.ok(api.effectText(generated).length>3);
 
@@ -124,7 +130,7 @@ assert.equal(JSON.stringify(api.gearTierFor("SIZZLER")),JSON.stringify({name:"SU
 assert.equal(JSON.stringify(api.gearTierFor("GOLD MEDAL")),JSON.stringify({name:"ENCHANTED",armourBonus:3,enchanted:true}),"Enchanted wearable tier must retain +3 armour-cap semantics");
 const enchantedHead=api.makeWearable({id:"enchanted-head-search",depth:12},{rpgStats:{luck:10}});
 assert.ok(["COMMON","RARE","SUPERIOR","ENCHANTED"].includes(enchantedHead.gearTier));
-if(enchantedHead.gearTier==="ENCHANTED")assert.ok(/SIGHT|AMMO PICKUPS|FASTER MOVEMENT/.test(api.effectText(enchantedHead)),"Enchanted wearables must add a secondary slot bonus");
+if(enchantedHead.gearTier==="ENCHANTED")assert.ok(/SIGHT|AMMO PICKUPS|FASTER MOVEMENT|ARMOUR CAP \+4/.test(api.effectText(enchantedHead)),"Enchanted wearables must add a secondary slot bonus");
 
 const lowLuck={rpgStats:{luck:5}};
 const highLuck={rpgStats:{luck:10}};
@@ -134,6 +140,29 @@ assert.ok(context.window.CCGProgression.RARITY.indexOf(highLuckGear.rarity)>cont
 assert.equal(api.qualifiesForDrop({id:"drop-luck-0",depth:1},lowLuck),false,"baseline Luck should not force the selected ordinary chest to drop gear");
 assert.equal(api.qualifiesForDrop({id:"drop-luck-0",depth:1},highLuck),true,"higher Luck must be able to turn the same deterministic ordinary chest roll into a wearable drop");
 
+// R156: retain old three-slot saves, apply the new real Body/Trinket gear,
+// preserve the head bonus, and recover all equipped items from the death cache.
+const previousSave={inventory:[],wearables:{head:{kind:"wearable",slot:"head",name:"SAVED HOOD"},hands:null,feet:null}};
+const expanded=api.wearables(previousSave);
+assert.equal(expanded.head.name,"SAVED HOOD");
+assert.equal(expanded.body,null);
+assert.equal(expanded.trinket,null);
+const bodyGear={kind:"wearable",slot:"body",name:"ENCHANTED WARDEN PLATE",rarity:"GOLD MEDAL",gearTier:"ENCHANTED",armourBonus:4};
+const trinketGear={kind:"wearable",slot:"trinket",name:"ENCHANTED WARDEN AMULET",rarity:"GOLD MEDAL",gearTier:"ENCHANTED",armourBonus:3,sightBonus:1};
+const allGear={inventory:[bodyGear,trinketGear],wearables:{head:{kind:"wearable",slot:"head",name:"SAVED VISOR",sightBonus:1},hands:null,feet:null}};
+assert.equal(api.equipWearable(allGear,0),true);
+assert.equal(api.equipWearable(allGear,0),true);
+assert.equal(allGear.wearables.body.name,bodyGear.name);
+assert.equal(allGear.wearables.trinket.name,trinketGear.name);
+assert.equal(context.window.CCGProgression.effectiveSight(allGear,context.run),7,"Head and Trinket sight bonuses must compose exactly once");
+assert.equal(api.wearableSlot({kind:"wearable",name:"ARCHIVE CUIRASS"}),"body","legacy Body naming must restore a lost slot");
+assert.equal(api.wearableSlot({kind:"wearable",name:"ARCHIVE TALISMAN"}),"trinket","legacy Trinket naming must restore a lost slot");
+assert.equal(api.wearableSlot({kind:"torch",name:"TORCH RELIC"}),null,"ordinary consumables cannot become wearables");
+const fiveDeath=context.window.CCGProgression.createDeathCache(allGear,context.run,2,2);
+assert.equal(allGear.wearables.body,null);
+assert.equal(allGear.wearables.trinket,null);
+assert.equal(fiveDeath.inventory.filter(item=>item.deathEquippedSlot==="body").length,1);
+assert.equal(fiveDeath.inventory.filter(item=>item.deathEquippedSlot==="trinket").length,1);
 const player={
   inventory:[{kind:"wearable",slot:"hands",name:"TEST GLOVES",rarity:"SIZZLER",scavengerBonus:.16}],
   scavenger:.2,
@@ -234,7 +263,7 @@ const chosenPlayer={
 };
 assert.equal(api.bestCarriedForSlot(chosenPlayer,"head").index,3,"direct slot action chooses strongest matching wearable, not the first unrelated item");
 assert.equal(api.bestCarriedForSlot(chosenPlayer,"hands").index,2,"different slots cannot select Head equipment");
-assert.equal(api.bestCarriedForSlot(chosenPlayer,"body"),null,"unsupported body slot must not consume carried gear");
+assert.equal(api.bestCarriedForSlot(chosenPlayer,"body"),null,"no Body wearable must not select unrelated gear");
 assert.equal(api.equipBestForSlot(chosenPlayer,"head"),true,"loadout swap must use the real transactional equip owner");
 assert.equal(chosenPlayer.wearables.head.name,legacyUpgrade.name);
 assert.equal(chosenPlayer.inventory.filter(item=>item.name===oldHelmet.name).length,1,"replaced gear returns to inventory exactly once");

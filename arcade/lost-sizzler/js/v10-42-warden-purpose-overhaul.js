@@ -209,6 +209,9 @@
     h.revision=(Number(h.revision)||0)+1;sfx("elite");fxBurst(target.x,target.y);
     try{floatText(target.x,target.y,`WARDEN DOWN! +${SCORE_REWARD.toLocaleString()} SCORE`,P.gold,{life:3200})}catch(_){}
     announce(`${name.toUpperCase()} DEFEATED`,`Warden kill secured: ${SCORE_REWARD.toLocaleString()} total score, ${XP_REWARD} total XP, ${essenceGain?"+1 Banishment Essence, ":""}+2 armour and an ammo refill. ${cache?"A high-tier Warden Cache has appeared nearby. ":"The Warden Cache is reserved until a safe tile is available. "}The kill has also triggered a ${Math.round(AFTERSHOCK_MS/1000)}-second dungeon aftershock at ${AFTERSHOCK_ALERT}%+ alert, so taking the reward still carries risk. Vessel Essence: ${essence}.`,"green",12500);
+    if(!isCount(target)){
+      try{window.CCGLostSizzlerAchievementsV129?.award?.("LS_STALKER_BANISHED")}catch(_){}
+    }
     broadcast();syncNow();return true;
   }
 

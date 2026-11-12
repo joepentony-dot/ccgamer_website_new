@@ -99,3 +99,34 @@ test('music keeps its established short URL while signalling C64 and Amiga stron
   assert.match(music, /"name": "C64 & Amiga Music Hub"/);
   assert.doesNotMatch(generator, /music\/index\.html/);
 });
+
+// Guard the original Omega banners: speculative image priority hints were
+// measured as regressive, so the generator must not reinstate them.
+test('all 15 genre banners retain their baseline first-paint markup', () => {
+  const files = ["action-adventure-games.html","adventure-games.html","arcade-games.html","casino-games.html","fighting-games.html","horror-games.html","miscellaneous.html","platform-games.html","puzzle-games.html","quiz-games.html","racing-games.html","role-playing-games.html","shooting-games.html","sports-games.html","strategy-games.html"];
+  for (const file of files) {
+    const html = fs.readFileSync('games/genres/' + file, 'utf8');
+    const banners = html.match(/<img\b[^>]*\bclass=["'][^"']*\bccg-genre-hero__img\b[^"']*["'][^>]*>/gi) || [];
+    assert.equal(banners.length, 1, file + ': retain the original genre banner');
+    assert.doesNotMatch(banners[0], /\b(?:loading|fetchpriority)=/i, file + ': no unqualified banner priority');
+    const expectedFontPreconnects = file === 'arcade-games.html' ? 1 : 0;
+    assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">/g) || []).length, expectedFontPreconnects, file + ': preserve existing Google CSS preconnect count');
+    assert.equal((html.match(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/g) || []).length, expectedFontPreconnects, file + ': preserve existing Google font preconnect count');
+    assert.match(html, /\bccg-game-card\b/, file + ': retain the catalogue cards');
+  }
+  assert.doesNotMatch(generator, /function prioritiseAboveFoldGenreBanner\(/);
+  assert.doesNotMatch(generator, /function ensureGenreFontPreconnect\(/);
+});
+
+test('Amiga decoration cannot occupy document flow before its deferred visual stylesheet loads', () => {
+  const modeCss = fs.readFileSync('resources/css/ccg-mode.css', 'utf8');
+  const amigaCss = fs.readFileSync('resources/css/ccg-amiga-mode.css', 'utf8');
+  const modeEngine = fs.readFileSync('js/ccg-mode-engine.js', 'utf8');
+  const initial = modeCss.match(/\.ccg-amiga-chrome\s*\{([^}]+)\}/);
+  assert.ok(initial, 'blocking mode CSS includes first-paint Amiga chrome geometry');
+  for (const property of ['position: fixed', 'inset: 0', 'pointer-events: none', 'opacity: 0', 'visibility: hidden']) {
+    assert.ok(initial[1].includes(property), 'first-paint geometry reserves ' + property);
+  }
+  assert.match(modeEngine, /ensureAmigaStyles\(\);\s*ensureAmigaChrome\(\);/, 'mode engine still owns the deferred visual layer');
+  assert.match(amigaCss, /html\[data-ccg-mode="amiga"\]\s+\.ccg-amiga-chrome/, 'full Amiga visuals retain final mode ownership');
+});

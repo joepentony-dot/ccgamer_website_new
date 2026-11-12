@@ -67,6 +67,27 @@
     }
   }
 
+  // Canonical public watch-page routes only. Never display a total for
+  // a legacy redirect, a private/admin page, or a non-collection URL.
+  function getRetroFeaturePath() {
+    if (document.documentElement.getAttribute("data-ccg-page") !== "retro-video") {
+      return null;
+    }
+    var canonical = document.querySelector('link[rel="canonical"][href]');
+    if (!canonical) return null;
+    try {
+      var url = new URL(canonical.href, location.origin);
+      if (url.origin !== location.origin ||
+          !/^\/(?:retro-specials|retro-events|amiga-demo-music)\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(url.pathname) ||
+          url.pathname !== window.location.pathname) {
+        return null;
+      }
+      return url.pathname;
+    } catch (_) {
+      return null;
+    }
+  }
+
   function displayNumber(node, number, source) {
     if (!node || !Number.isSafeInteger(number) || number < 0) return;
     node.textContent = number.toLocaleString("en-GB");
@@ -207,6 +228,48 @@
   }
 
 
+  function addRetroFeatureCounter() {
+    var path = getRetroFeaturePath();
+    if (!path) return;
+
+    var footer = document.querySelector(".ccg-footer");
+    if (!footer) return;
+
+    // The generated watch-page template renders a counter placeholder.
+    // Retain a fallback for older live pages that have not yet been rebuilt.
+    var count = document.getElementById("ccg-retro-view-count");
+    if (!count) {
+      var badge = document.createElement("div");
+      badge.className = "ccg-retro-views";
+      badge.setAttribute("aria-label", "Recorded visits to this feature");
+
+      var label = document.createElement("span");
+      label.className = "ccg-retro-views__label";
+      label.textContent = "Feature visits";
+
+      count = document.createElement("span");
+      count.className = "ccg-retro-views__count";
+      count.id = "ccg-retro-view-count";
+      count.textContent = "—";
+      count.setAttribute("aria-live", "polite");
+
+      badge.appendChild(label);
+      badge.appendChild(count);
+      var inner = footer.querySelector ? footer.querySelector(".ccg-footer__inner") : null;
+      (inner || footer).appendChild(badge);
+    }
+    if (!window.fetch) return;
+
+    // GoatCounter stores trailing-slash and non-trailing-slash paths as the
+    // same key. Fetch once; never add both or inflate the feature count.
+    publicCount(path.slice(0, -1)).then(function (visits) {
+      displayNumber(count, visits, "live");
+      count.title = "Feature visits recorded by GoatCounter. Counts may be cached or delayed; not unique people.";
+    }).catch(function () {
+      // Leave the placeholder rather than displaying an invented number.
+    });
+  }
+
   // Separate cumulative hourly browser-session events from the recovered
   // historical archive total. Never add the same event twice to the baseline.
   function addHourlySessionCounter(homeCount) {
@@ -285,6 +348,7 @@
     }
 
     addGameCounter();
+    addRetroFeatureCounter();
     ensureGoatCounterTracker();
     countArchiveSessionOnce();
   }

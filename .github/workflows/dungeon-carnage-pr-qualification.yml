@@ -23,6 +23,7 @@ on:
       - 'scripts/verify-c64-dungeon-carnage-itch-browser.mjs'
       - '.github/workflows/c64-dungeon-carnage-itch-package.yml'
       - '.github/workflows/dungeon-carnage-pr-qualification.yml'
+      - 'scripts/install-dungeon-chromium.sh'
       - '.github/workflows/lost-sizzler-load-safety.yml'
 
 permissions:
@@ -109,7 +110,8 @@ jobs:
   browser-smoke:
     name: Focused Chromium regression smoke
     needs: fast-contracts
-    runs-on: ubuntu-latest
+    # Playwright 1.55 is incompatible with the ubuntu-latest 26.04 runner.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - name: Checkout repository
@@ -122,12 +124,7 @@ jobs:
 
       - name: Install Chromium test runtime once
         shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --no-package-lock playwright@1.55.0
-          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
-          sudo apt-get update
-          npx playwright install --with-deps chromium
+        run: bash scripts/install-dungeon-chromium.sh
 
       - name: Build and statically verify staged itch.io package
         shell: bash

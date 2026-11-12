@@ -531,3 +531,30 @@
   border-color: #72d7ff;
   box-shadow: 0 0 0 3px rgba(114, 215, 255, 0.25);
 }
+
+/* GoatCounter visits: small, visible counter beneath each retro feature. */
+html[data-ccg-page="retro-video"] .ccg-footer .ccg-retro-views {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin: 10px auto 0;
+  padding: 8px 16px;
+  border: 1px solid rgba(114, 215, 255, 0.45);
+  border-radius: 999px;
+  background: rgba(16, 21, 34, 0.82);
+  color: #e8f3fc;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  font-weight: 500;
+  text-align: center;
+}
+
+html[data-ccg-page="retro-video"] .ccg-footer .ccg-retro-views__count {
+  color: #72d7ff;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}

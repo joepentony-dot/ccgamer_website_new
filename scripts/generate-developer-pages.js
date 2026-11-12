@@ -311,6 +311,8 @@ function renderDeveloperIndex(groups) {
     const represented = [...groups]
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "en", { sensitivity: "base" }))
         .slice(0, 11);
+    const representedSlugs = new Set(represented.map((group) => group.slug));
+    const remainingGroups = groups.filter((group) => !representedSlugs.has(group.slug));
 
     const schema = {
         "@context": "https://schema.org",
@@ -391,7 +393,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-developer-system="c64" aria-pressed="false">C64</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-developer-system="amiga" aria-pressed="false">Amiga</button>
                 </div>
-                <p class="ccg-developers-visible-count"><strong id="developerVisibleCount">${groups.length}</strong> developers available</p>
+                <p class="ccg-developers-visible-count" role="status" aria-live="polite" aria-atomic="true"><strong id="developerVisibleCount">${groups.length}</strong> developers available</p>
             </section>
 
             <section class="ccg-developers-section" aria-labelledby="represented-developers-title">
@@ -404,16 +406,16 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 </div>
             </section>
 
-            <details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">
-                <summary>Browse all ${groups.length} developers A–Z</summary>
+            <details class="ccg-developers-section ccg-developers-directory" id="developerDirectory" data-developer-directory-disclosure>
+                <summary>Browse the other ${remainingGroups.length} developers A–Z</summary>
                 <section aria-labelledby="all-developers-title">
                 <div class="ccg-developers-section__heading">
                     <p class="ccg-developers-section__kicker">Full recorded archive</p>
-                    <h2 id="all-developers-title">All Developers</h2>
+                    <h2 id="all-developers-title">Other Developers</h2>
                     <p>Dedicated developer pages with verified catalogue credits are eligible for indexing, including single-game archives.</p>
                 </div>
                 <div class="ccg-developer-grid" id="developerGrid">
-                    ${groups.map((group) => renderDeveloperCard(group)).join("\n")}
+                    ${remainingGroups.map((group) => renderDeveloperCard(group)).join("\n")}
                 </div>
                 <p class="ccg-developers-empty" id="developerEmptyState" hidden>No developers match that search.</p>
                 </section>
@@ -525,7 +527,7 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
         <main class="ccg-main ccg-developers-main">
             <section class="ccg-developers-hero ccg-developer-hero">
                 <p class="ccg-developers-hero__kicker">Developer credit archive · ${htmlEscape(systemLabel)}</p>
-                <h1 class="ccg-developers-hero__title">${htmlEscape(single ? `${group.name}: ${single.title}` : `${group.name} Games`)}</h1>
+                <h1 class="ccg-developers-hero__title">${htmlEscape(single ? `${group.name}: ${single.title}` : /\bgames$/i.test(group.name) ? `${group.name} — Developer Archive` : `${group.name} Games`)}</h1>
                 <p class="ccg-developers-hero__intro">
                     ${single
                         ? `${htmlEscape(single.title)}${htmlEscape(singleYear)} is recorded with a ${htmlEscape(group.name)} developer credit on ${htmlEscape(singlePlatform)}. Follow the game link below for its catalogue details.`
@@ -557,7 +559,7 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
                     ${group.c64Count ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-developer-game-system="c64" aria-pressed="false">C64</button>` : ""}
                     ${group.amigaCount ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-developer-game-system="amiga" aria-pressed="false">Amiga</button>` : ""}
                 </div>
-                <p class="ccg-developers-visible-count"><strong id="developerGameVisibleCount">${group.count}</strong> games shown</p>
+                <p class="ccg-developers-visible-count"><strong id="developerGameVisibleCount">${group.count}</strong> ${group.count === 1 ? "game" : "games"} shown</p>
             </section>
 
             <section class="ccg-developers-section" aria-labelledby="developer-games-title">

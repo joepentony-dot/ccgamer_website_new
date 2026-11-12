@@ -1,11 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import vm from "node:vm";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { collectRoles } = require("../scripts/mark-rerelease-publishers.js");
+const { publisherIndexCountSuffix, publisherGameCountSuffix } = require("../js/publisher-pages.js");
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -82,12 +84,30 @@ test("publisher index shows focused search first and keeps complete directory av
     assert.match(js, /directory\?\.addEventListener\("toggle"/);
     assert.match(js, /if \(normalize\(search\?\.value\)\) event\.preventDefault\(\)/);
     assert.match(js, /query \? renderSearchResults\(query\) : renderDirectory\(\)/);
-    assert.match(js, /" publishers found"/);
-    assert.match(js, /" publishers available"/);
+    assert.match(js, /publisherIndexCountSuffix\(visible, Boolean\(query\)\)/);
+    assert.match(js, /prepareLiveCount\(count\)/);
 
     assert.match(css, /\.ccg-publisher-directory-disclosure__summary:focus-visible/);
     assert.match(css, /\.ccg-publisher-directory-disclosure\[open\]/);
     assert.doesNotMatch(css, /#publisherGrid\s*\{[^}]*display:\s*none/s, "the static directory is not hidden with CSS");
+});
+
+test("publisher search and game counts use singular labels and announce updates", () => {
+    assert.equal(publisherIndexCountSuffix(0, false), " publishers available");
+    assert.equal(publisherIndexCountSuffix(1, false), " publisher available");
+    assert.equal(publisherIndexCountSuffix(1, true), " publisher found");
+    assert.equal(publisherIndexCountSuffix(2, true), " publishers found");
+    assert.equal(publisherGameCountSuffix(0), " games shown");
+    assert.equal(publisherGameCountSuffix(1), " game shown");
+    assert.equal(publisherGameCountSuffix(2), " games shown");
+    const runtime = read("js/publisher-pages.js");
+    const generator = read("scripts/generate-publisher-pages.js");
+    assert.match(runtime, /publisherGameCountSuffix\(visible\)/);
+    assert.match(runtime, /container\.setAttribute\("role", "status"\)/);
+    assert.match(runtime, /container\.setAttribute\("aria-live", "polite"\)/);
+    assert.match(runtime, /container\.setAttribute\("aria-atomic", "true"\)/);
+    assert.match(generator, /group\.count === 1 \? "game" : "games"/);
+    assert.equal((generator.match(/role="status" aria-live="polite" aria-atomic="true"/g) || []).length, 2);
 });
 
 test("publisher rendered audit follows generated directory totals, not fixed catalogue numbers", () => {
@@ -175,26 +195,104 @@ test("public code cache includes the shared directory stylesheet", () => {
     assert.match(sw, /\/resources\/css\/ccg-archive-directory\.css/);
 });
 
-test("developer index keeps complete static A-Z directory and opens bookmarked system results", () => {
+test("developer index reduces default clutter without dropping a credited route", () => {
+    const html = read("games/developers/index.html");
+    const generator = read("scripts/generate-developer-pages.js");
+    const runtime = read("js/developer-pages.js");
+    const css = read("resources/css/developers.css");
+
+    const links = [...html.matchAll(/<a class="ccg-developer-card [^"]*"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    const totalMatch = html.match(/id="developerVisibleCount">(\d+)<\/strong> developers available/);
+    assert.ok(totalMatch, "default static count describes available credits, not expanded cards");
+    const expected = Number(totalMatch[1]);
+    assert.equal(links.length, expected, "every developer appears exactly once as a static card");
+    assert.equal(new Set(links).size, expected, "the featured set and directory never duplicate a route");
+
+    const featured = [...html.matchAll(/<a class="ccg-developer-card ccg-developer-card--featured"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    const directoryStart = html.indexOf('id="developerGrid"');
+    const directoryEnd = html.indexOf('id="developerEmptyState"', directoryStart);
+    assert.ok(directoryStart > 0 && directoryEnd > directoryStart, "other credits have a static crawlable directory");
+    const other = [...html.slice(directoryStart, directoryEnd).matchAll(/<a class="ccg-developer-card [^"]*"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    assert.ok(featured.length > 0 && other.length > 0);
+    assert.equal(featured.length + other.length, expected);
+    assert.ok(html.includes(`Browse the other ${other.length} developers A–Z</summary>`));
+    assert.match(html, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory" data-developer-directory-disclosure>/);
+    assert.match(html, /<h2 id="all-developers-title">Other Developers<\/h2>/);
+    assert.match(html, /id="developerSearchInput"/);
+    assert.match(generator, /new Set\(represented\.map\(\(group\) => group\.slug\)\)/);
+    assert.match(generator, /groups\.filter\(\(group\) => !representedSlugs\.has\(group\.slug\)\)/);
+    assert.match(generator, /Browse the other \$\{remainingGroups\.length\} developers A–Z/);
+    assert.match(runtime, /data-developer-search-result/);
+    assert.match(runtime, /allCards\.filter\(\(card\) => matches\(card, query\)\)/);
+    assert.match(runtime, /directory\.open = hasSearch \|\| system !== "all" \|\| manuallyExpanded/);
+    assert.match(runtime, /event\.preventDefault\(\)/);
+    assert.match(css, /\.ccg-developers-directory > summary:focus-visible/);
+    assert.match(css, /\.ccg-developers-directory > section/);
+    assert.doesNotMatch(css, /#developerGrid\s*\{[^}]*display:\s*none/s);
+});
+
+
+test("developer index announces accurate singular/plural live search and filter counts", () => {
+    const runtime = read("js/developer-pages.js");
+    const marker = '    function setPressed(buttons, activeValue, attributeName) {';
+    assert.ok(runtime.includes(marker), "the live-count formatter is exercised from actual runtime source");
+    const sandbox = { document: { readyState: "loading", addEventListener() {} } };
+    vm.runInNewContext(
+        runtime.replace(marker, '    globalThis.__testDeveloperCountSuffix = developerCountSuffix;\\n\\n' + marker).replace(/\\n/g, "\n"),
+        sandbox
+    );
+    const format = sandbox.__testDeveloperCountSuffix;
+    assert.equal(typeof format, "function");
+    for (const [count, found, available] of [
+        [0, " developers found", " developers available"],
+        [1, " developer found", " developer available"],
+        [2, " developers found", " developers available"],
+        [47, " developers found", " developers available"]
+    ]) {
+        assert.equal(format(count, true), found);
+        assert.equal(format(count, false), available);
+    }
+    const liveRegion = /<p class="ccg-developers-visible-count" role="status" aria-live="polite" aria-atomic="true">/;
+    assert.match(read("games/developers/index.html"), liveRegion);
+    assert.match(read("scripts/generate-developer-pages.js"), liveRegion);
+    assert.ok(runtime.includes("count.parentElement.lastChild.nodeValue = developerCountSuffix(visible, hasSearch);"));
+});
+
+test("developer index keeps complete static A-Z links and opens bookmarked system results", () => {
     const html = read("games/developers/index.html");
     const generator = read("scripts/generate-developer-pages.js");
     const js = read("js/developer-pages.js");
     const css = read("resources/css/developers.css");
 
-    assert.match(html, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">/);
-    assert.match(generator, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">/);
-    const summary = html.match(/<summary>Browse all (\d+) developers A–Z<\/summary>/);
-    assert.ok(summary, "developer disclosure includes a real available count");
+    const detailsTag = /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory" data-developer-directory-disclosure>/;
+    assert.match(html, detailsTag, "the native directory is closed before JS and is keyboard accessible");
+    assert.match(generator, detailsTag, "the authoritative generator preserves the native disclosure");
+    const summary = html.match(/<summary>Browse the other (\d+) developers A–Z<\/summary>/);
+    assert.ok(summary, "the summary accurately counts nonfeatured developers");
     const directoryStart = html.indexOf('<div class="ccg-developer-grid" id="developerGrid">');
     const directoryEnd = html.indexOf('id="developerEmptyState"', directoryStart);
     assert.ok(directoryStart >= 0 && directoryEnd > directoryStart, "directory links exist in static HTML");
-    const hrefs = Array.from(html.slice(directoryStart, directoryEnd).matchAll(/href="(\/games\/developers\/[^"]+\/)"(?:\s|>)/g), (match) => match[1]);
-    assert.equal(hrefs.length, Number(summary[1]), "all counted developer links are present without JavaScript");
-    assert.equal(new Set(hrefs).size, hrefs.length, "developer routes are not duplicated inside directory");
-    assert.match(js, /if \(directory && system !== "all"\) directory\.open = true;/,
-        "supported bookmarked system filters must open the disclosure on page load");
-    assert.match(js, /Boolean\(normalize\(search\.value\)\) \|\| system !== "all" \|\| initialDirectoryOpen/,
-        "clearing a name search must not close active platform-filter results");
+    const otherHrefs = Array.from(html.slice(directoryStart, directoryEnd).matchAll(/href="(\/games\/developers\/[^"]+\/)"(?:\s|>)/g), (match) => match[1]);
+    assert.equal(otherHrefs.length, Number(summary[1]), "every nonfeatured developer is available without JavaScript");
+
+    const featuredStart = html.indexOf('aria-labelledby="represented-developers-title"');
+    const featuredEnd = html.indexOf("</section>", featuredStart);
+    assert.ok(featuredStart >= 0 && featuredEnd > featuredStart, "featured credits remain visible");
+    const featuredHrefs = Array.from(html.slice(featuredStart, featuredEnd).matchAll(/href="(\/games\/developers\/[^"]+\/)"(?:\s|>)/g), (match) => match[1]);
+    const total = Number(html.match(/id="developerVisibleCount">(\d+)<\/strong> developers available/)?.[1]);
+    assert.ok(Number.isInteger(total) && total > 0, "the static total remains available");
+    assert.equal(featuredHrefs.length + otherHrefs.length, total, "featured and other links cover the full archive");
+    assert.equal(new Set([...featuredHrefs, ...otherHrefs]).size, total, "no credited route is duplicated or lost");
+
+    assert.match(js, /readInitialSystem\(\["all", "c64", "amiga"\]\)/,
+        "bookmarked C64/Amiga system filters are read on initialisation");
+    assert.match(js, /directory\.open = hasSearch \|\| system !== "all" \|\| manuallyExpanded/,
+        "active search and bookmarked system filters open the directory");
+    assert.match(js, /event\.preventDefault\(\)/,
+        "the disclosure cannot be closed while filtered results are active");
     assert.match(css, /\.ccg-developers-directory > summary:focus-visible/,
         "native directory disclosure keeps visible keyboard focus");
 });
@@ -282,6 +380,32 @@ test("Games Archive combines title search with the selected release year", () =>
         "the visitor must remain able to change or reset the year explicitly");
     assert.match(page, /id="gamesSearchInput"/);
     assert.match(page, /id="gamesYearSelect"/);
+});
+
+test("Games Archive free-text search finds actual release years alongside titles", () => {
+    const source = read("js/games-library.js");
+    const games = JSON.parse(read("games/games-search.json"));
+    const library = new Function("window", "document",
+        source + "\nreturn { getSearchQueryData, matchesSearchQuery };"
+    )({ matchMedia: () => ({ matches: false }), innerWidth: 1440 }, { addEventListener() {} });
+    const find = (term) => games.filter(game =>
+        library.matchesSearchQuery(game, library.getSearchQueryData(term)));
+
+    for (const year of [1986, 1987]) {
+        const expected = games.filter(game => Number(game.year) === year).map(game => game.slug).sort();
+        const actual = find(String(year)).map(game => game.slug).sort();
+        assert.ok(expected.length > 0, "source catalogue contains " + year + " games");
+        assert.deepEqual(actual, expected, "free-text year search returns the actual " + year + " catalogue");
+    }
+
+    const ace = games.find(game => game.slug === "ace-of-aces");
+    assert.ok(ace && Number(ace.year) === 1986, "fixture is an actual 1986 game");
+    assert.ok(find("ace of aces").some(game => game.slug === ace.slug),
+        "existing title search still works");
+    assert.ok(find("1986 ace").some(game => game.slug === ace.slug),
+        "year and title tokens can be combined");
+    assert.equal(library.matchesSearchQuery(ace, library.getSearchQueryData("1987")), false,
+        "a game does not match the wrong release year");
 });
 
 test("Games Archive clear control preserves keyboard workflow and active filters", () => {
@@ -391,4 +515,185 @@ test("Games Archive search comes before optional browse destinations and results
     }
     assert.match(html.slice(library), /id="gamesStaticFallback"/,
         "crawlable game links remain below the rendered library");
+});
+
+
+test("developer detail generator and all 47 published pages retain accurate headings and game-count grammar", () => {
+    const { buildDeveloperGroups } = require("../scripts/developer-utils.js");
+    const { renderDeveloperPage } = require("../scripts/generate-developer-pages.js");
+    const games = JSON.parse(read("games/games.json"));
+    const groups = buildDeveloperGroups(games);
+    const metadata = JSON.parse(read("games/developers/developers.json"));
+    assert.equal(groups.length, metadata.length, "all developer routes remain represented");
+    assert.ok(groups.length > 0, "the catalogue has credited developers");
+
+    for (const group of groups) {
+        const file = "games/developers/" + group.slug + "/index.html";
+        const published = read(file);
+        const generated = renderDeveloperPage(group);
+        const heading = /<h1 class="ccg-developers-hero__title">([^<]+)<\/h1>/;
+        const count = /<strong id="developerGameVisibleCount">(\d+)<\/strong> (game|games) shown/;
+        const actualHeading = published.match(heading)?.[1];
+        const generatedHeading = generated.match(heading)?.[1];
+        const actualCount = published.match(count);
+        const generatedCount = generated.match(count);
+
+        assert.equal(actualHeading, generatedHeading, file + " heading matches the source generator");
+        assert.ok(actualCount && generatedCount, file + " has a visible, grammatical count");
+        assert.equal(Number(actualCount[1]), group.count, file + " displays the real credit count");
+        assert.equal(actualCount[2], group.count === 1 ? "game" : "games", file + " pluralisation");
+        assert.equal(actualCount[0], generatedCount[0], file + " count matches the source generator");
+        if (group.count > 1 && /\bgames$/i.test(group.name)) {
+            assert.equal(actualHeading, group.name + " — Developer Archive",
+                file + " must not repeat Games Games");
+        }
+    }
+
+    const runtime = read("js/developer-pages.js");
+    assert.match(runtime, /visible === 1 \? " game shown" : " games shown"/,
+        "live C64/Amiga and title filtering must update singular and plural count labels");
+});
+
+
+test("music composer dynamic HTML escapes editable credits", () => {
+    const source = read("js/music-composer-pages.js");
+    const between = (start, end) => {
+        const from = source.indexOf(start);
+        const to = source.indexOf(end, from + start.length);
+        assert.ok(from >= 0 && to > from, "composer source section exists: " + start);
+        return source.slice(from, to);
+    };
+
+    // Execute the actual runtime markup functions, rather than testing a
+    // separately implemented encoder that could diverge from production.
+    const snippets = [
+        between("  function escapeComposerMarkup(", "\n  function getCanonicalComposerName("),
+        between("  function cardMarkup(", "\n  function renderHubAccordion("),
+        between("  function renderHubAccordion(", "\n  async function renderHubCards(")
+    ];
+    const search = { value: "", addEventListener() {} };
+    const accordion = { innerHTML: "", querySelectorAll: () => [] };
+    const document = {
+        getElementById(id) {
+            return id === "composer-discovery-search" ? search : accordion;
+        }
+    };
+    const runtime = vm.runInNewContext(snippets.join("\n") +
+        "\n({ escapeComposerMarkup, cardMarkup, renderHubAccordion })", {
+        document,
+        window: { CCGMusicHubOmega: { refreshAccordion() {} } },
+        getComposerUrl: (composer) => "/music/" + composer.slug + "/",
+        getPlatformLabel: () => "C64",
+        composerSortLetter: () => "R",
+        normaliseName: (value) => String(value || "").toLowerCase()
+    });
+
+    const injectedName = 'Rogue"><img src=x onerror=alert(1)>&';
+    const composer = { name: injectedName, slug: "rogue", aliases: [] };
+    const stats = new Map([["rogue", { games: [{}] }]]);
+    const card = runtime.cardMarkup(composer, "/resources/images/composers/rogue.webp", stats, false);
+    runtime.renderHubAccordion([composer], stats);
+
+    for (const html of [card, accordion.innerHTML]) {
+        assert.doesNotMatch(html, /<img src=x onerror=alert\(1\)>/,
+            "catalogue credit must not become an executable HTML element");
+        assert.match(html, /Rogue&quot;&gt;&lt;img src=x onerror=alert\(1\)&gt;&amp;/,
+            "quotes, tags and ampersands must be encoded in dynamic markup");
+    }
+    assert.match(card, /alt="Rogue&quot;&gt;&lt;img/,
+        "composer image alt attribute must not be broken by a quoted name");
+    assert.equal(runtime.escapeComposerMarkup("Chris Hülsbeck"), "Chris Hülsbeck",
+        "normal accented names remain unchanged");
+    assert.equal(runtime.escapeComposerMarkup("Tom & Jerry's"), "Tom &amp; Jerry&#39;s");
+
+    assert.doesNotMatch(source, /\$\{composer\.(?:name|bio|born|birthplace)\}/,
+        "no raw composer credit is interpolated into a template");
+    assert.match(source, /const safeName = requestedName \? escapeComposerMarkup\(requestedName\)/,
+        "unknown composer search terms must also be encoded");
+    assert.match(source, /\$\{escapeComposerMarkup\(displayMeta\)\}/,
+        "dynamic track metadata is encoded");
+});
+
+test("Music Hub composer search ignores track badges and explains empty results", () => {
+    const source = read("js/music-composer-utils.js");
+    const section = (start, end) => {
+        const a = source.indexOf(start);
+        const b = source.indexOf(end, a + start.length);
+        assert.ok(a >= 0 && b > a, "source function exists: " + start);
+        return source.slice(a, b);
+    };
+    class FakeElement {
+        constructor() { this.dataset = {}; this.hidden = false; this.textContent = ""; this.parent = null; }
+        remove() { if (this.parent) this.parent.empty = null; }
+    }
+    class FakeAnchor extends FakeElement {
+        constructor(name, count, href) {
+            super();
+            this.href = href;
+            this.textContent = name + count;
+            this.childNodes = [{ textContent: name }, { textContent: String(count) }];
+            this.countBadge = this.childNodes[1];
+        }
+        getAttribute() { return this.href; }
+        querySelector() { return this.countBadge; }
+    }
+    class FakeInput extends FakeElement { constructor() { super(); this.value = ""; } }
+    class FakeGroup extends FakeElement {
+        constructor(chips) {
+            super();
+            this.chips = chips;
+            this.dataset.ccgUserOpen = "false";
+            this.count = { dataset: { ccgTotalCount: String(chips.length) }, textContent: String(chips.length) };
+        }
+        querySelectorAll() { return this.chips; }
+        querySelector() { return this.count; }
+    }
+    class FakeAccordion extends FakeElement {
+        constructor(groups) { super(); this.groups = groups; this.empty = null; }
+        querySelectorAll() { return this.groups; }
+        querySelector() { return this.empty; }
+        appendChild(node) { node.parent = this; this.empty = node; }
+    }
+    const runtime = vm.runInNewContext(
+        section("  function getMusicHubChipSearchText(", "\n  function applyMusicHubAccordionSearch(") +
+        section("  function applyMusicHubAccordionSearch(", "\n  function bindMusicHubAccordion(") +
+        "\n({ getMusicHubChipSearchText, applyMusicHubAccordionSearch })", {
+            Element: FakeElement,
+            HTMLAnchorElement: FakeAnchor,
+            HTMLInputElement: FakeInput,
+            document: { createElement: () => new FakeElement() },
+            normalizeComposerName: (value) => String(value || "").toLowerCase().trim(),
+            prepareMusicHubAccordionGroup: () => {},
+            setMusicHubAccordionState: (group, open) => { group.open = Boolean(open); }
+        }
+    );
+    const rob = new FakeAnchor("Rob Hubbard", "32", "/music/rob-hubbard/");
+    const julie = new FakeAnchor("Julie Dunn", "6", "/music/david-dunn/");
+    const group = new FakeGroup([rob, julie]);
+    const accordion = new FakeAccordion([group]);
+    const search = new FakeInput();
+    assert.equal(runtime.getMusicHubChipSearchText(rob), "rob hubbard");
+    assert.match(runtime.getMusicHubChipSearchText(julie), /david dunn/);
+    search.value = "32";
+    runtime.applyMusicHubAccordionSearch(accordion, search);
+    assert.equal(group.hidden, true, "track-count-only query has no composer matches");
+    assert.equal(accordion.empty?.textContent, "No composers match this search.");
+    assert.equal(group.count.textContent, "0");
+    search.value = "Hubbard";
+    runtime.applyMusicHubAccordionSearch(accordion, search);
+    assert.equal(rob.hidden, false);
+    assert.equal(julie.hidden, true);
+    assert.equal(group.open, true);
+    assert.equal(accordion.empty, null);
+    search.value = "David Dunn";
+    runtime.applyMusicHubAccordionSearch(accordion, search);
+    assert.equal(julie.hidden, false, "historic alias still matches");
+    search.value = "";
+    runtime.applyMusicHubAccordionSearch(accordion, search);
+    assert.equal(rob.hidden, false);
+    assert.equal(julie.hidden, false);
+    assert.equal(group.count.textContent, "2");
+    assert.equal(accordion.empty, null);
+    assert.ok(read("resources/css/music-hub-omega.css").includes(".composer-accordion__empty {"));
+    assert.ok(read("music/index.html").includes('aria-live="polite"'));
 });

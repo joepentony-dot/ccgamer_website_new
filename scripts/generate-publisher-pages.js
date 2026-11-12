@@ -454,7 +454,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="amiga" aria-pressed="false">Amiga</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="both" aria-pressed="false">Both</button>
                 </div>
-                <p class="ccg-publishers-visible-count"><strong id="publisherVisibleCount">${groups.length}</strong> publishers available</p>
+                <p class="ccg-publishers-visible-count" role="status" aria-live="polite" aria-atomic="true"><strong id="publisherVisibleCount">${groups.length}</strong> publishers available</p>
             </section>
 
             ${featuredGroups.length ? `<section class="ccg-publishers-section ccg-publishers-section--featured" aria-labelledby="featured-publishers-title">
@@ -496,7 +496,7 @@ function renderGameCard(game) {
     const platform = String(game.system || game.platform || "Retro").trim();
     const year = Number(game.year) || "Year unknown";
 
-    return `                    <article class="ccg-publisher-game-card" data-publisher-game-card data-game-title="${htmlEscape(String(game.title || "").toLowerCase())}" data-game-platform="${htmlEscape(String(platform).toLowerCase())}">
+    return `                    <article class="ccg-publisher-game-card" data-publisher-game-card data-publisher-game data-game-title="${htmlEscape(String(game.title || "").toLowerCase())}" data-game-platform="${htmlEscape(String(platform).toLowerCase())}" data-system="${htmlEscape(String(platform).toLowerCase())}">
                         <a class="ccg-publisher-game-card__link" href="/games/${htmlEscape(game.slug)}/">
                             <div class="ccg-publisher-game-card__media">
                                 <img src="${htmlEscape(thumbnail)}" alt="${htmlEscape(game.title)} thumbnail" loading="lazy" decoding="async">
@@ -646,7 +646,7 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
                     ${group.c64Count ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-game-system="c64" aria-pressed="false">C64</button>` : ""}
                     ${group.amigaCount ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-game-system="amiga" aria-pressed="false">Amiga</button>` : ""}
                 </div>
-                <p class="ccg-publishers-visible-count"><strong id="publisherGameVisibleCount">${group.count}</strong> games shown</p>
+                <p class="ccg-publishers-visible-count" role="status" aria-live="polite" aria-atomic="true"><strong id="publisherGameVisibleCount">${group.count}</strong> ${group.count === 1 ? "game" : "games"} shown</p>
             </section>
 
             <section class="ccg-publishers-section" aria-labelledby="publisher-games-title">

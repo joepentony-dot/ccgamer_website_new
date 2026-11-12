@@ -13,11 +13,18 @@ function getContentLastmod(repoRoot, filePath, today = () => new Date().toISOStr
 
   // Compare bytes to HEAD (both staged and unstaged changes), not to the
   // index, so a publisher-generated page receives its real publication date.
-  const difference = spawnSync("git", ["diff", "--quiet", "HEAD", "--", relativePath], {
+  // During final SEO staging, only HTML that is actually in the outgoing
+  // commit may advance a sitemap date. Temporary working-tree rewrites do not.
+  const stagedOnly = process.env.CCG_SITEMAP_LASTMOD_STAGED_ONLY === "1";
+  const diffArgs = ["diff", ...(stagedOnly ? ["--cached"] : []), "--quiet", "HEAD", "--", relativePath];
+  const difference = spawnSync("git", diffArgs, {
     cwd: repoRoot,
     stdio: "ignore",
   });
   if (difference.status === 1) return today();
+  if (difference.status !== 0) {
+    throw new Error(`Cannot establish sitemap lastmod for ${relativePath}: git diff failed.`);
+  }
 
   try {
     const recorded = execFileSync("git", ["log", "-1", "--format=%cI", "--", relativePath], {

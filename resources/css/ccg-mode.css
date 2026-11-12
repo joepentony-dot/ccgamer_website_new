@@ -7,6 +7,20 @@
    • ZERO layout or spacing changes
 ============================================================ */
 
+/* Amiga overlay first-paint safety: the mode engine appends this layer while
+   its detailed Amiga stylesheet is still loading. Keep the decorative layer
+   outside document flow from the first frame; the existing Amiga stylesheet
+   retains ownership of its final appearance and visibility. */
+.ccg-amiga-chrome {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+}
+
 /* ============================================================
    DEFAULT (C64 MODE)
 ============================================================ */

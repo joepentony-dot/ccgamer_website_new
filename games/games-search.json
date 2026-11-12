@@ -5587,6 +5587,29 @@
     "ccg_rating_reason": ""
   },
   {
+    "title": "Gloom",
+    "slug": "gloom",
+    "sorttitle": "Gloom",
+    "system": "AMIGA",
+    "thumbnail": "resources/images/thumbnails/all/gloom.webp",
+    "publisher": [
+      "Guildhall"
+    ],
+    "genre": [
+      "shooting"
+    ],
+    "genres": [
+      "shooting"
+    ],
+    "composer": [
+      "Kevan Stannard"
+    ],
+    "music": [],
+    "year": 1995,
+    "ccg_rating": 8,
+    "ccg_rating_reason": "Gloom earns a solid 8/10 for bringing fast, enjoyable Doom-style action to the Amiga at a time when many doubted the machine could deliver it. The excessive gore, satisfying shooting, excellent soundtrack and multiplayer options make it great fun, even today."
+  },
+  {
     "title": "Go For The Gold",
     "slug": "go-for-the-gold",
     "sorttitle": "Go For The Gold",

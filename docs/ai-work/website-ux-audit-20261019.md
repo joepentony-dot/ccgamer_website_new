@@ -1,4 +1,54 @@
+## 1 November 2026 — Retro Specials deployed-browser acceptance (BRANCH ONLY)
+
+- After security fix #2995 merged at `6b3cd58f88cf8bc5fc604ca5cda964d1ae8f6b3d` and Pages/live navigation succeeded, the existing live browser workflow did **not** exercise Retro Specials thumbnail fallback or search. Public static HTML retrieval alone is not a desktop/mobile interaction test.
+- Bounded verification-only change to `scripts/audit-nav-more-browser.js`: compare deployed `js/retro-specials-loader.js` against release bytes, open actual Retro Specials in ChromeDriver at 1440px and 390px, check hydrated latest/archive cards, intrinsic 480×270 dimensions and no inline error handlers, simulate a failed image to verify one-shot capture-phase fallback, and test Zzap!64 search, no-results and reset. Existing Ask CCG retirement, Games Archive, Music Hub, navigation and merchandise checks remain intact. Source JavaScript syntax preflight passed.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE ACCEPTED.** Require actual GitHub ChromeDriver PR execution, current-main reconciliation, guarded merge and post-deployment production-domain browser execution. No runtime, catalogue, Omega styling, service worker, generated pages, accounts or Dungeon code changed. Other owner-controlled release holds remain separate.
+
+## 1 November 2026 — Retro Specials thumbnail fallback injection guard (BRANCH ONLY)
+
+- Reproduced an executable inline image-error handler from editable Retro Specials metadata: the adversarial YouTube ID `x'-alert(1)-'` survived URL encoding and HTML-entity decoding inside the old `onerror` JavaScript; a source-executed negative control invoked the injected alert. This is a latent data-to-code risk, not evidence that the current published dataset was malicious.
+- Bounded source correction replaces only the dynamically generated card's inline handler with an HTML-encoded fallback data attribute and a single capture-phase image-error listener, registered before rendering and limited to one retry. Preserve thumbnail dimensions, high-priority first image, members badges, search/re-render, static fallbacks and existing routes. Add four source-executed regressions in the existing thumbnail test, run them in Site Safety, and advance public code cache v217→v218. No catalogue, generated pages, intro, Omega CSS, emulator, accounts or Dungeon files changed.
+- CI exposed a second existing thumbnail defect: the shared `scripts/lib/youtube-thumbnail-dimensions.js` helper excluded the `img.youtube.com` origin used by Retro Specials, so its original geometry test failed and some generated video cards could miss intrinsic dimensions. Extend both known-YouTube thumbnail helpers to recognise this host without accepting arbitrary origins; retain the original assertion and add an `img.youtube.com` resizing regression. This is a real source fix, not a test waiver.
+
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head Site Safety, cache, Lighthouse and applicable native CI; reconcile fresh main, guarded expected-head squash merge and verify live Retro Specials thumbnails and search on desktop/mobile. Existing owner-controlled holds remain independent.
+
+## 1 November 2026 — publisher count grammar and accessible announcements (BRANCH ONLY)
+
+- Main `cdfa1c9ab7a8bffc38774abb76d81a22fbcc8d1c`. Existing publisher generator outputs `1 games shown` for one-credit pages; shared publisher runtime updates numbers without singular nouns, including index `1 publishers found`. Lucasfilm Games contains three entries including a single Amiga title, an actual one-result filter case.
+- Bounded generator and shared runtime correction: 0/1/many labels, polite live count announcements, seven source-executed count regressions in existing archive-directory tests; public cache v214→v215. No generated HTML, games.json, Omega intro, ratings, emulator, Dungeon or CSS changed. JS-enabled existing pages gain correct labels; no-JS single-game pages await authoritative publisher regeneration.
+- **DRAFT / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head CI, guarded merge, Pages deployment and desktop/mobile acceptance. SEO #2981 Actions approval, Amazon #2957 owner attribution, Dungeon #2958 Windows and genre #2964 measured CLS holds remain separate.
+
+## 1 November 2026 — Music Hub production search acceptance guard (BRANCH ONLY)
+
+- Merged Music Hub search correction #2980 and its Pages deployment were successful, but actual interactive desktop/mobile composer-name search acceptance remained unverified. The existing Live Public Navigation workflow already runs a real ChromeDriver browser after Pages deployment; it did not exercise Music Hub search or compare its shipped composer utility with the repository.
+- ONE bounded browser-verification candidate adds a live/local Music Hub interaction audit at 1440px and 390px to `scripts/audit-nav-more-browser.js`: reject track-count-only query `32`, find Rob Hubbard, resolve historical David Dunn to Julie Dunn, show an unmatched-search message, and restore the full composer directory after clearing. Compare live `js/music-composer-utils.js` bytes with the exact repository release. Existing Ask CCG retirement and navigation tests are preserved.
+- Browser script syntax was checked before branch creation. **BRANCH ONLY / REAL CHROMIUM CI, GUARDED MERGE AND LIVE VERIFICATION PENDING.** No public HTML, JS runtime, CSS, service-worker cache, catalogue, emulator, Dungeon, Amazon or generated sitemap changed. Native generated SEO #2981 Actions approval, Amazon #2957 account verification and Dungeon #2958 Windows acceptance remain independent holds.
+
+## 1 November 2026 — Music Hub composer search feedback (BRANCH ONLY)
+
+- Existing Music Hub UX backlog: static composer search indexed trailing track-count badges as names (source-executed negative control: “32” matched Rob Hubbard), and unmatched queries hid all A–Z groups without feedback.
+- ONE bounded candidate `fix/music-hub-search-feedback-20261101` based on `9620db664aa4662204eaec020e1ccd6ff33b0c90`: change only `js/music-composer-utils.js`, existing `tests/archive-directory-system.test.mjs`, service-worker code cache v213→v214 and this checkpoint. Preserve the generated 276-composer archive, existing aliases, portraits, Omega styling, routes and protected systems. Eight source-executed V8 checks passed pre-write.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED / NOT LIVE.** Require exact-head Node/Chromium/Site Safety/SEO/cache CI, current-main reconciliation, guarded merge, Pages deployment and real desktop/mobile acceptance. SEO #2979, Amazon #2957 and Dungeon #2958 remain parked on their independent holds.
+
+## 31 October 2026 — Composer dynamic HTML encoding (BRANCH ONLY)
+
+- A source-executed negative control showed that a catalogue composer credit containing a quoted HTML element was inserted unescaped into both a generated featured card's image alt attribute and visible heading; the same unescaped interpolation existed in the composer search accordion, profile and related links. Static generator output already escaped catalogue names; this is a dynamic runtime inconsistency.
+- One isolated ACTIVE ordinary-site source branch: `fix/music-composer-markup-escape-20261031`, based on main `4b23abec3490f736e048eebabda426055d9ec160`. Escape editable composer/track text in existing dynamic HTML templates, preserve textContent paths, add source-executed negative regression to the existing archive-directory test, and advance public code cache v211→v212. No catalogue data, static composer routes, artwork, CSS, Omega intro, backend or Dungeon changes.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED.** Require exact-head archive-directory/site-safety/music/SEO/cache and applicable Full Dungeon CI, current-main comparison, guarded squash merge, Pages deployment and desktop/mobile composer search/portrait acceptance. Ask CCG remains removed; Dungeon Windows commercial release HOLD and Amazon attribution block remain unchanged.
+
+## 31 October 2026 — Developer detail-page language correction
+
+- Following merged directory #2853, 36 single-credit pages incorrectly show “1 games shown” and Lucasfilm Games duplicates “Games” in its hero heading. A separate bounded source-generator correction repairs both, including dynamic filter counts, while retaining all 47 credited routes and original SEO.
+- Source and static output parity regression added to existing archive-directory tests; JS cache v208→v209. Branch-only until current-head CI and deployment acceptance.
+
 # CCG website usability audit — 19 October 2026
+
+## 31 October 2026 — Developers directory, reconcile existing PR #2853 with current main
+
+- Main already has a native closed `#developerDirectory` containing all 47 credits **and** 11 repeated featured links. Preserve that current disclosure styling and newly updated developer indexing eligibility rather than replacing them with the older PR's markup/SEO text. Reconciled source renders 11 featured links plus only 36 nonfeatured directory links (47 unique total); searchable alphabetic results include both groups and keep active filters visible. Preserve no-JS static links and C64/Amiga filters.
+- Update only current generator, index, JS, responsive audit and directory tests, plus monotonic service-worker public code cache v207→v208. Do not copy the older PR's stale cache v169, old generated SEO copy or older CSS fork. The superseded overlapping PR #2852 remains parked.
+- **BRANCH ONLY, NOT QUALIFIED/NOT MERGED/NOT DEPLOYED/NOT LIVE** until generator parity, source-executed tests, real 360/768/956/1440 browser checks, exact-head CI, current-main reconciliation and guarded merge. Do not claim user-facing improvement from static card counts alone.
+
 
 Objective: reduce time-to-task across all significant page families while preserving Omega identity, accessibility, search indexing, content depth, monetisation, links and existing browser/emulator functionality. 'Perfect' is not a measurable state; real desktop/mobile user flows and regression tests are release gates.
 
@@ -35,3 +85,9 @@ Review corrections, 19 October: independent first-head review identified a P1 wr
 - Publisher UX PR #2847 passed 18 of 19 workflows at prior head `33be552286ab4a68006039c58b3d9864fb2a97c3`. `CCG UI Regression Fixes` failed because an old test still expected homepage text "Zzap!64 Awards", "Browse Genres" and class `home-cta-upgrade--streamlined`; the merged homepage actually has the longer Zzap label, "Genres" category, and `home-cta-upgrade` with support artwork. Updated the assertion to preserve the real current destinations and support structure, rather than exempting the whole test.
 - Publisher PR's public code cache advanced from v167 to **v168** to avoid overwriting the already-merged menu release. Fresh-main reconciliation and a full new CI/review cycle are required before merging; do not reuse old 18/19 results.
 - All six prior publisher review threads were resolved with code and current-head review before this test correction; solicit another independent review of the newer exact head.
+
+## 31 October 2026 — developer search result count accessibility (candidate)
+
+- Bounded developer-directory follow-up on main 117e2f38f30662bb3d96204dab5c02c9b98b0526: runtime search/filter count currently says “1 developers found/available” for a single result. The current generated index count is not a live region, so changes may be missed by assistive technology.
+- Candidate updates only the existing developer runtime, its authoritative generator and generated index, the existing archive-directory regression test, and public-code service-worker cache v210→v211. It retains all 47 static routes, featured/disclosure behaviour, game cards, styles and Omega presentation.
+- Regression executes the actual runtime count formatter for 0/1/2/47 results and verifies generated/source live-region parity. Full exact-head GitHub CI, mobile/desktop behaviour, deployment and live acceptance remain mandatory; this entry does not claim any of those outcomes.

@@ -77,6 +77,20 @@ Existing legacy artwork is not mass-rewritten merely because it predates the rul
 
 This contract is not permission to reduce visual quality. Artwork should remain visually faithful while avoiding needless bytes and dimensions.
 
+## Fail-closed artwork preflight and recovery
+
+Before a new game is committed, the browser checks the actual image bytes, not just a filename. It accepts standard lossy VP8, lossless VP8L and extended VP8X WebP artwork with readable intrinsic dimensions and enforces the 500 KB image budget. It checks any uploaded thumbnail/3D box and reuses existing matching GitHub artwork after verifying its contents. A missing required thumbnail or an unreadable image stops publication **before** adding the game to `games.json`. The optional 3D box is not required.
+
+The game-page generator is regression-tested against all three WebP flavours, including the ordinary VP8 container used by Gloom. The Content Publisher validation workflow executes the same artwork tests before changes can be accepted.
+
+The generated-output writer still owns page creation, library indexes, archived credits and sitemaps. Independent checks and a completed exact-head Codex review remain mandatory before merging generated output. These checks can take up to 45 minutes. The admin's recovery monitor allows enough time to observe them and labels the wait as an independent-review stage, not an immediate publishing failure.
+
+If a workflow fails during its merge/review stage, do not create the game again or blindly dispatch another build. The existing source record remains committed and the status panel identifies the failed step. Review the generated-output pull request and its findings, then resume or retry only after the blocker is resolved. A game may only be marked live when its canonical URL responds.
+
+The **Retry game publishing on current main** control now checks the authoritative game source record, the corresponding original failed workflow, newer successful runs, active or queued workflow runs, the exact generated-output PR and whether the canonical game page already exists on main. It refuses duplicate work when the game is already generated, merged, awaiting review, or its state cannot be verified. A retry does not add another record to `games.json`. The admin cannot invent an automatic fix for a failed code review or deterministic build defect; those are reported and retained for inspection.
+
+On returning to the admin, the Status panel independently checks whether the saved game's canonical HTML and OpenGraph URL have appeared on the public domain. It reconciles an older failed browser status to **Live** only when the exact game page is verified; an unrelated HTTP 200 or redirect shell is not accepted. Historic log errors must never override a later successful publication.
+
 ## Adding a video / feature
 
 Supported source datasets are:

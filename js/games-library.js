@@ -523,12 +523,12 @@ function buildAccordion(groups) {
         section.dataset.letter = letter;
 
         const letterSlug = letter === "#" ? "num" : letter.toLowerCase();
-        const headerId = `games-accordion-header-${letterSlug}`;
-        const contentId = `games-accordion-panel-${letterSlug}`;
+        const headerId = `games-accordion-header-${escapeGamesLibraryHtml(letterSlug)}`;
+        const contentId = `games-accordion-panel-${escapeGamesLibraryHtml(letterSlug)}`;
 
         section.innerHTML = `
-            <button class="ccg-btn ccg-btn--ghost games-accordion__header" data-letter="${letter}" type="button" id="${headerId}" aria-controls="${contentId}">
-                <span class="games-accordion__letter"><span class="games-accordion__letter-mark">${letter}</span>${hintMarkup}</span>
+            <button class="ccg-btn ccg-btn--ghost games-accordion__header" data-letter="${escapeGamesLibraryHtml(letter)}" type="button" id="${headerId}" aria-controls="${contentId}">
+                <span class="games-accordion__letter"><span class="games-accordion__letter-mark">${escapeGamesLibraryHtml(letter)}</span>${hintMarkup}</span>
                 <span class="games-accordion__meta"><strong>${gamesForLetter.length.toLocaleString("en-US")}</strong> titles <small>${systemSummary}</small></span>
                 <span class="games-accordion__action" aria-hidden="true">View titles</span>
                 <span class="games-accordion__chevron">⌄</span>
@@ -1248,6 +1248,7 @@ function getGameSearchData(game) {
         String(game.sorttitle || ""),
         String(game.id || ""),
         String(game.slug || ""),
+        String(game.year || ""),
         ...publisherValues.map((value) => String(value || "")),
         ...genreValues.map((value) => String(value || "")),
         ...musicValues.map((value) => String(value || "")),
@@ -1472,11 +1473,23 @@ function getGameKey(game, index) {
     return `idx:${index}`;
 }
 
-function renderGameCardMarkup(game, opts = {}) {
-    const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
+function escapeGamesLibraryHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
 
-    const gameUrl = resolveGameUrl(game);
-    const keyAttr = opts.key ? ` data-game-key="${opts.key}"` : "";
+function renderGameCardMarkup(game, opts = {}) {
+    const thumb = escapeGamesLibraryHtml(resolveGameThumb(game.thumbnail || game.thumb || game.cover));
+
+    const gameUrl = escapeGamesLibraryHtml(resolveGameUrl(game));
+    const keyAttr = opts.key ? ` data-game-key="${escapeGamesLibraryHtml(opts.key)}"` : "";
+    const safeTitle = escapeGamesLibraryHtml(game.title);
+    const safeYear = escapeGamesLibraryHtml(game.year || "");
+    const safeSystem = escapeGamesLibraryHtml(game.system || "");
     const classNames = ["ccg-game-card"];
     if (opts.rendered) classNames.push("rendered");
     const ratingMarkup = typeof window.ccgBuildRatingMarkup === "function"
@@ -1494,7 +1507,7 @@ function renderGameCardMarkup(game, opts = {}) {
                      data-src="${thumb}"
                      data-srcset="${thumb} 320w"
                      data-sizes="(max-width: 720px) 48vw, 320px"
-                     alt="${game.title}"
+                     alt="${safeTitle}"
                      data-game-thumb
                      loading="lazy"
                      decoding="async"
@@ -1504,16 +1517,16 @@ function renderGameCardMarkup(game, opts = {}) {
             </a>
             <div class="ccg-game-card__body">
                 <div class="game-title-wrapper">
-                    <h3 class="ccg-game-card__title">${game.title}</h3>
+                    <h3 class="ccg-game-card__title">${safeTitle}</h3>
                     <div class="ccg-game-card__meta">
-                        ${(game.year || "")} · ${(game.system || "")}
+                        ${safeYear} · ${safeSystem}
                     </div>
                 </div>
                 <div class="ccg-game-card__actions">
                     <a href="${gameUrl}"
                        class="ccg-btn ccg-btn--primary ccg-game-card__btn"
-                       aria-label="View ${game.title}">
-                       View ${game.title}
+                       aria-label="View ${safeTitle}">
+                       View ${safeTitle}
                     </a>
                 </div>
             </div>
@@ -1523,7 +1536,7 @@ function renderGameCardMarkup(game, opts = {}) {
 
 function renderGameCardShell(key) {
     return `
-        <div class="ccg-game-card ccg-game-card--shell" data-game-key="${key}"></div>
+        <div class="ccg-game-card ccg-game-card--shell" data-game-key="${escapeGamesLibraryHtml(key)}"></div>
     `;
 }
 
@@ -1542,7 +1555,7 @@ function resolveGameThumb(raw) {
 function resolveGameUrl(game) {
     let slug = String(game?.slug || "").trim();
     if (slug === "smash-t-5" || slug === "smash-t-v") slug = "smash-tv";
-    if (slug) return `${slug}/`;
+    if (slug && /^[a-z0-9-]+$/i.test(slug)) return `${slug}/`;
 
     const id = String(game?.id || "").trim();
     if (id) {
