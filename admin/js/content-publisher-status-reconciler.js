@@ -1,6 +1,6 @@
 import { GENERATED_OUTPUT_STEP, classifyGeneratedOutputFailure, storedPublicationMessage, latestPublicationLogTransition } from './content-publisher-recovery-state.mjs';
 import { decideGamePublishingRetry, selectSourceWorkflowRun } from './content-publisher-retry-guard.mjs';
-import { publishedGamePageMatches } from './content-publisher-live-verification.mjs';
+import { publishedGamePageMatches, savedRevisionMatchesLive } from './content-publisher-live-verification.mjs';
 
 const DEFAULT_OWNER = 'joepentony-dot';
 const DEFAULT_REPO = 'ccgamer_website_new';
@@ -44,8 +44,10 @@ if (gameForm) {
   const refreshOnReturn = () => {
     const job = readStoredJob();
     if (!job?.slug || job.status === 'live' || Date.now() - lastLiveCheck < 30000) return;
+    let config = null;
+    try { config = getGithubConfig(); } catch (_error) { return; }
     lastLiveCheck = Date.now();
-    void refreshStoredLivePublication(job);
+    void refreshStoredLivePublication(job, config);
   };
   window.addEventListener('focus', refreshOnReturn);
   document.addEventListener('visibilitychange', () => {
@@ -545,14 +547,15 @@ async function resumeStoredPublication() {
     return;
   }
   try {
+    const config = getGithubConfig();
     // A closed browser can miss the successful merge and deployment. Verify
-    // the actual canonical game page before replaying old failed-run status.
-    await refreshStoredLivePublication(job);
+    // the actual canonical page and exact saved revision before replaying old
+    // failed-run status.
+    await refreshStoredLivePublication(job, config);
     if (readStoredJob()?.status === 'live') {
       setRecoveryMessage(`The saved game ${job.title || job.slug} has already been published. No rebuild is necessary.`, false);
       return;
     }
-    const config = getGithubConfig();
     activateStatusTab();
     setPublisherPipelineStep('source', 'ok', 'Source saved');
     await monitorPublication(config, job);
@@ -704,7 +707,7 @@ async function monitorWorkflowRun(config, runId, job) {
 
   updateStoredJob({ status: 'published', runId, updatedAt: new Date().toISOString() });
   if (job?.slug) {
-    const live = await waitForLiveUrl(`${SITE_ORIGIN}/games/${job.slug}/`);
+    const live = await waitForLiveUrl(`${SITE_ORIGIN}/games/${job.slug}/`, config, job);
     setPublisherPipelineStep('live', live ? 'ok' : 'running', live ? 'Live' : 'Deploy pending');
     if (live) updateStoredJob({ status: 'live', updatedAt: new Date().toISOString() });
   } else {
@@ -779,19 +782,37 @@ async function fetchVerifiedVideo(videoId) {
   }
 }
 
-async function verifyCanonicalLiveGame(slug) {
+async function verifyCanonicalLiveGame(slug, config = null, job = null) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(slug || ''))) return false;
   const url = `${SITE_ORIGIN}/games/${slug}/?publisher_recovery=${Date.now()}`;
   const response = await fetch(url, { cache: 'no-store' });
-  return response.ok && publishedGamePageMatches(await response.text(), slug, SITE_ORIGIN);
+  if (!response.ok) return false;
+  const liveHtml = await response.text();
+  if (!publishedGamePageMatches(liveHtml, slug, SITE_ORIGIN)) return false;
+  if (!job?.sourceSha || !config) return true;
+  return verifySavedRevisionLive(config, job, liveHtml);
 }
 
-async function waitForLiveUrl(url) {
+async function verifySavedRevisionLive(config, job, liveHtml) {
+  if (!job?.sourceSha || !job?.slug || !config) return false;
+  const [mainRef, repositoryPage, comparison] = await Promise.all([
+    githubRequest(config, '/git/ref/heads/main'),
+    githubRequest(config, `/contents/games/${encodePath(job.slug)}/index.html?ref=main`),
+    githubRequest(config, `/compare/${encodeURIComponent(job.sourceSha)}...${encodeURIComponent(mainRefPlaceholder)}`)
+  ]);
+  const mainSha = mainRef?.object?.sha;
+  if (!mainSha || !repositoryPage?.content) return false;
+  const finalComparison = comparison;
+  const repositoryHtml = decodeBase64Utf8(repositoryPage.content);
+  return savedRevisionMatchesLive({ liveHtml, repositoryHtml, comparison: finalComparison });
+}
+
+async function waitForLiveUrl(url, config = null, job = null) {
   const match = String(url || '').match(/\/games\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?(?:\?|$)/);
   if (!match) return false;
   for (let attempt = 0; attempt < 8; attempt += 1) {
     try {
-      if (await verifyCanonicalLiveGame(match[1])) return true;
+      if (await verifyCanonicalLiveGame(match[1], config, job)) return true;
     } catch (_error) {
       // Deployment may still be catching up.
     }
@@ -800,10 +821,10 @@ async function waitForLiveUrl(url) {
   return false;
 }
 
-async function refreshStoredLivePublication(job) {
+async function refreshStoredLivePublication(job, config = null) {
   if (!job?.slug || job.status === 'live') return;
   try {
-    if (!(await verifyCanonicalLiveGame(job.slug))) return;
+    if (!(await verifyCanonicalLiveGame(job.slug, config, job))) return;
     const current = readStoredJob();
     if (!current || current.slug !== job.slug || current.sourceSha !== job.sourceSha) return;
     updateStoredJob({ status: 'live', recoveryMessage: '', updatedAt: new Date().toISOString() });
@@ -825,7 +846,11 @@ function restoreStoredPublication() {
     setLaterStagesNotConfirmed();
   }
   if (job.status === 'live') setPublisherPipelineStep('live', 'ok', 'Live');
-  else void refreshStoredLivePublication(job);
+  else {
+    let config = null;
+    try { config = getGithubConfig(); } catch (_error) { /* token may not be hydrated yet */ }
+    if (config) void refreshStoredLivePublication(job, config);
+  }
 }
 
 function updateRecoveryCard() {
