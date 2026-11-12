@@ -246,7 +246,7 @@ try{
       assert.equal(launch.mode,"playing",label+" must be in playable mode");
       assert.equal(launch.tutorialActive,false,label+" must not be in Tutorial mode");
       assert.equal(launch.modalVisible,false,label+" must not capture the Tutorial overlay");
-      for(const floor of [1,2,3,4,6,7,10,11,13,14,15]){
+      for(let floor=1;floor<=15;floor++){
         const sample=await capturePage.evaluate(async selectedFloor=>{
           run.floor=selectedFloor;
           run.deepest=Math.max(Number(run.deepest||1),selectedFloor);

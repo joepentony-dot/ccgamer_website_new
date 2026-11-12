@@ -301,7 +301,7 @@ function drawCorridorDetail(s,x,y,h,th){
 // Deliberately decorative only: no new collision, light, world or save owner.
 function drawCampaignSurfaceWear(s,h,wall,room,theme){
   const floor=Number(run?.floor)||1,k=h>>>0;
-  if(floor!==2&&floor!==3&&floor!==4&&floor!==6&&floor!==7&&floor!==10&&floor!==11&&floor!==13&&floor!==14&&floor!==15)return;
+  if(!Number.isInteger(floor)||floor<2||floor>15)return;
   if(room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return;
   // Technology floors use sparse inlaid marks. These are static surface
   // details, drawn beneath traps, furniture, actors and other gameplay cues.
@@ -362,6 +362,37 @@ function drawCampaignSurfaceWear(s,h,wall,room,theme){
       ctx.fillRect(x+12,y+(wall?5:3),7,1);
       ctx.fillRect(x+23,y+(wall?5:3),6,1);
       ctx.fillRect(x+15,y+(wall?10:5),14,1);
+    }
+    return;
+  }
+  if(floor===5||floor===8||floor===9||floor===12){
+    const cartridge=floor===5,demo=floor===8,modem=floor===9;
+    const core=theme===(cartridge?"CARTRIDGE_BAY":demo?"DEMO_LOUNGE":modem?"MODEM_EXCHANGE":"PIXEL_FOUNDRY");
+    if(k%(core?(wall?5:7):(wall?11:17))!==0)return;
+    const x=s.x,y=s.y+(wall?11:26);
+    ctx.fillStyle="rgba(12,9,16,.50)";
+    ctx.fillRect(x+7,y,28,wall?20:8);
+    ctx.fillStyle=cartridge?"rgba(119,91,52,.65)":demo?"rgba(105,65,134,.60)":modem?"rgba(44,111,124,.60)":"rgba(137,70,49,.60)";
+    ctx.fillRect(x+9,y+1,24,2);
+    ctx.fillRect(x+9,y+(wall?17:6),24,1);
+    ctx.fillStyle=cartridge?"rgba(182,141,74,.62)":demo?"rgba(169,117,189,.59)":modem?"rgba(85,170,172,.58)":"rgba(189,109,68,.59)";
+    if(cartridge){
+      // Recessed cartridge contacts with a chipped end stop.
+      ctx.fillRect(x+13,y+3,2,wall?11:2);ctx.fillRect(x+18,y+3,2,wall?11:2);
+      ctx.fillRect(x+23,y+3,2,wall?11:2);ctx.fillRect(x+28,y+3,2,wall?8:1);
+    }else if(demo){
+      // A broken raster-step motif set into the slab.
+      ctx.fillRect(x+12,y+(wall?12:5),6,1);ctx.fillRect(x+18,y+(wall?9:4),6,1);
+      ctx.fillRect(x+24,y+(wall?6:3),6,1);
+    }else if(modem){
+      // Paired terminal sockets and one short cable trace.
+      ctx.fillRect(x+12,y+(wall?7:3),4,2);ctx.fillRect(x+26,y+(wall?7:3),4,2);
+      ctx.fillRect(x+16,y+(wall?8:4),10,1);
+    }else{
+      // Missing pixels break the outline of a casting die.
+      ctx.fillRect(x+13,y+(wall?5:3),7,1);ctx.fillRect(x+23,y+(wall?5:3),6,1);
+      ctx.fillRect(x+14,y+(wall?13:5),14,1);
+      if(wall){ctx.fillRect(x+13,y+6,1,7);ctx.fillRect(x+28,y+6,1,7)}
     }
     return;
   }
