@@ -175,10 +175,29 @@
     "enabled": true,
     "product": "thea1200",
     "start": "2026-09-01T00:00:00Z",
-    "end": "2026-12-31T23:59:59Z",
+    "end": "2026-12-03T23:59:59.999Z",
     "eyebrow": "NEW AMIGA HARDWARE",
     "headline": "THEA1200 ARRIVES 4 DECEMBER 2026",
     "copy": "THEA1200 is due on 4 December 2026. If you're planning to pick one up, using the CCG Amazon link helps support the channel at no extra cost to you.",
     "releaseLabel": "RELEASES 4 DEC 2026"
+  },
+  "homepageRetroShop": {
+    "enabled": true,
+    "start": "2026-12-04T00:00:00Z",
+    "activeTag": "joepentony-20",
+    "collections": [
+      {
+        "label": "Evercade games & consoles",
+        "url": "https://www.amazon.co.uk/shop/cheekycommodoregamer/list/1VTVYVC8X7SDE?ref_=aipsflist&tag=joepentony-20&originMarketplaceId=A1F83G8C2ARO7P"
+      },
+      {
+        "label": "Retro hardware & accessories",
+        "url": "https://www.amazon.co.uk/shop/cheekycommodoregamer/list/12HA8QPINLWST?ref_=aipsflist&tag=joepentony-20&originMarketplaceId=A1F83G8C2ARO7P"
+      },
+      {
+        "label": "Bitmap Books",
+        "url": "https://www.amazon.co.uk/shop/cheekycommodoregamer/list/1OSXO76IN2A73?ref_=aipsflist&tag=joepentony-20&originMarketplaceId=A1F83G8C2ARO7P"
+      }
+    ]
   }
 }
