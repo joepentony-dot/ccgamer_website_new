@@ -1,3 +1,7 @@
+## 13 November 2026 — desktop CLS browser coverage expanded
+
+- Draft PR #3079 now samples three desktop viewport sizes and exposes top shift sources in Actions logs. The previous 1440×900 run completed 18 live cases with maximum lab CLS 0.07796. The reported 0.89 field result remains unresolved. See [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md) for evidence and qualification status.
+
 ## 12 November 2026 — desktop CLS evidence checkpoint
 
 - The owner-reported 106 desktop CLS-poor URLs (group 0.89) are under fresh investigation. Historical sitewide #2896 and mode first-paint #2964 were merged; neither alone establishes the current field verdict.

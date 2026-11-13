@@ -1,3 +1,9 @@
+## 13 November 2026 — desktop CLS at additional viewport sizes (DRAFT)
+
+- Phase 8A run [43266495596](https://github.com/joepentony-dot/ccgamer_website_new/actions/runs/43266495596) at `e3fa99d909fdc47996859737a61c77ca26e67d6c` captured 18 successful 1440×900 lab cases on the five live route families. The largest CLS was 0.07796 (Emulation guide, saved Amiga mode, cold). The 0.89 grouped Search Console field result was not reproduced.
+- Extend the existing live diagnostic to 1280×800 and 1920×1080 alongside 1440×900. Keep cold/warm and saved-mode coverage, retain viewport-specific screenshots, and put the three largest shift records per case in Actions logs so attribution survives artifact-download failures. Source evidence remains an observation of shifted elements, not proof of the trigger.
+- Local diagnostic syntax and all five session-window tests passed. The shell Chromium launch was blocked by the runtime socket restriction and the previous artifact transfer returned HTTP 503. Exact-head CI and independent review remain pending on the expanded diagnostic. No public repair or deployment has been verified.
+
 ## 12 November 2026 — desktop CLS measurement coverage (DRAFT / NO WEBSITE FIX)
 
 - Owner Google Search Console report identifies 106 desktop URLs in a poor CLS group (0.89), including Combat School, Games archive, the C64 emulator, Emulation guide and 50 Essential Amiga Games. Grouped 28-day field data cannot by itself establish a current first-paint regression or identify its element.
