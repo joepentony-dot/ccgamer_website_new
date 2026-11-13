@@ -1,3 +1,8 @@
+## 13 November 2026 — hourly sitewide Lighthouse schedule candidate
+
+- The existing GitHub Actions matrix is configured in this candidate for minute 20 of every hour. Both desktop and mobile still audit all public sitemap routes. The shard concurrency increases from eight to twelve, and newer triggers no longer cancel an audit already running.
+- The latest verified full audit, run `43145492388`, completed in about 63 minutes with eight parallel shards. Verify full run duration and scheduled completion after this candidate reaches the default branch. See [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md).
+
 ## 11 November 2026 — Dungeon R162 campaign completion
 
 - R161 #3057 merged at `d1caeb90ef83e520d3913fec0600cfe2f96a2a85` and production smoke verified `V10.42 r161`.
