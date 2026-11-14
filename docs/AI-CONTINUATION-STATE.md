@@ -1,7 +1,12 @@
-## 13 November 2026 — hourly sitewide Lighthouse schedule candidate
+## 13 November 2026 — desktop CLS browser coverage expanded
 
-- The existing GitHub Actions matrix is configured in this candidate for minute 20 of every hour. Both desktop and mobile still audit all public sitemap routes. The shard concurrency increases from eight to twelve, and newer triggers no longer cancel an audit already running.
-- The latest verified full audit, run `43145492388`, completed in about 63 minutes with eight parallel shards. Verify full run duration and scheduled completion after this candidate reaches the default branch. See [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md).
+- Draft PR #3079 now samples three desktop viewport sizes and exposes top shift sources in Actions logs. The previous 1440×900 run completed 18 live cases with maximum lab CLS 0.07796. The reported 0.89 field result remains unresolved. See [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md) for evidence and qualification status.
+
+## 12 November 2026 — desktop CLS evidence checkpoint
+
+- The owner-reported 106 desktop CLS-poor URLs (group 0.89) are under fresh investigation. Historical sitewide #2896 and mode first-paint #2964 were merged; neither alone establishes the current field verdict.
+- Existing Phase 8A mobile CLS report was based on a lifetime sum instead of the largest session window and did not cover the five reported desktop page families. A bounded diagnostic candidate adds targeted live desktop shift-source capture and fixes the mobile browser metric method without changing public-site behavior. Details: [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md).
+- The Content Publisher #3062 is merged; Friday the 13th PR #3069 remains a deliberately parked draft. Never merge any unqualified candidate or claim a Search Console validation pass based on lab results.
 
 ## 11 November 2026 — Dungeon R162 campaign completion
 

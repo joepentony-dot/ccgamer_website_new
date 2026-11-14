@@ -5,6 +5,7 @@ import process from 'node:process';
 import { chromium } from 'playwright-core';
 import lighthouse from 'lighthouse';
 import * as chromeLauncher from 'chrome-launcher';
+import { largestSessionWindow } from './lib/cls-session-window.mjs';
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -296,7 +297,7 @@ async function runBrowserDiagnostic(chromePath, routes, rawDir) {
           };
         });
         const validShifts = (data.observer.shifts || []).filter((entry) => !entry.had_recent_input);
-        const cls = validShifts.reduce((sum, entry) => sum + Number(entry.value || 0), 0);
+        const cls = largestSessionWindow(validShifts);
         const latestLcp = (data.observer.lcp || []).at(-1) || null;
         const resourcesByDuration = [...data.resources]
           .sort((left, right) => right.duration - left.duration)

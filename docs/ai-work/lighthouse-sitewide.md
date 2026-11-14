@@ -1,3 +1,17 @@
+## 13 November 2026 — desktop CLS at additional viewport sizes (DRAFT)
+
+- Phase 8A run [43266495596](https://github.com/joepentony-dot/ccgamer_website_new/actions/runs/43266495596) at `e3fa99d909fdc47996859737a61c77ca26e67d6c` captured 18 successful 1440×900 lab cases on the five live route families. The largest CLS was 0.07796 (Emulation guide, saved Amiga mode, cold). The 0.89 grouped Search Console field result was not reproduced.
+- Extend the existing live diagnostic to 1280×800 and 1920×1080 alongside 1440×900. Keep cold/warm and saved-mode coverage, retain viewport-specific screenshots, and put the three largest shift records per case in Actions logs so attribution survives artifact-download failures. Source evidence remains an observation of shifted elements, not proof of the trigger.
+- Local diagnostic syntax and all five session-window tests passed. The shell Chromium launch was blocked by the runtime socket restriction and the previous artifact transfer returned HTTP 503. Exact-head CI and independent review remain pending on the expanded diagnostic. No public repair or deployment has been verified.
+
+## 12 November 2026 — desktop CLS measurement coverage (DRAFT / NO WEBSITE FIX)
+
+- Owner Google Search Console report identifies 106 desktop URLs in a poor CLS group (0.89), including Combat School, Games archive, the C64 emulator, Emulation guide and 50 Essential Amiga Games. Grouped 28-day field data cannot by itself establish a current first-paint regression or identify its element.
+- Previous sitewide #2896 and first-paint Amiga safeguard #2964 are already merged; do not redo them or interpret a past pass as all URLs fixed.
+- Candidate branch `fix/desktop-cls-evidence-20261112` adds a read-only live Chromium desktop (1440x900) five-route, C64/Amiga where applicable, cold/warm measurement with attributed DOM rectangles, screenshots and raw artifacts to the existing Phase 8A workflow. It also corrects Phase 8A's mobile browser CLS calculation from lifetime sum to the Core Web Vitals largest 1s-gap/5s session window, with focused unit tests.
+- This is diagnostic instrumentation only: no public HTML/CSS/JS, publisher, admin, catalogue, game, emulator, Supabase, cache or deployment change. No claim of a measured before/after result until exact-head GitHub execution publishes artifacts.
+- Require current-head CI, inspect actual shift elements for repeatability, then isolate one source-backed repair and test representative desktop/mobile nonregression. No merge of this diagnostic or subsequent website fix without normal review and safeguards. PR #3069 is a separate parked draft.
+
 ## 3 November 2026 — isolate and revert the 15-page loading-hint regression (BRANCH ONLY)
 
 - Measured exact-head #2964 Category Omega run 41567494667 PASSED its existing numeric gate **when the Role-Playing representative page was restored byte-for-byte to main HTML**, with the separate first-paint Amiga-mode overlay safeguard preserved: mobile CLS baseline 0.77764 vs candidate 0.06190; desktop CLS baseline 1.10339 vs candidate 0.20746. Mobile LCP 21476ms vs 16451ms, desktop LCP 3989ms vs 3959ms. Results vary substantially between runs; not a sitewide win or evidence of live improvement.
@@ -119,7 +133,7 @@ The user-supplied Lighthouse reports from **25 September 2026** for the public H
 
 The complete site-wide Lighthouse matrix is intentionally the broad diagnostic sweep rather than a blanket score gate for every unrelated pull request. Syntax, URL inventory breadth and execution failures remain tooling defects.
 
-Known regression classes are now enforced separately by the permanent `CCG Lighthouse Performance Protocol` source/publishing guard. Public-site development must pass that contract even when the full multi-page matrix is not run pre-merge. The complete public-site sweep runs automatically after relevant shared changes reach `main`, and remains available by manual dispatch plus the hourly schedule at minute 20 UTC. It is split into deterministic mobile and desktop shards with bounded parallelism.
+Known regression classes are now enforced separately by the permanent `CCG Lighthouse Performance Protocol` source/publishing guard. Public-site development must pass that contract even when the full multi-page matrix is not run pre-merge. The complete public-site sweep runs automatically after relevant shared changes reach `main`, and remains available by manual dispatch plus the weekly schedule. It is split into deterministic mobile and desktop shards with bounded parallelism.
 
 ## Safety
 
