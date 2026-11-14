@@ -2,8 +2,20 @@
   "version": 1,
   "channelId": "UCHROCLVcatA449Gg-PoqlKw",
   "source": "youtube-atom-feed",
-  "syncedAt": "2026-11-11T19:27:38.955Z",
+  "syncedAt": "2026-11-13T22:40:00.710Z",
   "videos": [
+    {
+      "id": "GMH3zjOMvWI",
+      "title": "10 Gruesome Sounds – Can YOU Identify Them? | Friday the 13th C64",
+      "publishedAt": "2026-11-13T18:30:37.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/GMH3zjOMvWI/mqdefault.jpg"
+    },
+    {
+      "id": "0K4hWBrSXsE",
+      "title": "Imagine Playing THIS C64 Game at 7 Years Old 😳",
+      "publishedAt": "2026-11-13T17:30:15.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/0K4hWBrSXsE/mqdefault.jpg"
+    },
     {
       "id": "eciifDta8Kk",
       "title": "Gloom (1995) – Was This the Amiga's Answer to DOOM?",
@@ -27,18 +39,6 @@
       "title": "Alien Breed's INTEX SYSTEMS Voice Was the Composer's MUM?! | Amiga",
       "publishedAt": "2026-11-07T16:00:02.000Z",
       "thumbnail": "https://i.ytimg.com/vi/zLnqG8CMWII/mqdefault.jpg"
-    },
-    {
-      "id": "ygPOtslHRfk",
-      "title": "C64 vs Amiga: 100 Games Compared – Can You Guess the Winner?",
-      "publishedAt": "2026-11-06T18:30:07.000Z",
-      "thumbnail": "https://i.ytimg.com/vi/ygPOtslHRfk/mqdefault.jpg"
-    },
-    {
-      "id": "o-H9Ki2Mdwg",
-      "title": "INTERCEPTOR SOFTWARE on COMMODORE 64 – HARD AS NAILS! | C64 LIVE",
-      "publishedAt": "2026-11-05T22:32:43.000Z",
-      "thumbnail": "https://i.ytimg.com/vi/o-H9Ki2Mdwg/mqdefault.jpg"
     }
   ]
 }
