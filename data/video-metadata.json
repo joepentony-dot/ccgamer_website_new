@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-11-11T17:54:46.213Z",
+  "updatedAt": "2026-11-12T03:03:21.174Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -2106,6 +2106,15 @@
       "uploadDate": "2023-12-07T18:30:09Z",
       "duration": "PT6M12S",
       "thumbnailUrl": "https://i.ytimg.com/vi/E9zwNkSIFBc/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "eciifDta8Kk": {
+      "title": "Gloom (1995) – Was This the Amiga's Answer to DOOM?",
+      "description": "🕹️ GLOOM (1995) – WAS THIS THE AMIGA'S ANSWER TO DOOM?\nBack in 1995, PC owners had been enjoying Doom for almost two years, while Commodore Amiga owners were desperate for something similar. Then along came Gloom, a first-person shooter featuring enormous pixels, relentless action and some ridiculously gruesome violence! But was Gloom really the Amiga's answer to Doom, or were we just grateful to have something resembling it running on our beloved machine?\n\n🌐 Explore more Commodore 64 & Amiga games:\n👉 https://www.cheekycommodoregamer.co.uk/games/gloom\n\nDeveloped by New Zealand studio Black Magic Software and published by Guildhall Leisure, Gloom was programmed by Mark Sibly, the man behind Overkill, Guardian and Blitz Basic. With graphics from brothers Hans and Kurt Butler and music by Kevan Stannard, the game takes you through futuristic spacecraft corridors, Gothic environments and eventually Hell itself, blasting soldiers, robots, demons and some particularly annoying ghosts along the way.\n\nGloom wasn't interested in complicated puzzles or collecting coloured keys. You've got unlimited ammunition, an upgradeable weapon and plenty of enemies to shoot. Its notorious Meaty and Messy settings send body parts flying everywhere, while adjustable graphics let you trade resolution for speed. There's also split-screen multiplayer, secret rooms, hidden switches and absolutely no automap to help when you've wandered down the same bloody corridor six times!\n\nIn this retrospective, I'm heading back to 1995 to revisit Gloom and see how my memories compare with playing it more than thirty years later. We'll look at the gameplay, those enormous pixels, the frustrating level design and how it compared with other Amiga Doom-style shooters such as Alien Breed 3D and Fears. I'll also revisit the contemporary magazine reviews, including those impressive 90% scores.\n\nThere's some fascinating history behind Gloom too, including a hidden arcade machine featuring Underkill, an abandoned idea to have Gloom running inside Gloom itself, and the story of three developers working above a restaurant in Auckland, fuelled by KFC, beer and loud music. We'll also touch on Gloom Deluxe, its later follow-ups and the continuing interest in this distinctive Amiga shooter.\n\nGloom might not have been Doom, but for those of us playing on an Amiga 1200 in the mid-nineties, it was an exciting glimpse of what our machines could still achieve. Even if finding the bloody exit was sometimes harder than killing everything in sight!\n\n💬 Did you play Gloom on the Amiga back in 1995, and what did you think of it?\n\n💬 Which was your favourite Amiga Doom-style shooter: Gloom, Alien Breed 3D, Fears or something else?\n\nIf you enjoy revisiting classic Commodore games, give the video a thumbs up and subscribe to the Cheeky Commodore Gamer channel for more Amiga and C64 reviews, retro gaming history and forgotten favourites!\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#Gloom #Amiga #CommodoreAmiga #AmigaGames #RetroGaming",
+      "uploadDate": "2026-11-11T18:30:33Z",
+      "duration": "PT8M44S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/eciifDta8Kk/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
