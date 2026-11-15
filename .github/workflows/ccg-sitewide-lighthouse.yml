@@ -16,13 +16,13 @@ on:
       - "js/**"
       - "service-worker.js"
   schedule:
-    - cron: "20 3 * * 0"
+    - cron: "20 * * * *"
 permissions:
   contents: read
 
 concurrency:
   group: ccg-sitewide-lighthouse-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   lighthouse:
@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 70
     strategy:
       fail-fast: false
-      max-parallel: 8
+      max-parallel: 12
       matrix:
         device:
           - mobile
