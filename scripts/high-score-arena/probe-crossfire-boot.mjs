@@ -90,7 +90,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-fire-play-80', 'after-play-idle-300', 'after-level-fire-150', 'after-level-fire-450', 'after-level-fire-move-300', 'after-level-fire-rest-400'].includes(name)) {
+  if (['after-level-fire-150', 'first-shots-right-90', 'first-shots-straight-70', 'first-shots-up-70', 'first-shots-left-70', 'after-level-fire-rest-400'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -198,8 +198,13 @@ advance(300,0xff,'after-play-idle-300');
 // Preserve the HUD/score framebuffer without assuming the score has advanced.
 advance(8,0xef,'level-fire-press');
 advance(150,0xff,'after-level-fire-150');
-advance(300,0xff,'after-level-fire-450');
-advance(300,0xe7,'after-level-fire-move-300');
+// The first street gameplay image appears here. Sweep the aim while holding
+// FIRE using the existing joystick encoding; do not label results as scores.
+advance(90,0xe7,'first-shots-right-90');
+advance(70,0xef,'first-shots-straight-70');
+advance(70,0xee,'first-shots-up-70');
+advance(70,0xeb,'first-shots-left-70');
+advance(300,0xff,'after-level-fire-move-300');
 advance(400,0xff,'after-level-fire-rest-400');
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
