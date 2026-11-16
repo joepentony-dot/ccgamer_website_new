@@ -87,7 +87,7 @@ function record(machine,name,frame) {
     screenBase:screen.base,ramSHA256:sha256(ram),
     frameSHA256:sha256(machine.vic2.frameBuffer),screenText:screen.rows};
   const visible=screen.rows.map(x=>x.trim()).filter(x=>/[A-Z0-9]{3}/.test(x));
-  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-')) {
+  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
     const regs=machine.vic2.regs, base=Number(screen.base);
     const sprites=[];
     for(let i=0;i<8;i++) {
@@ -103,7 +103,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'aim-left-22', 'aim-up-22', 'aim-fire-32', 'aim-right-22', 'aim-down-left-25', 'aim-fire-30', 'after-level-fire-rest-400'].includes(name)) {
+  if (['after-level-fire-150', 'target-upper-left-x', 'target-upper-left-y', 'shoot-upper-left-8', 'target-lower-right-x', 'target-lower-right-y', 'shoot-lower-right-8', 'after-level-fire-rest-400'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -213,16 +213,20 @@ advance(8,0xef,'level-fire-press');
 advance(150,0xff,'after-level-fire-150');
 // The first street gameplay image appears here. Sweep the aim while holding
 // FIRE using the existing joystick encoding; do not label results as scores.
-advance(22,0xeb,'aim-left-22');
-advance(22,0xee,'aim-up-22');
-advance(32,0xef,'aim-fire-32');
-advance(22,0xe7,'aim-right-22');
-advance(25,0xea,'aim-down-left-25');
-advance(30,0xef,'aim-fire-30');
-advance(90,0xe7,'first-shots-right-90');
-advance(70,0xef,'first-shots-straight-70');
-advance(70,0xee,'first-shots-up-70');
-advance(70,0xeb,'first-shots-left-70');
+// At street start the sprite 0/1 cursor is x=112,y=128; character-window
+// targets appear near x=75,y=145 and x=195,y=185. The VIC coordinate to
+// visible-screen offset is empirical and target shots must be verified onscreen.
+// Move WITHOUT fire; only press once the cursor has reached a suspected target.
+advance(30,0xfb,'target-upper-left-x');
+advance(12,0xfd,'target-upper-left-y');
+advance(8,0xef,'shoot-upper-left-8');
+advance(8,0xff,'release-upper-left-8');
+advance(60,0xf7,'target-lower-right-x');
+advance(20,0xfd,'target-lower-right-y');
+advance(8,0xef,'shoot-lower-right-8');
+advance(8,0xff,'release-lower-right-8');
+advance(60,0xef,'followup-fire-60');
+advance(120,0xff,'first-shots-rest-120');
 advance(300,0xff,'after-level-fire-move-300');
 advance(400,0xff,'after-level-fire-rest-400');
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
