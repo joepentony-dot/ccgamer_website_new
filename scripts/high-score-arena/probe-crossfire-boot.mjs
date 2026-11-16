@@ -90,7 +90,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level1-250', 'after-fire-play-80', 'after-fire-play-250', 'after-right-fire-250', 'after-play-idle-300'].includes(name)) {
+  if (['after-fire-play-80', 'after-play-idle-300', 'after-level-fire-150', 'after-level-fire-450', 'after-level-fire-move-300', 'after-level-fire-rest-400'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -194,6 +194,13 @@ advance(80,0xff,'after-fire-play-80');
 advance(170,0xff,'after-fire-play-250');
 advance(250,0xe7,'after-right-fire-250');
 advance(300,0xff,'after-play-idle-300');
+// Try a second FIRE from the displayed "LEVEL 1 / DOWNTOWN CHICAGO" state.
+// Preserve the HUD/score framebuffer without assuming the score has advanced.
+advance(8,0xef,'level-fire-press');
+advance(150,0xff,'after-level-fire-150');
+advance(300,0xff,'after-level-fire-450');
+advance(300,0xe7,'after-level-fire-move-300');
+advance(400,0xff,'after-level-fire-rest-400');
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
