@@ -87,10 +87,23 @@ function record(machine,name,frame) {
     screenBase:screen.base,ramSHA256:sha256(ram),
     frameSHA256:sha256(machine.vic2.frameBuffer),screenText:screen.rows};
   const visible=screen.rows.map(x=>x.trim()).filter(x=>/[A-Z0-9]{3}/.test(x));
+  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-')) {
+    const regs=machine.vic2.regs, base=Number(screen.base);
+    const sprites=[];
+    for(let i=0;i<8;i++) {
+      if(!(regs[0x15] & (1<<i))) continue;
+      sprites.push({i,x:regs[i*2]+((regs[0x10]&(1<<i))?256:0),y:regs[i*2+1]});
+    }
+    const hudBytes=Array.from(ram.subarray(base,base+80));
+    console.log('HUD_DIAGNOSTIC '+JSON.stringify({name,frame,sprites,
+      screenBase:screen.base,hudHex:Buffer.from(hudBytes).toString('hex'),
+      scoreRegionSHA256:sha256(Buffer.concat(Array.from({length:20},(_,y)=>
+        Buffer.from(machine.vic2.frameBuffer.subarray(((45+y)*384+245)*4,((45+y)*384+345)*4)))))}));
+  }
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'first-shots-right-90', 'first-shots-straight-70', 'first-shots-up-70', 'first-shots-left-70', 'after-level-fire-rest-400'].includes(name)) {
+  if (['after-level-fire-150', 'aim-left-22', 'aim-up-22', 'aim-fire-32', 'aim-right-22', 'aim-down-left-25', 'aim-fire-30', 'after-level-fire-rest-400'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -200,6 +213,12 @@ advance(8,0xef,'level-fire-press');
 advance(150,0xff,'after-level-fire-150');
 // The first street gameplay image appears here. Sweep the aim while holding
 // FIRE using the existing joystick encoding; do not label results as scores.
+advance(22,0xeb,'aim-left-22');
+advance(22,0xee,'aim-up-22');
+advance(32,0xef,'aim-fire-32');
+advance(22,0xe7,'aim-right-22');
+advance(25,0xea,'aim-down-left-25');
+advance(30,0xef,'aim-fire-30');
 advance(90,0xe7,'first-shots-right-90');
 advance(70,0xef,'first-shots-straight-70');
 advance(70,0xee,'first-shots-up-70');
