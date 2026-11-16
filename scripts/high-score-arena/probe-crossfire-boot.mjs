@@ -88,7 +88,7 @@ function record(machine,name,frame) {
     screenBase:screen.base,ramSHA256:sha256(ram),
     frameSHA256:sha256(machine.vic2.frameBuffer),screenText:screen.rows};
   const visible=screen.rows.map(x=>x.trim()).filter(x=>/[A-Z0-9]{3}/.test(x));
-  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('scenario-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
+  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('life-cycle-') || name.startsWith('scenario-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
     const regs=machine.vic2.regs, base=Number(screen.base);
     const sprites=[];
     for(let i=0;i<8;i++) {
@@ -105,7 +105,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8'].includes(name)) {
+  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -277,6 +277,32 @@ for(const scenario of scenarios) {
     screenBase:screenText(machine).base
   }));
 }
+// Run score persistence across an ACTUAL life loss and restart, rather than
+// mistaking the Level-1 interstitial for a playable second target.
+machine=new C64Machine();
+machine.loadROMs({
+  kernal:firmware('kernal-901227-03.bin'),
+  basic:firmware('basic-901226-01.bin'),
+  charRom:firmware('chargen-901225-01.bin')
+});
+machine.restoreState(playableState);
+console.log('LIFE_CYCLE_START same original Level-1 no-trainer state');
+advance(1,0xff,'life-cycle-fresh-start');
+advance(30,0xfb,'life-cycle-first-aim-x');
+advance(33,0xfd,'life-cycle-first-aim-y');
+advance(8,0xef,'life-cycle-first-hit');
+advance(110,0xff,'life-cycle-after-first-death');
+advance(8,0xef,'life-cycle-restart-fire');
+advance(150,0xff,'life-cycle-respawn-150');
+advance(30,0xf7,'life-cycle-second-aim-x');
+advance(33,0xfd,'life-cycle-second-aim-y');
+advance(8,0xef,'life-cycle-second-hit');
+advance(80,0xff,'life-cycle-after-second-hit');
+console.log('LIFE_CYCLE_END '+JSON.stringify({
+  displayedScoreIfHUD:readCrossfireScreenScore(machine.mem.ram),
+  screenBase:screenText(machine).base,
+  lifeGlyphs:Array.from(machine.mem.ram.subarray(0x7429,0x742b))
+}));
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
