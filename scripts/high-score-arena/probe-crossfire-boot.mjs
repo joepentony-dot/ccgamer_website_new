@@ -87,7 +87,7 @@ function record(machine,name,frame) {
     screenBase:screen.base,ramSHA256:sha256(ram),
     frameSHA256:sha256(machine.vic2.frameBuffer),screenText:screen.rows};
   const visible=screen.rows.map(x=>x.trim()).filter(x=>/[A-Z0-9]{3}/.test(x));
-  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
+  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('scenario-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
     const regs=machine.vic2.regs, base=Number(screen.base);
     const sprites=[];
     for(let i=0;i<8;i++) {
@@ -103,7 +103,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'target-upper-left-x', 'target-upper-left-y', 'shoot-upper-left-8', 'target-lower-right-x', 'target-lower-right-y', 'shoot-lower-right-8', 'after-level-fire-rest-400'].includes(name)) {
+  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -120,7 +120,7 @@ function record(machine,name,frame) {
 const prg=loadExactPrg();
 if(OUT)mkdirSync(OUT,{recursive:true});
 console.log('EXACT-PRG '+JSON.stringify({gameId:'archive-02121',sha256:sha256(prg),bytes:prg.length}));
-const machine=new C64Machine();
+let machine=new C64Machine();
 machine.loadROMs({
   kernal:firmware('kernal-901227-03.bin'),
   basic:firmware('basic-901226-01.bin'),
@@ -211,6 +211,10 @@ advance(300,0xff,'after-play-idle-300');
 // Preserve the HUD/score framebuffer without assuming the score has advanced.
 advance(8,0xef,'level-fire-press');
 advance(150,0xff,'after-level-fire-150');
+// Fork this known playable state (not the non-restorable snapshot debug dump).
+// Each scoring experiment begins at the same exact machine state, without
+// modifying the production game or using any of the trainer options.
+const playableState=machine.serializeState();
 // The first street gameplay image appears here. Sweep the aim while holding
 // FIRE using the existing joystick encoding; do not label results as scores.
 // At street start the sprite 0/1 cursor is x=112,y=128; character-window
@@ -229,6 +233,34 @@ advance(60,0xef,'followup-fire-60');
 advance(120,0xff,'first-shots-rest-120');
 advance(300,0xff,'after-level-fire-move-300');
 advance(400,0xff,'after-level-fire-rest-400');
+// Independent target experiments from the same no-cheat first-street state.
+// Restores are DIAGNOSTIC only, not eligible challenge attempts.
+const scenarios=[
+  {label:'lower-left',commands:[
+    [30,0xfb,'move-left-30'],[33,0xfd,'move-down-33'],
+    [8,0xef,'shoot-8'],[15,0xff,'release-15']]},
+  {label:'lower-right',commands:[
+    [30,0xf7,'move-right-30'],[33,0xfd,'move-down-33'],
+    [8,0xef,'shoot-8'],[15,0xff,'release-15']]},
+  {label:'upper-left',commands:[
+    [30,0xfb,'move-left-30'],[12,0xfd,'move-down-12'],
+    [8,0xef,'shoot-8'],[15,0xff,'release-15']]},
+  {label:'lower-left-offset',commands:[
+    [27,0xfb,'move-left-27'],[29,0xfd,'move-down-29'],
+    [8,0xef,'shoot-8'],[15,0xff,'release-15']]},
+];
+for(const scenario of scenarios) {
+  machine=new C64Machine();
+  machine.loadROMs({
+    kernal:firmware('kernal-901227-03.bin'),
+    basic:firmware('basic-901226-01.bin'),
+    charRom:firmware('chargen-901225-01.bin')
+  });
+  machine.restoreState(playableState);
+  console.log('SCENARIO_START '+JSON.stringify({label:scenario.label,source:'single exact state from normal Crossfire level 1'}));
+  advance(1,0xff,'scenario-'+scenario.label+'-start');
+  for(const [n,joy,label] of scenario.commands) advance(n,joy,'scenario-'+scenario.label+'-'+label);
+}
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
