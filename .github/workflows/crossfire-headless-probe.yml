@@ -1,0 +1,37 @@
+name: CCG Crossfire Headless Gameplay Probe
+
+on:
+  pull_request:
+    paths:
+      - "scripts/high-score-arena/probe-crossfire-boot.mjs"
+      - "scripts/high-score-arena/inspect-crossfire-prg.mjs"
+      - "emulator/c64/media/prg-archive/catalog.json"
+      - "emulator/c64/media/prg-archive/pack-10.bin"
+      - ".github/workflows/crossfire-headless-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  headless-crossfire-boot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run exact Crossfire PRG against original C64 firmware and machine
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/high-score-arena/probe-crossfire-boot.mjs
+          node scripts/high-score-arena/probe-crossfire-boot.mjs --output-dir "$RUNNER_TEMP/crossfire-probe"
+      - name: Preserve test-only framebuffer and RAM evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: crossfire-headless-boot-evidence
+          path: ${{ runner.temp }}/crossfire-probe/
+          if-no-files-found: error
+          retention-days: 7
