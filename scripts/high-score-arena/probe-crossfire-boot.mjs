@@ -88,7 +88,7 @@ function record(machine,name,frame) {
     screenBase:screen.base,ramSHA256:sha256(ram),
     frameSHA256:sha256(machine.vic2.frameBuffer),screenText:screen.rows};
   const visible=screen.rows.map(x=>x.trim()).filter(x=>/[A-Z0-9]{3}/.test(x));
-  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('life-cycle-') || name.startsWith('zero-run-') || name.startsWith('scenario-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
+  if (name.startsWith('after-level-fire') || name.startsWith('after-level1') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('life-cycle-') || name.startsWith('zero-run-') || name.startsWith('scenario-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
     const regs=machine.vic2.regs, base=Number(screen.base);
     const sprites=[];
     for(let i=0;i<8;i++) {
@@ -105,7 +105,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit', 'life-cycle-zero-lives-hold', 'life-cycle-third-respawn', 'life-cycle-third-hit', 'life-cycle-after-third-death', 'life-cycle-post-game-over-250', 'life-cycle-post-game-over-650', 'zero-run-life1-death-observed', 'zero-run-life2-death-observed', 'zero-run-final-hud-removed', 'zero-run-game-over-hold'].includes(name)) {
+  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit', 'life-cycle-zero-lives-hold', 'life-cycle-third-respawn', 'life-cycle-third-hit', 'life-cycle-after-third-death', 'life-cycle-post-game-over-250', 'life-cycle-post-game-over-650', 'zero-run-life1-death-observed', 'zero-run-life2-death-observed', 'zero-run-grave-confirmed', 'zero-run-game-over-hold'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -351,13 +351,19 @@ if(zeroSawLifeOne) {
   if(zeroSawLifeZero) {
     advance(8,0xef,'zero-run-final-life-start');
     machine.joyPort1=0xff;machine.joyPort2=0xff;
-    let finalHudGone=false,gameoverAfterFrames=0;
+    // Reference: unchanged grave-screen bytes persisted at frames 9586,
+    // 9836 and 10236 of positive-score run 43938124747. This is an
+    // INVESTIGATION GATE only, not production gameover classification.
+    const knownGraveHeader=Buffer.from('0303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030333340235360303','hex');
+    let graveFrames=0,graveObserved=false,gameoverAfterFrames=0;
     for(;gameoverAfterFrames<1800;gameoverAfterFrames++) {
       assert(machine.runFrame());frames++;
-      if(readCrossfireScreenScore(machine.mem.ram)===null) {finalHudGone=true;break;}
+      const current=Buffer.from(machine.mem.ram.subarray(0x7400,0x7450));
+      if(current.equals(knownGraveHeader)) graveFrames++; else graveFrames=0;
+      if(graveFrames>=20) {graveObserved=true;break;}
     }
-    console.log('ZERO_GAMEOVER_TRANSITION '+JSON.stringify({finalHudGone,gameoverAfterFrames,score:readCrossfireScreenScore(machine.mem.ram)}));
-    record(machine,'zero-run-final-hud-removed',frames);
+    console.log('ZERO_GAMEOVER_TRANSITION '+JSON.stringify({graveObserved,graveFrames,gameoverAfterFrames,score:readCrossfireScreenScore(machine.mem.ram)}));
+    record(machine,'zero-run-grave-confirmed',frames);
     advance(280,0xff,'zero-run-game-over-hold');
   }
 }
