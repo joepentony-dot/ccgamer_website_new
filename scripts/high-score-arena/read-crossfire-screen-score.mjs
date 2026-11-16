@@ -37,3 +37,17 @@ export function readCrossfireScreenScore(ram) {
   }
   return score;
 }
+
+
+/**
+ * Remaining lives shown as a single paired tile digit in the top-left HUD.
+ * Observed 2 -> 1 -> 0 on exact Atlantis/Pantheon Crossfire, run 43938124747.
+ * A zero here means the LAST life, not the end of the whole game.
+ */
+export function readCrossfireScreenLives(ram) {
+  if (readCrossfireScreenScore(ram) === null) return null;
+  const first = ram[0x7429], second = ram[0x742a];
+  if (second !== first + 1 || first < 0x04 || first > 0x28 ||
+      (first - 0x04) % 4 !== 0) return null;
+  return (first - 0x04) / 4;
+}

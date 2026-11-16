@@ -14,6 +14,7 @@ import { deflateSync } from 'node:zlib';
 import { C64Machine } from '../../js/ccg-c64/core/machine.js';
 import { inspectCrossfire } from './inspect-crossfire-prg.mjs';
 import { readCrossfireScreenScore } from './read-crossfire-screen-score.mjs';
+import { CrossfireRunObserver } from './observe-crossfire-run.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUT = process.argv.includes('--output-dir')
@@ -286,18 +287,24 @@ machine.loadROMs({
   charRom:firmware('chargen-901225-01.bin')
 });
 machine.restoreState(playableState);
+const lifeObserver=new CrossfireRunObserver({gameId:'archive-02121',prgSHA256:SHA});
+lifeObserver.observe(machine.mem.ram);
 console.log('LIFE_CYCLE_START same original Level-1 no-trainer state');
 advance(1,0xff,'life-cycle-fresh-start');
 advance(30,0xfb,'life-cycle-first-aim-x');
 advance(33,0xfd,'life-cycle-first-aim-y');
 advance(8,0xef,'life-cycle-first-hit');
+lifeObserver.observe(machine.mem.ram);
 advance(110,0xff,'life-cycle-after-first-death');
+lifeObserver.observe(machine.mem.ram);
 advance(8,0xef,'life-cycle-restart-fire');
 advance(150,0xff,'life-cycle-respawn-150');
 advance(30,0xf7,'life-cycle-second-aim-x');
 advance(33,0xfd,'life-cycle-second-aim-y');
 advance(8,0xef,'life-cycle-second-hit');
+lifeObserver.observe(machine.mem.ram);
 advance(80,0xff,'life-cycle-after-second-hit');
+lifeObserver.observe(machine.mem.ram);
 // Confirm whether a lives HUD glyph of 0 is final game over or the last
 // remaining life; then observe what really appears after the next death.
 advance(90,0xff,'life-cycle-zero-lives-hold');
@@ -306,7 +313,17 @@ advance(150,0xff,'life-cycle-third-respawn');
 advance(30,0xfb,'life-cycle-third-aim-x');
 advance(33,0xfd,'life-cycle-third-aim-y');
 advance(8,0xef,'life-cycle-third-hit');
+lifeObserver.observe(machine.mem.ram);
 advance(105,0xff,'life-cycle-after-third-death');
+let observedFinal=lifeObserver.observe(machine.mem.ram);
+for(let i=0;i<25&&!observedFinal;i++){
+  assert(machine.runFrame());frames++;
+  observedFinal=lifeObserver.observe(machine.mem.ram);
+}
+assert.equal(observedFinal?.score,2325,
+  'No diagnostic final-score candidate unless actual grave persists after last life');
+assert.equal(observedFinal?.kind,'diagnostic-final-score-candidate');
+console.log('CROSSFIRE_OBSERVER_VERIFIED '+JSON.stringify(observedFinal));
 advance(250,0xff,'life-cycle-post-game-over-250');
 advance(400,0xff,'life-cycle-post-game-over-650');
 console.log('LIFE_CYCLE_END '+JSON.stringify({

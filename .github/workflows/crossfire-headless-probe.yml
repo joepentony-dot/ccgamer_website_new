@@ -5,6 +5,8 @@ on:
     paths:
       - "scripts/high-score-arena/probe-crossfire-boot.mjs"
       - "scripts/high-score-arena/inspect-crossfire-prg.mjs"
+      - "scripts/high-score-arena/read-crossfire-screen-score.mjs"
+      - "scripts/high-score-arena/observe-crossfire-run.mjs"
       - "emulator/c64/media/prg-archive/catalog.json"
       - "emulator/c64/media/prg-archive/pack-10.bin"
       - ".github/workflows/crossfire-headless-probe.yml"

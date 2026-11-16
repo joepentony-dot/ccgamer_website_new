@@ -6,6 +6,8 @@ on:
       - "scripts/high-score-arena/inspect-crossfire-prg.mjs"
       - "scripts/high-score-arena/analyse-crossfire-score-ram.mjs"
       - "scripts/high-score-arena/read-crossfire-screen-score.mjs"
+      - "scripts/high-score-arena/observe-crossfire-run.mjs"
+      - "tests/high-score-arena-crossfire-observer.test.mjs"
       - "tests/high-score-arena-crossfire-screen-score.test.mjs"
       - "tests/high-score-arena-crossfire-ram-analysis.test.mjs"
       - "docs/ai-work/high-score-arena-crossfire.md"
@@ -52,3 +54,5 @@ jobs:
           node --test tests/high-score-arena-crossfire-ram-analysis.test.mjs
           node --check scripts/high-score-arena/read-crossfire-screen-score.mjs
           node --test tests/high-score-arena-crossfire-screen-score.test.mjs
+          node --check scripts/high-score-arena/observe-crossfire-run.mjs
+          node --test tests/high-score-arena-crossfire-observer.test.mjs

@@ -1,3 +1,7 @@
+## 16 November 2026 — High Score Arena Crossfire 2325 + game-over diagnostic
+
+- Existing draft PR #3089 (not merged) has now demonstrated real cumulative scores **0, 775, 1550, 2325** and lives **2→1→0** on exact Atlantis/Pantheon `archive-02121` PRG. Grave-screen evidence persisted after final death at 2325 and on an independent 0-score run; it differs from title and ordinary blank transitions. Added fail-closed, read-only score/lives/final-screen observer plus authentic frame-fixture tests and in-emulator assertion. No website, game data, Supabase, score submission, overlay or other PRG changes; exact-head CI must pass before qualification. See [High Score Arena Crossfire](ai-work/high-score-arena-crossfire.md).
+
 ## 16 November 2026 — Crossfire verified score HUD experiment (draft #3089)
 
 - Real headless Atlantis/Pantheon Crossfire gameplay confirmed 000775 after a lower-window shot, replicated from the same no-trainer Level 1 state with distinct enemy windows. The C64 screen-memory glyphs at $7443–$744e changed from 000000 to 000775. A fail-closed read-only decoder and real-capture regression tests have been added to existing draft #3089. This is NOT automatic final-score detection: end-of-game and scoring trust remain unverified; no account/network/production game change. See [Crossfire project](ai-work/high-score-arena-crossfire.md).
