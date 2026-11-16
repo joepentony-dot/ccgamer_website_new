@@ -105,7 +105,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit'].includes(name)) {
+  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit', 'life-cycle-zero-lives-hold', 'life-cycle-third-respawn', 'life-cycle-third-hit', 'life-cycle-after-third-death', 'life-cycle-post-game-over-250', 'life-cycle-post-game-over-650'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -298,6 +298,17 @@ advance(30,0xf7,'life-cycle-second-aim-x');
 advance(33,0xfd,'life-cycle-second-aim-y');
 advance(8,0xef,'life-cycle-second-hit');
 advance(80,0xff,'life-cycle-after-second-hit');
+// Confirm whether a lives HUD glyph of 0 is final game over or the last
+// remaining life; then observe what really appears after the next death.
+advance(90,0xff,'life-cycle-zero-lives-hold');
+advance(8,0xef,'life-cycle-third-resume-fire');
+advance(150,0xff,'life-cycle-third-respawn');
+advance(30,0xfb,'life-cycle-third-aim-x');
+advance(33,0xfd,'life-cycle-third-aim-y');
+advance(8,0xef,'life-cycle-third-hit');
+advance(105,0xff,'life-cycle-after-third-death');
+advance(250,0xff,'life-cycle-post-game-over-250');
+advance(400,0xff,'life-cycle-post-game-over-650');
 console.log('LIFE_CYCLE_END '+JSON.stringify({
   displayedScoreIfHUD:readCrossfireScreenScore(machine.mem.ram),
   screenBase:screenText(machine).base,
