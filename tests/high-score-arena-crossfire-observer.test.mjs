@@ -77,7 +77,7 @@ test('zero-score game can end but a transient HUD loss cannot submit a result',(
   for(const key of ['zero','zeroLife1','zeroLife0'])assert.equal(observer.observe(ram(observed[key])),null);
   assert.equal(observer.observe(ram(observed.title)),null,'title is not grave');
   assert.equal(observer.observe(ram(observed.graveZero)),null);
-  assert.equal(observer.observe(ram(observed.life0)),null,'recovered HUD resets frame stability');
+  assert.equal(observer.observe(ram(observed.zeroLife0)),null,'recovered zero-score HUD resets frame stability');
   for(let i=0;i<19;i++)assert.equal(observer.observe(ram(observed.graveZero)),null);
   assert.equal(observer.observe(ram(observed.graveZero))?.score,0);
 });
