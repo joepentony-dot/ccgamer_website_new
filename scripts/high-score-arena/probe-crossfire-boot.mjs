@@ -90,7 +90,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-loader-1200', 'after-f1-490', 'after-space-250', 'after-enter-250', 'after-fire-250', 'after-f1-retry-250'].includes(name)) {
+  if (['after-space-250', 'after-n-200', 'after-n-500', 'after-n-900'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -159,6 +159,15 @@ pressKey(0,1,'enter-press','after-enter-250');
 advance(8,0xef,'fire-again-press');
 advance(250,0xff,'after-fire-250');
 pressKey(0,4,'f1-retry-press','after-f1-retry-250');
+// The exact archived PRG offers a TRAINER. Answer N on the real C64 keyboard
+// to reject endless lives. This does not establish that trainers are disabled
+// in subsequent gameplay, and never qualifies a leaderboard submission.
+machine.cia1.setKey(4,7,true); // KeyN on the existing matrix
+advance(8,0xff,'n-endless-lives-press');
+machine.cia1.setKey(4,7,false);
+advance(200,0xff,'after-n-200');
+advance(300,0xff,'after-n-500');
+advance(400,0xff,'after-n-900');
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
