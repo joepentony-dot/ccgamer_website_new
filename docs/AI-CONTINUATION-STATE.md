@@ -1,3 +1,7 @@
+## 16 November 2026 — Crossfire verified score HUD experiment (draft #3089)
+
+- Real headless Atlantis/Pantheon Crossfire gameplay confirmed 000775 after a lower-window shot, replicated from the same no-trainer Level 1 state with distinct enemy windows. The C64 screen-memory glyphs at $7443–$744e changed from 000000 to 000775. A fail-closed read-only decoder and real-capture regression tests have been added to existing draft #3089. This is NOT automatic final-score detection: end-of-game and scoring trust remain unverified; no account/network/production game change. See [Crossfire project](ai-work/high-score-arena-crossfire.md).
+
 ## 16 November 2026 — High Score Arena — Crossfire offline RAM candidate gate
 
 - Existing isolated draft #3089 identifies the exact `archive-02121` Crossfire PRG (not `Crossfire - Tron`). GitHub Actions `43911950805` passed the immutable pack and PRG checksum check on source head `2c4aa46e`; job log confirms PRG load address `0x0801`.

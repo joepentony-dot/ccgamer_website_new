@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 import { C64Machine } from '../../js/ccg-c64/core/machine.js';
 import { inspectCrossfire } from './inspect-crossfire-prg.mjs';
+import { readCrossfireScreenScore } from './read-crossfire-screen-score.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUT = process.argv.includes('--output-dir')
@@ -97,6 +98,7 @@ function record(machine,name,frame) {
     const hudBytes=Array.from(ram.subarray(base,base+80));
     console.log('HUD_DIAGNOSTIC '+JSON.stringify({name,frame,sprites,
       screenBase:screen.base,hudHex:Buffer.from(hudBytes).toString('hex'),
+      scoreCandidateFromHUD:readCrossfireScreenScore(ram),
       scoreRegionSHA256:sha256(Buffer.concat(Array.from({length:20},(_,y)=>
         Buffer.from(machine.vic2.frameBuffer.subarray(((45+y)*384+245)*4,((45+y)*384+345)*4)))))}));
   }
