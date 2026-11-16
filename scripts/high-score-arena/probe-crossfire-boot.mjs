@@ -88,7 +88,7 @@ function record(machine,name,frame) {
     screenBase:screen.base,ramSHA256:sha256(ram),
     frameSHA256:sha256(machine.vic2.frameBuffer),screenText:screen.rows};
   const visible=screen.rows.map(x=>x.trim()).filter(x=>/[A-Z0-9]{3}/.test(x));
-  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('life-cycle-') || name.startsWith('scenario-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
+  if (name.startsWith('after-level-fire') || name.startsWith('first-shots') || name.startsWith('aim-') || name.startsWith('life-cycle-') || name.startsWith('zero-run-') || name.startsWith('scenario-') || name.startsWith('target-') || name.startsWith('shoot-') || name.startsWith('release-')) {
     const regs=machine.vic2.regs, base=Number(screen.base);
     const sprites=[];
     for(let i=0;i<8;i++) {
@@ -105,7 +105,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit', 'life-cycle-zero-lives-hold', 'life-cycle-third-respawn', 'life-cycle-third-hit', 'life-cycle-after-third-death', 'life-cycle-post-game-over-250', 'life-cycle-post-game-over-650'].includes(name)) {
+  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit', 'life-cycle-zero-lives-hold', 'life-cycle-third-respawn', 'life-cycle-third-hit', 'life-cycle-after-third-death', 'life-cycle-post-game-over-250', 'life-cycle-post-game-over-650', 'zero-run-after-life1-death', 'zero-run-after-life2-death', 'zero-run-after-life3-death', 'zero-run-game-over-hold'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -313,6 +313,28 @@ console.log('LIFE_CYCLE_END '+JSON.stringify({
   displayedScoreIfHUD:readCrossfireScreenScore(machine.mem.ram),
   screenBase:screenText(machine).base,
   lifeGlyphs:Array.from(machine.mem.ram.subarray(0x7429,0x742b))
+}));
+// Independent no-hit/zero-score route through all three lives.
+// The memory/drawing signature must be verified against DIFFERENT scoring
+// outcomes before any game-over classifier is even considered.
+machine=new C64Machine();
+machine.loadROMs({
+  kernal:firmware('kernal-901227-03.bin'),
+  basic:firmware('basic-901226-01.bin'),
+  charRom:firmware('chargen-901225-01.bin')
+});
+machine.restoreState(playableState);
+console.log('NO_HIT_GAME_OVER_START exact level-one state; no shots or trainers');
+advance(200,0xff,'zero-run-after-life1-death');
+advance(8,0xef,'zero-run-life2-fire');
+advance(200,0xff,'zero-run-after-life2-death');
+advance(8,0xef,'zero-run-life3-fire');
+advance(200,0xff,'zero-run-after-life3-death');
+advance(300,0xff,'zero-run-game-over-hold');
+console.log('NO_HIT_GAME_OVER_END '+JSON.stringify({
+  scoreIfHud:readCrossfireScreenScore(machine.mem.ram),
+  screenSHA256:sha256(machine.mem.ram.subarray(0x7400,0x77e8)),
+  headerHex:Buffer.from(machine.mem.ram.subarray(0x7400,0x7450)).toString('hex')
 }));
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
