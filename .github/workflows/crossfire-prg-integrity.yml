@@ -1,0 +1,46 @@
+name: CCG Crossfire PRG Forensic Gate
+
+on:
+  pull_request:
+    paths:
+      - "scripts/high-score-arena/inspect-crossfire-prg.mjs"
+      - "docs/ai-work/high-score-arena-crossfire.md"
+      - "emulator/c64/media/prg-archive/catalog.json"
+      - "emulator/c64/media/prg-archive/pack-10.bin"
+      - ".github/workflows/crossfire-prg-integrity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-crossfire-original:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check the exact approved Crossfire PRG and its packed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/high-score-arena/inspect-crossfire-prg.mjs
+          node scripts/high-score-arena/inspect-crossfire-prg.mjs > "$RUNNER_TEMP/crossfire-prg-report.json"
+          node --input-type=module - "$RUNNER_TEMP/crossfire-prg-report.json" <<'JS'
+          import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          const report = JSON.parse(readFileSync(process.argv[2], "utf8"));
+          assert.equal(report.verified, true);
+          assert.equal(report.gameId, "archive-02121");
+          assert.equal(report.packFile, "pack-10.bin");
+          assert.equal(report.byteLength, 23637);
+          assert.equal(report.prgSHA256,
+            "ddc3ab84c98fc065fd39e69bfe68b7ee6de38ebab4b51b607bbcea64cad570a9");
+          assert.equal(report.automaticScoringEnabled, false,
+            "A forensic file check must never claim to enable automatic scoring");
+          assert.equal(report.memoryScoreAddressVerified, false);
+          assert.equal(report.gameOverSignalVerified, false);
+          console.log("Crossfire PRG forensic gate passed:", report.gameId, report.loadAddressHex);
+          JS
