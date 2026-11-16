@@ -20,6 +20,8 @@ const observed = {
   score2325: '01010101010101010101010101010101010101010101010101010101010101010101010101010101010405000809000000000000000000000004052c14150809000000040504050c0d10110c0d181901',
   grave2325: '0303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030333340235360303',
   graveZero: '0303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030333340235360303',
+  zeroLife1: '01010101010101010101010101010101010101010101010101010101010101010101010101010101010809000809000000000000000000000004052c1415040500000004050405040504050405040501',
+  zeroLife0: '01010101010101010101010101010101010101010101010101010101010101010101010101010101010405000809000000000000000000000004052c1415040500000004050405040504050405040501',
   title: '0303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303120405060303030303030303030303030303030303'
 };
 function ram(hex) {
@@ -43,6 +45,8 @@ test('actual lives counter decodes 2, 1, 0 without treating zero as gameover',()
   assert.equal(readCrossfireScreenLives(ram(observed.zero)),2);
   assert.equal(readCrossfireScreenLives(ram(observed.life1)),1);
   assert.equal(readCrossfireScreenLives(ram(observed.life0)),0);
+  assert.equal(readCrossfireScreenScore(ram(observed.zeroLife1)),0);
+  assert.equal(readCrossfireScreenScore(ram(observed.zeroLife0)),0);
   assert.equal(readCrossfireScreenLives(ram(observed.title)),null);
 });
 test('real gameover art is identical with zero and 2325 but not title or HUD',()=>{
@@ -70,7 +74,7 @@ test('normal three-life 2325-point run produces one result after 20 grave frames
 });
 test('zero-score game can end but a transient HUD loss cannot submit a result',()=>{
   const observer=exact();
-  for(const key of ['zero','life1','life0'])assert.equal(observer.observe(ram(observed[key])),null);
+  for(const key of ['zero','zeroLife1','zeroLife0'])assert.equal(observer.observe(ram(observed[key])),null);
   assert.equal(observer.observe(ram(observed.title)),null,'title is not grave');
   assert.equal(observer.observe(ram(observed.graveZero)),null);
   assert.equal(observer.observe(ram(observed.life0)),null,'recovered HUD resets frame stability');
