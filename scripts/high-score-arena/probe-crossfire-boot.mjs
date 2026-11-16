@@ -105,7 +105,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8'].includes(name)) {
+  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -250,6 +250,16 @@ const scenarios=[
   {label:'lower-left-offset',commands:[
     [27,0xfb,'move-left-27'],[29,0xfd,'move-down-29'],
     [8,0xef,'shoot-8'],[15,0xff,'release-15']]},
+  {label:'two-targets-left-then-right',commands:[
+    [30,0xfb,'move-left-30'],[33,0xfd,'move-down-33'],
+    [8,0xef,'first-shot-8'],[8,0xff,'first-release-8'],
+    [60,0xf7,'move-right-60'],[8,0xef,'second-shot-8'],
+    [15,0xff,'second-release-15'],[60,0xff,'post-shot-60']]},
+  {label:'two-targets-right-then-left',commands:[
+    [30,0xf7,'move-right-30'],[33,0xfd,'move-down-33'],
+    [8,0xef,'first-shot-8'],[8,0xff,'first-release-8'],
+    [60,0xfb,'move-left-60'],[8,0xef,'second-shot-8'],
+    [15,0xff,'second-release-15'],[60,0xff,'post-shot-60']]},
 ];
 for(const scenario of scenarios) {
   machine=new C64Machine();
@@ -262,6 +272,10 @@ for(const scenario of scenarios) {
   console.log('SCENARIO_START '+JSON.stringify({label:scenario.label,source:'single exact state from normal Crossfire level 1'}));
   advance(1,0xff,'scenario-'+scenario.label+'-start');
   for(const [n,joy,label] of scenario.commands) advance(n,joy,'scenario-'+scenario.label+'-'+label);
+  console.log('SCENARIO_END '+JSON.stringify({
+    label:scenario.label,displayedScoreIfHUD:readCrossfireScreenScore(machine.mem.ram),
+    screenBase:screenText(machine).base
+  }));
 }
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
