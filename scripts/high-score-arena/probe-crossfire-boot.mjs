@@ -90,7 +90,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-n-200', 'after-n2-140', 'after-n3-140', 'after-n4-140', 'after-n5-200'].includes(name)) {
+  if (['after-n2-140', 'after-level1-250', 'after-level1-650', 'after-start-f1-300'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -181,6 +181,11 @@ rejectTrainerOption(2);
 rejectTrainerOption(3);
 rejectTrainerOption(4);
 rejectTrainerOption(5,200);
+// A fixed "Starting level (1-9)?" prompt follows both rejected cheats.
+// Choose level 1 on the exact C64 key matrix before inspecting gameplay.
+pressKey(7,0,'level1-press','after-level1-250'); // Digit1
+advance(400,0xff,'after-level1-650');
+pressKey(0,4,'start-f1-press','after-start-f1-300');
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
