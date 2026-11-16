@@ -90,7 +90,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-run-220', 'fire-release-70', 'move-down-fire', 'rest-75'].includes(name)) {
+  if (['after-run-220', 'after-loader-800', 'after-loader-1200', 'after-f1-140', 'after-f1-490'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -135,6 +135,17 @@ advance(55,0xfe,'move-up');
 advance(55,0xfb,'move-left');
 advance(50,0xf5,'move-down-fire');
 advance(75,0xff,'rest-75');
+// After the preserved FBR intro, allow the remaining original game loader to
+// finish before using the published Crossfire F1 start key. This probe never
+// makes claims about a score or end-of-run state from these input sequences.
+advance(400,0xff,'after-loader-400');
+advance(400,0xff,'after-loader-800');
+advance(400,0xff,'after-loader-1200');
+machine.cia1.setKey(0,4,true); // F1 on the repository's C64 keyboard matrix
+advance(6,0xff,'f1-press');
+machine.cia1.setKey(0,4,false);
+advance(140,0xff,'after-f1-140');
+advance(350,0xff,'after-f1-490');
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
