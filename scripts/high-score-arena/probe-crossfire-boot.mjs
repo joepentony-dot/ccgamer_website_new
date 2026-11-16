@@ -90,7 +90,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-run-220', 'after-loader-800', 'after-loader-1200', 'after-f1-140', 'after-f1-490'].includes(name)) {
+  if (['after-loader-1200', 'after-f1-490', 'after-space-250', 'after-enter-250', 'after-fire-250', 'after-f1-retry-250'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -146,6 +146,19 @@ advance(6,0xff,'f1-press');
 machine.cia1.setKey(0,4,false);
 advance(140,0xff,'after-f1-140');
 advance(350,0xff,'after-f1-490');
+// The source contains a SECOND DCS crack scroller after the first FBR intro.
+// Exercise normal keys independently to locate the playable game transition.
+function pressKey(col,row,pressedName,releaseName) {
+  machine.cia1.setKey(col,row,true);
+  advance(8,0xff,pressedName);
+  machine.cia1.setKey(col,row,false);
+  advance(250,0xff,releaseName);
+}
+pressKey(7,4,'space-press','after-space-250');
+pressKey(0,1,'enter-press','after-enter-250');
+advance(8,0xef,'fire-again-press');
+advance(250,0xff,'after-fire-250');
+pressKey(0,4,'f1-retry-press','after-f1-retry-250');
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
