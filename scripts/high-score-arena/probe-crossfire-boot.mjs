@@ -105,7 +105,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit', 'life-cycle-zero-lives-hold', 'life-cycle-third-respawn', 'life-cycle-third-hit', 'life-cycle-after-third-death', 'life-cycle-post-game-over-250', 'life-cycle-post-game-over-650', 'zero-run-after-life1-death', 'zero-run-after-life2-death', 'zero-run-after-life3-death', 'zero-run-game-over-hold'].includes(name)) {
+  if (['after-level-fire-150', 'target-upper-left-y', 'shoot-upper-left-8', 'shoot-lower-right-8', 'scenario-lower-left-shoot-8', 'scenario-lower-right-shoot-8', 'scenario-upper-left-shoot-8', 'scenario-lower-left-offset-shoot-8', 'scenario-two-targets-left-then-right-first-shot-8', 'scenario-two-targets-left-then-right-second-shot-8', 'scenario-two-targets-right-then-left-second-shot-8', 'life-cycle-after-first-death', 'life-cycle-respawn-150', 'life-cycle-second-hit', 'life-cycle-after-second-hit', 'life-cycle-zero-lives-hold', 'life-cycle-third-respawn', 'life-cycle-third-hit', 'life-cycle-after-third-death', 'life-cycle-post-game-over-250', 'life-cycle-post-game-over-650', 'zero-run-life1-death-observed', 'zero-run-life2-death-observed', 'zero-run-final-hud-removed', 'zero-run-game-over-hold'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -325,12 +325,42 @@ machine.loadROMs({
 });
 machine.restoreState(playableState);
 console.log('NO_HIT_GAME_OVER_START exact level-one state; no shots or trainers');
-advance(200,0xff,'zero-run-after-life1-death');
-advance(8,0xef,'zero-run-life2-fire');
-advance(200,0xff,'zero-run-after-life2-death');
-advance(8,0xef,'zero-run-life3-fire');
-advance(200,0xff,'zero-run-after-life3-death');
-advance(300,0xff,'zero-run-game-over-hold');
+// HUD counter glyph is $04/$05=0, $08/$09=1, $0c/$0d=2.
+// The below is an internal diagnostic observer, not a trustworthy final
+// leaderboard lifecycle detector. The machine itself is unchanged.
+function readTestLives() {
+  const ram=machine.mem.ram, a=ram[0x7429], b=ram[0x742a];
+  if (readCrossfireScreenScore(ram) === null) return null;
+  return b===a+1 && a>=4 && a<=0x28 && (a-4)%4===0 ? (a-4)/4 : null;
+}
+function waitTestLives(target,label,maxFrames=1500) {
+  machine.joyPort1=0xff;machine.joyPort2=0xff;
+  let found=false,ran=0;
+  for(;ran<maxFrames;ran++) {
+    assert(machine.runFrame());frames++;
+    if(readTestLives()===target){found=true;break;}
+  }
+  console.log('ZERO_LIFE_TRANSITION '+JSON.stringify({target,found,ran,lives:readTestLives(),score:readCrossfireScreenScore(machine.mem.ram)}));
+  record(machine,label,frames);
+  return found;
+}
+const zeroSawLifeOne=waitTestLives(1,'zero-run-life1-death-observed');
+if(zeroSawLifeOne) {
+  advance(8,0xef,'zero-run-life2-start');
+  const zeroSawLifeZero=waitTestLives(0,'zero-run-life2-death-observed');
+  if(zeroSawLifeZero) {
+    advance(8,0xef,'zero-run-final-life-start');
+    machine.joyPort1=0xff;machine.joyPort2=0xff;
+    let finalHudGone=false,gameoverAfterFrames=0;
+    for(;gameoverAfterFrames<1800;gameoverAfterFrames++) {
+      assert(machine.runFrame());frames++;
+      if(readCrossfireScreenScore(machine.mem.ram)===null) {finalHudGone=true;break;}
+    }
+    console.log('ZERO_GAMEOVER_TRANSITION '+JSON.stringify({finalHudGone,gameoverAfterFrames,score:readCrossfireScreenScore(machine.mem.ram)}));
+    record(machine,'zero-run-final-hud-removed',frames);
+    advance(280,0xff,'zero-run-game-over-hold');
+  }
+}
 console.log('NO_HIT_GAME_OVER_END '+JSON.stringify({
   scoreIfHud:readCrossfireScreenScore(machine.mem.ram),
   screenSHA256:sha256(machine.mem.ram.subarray(0x7400,0x77e8)),
