@@ -1,0 +1,63 @@
+name: CCG High Score Arena — PostgreSQL Security Contract
+
+on:
+  pull_request:
+    paths:
+      - "scripts/high-score-arena/sql/crossfire-arena-schema-candidate.sql"
+      - "tests/high-score-arena-postgres-contract.sql"
+      - ".github/workflows/high-score-arena-postgres-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-arena-security-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: arena_contract
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d arena_contract"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: arena_contract
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create an EMPTY temporary auth schema and local API roles
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          create schema auth;
+          create table auth.users (id uuid primary key);
+          create role anon nologin;
+          create role authenticated nologin;
+          create role service_role nologin;
+          grant usage on schema public to anon, authenticated, service_role;
+          SQL
+      - name: Apply candidate schema to temporary CI Postgres ONLY
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 \
+            -f scripts/high-score-arena/sql/crossfire-arena-schema-candidate.sql
+      - name: Assert RLS, roles, ownership, pilot visibility and publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 \
+            -f tests/high-score-arena-postgres-contract.sql
