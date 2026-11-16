@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "scripts/high-score-arena/inspect-crossfire-prg.mjs"
+      - "scripts/high-score-arena/analyse-crossfire-score-ram.mjs"
+      - "tests/high-score-arena-crossfire-ram-analysis.test.mjs"
       - "docs/ai-work/high-score-arena-crossfire.md"
       - "emulator/c64/media/prg-archive/catalog.json"
       - "emulator/c64/media/prg-archive/pack-10.bin"
@@ -44,3 +46,5 @@ jobs:
           assert.equal(report.gameOverSignalVerified, false);
           console.log("Crossfire PRG forensic gate passed:", report.gameId, report.loadAddressHex);
           JS
+          node --check scripts/high-score-arena/analyse-crossfire-score-ram.mjs
+          node --test tests/high-score-arena-crossfire-ram-analysis.test.mjs
