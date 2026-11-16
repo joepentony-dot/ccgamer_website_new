@@ -1,3 +1,7 @@
+## 16 November 2026 — Crossfire Arena isolated score-storage design
+
+- Draft PR #3089 now has an **undeployed** seven-table leaderboard schema candidate and GitHub Actions PostgreSQL 17 security contract. CI run 43974322449 passed the ephemeral database test for RLS, denied browser writes/private attempt reads and pilot/published/retired visibility. Crossfire identity is digest-pinned but remains disabled; existing Supabase profile, Quest score and production website data are untouched. This is **not** a live migration or score ingestion. A production server validation/auth and anti-cheat design is required before enabling any leaderboard. See [High Score Arena Crossfire](ai-work/high-score-arena-crossfire.md).
+
 ## 16 November 2026 — High Score Arena Crossfire 2325 + game-over diagnostic
 
 - Existing draft PR #3089 (not merged) has now demonstrated real cumulative scores **0, 775, 1550, 2325** and lives **2→1→0** on exact Atlantis/Pantheon `archive-02121` PRG. Grave-screen evidence persisted after final death at 2325 and on an independent 0-score run; it differs from title and ordinary blank transitions. Added fail-closed, read-only score/lives/final-screen observer plus authentic frame-fixture tests and in-emulator assertion. No website, game data, Supabase, score submission, overlay or other PRG changes; exact-head CI must pass before qualification. See [High Score Arena Crossfire](ai-work/high-score-arena-crossfire.md).
