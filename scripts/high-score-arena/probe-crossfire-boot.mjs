@@ -88,6 +88,14 @@ function record(machine,name,frame) {
     frameSHA256:sha256(machine.vic2.frameBuffer),screenText:screen.rows};
   const visible=screen.rows.map(x=>x.trim()).filter(x=>/[A-Z0-9]{3}/.test(x));
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
+  // The public archive entry contains a historical crack intro. Emit only
+  // selected diagnostic frames for separate visual review; no score is inferred.
+  if (['after-run-220', 'fire-release-70', 'move-down-fire', 'rest-75'].includes(name)) {
+    const base64 = screenshot(machine).toString('base64');
+    console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
+    for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
+    console.log('CROSSFIRE_PNG_END '+name);
+  }
   if(OUT) {
     writeFileSync(resolve(OUT,name+'.png'),screenshot(machine));
     writeFileSync(resolve(OUT,name+'.ram.bin'),Buffer.from(ram));
