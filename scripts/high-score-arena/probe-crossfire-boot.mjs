@@ -90,7 +90,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-space-250', 'after-n-200', 'after-n-500', 'after-n-900'].includes(name)) {
+  if (['after-n-200', 'after-n2-140', 'after-n3-140', 'after-n4-140', 'after-n5-200'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -168,6 +168,19 @@ machine.cia1.setKey(4,7,false);
 advance(200,0xff,'after-n-200');
 advance(300,0xff,'after-n-500');
 advance(400,0xff,'after-n-900');
+// The first No exposes a second trainer question (Endless time?). Reject any
+// subsequent Yes/No trainer options individually. Never interpret test runs as
+// eligible leaderboard records without a verified no-cheat session signature.
+function rejectTrainerOption(index, settleFrames=140) {
+  machine.cia1.setKey(4,7,true);
+  advance(8,0xff,'n'+index+'-press');
+  machine.cia1.setKey(4,7,false);
+  advance(settleFrames,0xff,'after-n'+index+'-'+settleFrames);
+}
+rejectTrainerOption(2);
+rejectTrainerOption(3);
+rejectTrainerOption(4);
+rejectTrainerOption(5,200);
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
