@@ -1,3 +1,9 @@
+## 16 November 2026 — High Score Arena — Crossfire offline RAM candidate gate
+
+- Existing isolated draft #3089 identifies the exact `archive-02121` Crossfire PRG (not `Crossfire - Tron`). GitHub Actions `43911950805` passed the immutable pack and PRG checksum check on source head `2c4aa46e`; job log confirms PRG load address `0x0801`.
+- On the same draft branch, added a read-only RAM snapshot candidate analyzer, synthetic-data regression tests and an isolated workflow check. This is **not** measured Crossfire score detection; no gameplay RAM snapshots, game-over signal, automatic submissions, Supabase writes, live rankings or blue-neon runtime overlay have been implemented. Await fresh CI on the new branch head.
+- Preserve #3089 as a non-production forensic stage; do not merge it as a working leaderboard. Existing active Dungeon #3080 release work and other website workstreams remain separate. Details: [Crossfire pilot](ai-work/high-score-arena-crossfire.md).
+
 ## 13 November 2026 — hourly sitewide Lighthouse schedule candidate
 
 - The existing GitHub Actions matrix is configured in this candidate for minute 20 of every hour. Both desktop and mobile still audit all public sitemap routes. The shard concurrency increases from eight to twelve, and newer triggers no longer cancel an audit already running.
