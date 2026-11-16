@@ -90,7 +90,7 @@ function record(machine,name,frame) {
   console.log('PROBE '+JSON.stringify({...sample,screenText:visible.slice(0,12)}));
   // The public archive entry contains a historical crack intro. Emit only
   // selected diagnostic frames for separate visual review; no score is inferred.
-  if (['after-n2-140', 'after-level1-250', 'after-level1-650', 'after-start-f1-300'].includes(name)) {
+  if (['after-level1-250', 'after-fire-play-80', 'after-fire-play-250', 'after-right-fire-250', 'after-play-idle-300'].includes(name)) {
     const base64 = screenshot(machine).toString('base64');
     console.log('CROSSFIRE_PNG_BEGIN '+name+' '+base64.length);
     for (let p=0;p<base64.length;p+=2048) console.log('CROSSFIRE_PNG_CHUNK '+name+' '+base64.slice(p,p+2048));
@@ -186,6 +186,14 @@ rejectTrainerOption(5,200);
 pressKey(7,0,'level1-press','after-level1-250'); // Digit1
 advance(400,0xff,'after-level1-650');
 pressKey(0,4,'start-f1-press','after-start-f1-300');
+// Authentic title screen for Atlantis/Pantheon Crossfire says FIRE TO PLAY.
+// Trigger the joystick fire signal only after declining both trainer options
+// and selecting level one. These are observations, NOT eligible score runs.
+advance(8,0xef,'fire-play-press');
+advance(80,0xff,'after-fire-play-80');
+advance(170,0xff,'after-fire-play-250');
+advance(250,0xe7,'after-right-fire-250');
+advance(300,0xff,'after-play-idle-300');
 if(OUT)writeFileSync(resolve(OUT,'manifest.json'),JSON.stringify({
   gameId:'archive-02121',mediaSHA256:SHA,
   automatedScoreDetected:false,scoreAddressValidated:false,gameOverValidated:false,
