@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   acquireCrossfireHelioHostAttempt
-} from '../scripts/high-score-arena/client/heliohost-member-session.mjs';
+} from '../js/ccg-c64/arena/client/heliohost-member-session.mjs';
 
 const WEBSITE='https://www.cheekycommodoregamer.co.uk';
 const UUID='01234567-89ab-4abc-8def-0123456789ab';

@@ -159,7 +159,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
     // actual Crossfire PRG checksum. No Supabase account or token is accessed.
     const arenaAttemptFactory = arenaSubmissionRequested
       ? async () => {
-          const session = await import("../../scripts/high-score-arena/client/heliohost-member-session.mjs?ccg_rev=20261117_crossfire_member_v1");
+          const session = await import("./arena/client/heliohost-member-session.mjs?ccg_rev=20261117_crossfire_member_v1");
           return session.acquireCrossfireHelioHostAttempt({enabled:true});
         }
       : null;

@@ -5,8 +5,8 @@ on:
     paths:
       - "scripts/high-score-arena/probe-crossfire-boot.mjs"
       - "scripts/high-score-arena/inspect-crossfire-prg.mjs"
-      - "scripts/high-score-arena/read-crossfire-screen-score.mjs"
-      - "scripts/high-score-arena/observe-crossfire-run.mjs"
+      - "js/ccg-c64/arena/read-crossfire-screen-score.mjs"
+      - "js/ccg-c64/arena/observe-crossfire-run.mjs"
       - "tests/high-score-arena-crossfire-observer.test.mjs"
       - "emulator/c64/media/prg-archive/catalog.json"
       - "emulator/c64/media/prg-archive/pack-10.bin"

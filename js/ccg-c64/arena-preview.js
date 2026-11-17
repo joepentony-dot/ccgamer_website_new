@@ -7,13 +7,13 @@
  * and the explicit ccg_arena_preview=crossfire pilot parameter.
  */
 import { identifyArenaMedia, createArenaDiagnosticObserver }
-  from "../../scripts/high-score-arena/arena-game-profiles.mjs";
+  from "./arena/arena-game-profiles.mjs";
 import { renderArenaBoard, normaliseArenaBoard }
-  from "../../scripts/high-score-arena/view/arena-board.mjs";
+  from "./arena/view/arena-board.mjs";
 import { readHelioHostArenaBoard }
-  from "../../scripts/high-score-arena/client/heliohost-board.mjs";
+  from "./arena/client/heliohost-board.mjs";
 import { CrossfireAutomaticAttempt }
-  from "../../scripts/high-score-arena/client/auto-run-controller.mjs";
+  from "./arena/client/auto-run-controller.mjs";
 
 const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_preview_v2";
 const GAME_KEY="c64-crossfire-atlantis";

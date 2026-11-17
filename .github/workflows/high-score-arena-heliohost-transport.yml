@@ -3,10 +3,10 @@ name: CCG Arena HelioHost transport contract
 on:
   pull_request:
     paths:
-      - "scripts/high-score-arena/client/heliohost-attempt.mjs"
-      - "scripts/high-score-arena/client/heliohost-member-session.mjs"
-      - "scripts/high-score-arena/client/heliohost-board.mjs"
-      - "scripts/high-score-arena/client/auto-run-controller.mjs"
+      - "js/ccg-c64/arena/client/heliohost-attempt.mjs"
+      - "js/ccg-c64/arena/client/heliohost-member-session.mjs"
+      - "js/ccg-c64/arena/client/heliohost-board.mjs"
+      - "js/ccg-c64/arena/client/auto-run-controller.mjs"
       - "js/ccg-c64/arena-preview.js"
       - "js/ccg-c64/app.js"
       - "service-worker.js"
@@ -33,10 +33,10 @@ jobs:
           node-version: "22"
       - name: Verify disabled-by-default PHP/MariaDB transport and existing neon board
         run: |
-          node --check scripts/high-score-arena/client/heliohost-attempt.mjs
-          node --check scripts/high-score-arena/client/heliohost-member-session.mjs
-          node --check scripts/high-score-arena/client/heliohost-board.mjs
-          node --check scripts/high-score-arena/client/auto-run-controller.mjs
+          node --check js/ccg-c64/arena/client/heliohost-attempt.mjs
+          node --check js/ccg-c64/arena/client/heliohost-member-session.mjs
+          node --check js/ccg-c64/arena/client/heliohost-board.mjs
+          node --check js/ccg-c64/arena/client/auto-run-controller.mjs
           node --check js/ccg-c64/arena-preview.js
           node --test tests/high-score-arena-heliohost-transport.test.mjs
           node --test tests/high-score-arena-heliohost-board.test.mjs
@@ -48,6 +48,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -Ei 'supabase|service_role|anon_key|auth.users' scripts/high-score-arena/client/heliohost-attempt.mjs scripts/high-score-arena/client/heliohost-board.mjs scripts/high-score-arena/client/auto-run-controller.mjs scripts/high-score-arena/client/heliohost-member-session.mjs; then
+          if grep -Ei 'supabase|service_role|anon_key|auth.users' js/ccg-c64/arena/client/heliohost-attempt.mjs js/ccg-c64/arena/client/heliohost-board.mjs js/ccg-c64/arena/client/auto-run-controller.mjs js/ccg-c64/arena/client/heliohost-member-session.mjs; then
             echo "High Score Arena must use independent HelioHost PHP backend"; exit 1
           fi

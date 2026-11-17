@@ -1,3 +1,7 @@
+## 17 November 2026 — Publish the Crossfire Arena browser modules
+
+- PR #3089 moves the Arena browser modules and board CSS into the published C64 assets. The Chromium fixture now excludes the tooling directories that Pages strips. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
 ## 17 November 2026 — Crossfire selects the exact archive edition
 
 - Website PR #3089 isolates the exact opted-in archive launch from normal title deduplication. The ordinary BLAST Crossfire stays available. Backend PR #2 passed MariaDB lifecycle CI in run 43999313323. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).

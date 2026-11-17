@@ -13,8 +13,8 @@ import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 import { C64Machine } from '../../js/ccg-c64/core/machine.js';
 import { inspectCrossfire } from './inspect-crossfire-prg.mjs';
-import { readCrossfireScreenScore } from './read-crossfire-screen-score.mjs';
-import { CrossfireRunObserver } from './observe-crossfire-run.mjs';
+import { readCrossfireScreenScore } from '../../js/ccg-c64/arena/read-crossfire-screen-score.mjs';
+import { CrossfireRunObserver } from '../../js/ccg-c64/arena/observe-crossfire-run.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUT = process.argv.includes('--output-dir')

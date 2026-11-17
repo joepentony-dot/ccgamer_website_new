@@ -131,3 +131,7 @@ All 48 Arena Node tests and the local exact-PRG forensic and headless gameplay p
 ## 17 November 2026 — Select the exact archived edition
 
 Chromium run 43999548038 found that the normal library suppresses the Crossfire archive PRG because BLAST already contains a different PRG under the same title. An exact opted-in Arena deep link now selects the archive entry after catalogue verification, while the ordinary BLAST launch keeps its existing path. Browser qualification exercises both editions.
+
+## 17 November 2026 — Pages packaging review fix
+
+The real Chromium launch passed at 4038a0df, but review found that its repository-root fixture still served browser imports from scripts/, which Pages removes. The Arena browser modules and board CSS now live under js/ccg-c64/arena/. The Chromium fixture rejects scripts/, tests/ and docs/ URLs. The 54 targeted Node tests passed, and rendered acceptance must run again at the new head. The separate navigation audit failed twice while opening the More menu, at different viewport widths.

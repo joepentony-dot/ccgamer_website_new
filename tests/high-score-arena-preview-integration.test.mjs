@@ -188,7 +188,7 @@ test("wrong game never mounts or loads any preview styles",async()=>{
 });
 
 test("full browser hook is optional, and cannot submit accounts or scores",async()=>{
-  const {ARENA_CROSSFIRE_PROFILE}=await import("../scripts/high-score-arena/arena-game-profiles.mjs");
+  const {ARENA_CROSSFIRE_PROFILE}=await import("../js/ccg-c64/arena/arena-game-profiles.mjs");
   assert.equal(ARENA_CROSSFIRE_PROFILE.publicSubmissionEnabled,false);
   const source=readFileSync(new URL("../js/ccg-c64/arena-preview.js",import.meta.url),"utf8");
   assert.doesNotMatch(source,/\.from\s*\(\s*['"]ccg_arena_attempts/);

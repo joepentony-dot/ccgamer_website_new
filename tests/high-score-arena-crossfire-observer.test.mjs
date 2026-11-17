@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   readCrossfireScreenScore, readCrossfireScreenLives
-} from '../scripts/high-score-arena/read-crossfire-screen-score.mjs';
+} from '../js/ccg-c64/arena/read-crossfire-screen-score.mjs';
 import {
   CROSSFIRE_GAME_ID, CROSSFIRE_PRG_SHA256,
   isCrossfireGameOverScreen, CrossfireRunObserver
-} from '../scripts/high-score-arena/observe-crossfire-run.mjs';
+} from '../js/ccg-c64/arena/observe-crossfire-run.mjs';
 
 // Real 80-byte screen RAM evidence from an identical, checksum-pinned PRG.
 // Scores/lives: GitHub run 43938124747, job 133548043835.

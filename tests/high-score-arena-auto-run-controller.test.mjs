@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CrossfireAutomaticAttempt } from '../scripts/high-score-arena/client/auto-run-controller.mjs';
+import { CrossfireAutomaticAttempt } from '../js/ccg-c64/arena/client/auto-run-controller.mjs';
 
 const fresh={started:true,lastScore:0,lastLives:2};
 const terminal={

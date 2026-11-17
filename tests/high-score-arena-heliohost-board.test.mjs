@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   arenaLeaderboardUrl,readHelioHostArenaBoard
-} from '../scripts/high-score-arena/client/heliohost-board.mjs';
+} from '../js/ccg-c64/arena/client/heliohost-board.mjs';
 
 const GAME='c64-crossfire-atlantis';
 function jsonReply(data) {

@@ -59,6 +59,12 @@ const measure = [
 
 const server = http.createServer((req,res) => {
   const pathname = decodeURIComponent(new URL(req.url,"http://local").pathname);
+  // GitHub Pages strips repository tooling from its published artifact.
+  if (/^\/(scripts|tests|docs)(\/|$)/.test(pathname)) {
+    res.writeHead(404);
+    res.end("not published");
+    return;
+  }
   let f = path.resolve(root,pathname.replace(/^\/+/,""));
   if (!f.startsWith(root+path.sep)) {res.writeHead(403);res.end();return;}
   if (fs.existsSync(f) && fs.statSync(f).isDirectory()) f=path.join(f,"index.html");

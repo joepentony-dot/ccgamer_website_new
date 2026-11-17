@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   ARENA_CROSSFIRE_PROFILE, arenaProfileKeys, identifyArenaMedia,
   createArenaDiagnosticObserver
-} from '../scripts/high-score-arena/arena-game-profiles.mjs';
+} from '../js/ccg-c64/arena/arena-game-profiles.mjs';
 
 const media = Object.freeze({
   platform: 'c64', catalogId: 'archive-02121', format: 'prg',

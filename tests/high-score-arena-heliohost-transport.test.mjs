@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   HelioHostArenaAttempt,makeArenaStartRequest,makeArenaFinishRequest,
   CCG_ARENA_API_ORIGIN,CCG_ARENA_INTAKE_PATH
-} from '../scripts/high-score-arena/client/heliohost-attempt.mjs';
+} from '../js/ccg-c64/arena/client/heliohost-attempt.mjs';
 
 const UUID='01234567-89ab-4abc-8def-0123456789ab', NONCE='a'.repeat(64);
 const diagnostic={

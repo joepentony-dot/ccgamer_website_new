@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   CROSSFIRE_HUD_SCORE_BASE, readCrossfireScreenScore
-} from '../scripts/high-score-arena/read-crossfire-screen-score.mjs';
+} from '../js/ccg-c64/arena/read-crossfire-screen-score.mjs';
 
 // Real 80-byte HUD screen-memory captures from unchanged C64Machine running
 // verified Crossfire archive-02121; GitHub headless run 43929867793,
