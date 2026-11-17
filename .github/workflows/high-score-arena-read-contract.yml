@@ -6,8 +6,8 @@ on:
       - "supabase/functions/ccg-arena-leaderboard/**"
       - "tests/high-score-arena-read-contract.test.mjs"
       - "tests/high-score-arena-board-model.test.mjs"
-      - "js/high-score-arena/arena-board.mjs"
-      - "resources/css/high-score-arena-board.css"
+      - "scripts/high-score-arena/view/arena-board.mjs"
+      - "scripts/high-score-arena/view/arena-board.css"
       - ".github/workflows/high-score-arena-read-contract.yml"
   workflow_dispatch:
 
@@ -27,7 +27,7 @@ jobs:
         run: |
           node --check supabase/functions/ccg-arena-leaderboard/contract.mjs
           node --test tests/high-score-arena-read-contract.test.mjs
-          node --check js/high-score-arena/arena-board.mjs
+          node --check scripts/high-score-arena/view/arena-board.mjs
           node --test tests/high-score-arena-board-model.test.mjs
       - name: Fail if read-only endpoint gains score submissions or secret-key access
         shell: bash

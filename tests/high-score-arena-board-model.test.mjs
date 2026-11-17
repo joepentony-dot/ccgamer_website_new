@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   displayArenaScore, normaliseArenaBoard, SEVEN_SEGMENTS
-} from '../js/high-score-arena/arena-board.mjs';
+} from '../scripts/high-score-arena/view/arena-board.mjs';
 
 test('pinball digit presentation covers verified Crossfire points',()=>{
   assert.equal(displayArenaScore(0),'000000');
