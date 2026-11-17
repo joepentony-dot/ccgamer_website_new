@@ -11,6 +11,8 @@ import { renderArenaBoard, normaliseArenaBoard }
   from "../../scripts/high-score-arena/view/arena-board.mjs";
 import { readHelioHostArenaBoard }
   from "../../scripts/high-score-arena/client/heliohost-board.mjs";
+import { CrossfireAutomaticAttempt }
+  from "../../scripts/high-score-arena/client/auto-run-controller.mjs";
 
 const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_preview_v1";
 const GAME_KEY="c64-crossfire-atlantis";
@@ -46,7 +48,8 @@ export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThi
 export async function mountCrossfirePreview({
   entry, bytes, stage, doc=globalThis.document, subtle,
   publicBoardRead=globalThis.window?.location?.origin==="https://www.cheekycommodoregamer.co.uk"
-    ? readHelioHostArenaBoard : null
+    ? readHelioHostArenaBoard : null,
+  arenaAttempt=null
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
@@ -55,6 +58,9 @@ export async function mountCrossfirePreview({
     sha256:entry.sha256,byteLength:bytes.byteLength
   });
   if(!observer)return null;
+  // No writes by default. A signed-in HelioHost transport must be injected
+  // after separate member migration and feature-release qualification.
+  const automaticAttempt=new CrossfireAutomaticAttempt(arenaAttempt);
 
   const link=doc.createElement("link");
   link.rel="stylesheet";
@@ -71,7 +77,9 @@ export async function mountCrossfirePreview({
   const title=doc.createElement("h2");
   title.textContent="CROSSFIRE · HIGH SCORE ARENA";
   const notice=doc.createElement("p");
-  notice.textContent="PREVIEW ONLY · SCORES ARE NOT SUBMITTED";
+  notice.textContent=automaticAttempt.enabled
+    ?"PILOT · SCORES REQUIRE INDEPENDENT REVIEW"
+    :"PREVIEW ONLY · SCORES ARE NOT SUBMITTED";
   intro.append(title,notice);
 
   const modes=doc.createElement("div");
@@ -147,6 +155,7 @@ export async function mountCrossfirePreview({
       // Run every emulated frame; the game-over sentinel must persist for
       // twenty consecutive PAL frames. This is only loaded for opted-in PRG.
       const candidate=observer.observe(ram);
+      const receipt=automaticAttempt.observe(observer,candidate);
       if(observer.lastScore!==null && lastScore!==observer.lastScore){
         lastScore=observer.lastScore;
         local.textContent=lastScore.toLocaleString("en-GB");
@@ -156,10 +165,19 @@ export async function mountCrossfirePreview({
         final=true;
         local.textContent=candidate.score.toLocaleString("en-GB");
         hint.textContent="GAME OVER · LOCAL RESULT NOT RECORDED";
+        if(receipt){
+          void receipt.then(result=>{
+            if(!disposed && result?.status==="pending-review" &&
+               result.scoreReceived===candidate.score){
+              hint.textContent="SUBMITTED FOR REVIEW · NOT YET RANKED";
+            }
+          });
+        }
       }
     },
     invalidate() {
       if(disposed)return;
+      automaticAttempt.stop();
       stopBoardRead();
       final=true;
       local.textContent="—";
@@ -168,6 +186,7 @@ export async function mountCrossfirePreview({
     dispose() {
       if(disposed)return;
       disposed=true;
+      automaticAttempt.stop();
       stopBoardRead();
       section.remove();
       link.remove();
