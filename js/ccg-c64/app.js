@@ -124,7 +124,7 @@ const audioButton = document.querySelector("[data-audio-toggle]");
 const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
- 
+
 // Crossfire High Score Arena is an opt-in, zero-write diagnostic pilot.
 // No extra modules, scores or CSS load on ordinary C64 emulator visits.
 const arenaPreviewRequested = new URLSearchParams(window.location.search)

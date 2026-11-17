@@ -98,6 +98,28 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           path: candidate
 
+      - name: Select a changed category or collection page for the benchmark
+        id: benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Compare the actually affected page, not an unrelated static genre.
+          # Keep the original representative when no category HTML changed.
+          target="games/genres/role-playing-games.html"
+          for family in games/genres games/collections; do
+            while IFS= read -r page; do
+              relative="${page#candidate/}"
+              if [ ! -f "baseline/$relative" ] || ! cmp -s "baseline/$relative" "$page"; then
+                target="$relative"
+                break 2
+              fi
+            done < <(find "candidate/$family" -maxdepth 1 -type f -name '*.html' | sort)
+          done
+          test -f "baseline/$target"
+          test -f "candidate/$target"
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+          echo "Paired Lighthouse target: $target"
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -113,13 +135,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p reports
+          target="${{ steps.benchmark.outputs.target }}"
+          echo "Testing $target in both exact source revisions"
           python3 -m http.server 8123 --bind 127.0.0.1 --directory baseline > /tmp/ccg-lh-baseline.log 2>&1 &
           BASE_SERVER=$!
           python3 -m http.server 8124 --bind 127.0.0.1 --directory candidate > /tmp/ccg-lh-candidate.log 2>&1 &
           CANDIDATE_SERVER=$!
           trap 'kill "$BASE_SERVER" "$CANDIDATE_SERVER" 2>/dev/null || true' EXIT
           for i in $(seq 1 30); do
-            if curl -fsS -o /dev/null http://127.0.0.1:8123/games/genres/role-playing-games.html && curl -fsS -o /dev/null http://127.0.0.1:8124/games/genres/role-playing-games.html; then break; fi
+            if curl -fsS -o /dev/null "http://127.0.0.1:8123/$target" && curl -fsS -o /dev/null "http://127.0.0.1:8124/$target"; then break; fi
             sleep 1
           done
           # Balance runner warm-up/order: each revision runs first and second
@@ -136,7 +160,7 @@ jobs:
                 if [ "$version" = candidate ]; then port=8124; fi
                 options=()
                 if [ "$mode" = desktop ]; then options+=(--preset=desktop); fi
-                node /tmp/ccg-lighthouse/node_modules/lighthouse/cli/index.js "http://127.0.0.1:$port/games/genres/role-playing-games.html" \
+                node /tmp/ccg-lighthouse/node_modules/lighthouse/cli/index.js "http://127.0.0.1:$port/$target" \
                   --only-categories=performance --output=json \
                   --output-path="reports/${version}-${mode}-${repetition}.json" \
                   --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
@@ -165,6 +189,7 @@ jobs:
           });
           let failure = false;
           const summary = [];
+          console.log('Measured category route: ${{ steps.benchmark.outputs.target }}');
           for (const mode of ['mobile','desktop']) {
             const baseRuns = samples('baseline', mode);
             const candidateRuns = samples('candidate', mode);

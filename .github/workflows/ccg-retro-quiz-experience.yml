@@ -56,6 +56,9 @@ jobs:
       - name: Run source contract audit
         run: node scripts/audit-retro-quiz-experience.js
 
+      - name: Verify source-owned SID documentary chapters and publishing
+        run: node --test tests/retro-sid-documentary.test.mjs
+
       - name: Reproduce Pages-stage retro generation
         shell: bash
         run: |

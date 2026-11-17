@@ -106,7 +106,9 @@
 
 <body class="ccg-body"
       data-ccg-mode="c64"
-      data-collection="Retro Specials" data-mode="c64" id="top">
+      data-collection="Retro Specials" data-mode="c64" id="top"
+      data-ccg-category-theme="retro-specials" data-ccg-category-kind="collection"
+      data-ccg-directory="collection-record">
 
 <!-- BACKGROUNDS -->
 <div class="ccg-bg" aria-hidden="true">
@@ -289,11 +291,12 @@
 <main class="ccg-main">
 
     <!-- HERO -->
-    <section class="ccg-genre-hero ccg-collection-hero">
+    <section class="ccg-genre-hero ccg-collection-hero ccg-category-omega__hero" data-ccg-category-icon="CCG">
         <div class="ccg-genre-hero__bg">
             <div class="ccg-genre-hero__overlay"></div>
         </div>
         <div class="ccg-genre-hero__inner">
+            <p class="ccg-category-omega__kicker">Curated C64 &amp; Amiga archive</p>
             <h1 class="ccg-genre-hero__title">Retro Specials – C64 &amp; Amiga</h1>
 
             <p class="ccg-genre-hero__tagline">Long-form C64 and Amiga features, rankings, magazine history and archive projects.</p>
@@ -322,9 +325,39 @@
 
     </section>
 
+    <!-- Category Omega's existing discovery links, present before runtime to reserve their layout. -->
+    <section class="ccg-category-omega__discovery" data-ccg-category-discovery="true">
+        <div class="ccg-category-omega__discovery-heading">
+            <span class="ccg-category-omega__eyebrow">Explore the Commodore archive</span>
+            <h2>More from Retro Specials</h2>
+            <p>Browse C64 and Amiga retro specials from Cheeky Commodore Gamer, including rankings, magazine retrospectives, publisher features and long-form Commodore archive projects.</p>
+        </div>
+        <nav class="ccg-category-omega__links" aria-label="Related archive categories">
+            <a href="/games/" class="ccg-category-omega__link ccg-category-omega__link--core">All C64 &amp; Amiga Games</a>
+            <a href="/games/genres/" class="ccg-category-omega__link ccg-category-omega__link--core">Browse by Genre</a>
+            <a href="/games/collections/" class="ccg-category-omega__link ccg-category-omega__link--core">All Collections</a>
+            <a href="/games/collections/top-picks.html" class="ccg-category-omega__link">CCG Top Picks</a>
+            <a href="/games/collections/retro-events.html" class="ccg-category-omega__link">Retro Events</a>
+            <a href="/games/collections/amiga-demo-music.html" class="ccg-category-omega__link">Amiga Demo Music</a>
+        </nav>
+    </section>
+
     <!-- GRID -->
     <section class="ccg-genre-main">
         <div id="genreGamesGrid" class="ccg-genre-grid">
+            <!-- Fifty SID tunes: crawlable static fallback retained without JavaScript. -->
+            <article class="ccg-game-card genre-card ccg-game-card--retro-event">
+                <a class="ccg-game-card__link" href="/retro-specials/50-commodore-64-sid-tunes-zzap64/">
+                    <div class="ccg-game-card__media ccg-game-card__thumb">
+                        <img src="https://img.youtube.com/vi/7PU3GqBDnRI/hqdefault.jpg" alt="50 Commodore 64 SID Tunes from Zzap!64, 1985–1991 – video thumbnail" loading="lazy" decoding="async" width="480" height="360" />
+                    </div>
+                    <div class="ccg-game-card__body">
+                        <h3 class="ccg-game-card__title">50 Commodore 64 SID Tunes from Zzap!64 (1985–1991) – Classic C64 Game Music</h3>
+                        <p class="ccg-game-card__desc">Fifty classic C64 SID music selections from Zzap!64's reviews, 1985–1991, with introductions, composers and chapter links.</p>
+                        <span class="ccg-game-card__actions"><span class="ccg-game-card__btn" aria-label="Watch 50 Commodore 64 SID Tunes from Zzap!64">Watch special</span></span>
+                    </div>
+                </a>
+            </article>
             <!-- Friday the 13th Commodore 64 horror quiz: crawlable card, retained when JavaScript is unavailable. -->
             <article class="ccg-game-card genre-card ccg-game-card--retro-event">
                 <a class="ccg-game-card__link" href="/retro-specials/friday-the-13th-commodore-64-horror-quiz/">

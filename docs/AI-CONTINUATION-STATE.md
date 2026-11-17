@@ -43,6 +43,19 @@
 - Existing isolated draft #3089 identifies the exact `archive-02121` Crossfire PRG (not `Crossfire - Tron`). GitHub Actions `43911950805` passed the immutable pack and PRG checksum check on source head `2c4aa46e`; job log confirms PRG load address `0x0801`.
 - On the same draft branch, added a read-only RAM snapshot candidate analyzer, synthetic-data regression tests and an isolated workflow check. This is **not** measured Crossfire score detection; no gameplay RAM snapshots, game-over signal, automatic submissions, Supabase writes, live rankings or blue-neon runtime overlay have been implemented. Await fresh CI on the new branch head.
 - Preserve #3089 as a non-production forensic stage; do not merge it as a working leaderboard. Existing active Dungeon #3080 release work and other website workstreams remain separate. Details: [Crossfire pilot](ai-work/high-score-arena-crossfire.md).
+## 17 November 2026 — SID Retro Specials targeted first-paint stabilisation, PR #3090
+
+- The strict Category Omega job now measures the actually modified Retro Specials collection rather than a fixed unrelated Role-Playing genre. Measured mobile/desktop LCP passed but CLS failed on `d60179367` (see [SEO workstream](ai-work/seo-and-generated-output.md)), and source review identified the existing category runtime adding a hero kicker/discovery after first paint, with font-related shifting in the Lighthouse reports.
+- A **new, unqualified branch-only candidate** pre-renders the same established Omega hero class/icon/body theme, kicker and existing discovery links in `games/collections/retro-specials.html`, guarded by category regression tests and idempotent runtime checks; final visual content is preserved. Repeat exact-head CI, independent review and real paired Lighthouse; merge only after all performance gates qualify and owner consent. No live deployment.
+
+## 17 November 2026 — Retro Specials SID video PR #3090 performance qualification correction
+
+- Existing ready-for-review [PR #3090](https://github.com/joepentony-dot/ccgamer_website_new/pull/3090) retains the C64 SID documentary, 53 source-owned chapters, SEO watch/collection pages, strict deferred-player delivery and publisher regression. Initial head `f56ed203` passed 14 of 15 CI workflow families and a clean exact-head independent Codex review. The unrelated fixed Role-Playing genre Lighthouse comparison failed twice despite identical benchmark HTML and alternating mobile/desktop regressions.
+- On the **same branch and PR**, Category Omega's paired Lighthouse job now selects an actually changed category or collection HTML when present, falling back to the original Role-Playing page if no such HTML changed. All numeric CLS/LCP limits, paired runner alternation and audit artefacts remain intact; the existing Category Omega test protects these. New exact-head CI/independent review, guarded merge and production acceptance are still **PENDING**. No main or live changes.
+
+## 17 November 2026 — SID music Retro Specials content candidate
+
+- Separate branch `content/50-c64-sid-tunes-zzap64-20261117` from main `b85d1876267cc241cbe4f742f2529ccfc18ec3fb` stages YouTube `7PU3GqBDnRI` in the Retro Specials source/collection, SEO watch page and redirect, plus 53 chapter links and accurate Sanxion / Last Ninja 2 copyright substitutions. The two generator owners preserve the authored guide; an isolated regression has been added. See [SEO/generated-output workstream](ai-work/seo-and-generated-output.md). BRANCH ONLY; unqualified, unmerged, not deployed. Existing priority implementation PRs are unchanged.
 
 ## 13 November 2026 — hourly sitewide Lighthouse schedule candidate
 

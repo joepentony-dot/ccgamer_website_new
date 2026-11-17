@@ -130,3 +130,36 @@ test('Amiga decoration cannot occupy document flow before its deferred visual st
   assert.match(modeEngine, /ensureAmigaStyles\(\);\s*ensureAmigaChrome\(\);/, 'mode engine still owns the deferred visual layer');
   assert.match(amigaCss, /html\[data-ccg-mode="amiga"\]\s+\.ccg-amiga-chrome/, 'full Amiga visuals retain final mode ownership');
 });
+
+
+test('paired Category Omega Lighthouse measures a changed category and keeps strict limits', () => {
+  const workflow = fs.readFileSync('.github/workflows/category-omega-validation.yml', 'utf8');
+  assert.match(workflow, /id: benchmark/);
+  assert.match(workflow, /for family in games\/genres games\/collections; do/);
+  assert.match(workflow, /cmp -s "baseline\/\$relative" "\$page"/);
+  assert.match(workflow, /target="\$relative"/);
+  assert.match(workflow, /test -f "baseline\/\$target"/);
+  assert.match(workflow, /test -f "candidate\/\$target"/);
+  assert.match(workflow, /echo "target=\$target" >> "\$GITHUB_OUTPUT"/);
+  assert.match(workflow, /http:\/\/127\.0\.0\.1:\$port\/\$target/);
+  assert.match(workflow, /const clsAllowance = 0\.03;/);
+  assert.match(workflow, /const lcpAllowance = before\.lcp \* 0\.15 \+ 250;/);
+  assert.match(workflow, /if \(failure\) throw Error\('Genre Lighthouse regression exceeds bounded lab-variance tolerance'\);/);
+});
+
+test('Retro Specials paints its Omega hero and archive discovery before deferred enhancement', () => {
+  const page = fs.readFileSync('games/collections/retro-specials.html', 'utf8');
+  assert.match(page, /data-ccg-category-theme="retro-specials"/);
+  assert.match(page, /data-ccg-category-kind="collection"/);
+  assert.match(page, /ccg-collection-hero ccg-category-omega__hero" data-ccg-category-icon="CCG"/);
+  assert.equal((page.match(/class="ccg-category-omega__kicker"/g) || []).length, 1);
+  assert.match(page, /Curated C64 &amp; Amiga archive/);
+  assert.equal((page.match(/data-ccg-category-discovery="true"/g) || []).length, 1);
+  assert.match(page, /<h2>More from Retro Specials<\/h2>/);
+  assert.match(page, /href="\/games\/collections\/top-picks\.html"/);
+  assert.match(page, /href="\/games\/collections\/retro-events\.html"/);
+  assert.match(page, /href="\/games\/collections\/amiga-demo-music\.html"/);
+  assert.match(runtime, /heroInner\.querySelector\("\.ccg-category-omega__kicker"\)/);
+  assert.match(runtime, /document\.querySelector\("\[data-ccg-category-discovery\]"\)/);
+  assert.match(page, /href="\/retro-specials\/50-commodore-64-sid-tunes-zzap64\//);
+});
