@@ -196,7 +196,8 @@ const browserSource = readFileSync(new URL("../js/ccg-c64/catalogue-browser.js",
 assert.match(browserSource, /searchCatalogEntries\(visible, query\)/,
   "Browse All must use the same fuzzy matching implementation as the quick search");
 
-\n// Crossfire owner correction: Sierra Online CRT is the only Arena choice,
+
+// Crossfire owner correction: Sierra Online CRT is the only Arena choice,
 // while the separate Crossfire - Tron remains searchable. Do not alter the
 // original PRG pack data, and do not withdraw PRGs if the CRT is unavailable.
 const crossfireCRT = {
