@@ -1,3 +1,7 @@
+## 17 November 2026 — SID music Retro Specials content candidate
+
+- Separate branch `content/50-c64-sid-tunes-zzap64-20261117` from main `b85d1876267cc241cbe4f742f2529ccfc18ec3fb` stages YouTube `7PU3GqBDnRI` in the Retro Specials source/collection, SEO watch page and redirect, plus 53 chapter links and accurate Sanxion / Last Ninja 2 copyright substitutions. The two generator owners preserve the authored guide; an isolated regression has been added. See [SEO/generated-output workstream](ai-work/seo-and-generated-output.md). BRANCH ONLY; unqualified, unmerged, not deployed. Existing priority implementation PRs are unchanged.
+
 ## 13 November 2026 — hourly sitewide Lighthouse schedule candidate
 
 - The existing GitHub Actions matrix is configured in this candidate for minute 20 of every hour. Both desktop and mobile still audit all public sitemap routes. The shard concurrency increases from eight to twelve, and newer triggers no longer cancel an audit already running.
