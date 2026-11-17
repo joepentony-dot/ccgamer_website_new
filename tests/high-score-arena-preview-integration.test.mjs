@@ -131,6 +131,49 @@ test("stale leaderboard response cannot paint after Crossfire reset or disposal"
   assert.equal(stage.after.removed,true);
 });
 
+test("member handshake executes only after verified Crossfire SHA and never for Tron",async()=>{
+  let attempted=0;
+  const factory=async()=>{
+    attempted++;
+    return {enabled:true,start:async()=>({status:"started"}),
+      finish:async()=>({status:"pending-review",scoreReceived:2325}),
+      cancel:async()=>true};
+  };
+  const wrongDoc=fakeDocument(),wrongStage=wrongDoc.createElement("div");
+  assert.equal(await mountCrossfirePreview({
+    entry:{...entry,id:"archive-02122"},bytes,stage:wrongStage,doc:wrongDoc,
+    subtle:fakeCrypto,arenaAttemptFactory:factory
+  }),null);
+  assert.equal(attempted,0,"Wrong game cannot request member session");
+  const invalidDoc=fakeDocument(),invalidStage=invalidDoc.createElement("div");
+  assert.equal(await mountCrossfirePreview({
+    entry,bytes,stage:invalidStage,doc:invalidDoc,
+    subtle:{digest:async()=>new Uint8Array(32).buffer},
+    arenaAttemptFactory:factory
+  }),null);
+  assert.equal(attempted,0,"Unverified media cannot request member session");
+  const doc=fakeDocument(),stage=doc.createElement("div");
+  const valid=await mountCrossfirePreview({
+    entry,bytes,stage,doc,subtle:fakeCrypto,arenaAttemptFactory:factory
+  });
+  assert(valid,"Exact media mounts with optional member client");
+  assert.equal(attempted,1);
+  assert(stage.after.find(x=>x.tag==="p"
+    && x.textContent==="PILOT · SCORES REQUIRE INDEPENDENT REVIEW"));
+  valid.dispose();
+});
+test("failed HelioHost membership cannot enable automatic score submission",async()=>{
+  const doc=fakeDocument(),stage=doc.createElement("div");
+  const controller=await mountCrossfirePreview({
+    entry,bytes,stage,doc,subtle:fakeCrypto,
+    arenaAttemptFactory:async()=>{throw Error("Member service unavailable");}
+  });
+  assert(controller);
+  assert(stage.after.find(x=>x.tag==="p"
+    && x.textContent==="PREVIEW ONLY · SCORES ARE NOT SUBMITTED"));
+  controller.dispose();
+});
+
 test("wrong game never mounts or loads any preview styles",async()=>{
   const doc=fakeDocument(),stage=doc.createElement("div");
   const mounted=await mountCrossfirePreview({
