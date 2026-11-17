@@ -8,6 +8,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { isVerifiedSierraCrossfireCrt } from "../js/ccg-c64/game-catalog.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (rel) => fs.readFileSync(path.join(root, rel), "utf8");
@@ -82,6 +83,7 @@ const context = vm.createContext({
   onlineLibraryDiskIndex: 0,
   activeLibraryEntryId: null,
   pendingMedia: null,
+  isVerifiedSierraCrossfireCrt,
   decodeLibraryBase64() { return Uint8Array.from([0, 8, 1]); },
   setLibrarySuggestionsOpen(value) {
     popupVisible = value;
