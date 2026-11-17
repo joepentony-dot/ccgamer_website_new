@@ -1,0 +1,37 @@
+name: CCG Arena HelioHost transport contract
+
+on:
+  pull_request:
+    paths:
+      - "scripts/high-score-arena/client/heliohost-attempt.mjs"
+      - "tests/high-score-arena-heliohost-transport.test.mjs"
+      - "tests/high-score-arena-board-model.test.mjs"
+      - "tests/high-score-arena-preview-integration.test.mjs"
+      - ".github/workflows/high-score-arena-heliohost-transport.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  transport-and-overlay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify disabled-by-default PHP/MariaDB transport and existing neon board
+        run: |
+          node --check scripts/high-score-arena/client/heliohost-attempt.mjs
+          node --test tests/high-score-arena-heliohost-transport.test.mjs
+          node --test tests/high-score-arena-board-model.test.mjs
+          node --test tests/high-score-arena-preview-integration.test.mjs
+      - name: Ensure no Supabase score route is reintroduced
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Ei 'supabase|service_role|anon_key|auth.users' scripts/high-score-arena/client/heliohost-attempt.mjs; then
+            echo "High Score Arena must use independent HelioHost PHP backend"; exit 1
+          fi
