@@ -2,27 +2,24 @@
  * CCG High Score Arena: exact-media game profiles.
  *
  * Reuse this registration contract for future verified titles.
- * Only Crossfire has an adapter. This file NEVER enables submissions.
- * Adding a game requires independently validated media, scores, lives or
- * another true completion signal, a game-specific observer and new CI tests.
+ * The Sierra Online CRT is the only opted-in Crossfire presentation edition.
+ * Its HUD, lives and game-over signatures have NOT been measured. The old
+ * Atlantis PRG observer must never be applied to this different game.
+ * No score observers or network submissions are enabled.
  */
-import {
-  CROSSFIRE_GAME_ID,
-  CROSSFIRE_PRG_SHA256,
-  CrossfireRunObserver
-} from './observe-crossfire-run.mjs';
+import { SIERRA_CROSSFIRE_CRT } from '../game-catalog.js';
 
 export const ARENA_CROSSFIRE_PROFILE = Object.freeze({
-  key: 'c64-crossfire-atlantis',
+  key: 'c64-crossfire-sierra-online',
   platform: 'c64',
-  displayTitle: 'Crossfire',
-  publisher: 'Atlantis Software',
-  developer: 'Pantheon Software',
+  displayTitle: 'Crossfire (Sierra Online)',
+  publisher: 'Sierra On-Line',
+  developer: 'Not independently verified',
   media: Object.freeze({
-    catalogId: CROSSFIRE_GAME_ID,
-    format: 'prg',
-    sha256: CROSSFIRE_PRG_SHA256,
-    byteLength: 23637
+    catalogId: SIERRA_CROSSFIRE_CRT.id,
+    format: 'crt',
+    sha256: SIERRA_CROSSFIRE_CRT.sha256,
+    byteLength: SIERRA_CROSSFIRE_CRT.bytes
   }),
   rules: Object.freeze({
     startLevel: 1,
@@ -38,7 +35,7 @@ export const ARENA_CROSSFIRE_PROFILE = Object.freeze({
     frameAsset: 'crossfire-user-supplied-art',
     gameAspect: '4/3'
   }),
-  adapter: 'crossfire-grave-screen-v1',
+  adapter: 'crt-score-forensics-not-yet-verified',
   // No client-side runtime can by itself establish cheat-free score integrity.
   publicSubmissionEnabled: false
 });
@@ -57,13 +54,10 @@ export function identifyArenaMedia(media) {
   return null;
 }
 
-export function createArenaDiagnosticObserver(media) {
-  const profile = identifyArenaMedia(media);
-  if (!profile || profile.adapter !== 'crossfire-grave-screen-v1') return null;
-  return new CrossfireRunObserver({
-    gameId: profile.media.catalogId,
-    prgSHA256: profile.media.sha256
-  });
+// The verified Atlantis PRG RAM addresses DO NOT apply to Sierra's CRT.
+// Refuse a score observer until cartridge-specific gameplay forensics exist.
+export function createArenaDiagnosticObserver(_media) {
+  return null;
 }
 
 export function arenaProfileKeys() {
