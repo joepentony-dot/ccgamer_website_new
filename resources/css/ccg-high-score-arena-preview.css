@@ -1,0 +1,31 @@
+/* Opt-in Crossfire arena pilot. No global emulator styles are replaced. */
+.ccg-arena-preview{
+  box-sizing:border-box; width:100%; min-width:0;
+  background:linear-gradient(135deg,#0a1532,#030914);
+  color:#d9ecff;border:1px solid #3673a8;border-radius:10px;
+  margin:12px auto;padding:clamp(10px,2vw,18px);
+  box-shadow:inset 0 0 18px #0b346d,0 0 18px rgba(17,114,232,.22);
+}
+.ccg-arena-preview__intro{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.ccg-arena-preview__intro h2{margin:0;font-size:clamp(13px,1.45vw,20px);letter-spacing:.06em;color:#ffb24f}
+.ccg-arena-preview__intro p{margin:0;font-size:clamp(10px,.83vw,13px);color:#a4c1e6}
+.ccg-arena-preview__modes{display:flex;gap:6px;padding:10px 0}
+.ccg-arena-preview__modes button{
+  background:#102a59;border:1px solid #2c85cb;color:#c4ebff;
+  border-radius:5px;padding:7px 12px;font:700 12px Arial,sans-serif;cursor:pointer}
+.ccg-arena-preview__modes button[aria-pressed=true]{background:#154b88;border-color:#63bdff;box-shadow:0 0 9px #137bd2}
+.ccg-arena-preview__display{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,33%);gap:12px;min-height:260px}
+.ccg-arena-preview__board{min-height:260px;min-width:0}
+.ccg-arena-preview__run{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;
+ border:1px solid #27548c;border-radius:6px;text-align:center;padding:12px;
+ background:linear-gradient(170deg,#081a3b,#020611)}
+.ccg-arena-preview__run strong{font:700 clamp(22px,3vw,44px)/1.15 monospace;color:#4ecbff;text-shadow:0 0 7px #078fff}
+.ccg-arena-preview__run p{font-size:11px;line-height:1.4;color:#adcce5}
+.ccg-arena-preview .ccg-arena-board{box-sizing:border-box}
+@media(max-width:760px){
+ .ccg-arena-preview__display{display:flex;flex-direction:column}
+ .ccg-arena-preview__board{height:330px}
+ .ccg-arena-preview__run{min-height:100px}
+}
+@media(prefers-reduced-motion:reduce){.ccg-arena-preview *{transition:none!important;animation:none!important}}
