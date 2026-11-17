@@ -342,10 +342,42 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
+          name: github-pages-${{ github.run_attempt }}
+
+      # Upload metadata can lag the successful archive upload. Re-running the
+      # same workflow also retains the previous attempt's artifact; always
+      # identify only this run attempt's artifact before publishing.
+      - name: Wait for this attempt's Pages artifact metadata
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PAGES_ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          for attempt in {1..18}; do
+            artifacts_json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100")"
+            artifact_count="$(jq -r --arg name "$PAGES_ARTIFACT_NAME" --argjson run "$GITHUB_RUN_ID" \
+              '[.artifacts[] | select(.name == $name and .expired == false and .workflow_run.id == $run)] | length' \
+              <<< "$artifacts_json")"
+            if [ "$artifact_count" -eq 1 ]; then
+              echo "This run attempt's Pages artifact is discoverable."
+              exit 0
+            fi
+            if [ "$artifact_count" -gt 1 ]; then
+              echo "Ambiguous Pages artifacts for this run attempt; refusing deployment." >&2
+              exit 1
+            fi
+            echo "Waiting for Pages artifact metadata (attempt ${attempt}/18)"
+            sleep 5
+          done
+          echo "Pages artifact was not discoverable within the bounded wait; refusing deployment." >&2
+          exit 1
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
 
       - name: Verify deployed public pages
         shell: bash

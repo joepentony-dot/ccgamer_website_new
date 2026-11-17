@@ -1,3 +1,7 @@
+## 17 November 2026 — Pages publication artifact retry fix (BRANCH ONLY)
+
+- Current merged Crossfire main `7146b1a72e1c538cbc7039b010babc96f2de0aa0` passed feature CI but the actual Pages production workflow failed twice within run 44181038487: first artifact metadata was briefly invisible (0 matches); its failed-job retry then produced two identically named artifacts, and deploy-pages correctly rejected ambiguity. New isolated source candidate uses run-attempt-specific artifact names, a bounded read-only metadata gate and a regression in Site Safety. Preserve all existing public staged content and live checks; do not claim a successful production deployment until a newly qualified main run finishes.
+
 ## 17 November 2026 — Crossfire PR #3089 reconciled with qualified main
 
 - Main includes the guarded, independently reviewed game-hero CLS fix #3093 at `70519ad514bea6e78b90db69cda4aa147605d384`; its prior 768px Amiga warm result is 0.01109 versus 0.10. This is a source merge only: the Crossfire Arena remains opt-in, write-disabled and subject to its own new-head CI/browser review and separate HelioHost release gates. Both mainline Dungeon R166 and CLS source/test changes are retained without modifying protected runtime files.
