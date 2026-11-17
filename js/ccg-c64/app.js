@@ -13,7 +13,8 @@ import {
   PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
   ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
   parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
-  preferSelectedCartridges, catalogGameIdentity, selectVerifiedExactCrtEdition,
+  preferSelectedCartridges, preferSierraCrossfireCrt, isVerifiedSierraCrossfireCrt,
+  catalogGameIdentity, selectVerifiedExactCrtEdition,
   findVerifiedExactCrtEdition,
 } from "./game-catalog.js";
 
@@ -129,11 +130,8 @@ const screenStage = document.querySelector(".ccg-c64-screen-stage");
 // No extra modules, scores or CSS load on ordinary C64 emulator visits.
 const arenaPreviewRequested = new URLSearchParams(window.location.search)
   .get("ccg_arena_preview") === "crossfire";
-// Score intake is separately opt-in until independently approved release.
-// It never activates on ordinary emulation or for any unrelated game.
-const arenaSubmissionRequested = arenaPreviewRequested &&
-  new URLSearchParams(window.location.search).get("ccg_arena_submit") === "1" &&
-  window.location.origin === "https://www.cheekycommodoregamer.co.uk";
+// Sierra Online's CRT is a visual-only pilot. The Atlantis PRG's score
+// observer and HelioHost submission endpoint must never be used for it.
 let activeArenaPreview = null;
 let arenaPreviewGeneration = 0;
 function clearArenaPreview() {
@@ -150,21 +148,14 @@ function observeArenaPreviewFrame() {
   }
 }
 async function mountSelectedArenaPreview(entry, bytes) {
-  if (!arenaPreviewRequested || !screenStage || entry?.id !== "archive-02121") return;
+  if (!arenaPreviewRequested || !screenStage ||
+      !isVerifiedSierraCrossfireCrt(entry)) return;
   const generation = arenaPreviewGeneration;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261117_crossfire_preview_v2");
+    const module = await import("./arena-preview.js?ccg_rev=20261117_crossfire_crt_only_v1");
     if (generation !== arenaPreviewGeneration) return;
-    // The lazy session handshake runs ONLY after this module verifies the
-    // actual Crossfire PRG checksum. No Supabase account or token is accessed.
-    const arenaAttemptFactory = arenaSubmissionRequested
-      ? async () => {
-          const session = await import("./arena/client/heliohost-member-session.mjs?ccg_rev=20261117_crossfire_member_v1");
-          return session.acquireCrossfireHelioHostAttempt({enabled:true});
-        }
-      : null;
     const controller = await module.mountCrossfirePreview({
-      entry, bytes, stage: screenStage, arenaAttemptFactory,
+      entry, bytes, stage: screenStage,
       isCurrent: () => generation === arenaPreviewGeneration
     });
     if (generation !== arenaPreviewGeneration) {
@@ -173,7 +164,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
     }
     activeArenaPreview = controller;
   } catch (error) {
-    console.warn("[ccg-arena] Read-only Crossfire preview unavailable:", error);
+    console.warn("[ccg-arena] Sierra CRT-only preview unavailable:", error);
   }
 }
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
@@ -2555,7 +2546,6 @@ async function initialiseOnlineLibrary() {
   // An absent marker is normal: the existing Blast/direct libraries keep working.
   let archived = [];
   let archiveError = null;
-  let arenaArchiveEntry = null;
   try {
     const readyResponse = await fetch(ARCHIVE_READY_URL, {
       cache: "no-store", credentials: "same-origin",
@@ -2590,11 +2580,6 @@ async function initialiseOnlineLibrary() {
           parsedArchive.packs.length !== ready.packCount) {
         throw new Error("PRG archive record or pack counts do not match.");
       }
-      // Keep the Arena's exact edition available even if the ordinary library
-      // already has a different PRG called Crossfire.
-      if (arenaPreviewRequested) {
-        arenaArchiveEntry = parsedArchive.entries.find(entry => entry.id === "archive-02121") ?? null;
-      }
       const alreadyListed = new Set([...regular, ...packed].map((entry) =>
         `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
       // The standalone Bruce Lee PRG remains deliberately withheld: the
@@ -2618,7 +2603,7 @@ async function initialiseOnlineLibrary() {
     !(entry.title.trim().toLocaleLowerCase() === "friday the 13th - hammer challenge ii" &&
       String(entry.format).toLowerCase() === "prg"));
   const allHostedEntries = onlineLibraryEntries;
-  onlineLibraryEntries = preferSelectedCartridges(allHostedEntries);
+  onlineLibraryEntries = preferSierraCrossfireCrt(preferSelectedCartridges(allHostedEntries));
   // Only a game-page button with autoplay=1 starts the matched catalogue entry.
   // Ordinary emulator searches and legacy ?game= links still require LOAD.
   let linkedGameId = "";
@@ -2628,12 +2613,6 @@ async function initialiseOnlineLibrary() {
     linkedGameId = deepLink.get("game") || "";
     linkedGameAutoplay = deepLink.get("autoplay") === "1";
   } catch (_) { /* Invalid URL query is ignored. */ }
-  if (arenaArchiveEntry && linkedGameId === arenaArchiveEntry.id) {
-    const identity = catalogGameIdentity(arenaArchiveEntry.title);
-    onlineLibraryEntries = onlineLibraryEntries.filter(entry =>
-      catalogGameIdentity(entry.title) !== identity);
-    onlineLibraryEntries.push(arenaArchiveEntry);
-  }
   // Existing game pages still use some older BLAST/PRG IDs. Resolve the
   // bookmark to the selected CRT without changing unrelated game pages.
   const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
@@ -2671,6 +2650,12 @@ async function initialiseOnlineLibrary() {
         : (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
            (linkedOriginal && onlineLibraryEntries.find(entry =>
              catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
+           // Preserve legacy plain Crossfire PRG bookmarks by resolving to
+           // Sierra's pinned CRT if (and only if) the CRT is available.
+           (linkedOriginal && String(linkedOriginal.format).toLowerCase() === "prg" &&
+             ["crossfire", "cross fire"].includes(
+               String(linkedOriginal.title).trim().toLowerCase()) &&
+             onlineLibraryEntries.find(isVerifiedSierraCrossfireCrt)) ||
            (retiredTitle && onlineLibraryEntries.find(entry =>
              entry.format === "crt" &&
              catalogGameIdentity(entry.title) === catalogGameIdentity(retiredTitle)))))
@@ -2803,8 +2788,9 @@ async function loadSelectedLibraryEntry() {
       name: filename, type, bytes, sourceKey: firstKey,
       gameKey: "library:" + entry.id, gameTitle: entry.title,
     }, { freshBoot: true });
-    if (queued && entry.id === "archive-02121") {
-      // Recompute the SHA-256 of the actual loaded PRG in the lazy module.
+    if (queued && isVerifiedSierraCrossfireCrt(entry)) {
+      // Recompute the exact Sierra CRT digest inside the lazy visual module.
+      // No score observer or HelioHost session is armed for this edition.
       void mountSelectedArenaPreview(entry, bytes);
     }
     if (!queued && !pendingMedia) activeLibraryEntryId = null;
