@@ -7,7 +7,8 @@ import { readFileSync } from "node:fs";
 import {
   parsePackedCatalog, filterCatalog, suggestCatalogGames, loadPackedGameBytes,
   PACK_CATALOG_URL, PACK_ROOT, GAME_PAGE_SIZE, preferSelectedCartridges,
-  searchCatalogEntries,
+  searchCatalogEntries, preferSierraCrossfireCrt,
+  SIERRA_CROSSFIRE_CRT, isVerifiedSierraCrossfireCrt,
 } from "../js/ccg-c64/game-catalog.js";
 
 assert.equal(PACK_CATALOG_URL, "/emulator/c64/media/blast/catalog.json");
@@ -194,3 +195,36 @@ assert.ok(suggestCatalogGames(fuzzyFixture, "the").games.length <= 8,
 const browserSource = readFileSync(new URL("../js/ccg-c64/catalogue-browser.js", import.meta.url), "utf8");
 assert.match(browserSource, /searchCatalogEntries\(visible, query\)/,
   "Browse All must use the same fuzzy matching implementation as the quick search");
+
+\n// Crossfire owner correction: Sierra Online CRT is the only Arena choice,
+// while the separate Crossfire - Tron remains searchable. Do not alter the
+// original PRG pack data, and do not withdraw PRGs if the CRT is unavailable.
+const crossfireCRT = {
+  ...SIERRA_CROSSFIRE_CRT, approved: true, preferOverOtherFormats: true
+};
+const crossfireChoices = [
+  { id: 'archive-02121', title: 'Crossfire', format: 'prg' },
+  { id: 'archive-02122', title: 'Crossfire - Tron', format: 'prg' },
+  { id: 'blast-crossfire', title: 'Cross Fire', format: 'prg' },
+  crossfireCRT,
+  { id: 'other', title: 'Crossfire 2', format: 'prg' },
+];
+assert.equal(isVerifiedSierraCrossfireCrt(crossfireCRT), true);
+const chosenCrossfire = preferSierraCrossfireCrt(crossfireChoices);
+assert.deepEqual(chosenCrossfire.map(item => item.id), [
+  'archive-02122', SIERRA_CROSSFIRE_CRT.id, 'other'
+]);
+assert.deepEqual(suggestCatalogGames(chosenCrossfire, 'crossfire', 8).games
+  .filter(item => item.id === 'archive-02121' || item.id === 'blast-crossfire'), []);
+assert.equal(suggestCatalogGames(chosenCrossfire, 'crossfire', 8).games
+  .some(item => item.id === SIERRA_CROSSFIRE_CRT.id), true);
+assert.equal(suggestCatalogGames(chosenCrossfire, 'crossfire', 8).games
+  .some(item => item.id === 'archive-02122'), true);
+assert.equal(preferSierraCrossfireCrt(crossfireChoices.slice(0, 3)).length, 3,
+  'Missing optional CRT manifest must not remove existing playable PRGs');
+assert.equal(preferSierraCrossfireCrt([
+  ...crossfireChoices.slice(0, 3),
+  {...crossfireCRT, sha256: 'a'.repeat(64)}
+]).length, 4, 'A spoofed CRT cannot hide any PRG');
+assert.equal(crossfireChoices[0].title, 'Crossfire',
+  'Source catalogue and legacy links remain intact');
