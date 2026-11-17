@@ -1,3 +1,7 @@
+## 17 November 2026 — Crossfire PR #3089 reconciled with qualified main
+
+- Main includes the guarded, independently reviewed game-hero CLS fix #3093 at `70519ad514bea6e78b90db69cda4aa147605d384`; its prior 768px Amiga warm result is 0.01109 versus 0.10. This is a source merge only: the Crossfire Arena remains opt-in, write-disabled and subject to its own new-head CI/browser review and separate HelioHost release gates. Both mainline Dungeon R166 and CLS source/test changes are retained without modifying protected runtime files.
+
 ## 17 November 2026 — Cancel stale Crossfire member-session requests
 
 - Website PR #3089 checks the live launch generation after checksum verification and again after the member handshake. The regression test reproduced a stale session request before the fix. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
@@ -43,6 +47,10 @@
 - Existing isolated draft #3089 identifies the exact `archive-02121` Crossfire PRG (not `Crossfire - Tron`). GitHub Actions `43911950805` passed the immutable pack and PRG checksum check on source head `2c4aa46e`; job log confirms PRG load address `0x0801`.
 - On the same draft branch, added a read-only RAM snapshot candidate analyzer, synthetic-data regression tests and an isolated workflow check. This is **not** measured Crossfire score detection; no gameplay RAM snapshots, game-over signal, automatic submissions, Supabase writes, live rankings or blue-neon runtime overlay have been implemented. Await fresh CI on the new branch head.
 - Preserve #3089 as a non-production forensic stage; do not merge it as a working leaderboard. Existing active Dungeon #3080 release work and other website workstreams remain separate. Details: [Crossfire pilot](ai-work/high-score-arena-crossfire.md).
+## 17 November 2026 — targeted tablet game-hero CLS correction candidate
+
+- User authorised bounded implementation and guarded merging. A new isolated website PR candidate `fix/game-hero-credits-first-paint-20261117` adds source-backed first-paint Game Credits through the existing disposable Pages box-art staging prefill and a new exact-head release regression, addressing the observed 252px cover-art-row shift on `/games/ace-of-aces/` in 768px Amiga mode. The 3D artwork itself was already prefetched in staging; the credits panel is the next falsifiable cause to test. Unqualified and unmerged pending full staged Chrome CLS results, exact-head CI and independent review. Crossfire #3089 and backend #2 remain unchanged and independently gated. See [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md).
+
 ## 17 November 2026 — SID Retro Specials targeted first-paint stabilisation, PR #3090
 
 - The strict Category Omega job now measures the actually modified Retro Specials collection rather than a fixed unrelated Role-Playing genre. Measured mobile/desktop LCP passed but CLS failed on `d60179367` (see [SEO workstream](ai-work/seo-and-generated-output.md)), and source review identified the existing category runtime adding a hero kicker/discovery after first paint, with font-related shifting in the Lighthouse reports.
@@ -61,6 +69,11 @@
 
 - The existing GitHub Actions matrix is configured in this candidate for minute 20 of every hour. Both desktop and mobile still audit all public sitemap routes. The shard concurrency increases from eight to twelve, and newer triggers no longer cancel an audit already running.
 - The latest verified full audit, run `43145492388`, completed in about 63 minutes with eight parallel shards. Verify full run duration and scheduled completion after this candidate reaches the default branch. See [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md).
+
+## 12 November 2026 — Dungeon R166 source qualification
+
+- Main `7c0aec8d8e3e11e2b5c6ea4ff5d3c1360b05f298` still carries merged R165 #3076; both live version endpoints serve `V10.42 r165 / 20261112r165`. No compatible open Dungeon implementation PR exists.
+- Sole R166 [PR #3080](https://github.com/joepentony-dot/ccgamer_website_new/pull/3080), branch `fix/dungeon-r166-count-loadula-accessibility`, applies the supplied patch cleanly (implementation `ebd2afde62ae944de69511cb07d265253712854d`). Local canonical Node/syntax, accessibility negative control, desktop/mobile Canvas and full-game Count verification, performance contracts and itch staging are recorded in the [runtime checkpoint](ai-work/dungeon-carnage-runtime.md). Exact-head CI and independent APPROVED review are required before merge; no R166 live or owner acceptance claim.
 
 ## 11 November 2026 — Dungeon R162 campaign completion
 
