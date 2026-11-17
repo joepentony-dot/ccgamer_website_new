@@ -15,7 +15,7 @@ import { readHelioHostArenaBoard }
 import { CrossfireAutomaticAttempt }
   from "../../scripts/high-score-arena/client/auto-run-controller.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_preview_v1";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_preview_v2";
 const GAME_KEY="c64-crossfire-atlantis";
 const EXPECTED_CATALOG_ID="archive-02121";
 
@@ -112,6 +112,7 @@ export async function mountCrossfirePreview({
   run.append(local,hint);
   display.append(board,run);
   section.append(intro,modes,display);
+  stage.setAttribute("data-ccg-arena-frame","crossfire");
   stage.insertAdjacentElement("afterend",section);
 
   let mode="alltime", disposed=false, lastScore=null, final=false;
@@ -194,6 +195,7 @@ export async function mountCrossfirePreview({
       disposed=true;
       automaticAttempt.stop();
       stopBoardRead();
+      stage.removeAttribute("data-ccg-arena-frame");
       section.remove();
       link.remove();
     }

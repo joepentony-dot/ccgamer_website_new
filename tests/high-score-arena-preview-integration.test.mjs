@@ -41,6 +41,7 @@ class FakeElement {
     this.attributes={};this.textContent="";this.removed=false;
   }
   setAttribute(name,value){this.attributes[name]=String(value);}
+  removeAttribute(name){delete this.attributes[name];}
   append(...items){this.children.push(...items);}
   replaceChildren(...items){this.children=[...items];}
   insertAdjacentElement(_where,node){this.after=node;}
@@ -171,7 +172,9 @@ test("failed HelioHost membership cannot enable automatic score submission",asyn
   assert(controller);
   assert(stage.after.find(x=>x.tag==="p"
     && x.textContent==="PREVIEW ONLY · SCORES ARE NOT SUBMITTED"));
+  assert.equal(stage.attributes["data-ccg-arena-frame"],"crossfire");
   controller.dispose();
+  assert.equal(stage.attributes["data-ccg-arena-frame"],undefined);
 });
 
 test("wrong game never mounts or loads any preview styles",async()=>{

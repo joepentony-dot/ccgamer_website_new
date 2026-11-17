@@ -153,7 +153,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
   if (!arenaPreviewRequested || !screenStage || entry?.id !== "archive-02121") return;
   const generation = arenaPreviewGeneration;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261117_crossfire_preview_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261117_crossfire_preview_v2");
     if (generation !== arenaPreviewGeneration) return;
     // The lazy session handshake runs ONLY after this module verifies the
     // actual Crossfire PRG checksum. No Supabase account or token is accessed.

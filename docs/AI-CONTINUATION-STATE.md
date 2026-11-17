@@ -1,3 +1,7 @@
+## 17 November 2026 — Original Crossfire frame in the emulator preview
+
+- Website PR #3089 uses the owner-supplied frame around the live 4:3 canvas for the checksum-verified, opted-in Crossfire PRG. Normal play, fullscreen and immersive touch controls keep their existing layout. The neon board still has all-time and challenge modes. The local 48-test Arena suite and exact media/gameplay probe passed, including a 2,325-point terminal result. Chromium qualification is in the C64 browser workflow. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
 ## 17 November 2026 — High Score Arena backend decision: HelioHost, not Supabase
 
 - The owner has explicitly directed Crossfire permanent rankings and challenge records to **HelioHost PHP/MariaDB**, coordinated with backend independence. New **draft backend PR #2** in `joepentony-dot/ccg-backend-independence` stages disabled MariaDB schema and private-only PHP score intake; source CI passed. Existing website draft PR #3089 retains exact PRG diagnostic/neon preview but retires only its NEW, UNDEPLOYED Arena-specific Supabase/PG candidates. New non-public, disabled-by-default HelioHost transport emits automatic final-score diagnostics as **pending review**, not public records. The actual HelioHost API route and real member migration are not yet live. No live Supabase, HelioHost stage, web assets or member data changed. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).

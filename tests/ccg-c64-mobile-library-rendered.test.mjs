@@ -12,7 +12,7 @@ import { spawn, spawnSync } from "node:child_process";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const host = "127.0.0.1", driverPort = 19751;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-const mime = { ".html":"text/html", ".css":"text/css", ".js":"text/javascript",
+const mime = { ".html":"text/html", ".css":"text/css", ".js":"text/javascript", ".mjs":"text/javascript",
   ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png",
   ".webp":"image/webp", ".woff2":"font/woff2", ".ico":"image/x-icon" };
 
@@ -222,6 +222,55 @@ try {
   ].join("\n"));
   assert.equal(drop.position,"absolute");
   assert(Math.abs(drop.before-drop.after)<1,"Autocomplete pushed the mobile panels down");
+
+  // Boot the checksum-pinned PRG through the real game-page launch path.
+  await emulate(session, 1440, 900, false);
+  const crossfireUrl = "http://" + host + ":" + port + "/emulator/c64/?game=archive-02121&autoplay=1";
+  await wd("POST", "/session/"+session+"/url", {url:crossfireUrl + "&ccg_arena_preview=crossfire"});
+  let framed;
+  for (let attempt = 0; attempt < 100; attempt++) {
+    framed = await evaluate(session, `
+      const stage = document.querySelector('[data-ccg-arena-frame="crossfire"]');
+      if (!stage || !getComputedStyle(stage).backgroundImage.includes("crossfire-original-frame.webp")) return null;
+      const canvas = stage.querySelector("canvas").getBoundingClientRect();
+      const frame = stage.getBoundingClientRect();
+      return {
+        ratio: canvas.width / canvas.height,
+        left: (canvas.left - frame.left) / frame.width,
+        right: (canvas.right - frame.left) / frame.width,
+        top: (canvas.top - frame.top) / frame.height,
+        bottom: (canvas.bottom - frame.top) / frame.height,
+        board: Boolean(document.querySelector('[data-ccg-arena-preview="crossfire"]'))
+      };
+    `);
+    if (framed) break;
+    await sleep(250);
+  }
+  assert(framed?.board, "Verified Crossfire must start with its preview and artwork");
+  assert(Math.abs(framed.ratio - 4 / 3) < 0.01, "Crossfire artwork must frame a 4:3 canvas");
+  assert(framed.left > .18 && framed.right < .82 && framed.top > .19 && framed.bottom < .86,
+    "The gameplay canvas must fit in the artwork opening: " + JSON.stringify(framed));
+  await evaluate(session, `
+    document.querySelector('.ccg-arena-preview__modes button:last-child').click();
+    return true;
+  `);
+  assert.equal(await evaluate(session, `
+    return document.querySelector('.ccg-arena-preview__modes button:last-child').getAttribute('aria-pressed');
+  `), "true", "The challenge board must be selectable during gameplay");
+  await wd("POST", "/session/"+session+"/url", {url:crossfireUrl});
+  let regular;
+  for (let attempt = 0; attempt < 100; attempt++) {
+    regular = await evaluate(session, `
+      return document.querySelector('[data-online-library-status]')?.textContent === "GAME STARTED";
+    `);
+    if (regular) break;
+    await sleep(250);
+  }
+  assert(regular, "Crossfire must still launch without the preview");
+  assert.equal(await evaluate(session, `
+    return document.querySelector('[data-ccg-arena-frame], [data-ccg-arena-style]') !== null;
+  `), false, "An ordinary Crossfire launch must not load the Arena");
+  console.log("PASS Crossfire real PRG launch with and without the original frame");
 
   console.log("PASS C64 rendered mobile game library and desktop audit");
 } finally {
