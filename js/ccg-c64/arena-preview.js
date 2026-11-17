@@ -1,9 +1,10 @@
 /**
  * CCG Crossfire High Score Arena: browser-side OPT-IN pilot only.
  *
- * This module NEVER submits a score, reads account details, or claims a
- * trustworthy run. The live emulator does not load it without the explicit
- * ccg_arena_preview=crossfire URL parameter and exact verified PRG.
+ * This module only submits an UNVERIFIED automatic score when its separate,
+ * authenticated HelioHost transport is explicitly armed. Otherwise it never
+ * sends a score. The live emulator requires the exact checksum-verified PRG
+ * and the explicit ccg_arena_preview=crossfire pilot parameter.
  */
 import { identifyArenaMedia, createArenaDiagnosticObserver }
   from "../../scripts/high-score-arena/arena-game-profiles.mjs";
@@ -49,7 +50,7 @@ export async function mountCrossfirePreview({
   entry, bytes, stage, doc=globalThis.document, subtle,
   publicBoardRead=globalThis.window?.location?.origin==="https://www.cheekycommodoregamer.co.uk"
     ? readHelioHostArenaBoard : null,
-  arenaAttempt=null
+  arenaAttempt=null,arenaAttemptFactory=null
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
@@ -58,9 +59,14 @@ export async function mountCrossfirePreview({
     sha256:entry.sha256,byteLength:bytes.byteLength
   });
   if(!observer)return null;
-  // No writes by default. A signed-in HelioHost transport must be injected
-  // after separate member migration and feature-release qualification.
-  const automaticAttempt=new CrossfireAutomaticAttempt(arenaAttempt);
+  // The member handshake starts only AFTER exact PRG checksum verification.
+  // Disabled by default and never constructs a visitor ID from browser input.
+  let eligibleAttempt=arenaAttempt;
+  if(!eligibleAttempt && typeof arenaAttemptFactory==='function') {
+    try { eligibleAttempt=await arenaAttemptFactory(); }
+    catch { eligibleAttempt=null; }
+  }
+  const automaticAttempt=new CrossfireAutomaticAttempt(eligibleAttempt);
 
   const link=doc.createElement("link");
   link.rel="stylesheet";
