@@ -1,3 +1,7 @@
+## 17 November 2026 — targeted tablet game-hero CLS correction candidate
+
+- User authorised bounded implementation and guarded merging. A new isolated website PR candidate `fix/game-hero-credits-first-paint-20261117` adds source-backed first-paint Game Credits through the existing disposable Pages box-art staging prefill and a new exact-head release regression, addressing the observed 252px cover-art-row shift on `/games/ace-of-aces/` in 768px Amiga mode. The 3D artwork itself was already prefetched in staging; the credits panel is the next falsifiable cause to test. Unqualified and unmerged pending full staged Chrome CLS results, exact-head CI and independent review. Crossfire #3089 and backend #2 remain unchanged and independently gated. See [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md).
+
 ## 17 November 2026 — SID Retro Specials targeted first-paint stabilisation, PR #3090
 
 - The strict Category Omega job now measures the actually modified Retro Specials collection rather than a fixed unrelated Role-Playing genre. Measured mobile/desktop LCP passed but CLS failed on `d60179367` (see [SEO workstream](ai-work/seo-and-generated-output.md)), and source review identified the existing category runtime adding a hero kicker/discovery after first paint, with font-related shifting in the Lighthouse reports.
