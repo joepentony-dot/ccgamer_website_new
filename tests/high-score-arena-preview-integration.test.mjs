@@ -1,33 +1,40 @@
-import test from "node:test";
-import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   previewRequestEnabled, verifyCrossfirePreviewMedia, mountCrossfirePreview
-} from "../js/ccg-c64/arena-preview.js";
+} from '../js/ccg-c64/arena-preview.js';
+import { SIERRA_CROSSFIRE_CRT } from '../js/ccg-c64/game-catalog.js';
 
 const entry={
-  id:"archive-02121",format:"prg",
-  sha256:"ddc3ab84c98fc065fd39e69bfe68b7ee6de38ebab4b51b607bbcea64cad570a9"
+  ...SIERRA_CROSSFIRE_CRT,
+  approved:true,preferOverOtherFormats:true
 };
-const bytes = new Uint8Array(23637);
-const validSHA=Buffer.from(entry.sha256,"hex");
+const bytes=new Uint8Array(SIERRA_CROSSFIRE_CRT.bytes);
+const validSHA=Buffer.from(entry.sha256,'hex');
 const fakeCrypto={
-  digest: async (_algo, input)=>{
+  digest:async (_algo,input)=>{
     assert.equal(input,bytes);
     return validSHA.buffer.slice(validSHA.byteOffset,validSHA.byteOffset+validSHA.byteLength);
   }
 };
 
-test("preview requires explicit query opt-in",()=>{
-  assert.equal(previewRequestEnabled(""),false);
-  assert.equal(previewRequestEnabled("?ccg_arena_preview=crossfire"),true);
-  assert.equal(previewRequestEnabled("?ccg_arena_preview=crossfire-tron"),false);
-  assert.equal(previewRequestEnabled("?foo=bar"),false);
+test('preview requires the explicit Crossfire query parameter',()=>{
+  assert.equal(previewRequestEnabled(''),false);
+  assert.equal(previewRequestEnabled('?ccg_arena_preview=crossfire'),true);
+  assert.equal(previewRequestEnabled('?ccg_arena_preview=crossfire-tron'),false);
+  assert.equal(previewRequestEnabled('?foo=bar'),false);
 });
-test("only byte-for-byte verified Atlantis Crossfire may mount",async()=>{
+
+test('exact SHA-verified Sierra Online CRT only; Tron and old Atlantis PRG are refused',async()=>{
   assert.equal(await verifyCrossfirePreviewMedia(entry,bytes,fakeCrypto),true);
-  assert.equal(await verifyCrossfirePreviewMedia({...entry,id:"archive-02122"},bytes,fakeCrypto),false);
-  assert.equal(await verifyCrossfirePreviewMedia({...entry,format:"d64"},bytes,fakeCrypto),false);
+  for(const invalid of [
+    {...entry,id:'archive-02121',format:'prg'},
+    {...entry,id:'archive-02122',format:'prg'},
+    {...entry,title:'Crossfire'}, {...entry,url:'/emulator/c64/media/fake.crt'},
+    {...entry,bytes:23637},{...entry,approved:false},
+    {...entry,preferOverOtherFormats:false},{...entry,sha256:'a'.repeat(64)}
+  ]) assert.equal(await verifyCrossfirePreviewMedia(invalid,bytes,fakeCrypto),false);
   assert.equal(await verifyCrossfirePreviewMedia(entry,bytes.subarray(0,50),fakeCrypto),false);
   assert.equal(await verifyCrossfirePreviewMedia(entry,bytes,{
     digest:async()=>new Uint8Array(32).buffer
@@ -36,9 +43,9 @@ test("only byte-for-byte verified Atlantis Crossfire may mount",async()=>{
 });
 
 class FakeElement {
-  constructor(doc,tag) {
+  constructor(doc,tag){
     this.ownerDocument=doc;this.tag=tag;this.children=[];this.events=new Map();
-    this.attributes={};this.textContent="";this.removed=false;
+    this.attributes={};this.textContent='';this.removed=false;
   }
   setAttribute(name,value){this.attributes[name]=String(value);}
   removeAttribute(name){delete this.attributes[name];}
@@ -46,7 +53,7 @@ class FakeElement {
   replaceChildren(...items){this.children=[...items];}
   insertAdjacentElement(_where,node){this.after=node;}
   addEventListener(name,handler){this.events.set(name,handler);}
-  click(){this.events.get("click")?.();}
+  click(){this.events.get('click')?.();}
   remove(){this.removed=true;}
   find(predicate){
     if(predicate(this))return this;
@@ -54,193 +61,95 @@ class FakeElement {
     return null;
   }
 }
-function fakeDocument() {
+function fakeDocument(){
   const doc={
     createElement(tag){return new FakeElement(doc,tag);},
     createElementNS(_ns,tag){return new FakeElement(doc,tag);}
   };
-  doc.head=doc.createElement("head");
+  doc.head=doc.createElement('head');
   return doc;
 }
-test("verified PRG mounts an empty five-rank neon board, toggles views, and disposes",async()=>{
-  const doc=fakeDocument(),stage=doc.createElement("div");
+
+test('Sierra CRT gets neon frame and empty rankings, never an invented score',async()=>{
+  const doc=fakeDocument(),stage=doc.createElement('div');
   const candidate=await mountCrossfirePreview({entry,bytes,stage,doc,subtle:fakeCrypto});
-  assert(candidate,"Exact media must mount");
+  assert(candidate);
   const panel=stage.after;
-  assert.equal(panel.attributes["data-ccg-arena-preview"],"crossfire");
-  assert.equal(doc.head.children.length,1,"Styles load only after exact media validation");
-  assert.equal(panel.find(x=>x.tag==="li")?.textContent,"","no invented score text");
-  const slots=panel.find(x=>x.tag==="ol");
+  assert.equal(panel.attributes['data-ccg-arena-preview'],'crossfire');
+  assert.equal(stage.attributes['data-ccg-arena-frame'],'crossfire');
+  assert.equal(doc.head.children.length,1);
+  assert.equal(panel.find(x=>x.tag==='p'&&x.textContent==='SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED')!==null,true);
+  assert.equal(panel.find(x=>x.tag==='p'&&x.textContent==='CRT SCORE DETECTION NOT YET VERIFIED')!==null,true);
+  const slots=panel.find(x=>x.tag==='ol');
   assert.equal(slots.children.length,5);
   const buttons=[];
-  (function visit(n){if(n.tag==="button")buttons.push(n);for(const child of n.children)visit(child);})(panel);
+  (function visit(n){if(n.tag==='button')buttons.push(n);for(const child of n.children)visit(child);})(panel);
   assert.equal(buttons.length,2);
-  assert.equal(buttons[0].attributes["aria-pressed"],"true");
+  assert.equal(buttons[0].attributes['aria-pressed'],'true');
   buttons[1].click();
-  assert.equal(buttons[1].attributes["aria-pressed"],"true");
-  assert.equal(panel.find(x=>x.tag==="p"&&x.textContent==="NO PUBLISHED CHALLENGE")!==null,true);
+  assert.equal(buttons[1].attributes['aria-pressed'],'true');
+  assert(panel.find(x=>x.tag==='p'&&x.textContent==='NO PUBLISHED CHALLENGE'));
   candidate.observe(new Uint8Array(65536));
+  assert(panel.find(x=>x.tag==='p'&&x.textContent==='CRT SCORE DETECTION NOT YET VERIFIED'));
   candidate.invalidate();
-  assert.equal(panel.find(x=>x.tag==="p"&&x.textContent.includes("NO SCORE RECORDED"))!==null,true);
+  assert(panel.find(x=>x.tag==='p'&&x.textContent.includes('NO SCORE RECORDED')));
   candidate.dispose();
   assert.equal(panel.removed,true);
   assert.equal(doc.head.children[0].removed,true);
+  assert.equal(stage.attributes['data-ccg-arena-frame'],undefined);
+  candidate.dispose();
+});
+
+test('even injected backend readers and attempt factories cannot use PRG-era records on CRT',async()=>{
+  let reads=0,handshakes=0;
+  const doc=fakeDocument(),stage=doc.createElement('div');
+  const candidate=await mountCrossfirePreview({
+    entry,bytes,stage,doc,subtle:fakeCrypto,
+    publicBoardRead:async()=>{reads++;return {rows:[{rank:1,name:'Wrong PRG',score:2325}]};},
+    arenaAttemptFactory:async()=>{handshakes++;return {enabled:true};}
+  });
+  assert(candidate);
+  await Promise.resolve();await Promise.resolve();
+  assert.equal(reads,0);
+  assert.equal(handshakes,0);
+  assert.equal(stage.after.find(x=>x.tag==='span'&&x.textContent?.includes('Wrong PRG')),null);
   candidate.observe(new Uint8Array(65536));
   candidate.dispose();
 });
 
-test("real approved HelioHost reader populates opt-in board and switches to current challenge",async()=>{
-  const doc=fakeDocument(),stage=doc.createElement("div");
-  const selections=[];
-  const read=async ({board,enabled,signal})=>{
-    selections.push({board,enabled,signal});
-    return board==="alltime"
-      ?{status:"ranked",rows:[{rank:1,name:"Reviewed Player",score:2325}]}
-      :{status:"ranked",rows:[{rank:1,name:"Challenge Player",score:775}]};
-  };
-  const mounted=await mountCrossfirePreview({
-    entry,bytes,stage,doc,subtle:fakeCrypto,publicBoardRead:read
+test('stale or invalid CRT media cannot attach a frame',async()=>{
+  const doc=fakeDocument(),stage=doc.createElement('div');
+  let current=true;
+  const stale=mountCrossfirePreview({
+    entry,bytes,stage,doc,
+    subtle:{async digest(...args){
+      const hash=await fakeCrypto.digest(...args);
+      current=false;
+      return hash;
+    }},
+    isCurrent:()=>current
   });
-  assert(mounted);
-  for(let i=0;i<4;i++)await Promise.resolve();
-  assert.equal(selections.length,1);
-  assert.equal(selections[0].board,"alltime");
-  assert.equal(selections[0].enabled,true);
-  assert(stage.after.find(x=>x.tag==="span"&&x.textContent==="#1 Reviewed Player"));
-  const buttons=[];
-  (function visit(n){if(n.tag==="button")buttons.push(n);for(const child of n.children)visit(child);})(stage.after);
-  buttons[1].click();
-  for(let i=0;i<4;i++)await Promise.resolve();
-  assert.equal(selections.length,2);
-  assert.equal(selections[1].board,"challenge");
-  assert(stage.after.find(x=>x.tag==="span"&&x.textContent==="#1 Challenge Player"));
-  mounted.dispose();
-});
-test("stale leaderboard response cannot paint after Crossfire reset or disposal",async()=>{
-  const doc=fakeDocument(),stage=doc.createElement("div");
-  let complete;
-  const read=()=>new Promise(resolve=>{complete=resolve;});
-  const mounted=await mountCrossfirePreview({
-    entry,bytes,stage,doc,subtle:fakeCrypto,publicBoardRead:read
-  });
-  await Promise.resolve();
-  mounted.invalidate();
-  complete({status:"ranked",rows:[{rank:1,name:"Stale Score",score:999999}]});
-  for(let i=0;i<4;i++)await Promise.resolve();
-  assert.equal(stage.after.find(x=>x.tag==="span"&&x.textContent?.includes("Stale Score")),null);
-  mounted.dispose();
-  assert.equal(stage.after.removed,true);
-});
-
-test("member handshake executes only after verified Crossfire SHA and never for Tron",async()=>{
-  let attempted=0;
-  const factory=async()=>{
-    attempted++;
-    return {enabled:true,start:async()=>({status:"started"}),
-      finish:async()=>({status:"pending-review",scoreReceived:2325}),
-      cancel:async()=>true};
-  };
-  const wrongDoc=fakeDocument(),wrongStage=wrongDoc.createElement("div");
-  assert.equal(await mountCrossfirePreview({
-    entry:{...entry,id:"archive-02122"},bytes,stage:wrongStage,doc:wrongDoc,
-    subtle:fakeCrypto,arenaAttemptFactory:factory
-  }),null);
-  assert.equal(attempted,0,"Wrong game cannot request member session");
-  const invalidDoc=fakeDocument(),invalidStage=invalidDoc.createElement("div");
-  assert.equal(await mountCrossfirePreview({
-    entry,bytes,stage:invalidStage,doc:invalidDoc,
-    subtle:{digest:async()=>new Uint8Array(32).buffer},
-    arenaAttemptFactory:factory
-  }),null);
-  assert.equal(attempted,0,"Unverified media cannot request member session");
-  const doc=fakeDocument(),stage=doc.createElement("div");
-  const valid=await mountCrossfirePreview({
-    entry,bytes,stage,doc,subtle:fakeCrypto,arenaAttemptFactory:factory
-  });
-  assert(valid,"Exact media mounts with optional member client");
-  assert.equal(attempted,1);
-  assert(stage.after.find(x=>x.tag==="p"
-    && x.textContent==="PILOT · SCORES REQUIRE INDEPENDENT REVIEW"));
-  valid.dispose();
-});
-
-test("media invalidated during verification never requests a member session", async () => {
-  const doc = fakeDocument(), stage = doc.createElement("div");
-  let current = true;
-  let handshakeCalls = 0;
-  const stale = mountCrossfirePreview({
-    entry, bytes, stage, doc,
-    subtle: {
-      async digest(...args) {
-        const hash = await fakeCrypto.digest(...args);
-        current = false;
-        return hash;
-      }
-    },
-    arenaAttemptFactory: async () => { handshakeCalls++; },
-    isCurrent: () => current
-  });
-
-  assert.equal(await stale, null);
-  assert.equal(handshakeCalls, 0);
-  assert.equal(stage.after, undefined);
-  assert.equal(doc.head.children.length, 0);
-});
-
-test("media invalidated during the member handshake never mounts", async () => {
-  const doc = fakeDocument(), stage = doc.createElement("div");
-  let startHandshake;
-  const handshakeStarted = new Promise(resolve => { startHandshake = resolve; });
-  let current = true;
-  const stale = mountCrossfirePreview({
-    entry, bytes, stage, doc, subtle: fakeCrypto,
-    arenaAttemptFactory: async () => {
-      startHandshake();
-      return { enabled: true };
-    },
-    isCurrent: () => current
-  });
-
-  await handshakeStarted;
-  current = false;
-  assert.equal(await stale, null);
-  assert.equal(stage.after, undefined);
-  assert.equal(doc.head.children.length, 0);
-});
-test("failed HelioHost membership cannot enable automatic score submission",async()=>{
-  const doc=fakeDocument(),stage=doc.createElement("div");
-  const controller=await mountCrossfirePreview({
-    entry,bytes,stage,doc,subtle:fakeCrypto,
-    arenaAttemptFactory:async()=>{throw Error("Member service unavailable");}
-  });
-  assert(controller);
-  assert(stage.after.find(x=>x.tag==="p"
-    && x.textContent==="PREVIEW ONLY · SCORES ARE NOT SUBMITTED"));
-  assert.equal(stage.attributes["data-ccg-arena-frame"],"crossfire");
-  controller.dispose();
-  assert.equal(stage.attributes["data-ccg-arena-frame"],undefined);
-});
-
-test("wrong game never mounts or loads any preview styles",async()=>{
-  const doc=fakeDocument(),stage=doc.createElement("div");
-  const mounted=await mountCrossfirePreview({
-    entry:{...entry,id:"archive-02122"},bytes,stage,doc,subtle:fakeCrypto
-  });
-  assert.equal(mounted,null);
+  assert.equal(await stale,null);
   assert.equal(stage.after,undefined);
+  assert.equal(doc.head.children.length,0);
+  const wrong=await mountCrossfirePreview({
+    entry:{...entry,id:'archive-02122'},bytes,stage,doc,subtle:fakeCrypto
+  });
+  assert.equal(wrong,null);
   assert.equal(doc.head.children.length,0);
 });
 
-test("full browser hook is optional, and cannot submit accounts or scores",async()=>{
-  const {ARENA_CROSSFIRE_PROFILE}=await import("../js/ccg-c64/arena/arena-game-profiles.mjs");
+test('browser selection and source forbid legacy PRG or score submission',async()=>{
+  const { ARENA_CROSSFIRE_PROFILE }=await import('../js/ccg-c64/arena/arena-game-profiles.mjs');
   assert.equal(ARENA_CROSSFIRE_PROFILE.publicSubmissionEnabled,false);
-  const source=readFileSync(new URL("../js/ccg-c64/arena-preview.js",import.meta.url),"utf8");
-  assert.doesNotMatch(source,/\.from\s*\(\s*['"]ccg_arena_attempts/);
-  assert.doesNotMatch(source,/\.insert\(|\.upsert\(|\.update\(/);
-  assert.match(source,/LOCAL DIAGNOSTIC ONLY/);
-  const app=readFileSync(new URL("../js/ccg-c64/app.js",import.meta.url),"utf8");
+  assert.equal(ARENA_CROSSFIRE_PROFILE.media.format,'crt');
+  const source=readFileSync(new URL('../js/ccg-c64/arena-preview.js',import.meta.url),'utf8');
+  assert.doesNotMatch(source,/CrossfireAutomaticAttempt|readHelioHostArenaBoard|createArenaDiagnosticObserver/);
+  assert.doesNotMatch(source,/\.from\s*\(\s*['"]ccg_arena_attempts|\.insert\(|\.upsert\(/);
+  const app=readFileSync(new URL('../js/ccg-c64/app.js',import.meta.url),'utf8');
   assert.match(app,/ccg_arena_preview/);
-  assert.match(app,/if \(queued && entry.id === "archive-02121"\)/);
+  assert.match(app,/if \(queued && isVerifiedSierraCrossfireCrt\(entry\)\)/);
+  assert.doesNotMatch(app,/arenaSubmissionRequested|arenaArchiveEntry|entry\.id === "archive-02121"/);
   assert.match(app,/async function queueMedia\([^]*?clearArenaPreview\(\)/);
   assert.match(app,/function resetMachine\([^]*?clearArenaPreview\(\)/);
   assert.match(app,/async function loadGameVaultSlot\([^]*?clearArenaPreview\(\)/);
