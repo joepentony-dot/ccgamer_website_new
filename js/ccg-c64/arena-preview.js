@@ -102,7 +102,7 @@ export async function mountCrossfirePreview({ entry, bytes, stage, doc=globalThi
     challenge.setAttribute("aria-pressed",String(mode==="challenge"));
     // No backend exists in production yet. Empty is mandatory and never a fake rank.
     renderArenaBoard(board,normaliseArenaBoard({
-      ok:true,gameKey:GAME_KEY,board:mode,
+      ok:true,gameKey:GAME_KEY,board:mode,challengeSlug:null,
       status:mode==="challenge"?"no-published-challenge":"unavailable",
       records:[]
     },expected(mode)),{mode});
