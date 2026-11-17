@@ -184,10 +184,9 @@ const visibleCrossfire = activated.context.onlineLibraryEntries.filter(entry =>
   /cross\\s*fire/i.test(entry.title));
 assert.deepEqual(Array.from(visibleCrossfire, item => [item.title, item.format]).sort(
   (a, b) => a[0].localeCompare(b[0])), [
-  ["Crossfire (Sierra Online)", "crt"],
-  ["Crossfire - Tron", "prg"]
+  ["Crossfire (Sierra Online)", "crt"]
 ].sort((a, b) => a[0].localeCompare(b[0])),
-  "Only the verified Sierra Online CRT and the separate Tron PRG may be visible");
+  "The optional archive is offline in this fixture, so the pinned Sierra CRT must be its only Crossfire hit");
 assert.equal(activated.context.onlineLibraryEntries.some(entry =>
   entry.id === "archive-02121"), false,
   "The Atlantis/Pantheon Arena PRG must not reappear when preview is opted in");
