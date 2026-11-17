@@ -124,6 +124,42 @@ const audioButton = document.querySelector("[data-audio-toggle]");
 const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
+ 
+// Crossfire High Score Arena is an opt-in, zero-write diagnostic pilot.
+// No extra modules, scores or CSS load on ordinary C64 emulator visits.
+const arenaPreviewRequested = new URLSearchParams(window.location.search)
+  .get("ccg_arena_preview") === "crossfire";
+let activeArenaPreview = null;
+let arenaPreviewGeneration = 0;
+function clearArenaPreview() {
+  arenaPreviewGeneration++;
+  activeArenaPreview?.dispose();
+  activeArenaPreview = null;
+}
+function observeArenaPreviewFrame() {
+  if (!activeArenaPreview || !machine?.mem?.ram) return;
+  try { activeArenaPreview.observe(machine.mem.ram); }
+  catch (error) {
+    console.warn("[ccg-arena] Diagnostic preview stopped:", error);
+    clearArenaPreview();
+  }
+}
+async function mountSelectedArenaPreview(entry, bytes) {
+  if (!arenaPreviewRequested || !screenStage || entry?.id !== "archive-02121") return;
+  const generation = arenaPreviewGeneration;
+  try {
+    const module = await import("./arena-preview.js?ccg_rev=20261117_crossfire_preview_v1");
+    if (generation !== arenaPreviewGeneration) return;
+    const controller = await module.mountCrossfirePreview({ entry, bytes, stage: screenStage });
+    if (generation !== arenaPreviewGeneration) {
+      controller?.dispose();
+      return;
+    }
+    activeArenaPreview = controller;
+  } catch (error) {
+    console.warn("[ccg-arena] Read-only Crossfire preview unavailable:", error);
+  }
+}
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
 
@@ -1665,6 +1701,7 @@ function frameLoop(now) {
       const start = performance.now();
       do {
         machine.runFrame();
+        observeArenaPreviewFrame();
         frames++;
         if (autoStartSteps) autoWarpFrameCount++;
         if (autoStartSteps && (frames & 3) === 0) serviceAutoStart();
@@ -1678,6 +1715,7 @@ function frameLoop(now) {
       frameAccumulator += delta;
       while (frameAccumulator >= PAL_FRAME_MS) {
         machine.runFrame();
+        observeArenaPreviewFrame();
         if (autoStartSteps) autoWarpFrameCount++;
         frameAccumulator -= PAL_FRAME_MS;
         frames++;
@@ -1710,6 +1748,7 @@ function frameLoop(now) {
 }
 
 function powerOff() {
+  clearArenaPreview();
   if (typeof setMobilePlaying === "function") setMobilePlaying(false);
   captureMutableMedia();
   releaseAllInput();
@@ -1775,6 +1814,7 @@ async function powerOn() {
 
 function resetMachine() {
   if (!machine || !running) return;
+  clearArenaPreview();
   cancelAutoStart();
   machine.reset();
   resetAudioForMachine();
@@ -2253,6 +2293,7 @@ async function openMediaBytes(media) {
 }
 
 async function queueMedia(media, { freshBoot = false } = {}) {
+  clearArenaPreview();
   // LOAD must wait if a first-time visitor is still receiving the verified
   // original firmware. The chosen game is only queued after it has finished.
   if (typeof hostedFirmwareReadyPromise !== "undefined" && hostedFirmwareReadyPromise) {
@@ -2734,6 +2775,10 @@ async function loadSelectedLibraryEntry() {
       name: filename, type, bytes, sourceKey: firstKey,
       gameKey: "library:" + entry.id, gameTitle: entry.title,
     }, { freshBoot: true });
+    if (queued && entry.id === "archive-02121") {
+      // Recompute the SHA-256 of the actual loaded PRG in the lazy module.
+      void mountSelectedArenaPreview(entry, bytes);
+    }
     if (!queued && !pendingMedia) activeLibraryEntryId = null;
     updateOnlineDiskUi();
     if (onlineLibraryStatus) onlineLibraryStatus.textContent =
@@ -3115,6 +3160,8 @@ async function saveGameVaultSlot() {
 }
 
 async function loadGameVaultSlot() {
+  // Any restore attempt invalidates a fresh-run preview.
+  clearArenaPreview();
   if (!vault.snapshot().allRequiredReady) {
     showVaultFeedback("System ROMs are needed before a saved game can resume. Open ROM SETTINGS.", true);
     showSetup();
@@ -3610,6 +3657,7 @@ async function bootWithHostedFirmware() {
 hostedFirmwareReadyPromise = bootWithHostedFirmware();
 
 window.addEventListener("pagehide", () => {
+  clearArenaPreview();
   releaseAllInput();
   stopFrameLoop();
 });

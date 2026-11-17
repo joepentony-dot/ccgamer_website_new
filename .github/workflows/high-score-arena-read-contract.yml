@@ -6,6 +6,10 @@ on:
       - "supabase/functions/ccg-arena-leaderboard/**"
       - "tests/high-score-arena-read-contract.test.mjs"
       - "tests/high-score-arena-board-model.test.mjs"
+      - "tests/high-score-arena-preview-integration.test.mjs"
+      - "js/ccg-c64/arena-preview.js"
+      - "js/ccg-c64/app.js"
+      - "resources/css/ccg-high-score-arena-preview.css"
       - "scripts/high-score-arena/view/arena-board.mjs"
       - "scripts/high-score-arena/view/arena-board.css"
       - ".github/workflows/high-score-arena-read-contract.yml"
@@ -29,6 +33,9 @@ jobs:
           node --test tests/high-score-arena-read-contract.test.mjs
           node --check scripts/high-score-arena/view/arena-board.mjs
           node --test tests/high-score-arena-board-model.test.mjs
+          node --check js/ccg-c64/arena-preview.js
+          node --check js/ccg-c64/app.js
+          node --test tests/high-score-arena-preview-integration.test.mjs
       - name: Fail if read-only endpoint gains score submissions or secret-key access
         shell: bash
         run: |

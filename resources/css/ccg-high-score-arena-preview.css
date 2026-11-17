@@ -1,3 +1,4 @@
+@import url("/scripts/high-score-arena/view/arena-board.css");
 /* Opt-in Crossfire arena pilot. No global emulator styles are replaced. */
 .ccg-arena-preview{
   box-sizing:border-box; width:100%; min-width:0;
