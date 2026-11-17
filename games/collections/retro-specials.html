@@ -106,7 +106,9 @@
 
 <body class="ccg-body"
       data-ccg-mode="c64"
-      data-collection="Retro Specials" data-mode="c64" id="top">
+      data-collection="Retro Specials" data-mode="c64" id="top"
+      data-ccg-category-theme="retro-specials" data-ccg-category-kind="collection"
+      data-ccg-directory="collection-record">
 
 <!-- BACKGROUNDS -->
 <div class="ccg-bg" aria-hidden="true">
@@ -289,11 +291,12 @@
 <main class="ccg-main">
 
     <!-- HERO -->
-    <section class="ccg-genre-hero ccg-collection-hero">
+    <section class="ccg-genre-hero ccg-collection-hero ccg-category-omega__hero" data-ccg-category-icon="CCG">
         <div class="ccg-genre-hero__bg">
             <div class="ccg-genre-hero__overlay"></div>
         </div>
         <div class="ccg-genre-hero__inner">
+            <p class="ccg-category-omega__kicker">Curated C64 &amp; Amiga archive</p>
             <h1 class="ccg-genre-hero__title">Retro Specials – C64 &amp; Amiga</h1>
 
             <p class="ccg-genre-hero__tagline">Long-form C64 and Amiga features, rankings, magazine history and archive projects.</p>
@@ -320,6 +323,23 @@
             This collection is designed for retro fans who want broad platform coverage and context, not just one machine: C64, Amiga, arcade cabinets and more. You can also browse the <a href="/games/index.html">full games archive</a>, explore more <a href="/games/collections/index.html">curated collections</a>, or visit the <a href="/emulation.html">emulation guide</a>.
         </p>
 
+    </section>
+
+    <!-- Category Omega's existing discovery links, present before runtime to reserve their layout. -->
+    <section class="ccg-category-omega__discovery" data-ccg-category-discovery="true">
+        <div class="ccg-category-omega__discovery-heading">
+            <span class="ccg-category-omega__eyebrow">Explore the Commodore archive</span>
+            <h2>More from Retro Specials</h2>
+            <p>Browse C64 and Amiga retro specials from Cheeky Commodore Gamer, including rankings, magazine retrospectives, publisher features and long-form Commodore archive projects.</p>
+        </div>
+        <nav class="ccg-category-omega__links" aria-label="Related archive categories">
+            <a href="/games/" class="ccg-category-omega__link ccg-category-omega__link--core">All C64 &amp; Amiga Games</a>
+            <a href="/games/genres/" class="ccg-category-omega__link ccg-category-omega__link--core">Browse by Genre</a>
+            <a href="/games/collections/" class="ccg-category-omega__link ccg-category-omega__link--core">All Collections</a>
+            <a href="/games/collections/top-picks.html" class="ccg-category-omega__link">CCG Top Picks</a>
+            <a href="/games/collections/retro-events.html" class="ccg-category-omega__link">Retro Events</a>
+            <a href="/games/collections/amiga-demo-music.html" class="ccg-category-omega__link">Amiga Demo Music</a>
+        </nav>
     </section>
 
     <!-- GRID -->
