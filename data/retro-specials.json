@@ -1502,5 +1502,285 @@
         }
       ]
     }
+  },
+  {
+    "id": "50-commodore-64-sid-tunes-zzap64",
+    "slug": "50-commodore-64-sid-tunes-zzap64",
+    "type": "retro-specials",
+    "title": "50 Commodore 64 SID Tunes from Zzap!64 (1985–1991) – Classic C64 Game Music",
+    "youtubeId": "7PU3GqBDnRI",
+    "thumbnail": "https://img.youtube.com/vi/7PU3GqBDnRI/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 28,
+    "summary": "Fifty classic C64 SID music selections from Zzap!64's reviews, 1985–1991, with introductions, composers and chapter links.",
+    "description": "Explore fifty Commodore 64 SID music selections through Zzap!64's reviews, presented chronologically from 1985 to 1991. Hear one-minute sections featuring Rob Hubbard, Martin Galway, Ben Daglish, Fred Gray, Tim Follin, Jeroen Tel, Chris Hülsbeck and many other composers. These are selections, not a ranking: the magazine's sound percentages assessed effects and music together. The original SID audio in the Sanxion and Last Ninja 2 segments was replaced following copyright claims; the chapter guide clearly marks both substitutions.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "50 Commodore 64 SID Tunes from Zzap!64 (1985–1991) | Classic C64 Game Music",
+      "description": "Listen through 50 classic Commodore 64 SID music selections from Zzap!64's 1985–1991 reviews. Explore C64 composers, chapters and soundtrack history."
+    },
+    "created_at": "2026-11-17T00:00:00.000Z",
+    "tags": [
+      "Commodore 64",
+      "SID music",
+      "C64 soundtracks",
+      "Zzap!64",
+      "Rob Hubbard",
+      "Martin Galway",
+      "Ben Daglish",
+      "C64 composers"
+    ],
+    "platforms": [
+      "Commodore 64"
+    ],
+    "relatedSlugs": [
+      "sid-chip-story",
+      "zzap64-gold-medals-sizzlers-1986",
+      "50-essential-commodore-64-games",
+      "zzap64-gold-medals-sizzlers-1989"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true,
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "Introduction – 50 Commodore 64 SID Tunes"
+      },
+      {
+        "time": "00:28",
+        "title": "01. Master of the Lamps (1985) – Russell Lieblich"
+      },
+      {
+        "time": "01:28",
+        "title": "02. Thing on a Spring (1985) – Rob Hubbard"
+      },
+      {
+        "time": "02:28",
+        "title": "03. The Way of the Exploding Fist (1985) – Neil Brennan"
+      },
+      {
+        "time": "03:28",
+        "title": "04. The Fourth Protocol (1985) – Jonathan Dunn"
+      },
+      {
+        "time": "04:28",
+        "title": "05. Hyper Sports (1985) – Martin Galway | Menu Music"
+      },
+      {
+        "time": "05:28",
+        "title": "06. Frankie Goes to Hollywood (1985) – Fred Gray"
+      },
+      {
+        "time": "06:28",
+        "title": "07. Finders Keepers (1985) – Julie Dunn"
+      },
+      {
+        "time": "07:28",
+        "title": "08. Monty on the Run (1985) – Rob Hubbard"
+      },
+      {
+        "time": "08:27",
+        "title": "09. Nodes of Yesod (1985) – Fred Gray"
+      },
+      {
+        "time": "09:27",
+        "title": "10. Crazy Comets (1985) – Rob Hubbard"
+      },
+      {
+        "time": "10:27",
+        "title": "11. The Last V8 (1986) – Rob Hubbard"
+      },
+      {
+        "time": "11:27",
+        "title": "12. Commando (1986) – Rob Hubbard"
+      },
+      {
+        "time": "12:27",
+        "title": "13. One Man and His Droid (1986) – Rob Hubbard"
+      },
+      {
+        "time": "13:26",
+        "title": "14. Uridium (1986) – Steve Turner"
+      },
+      {
+        "time": "14:26",
+        "title": "15. Cauldron II (1986) – Richard Joseph"
+      },
+      {
+        "time": "15:26",
+        "title": "16. Bombo (1986) – Ben Daglish"
+      },
+      {
+        "time": "16:26",
+        "title": "17. Green Beret (1986) – Martin Galway"
+      },
+      {
+        "time": "17:26",
+        "title": "18. Ghosts 'n Goblins (1986) – Mark Cooksey"
+      },
+      {
+        "time": "18:26",
+        "title": "19. Trap (1986) – Ben Daglish"
+      },
+      {
+        "time": "19:25",
+        "title": "20. Mission A.D. (1986) – Fred Gray"
+      },
+      {
+        "time": "20:25",
+        "title": "21. Parallax (1986) – Martin Galway"
+      },
+      {
+        "time": "21:25",
+        "title": "22. Miami Vice (1986) – Martin Galway"
+      },
+      {
+        "time": "22:25",
+        "title": "23. W.A.R. (1986) – Rob Hubbard"
+      },
+      {
+        "time": "23:25",
+        "title": "24. World Games (1986)"
+      },
+      {
+        "time": "24:25",
+        "title": "25. Sanxion (1986) – Rob Hubbard | Original SID music replaced following copyright claim"
+      },
+      {
+        "time": "25:25",
+        "title": "26. The Sacred Armour of Antiriad (1986) – Richard Joseph"
+      },
+      {
+        "time": "26:24",
+        "title": "27. Knucklebusters (1987) – Rob Hubbard"
+      },
+      {
+        "time": "27:24",
+        "title": "28. Arkanoid (1987) – Martin Galway"
+      },
+      {
+        "time": "28:24",
+        "title": "29. Delta (1987) – Rob Hubbard"
+      },
+      {
+        "time": "29:24",
+        "title": "30. Wizball (1987) – Martin Galway"
+      },
+      {
+        "time": "30:24",
+        "title": "31. The Last Ninja (1987) – Ben Daglish & Anthony Lees"
+      },
+      {
+        "time": "31:24",
+        "title": "32. Combat School (1988) – Martin Galway"
+      },
+      {
+        "time": "32:24",
+        "title": "33. Driller (1988) – Matt Gray"
+      },
+      {
+        "time": "33:24",
+        "title": "34. Tetris (1988) – Wally Beben"
+      },
+      {
+        "time": "34:23",
+        "title": "35. Skate or Die (1988) – Rob Hubbard & Kyle Granger"
+      },
+      {
+        "time": "35:23",
+        "title": "36. Platoon (1988) – Jonathan Dunn"
+      },
+      {
+        "time": "36:23",
+        "title": "37. Bionic Commando (1988) – Tim Follin"
+      },
+      {
+        "time": "37:23",
+        "title": "38. The Great Giana Sisters (1988) – Chris Hülsbeck"
+      },
+      {
+        "time": "38:23",
+        "title": "39. Hawkeye (1988) – Jeroen Tel"
+      },
+      {
+        "time": "39:23",
+        "title": "40. Last Ninja 2 (1988) – Matt Gray | Original SID music replaced following copyright claim"
+      },
+      {
+        "time": "40:23",
+        "title": "41. Katakis (1988) – Chris Hülsbeck"
+      },
+      {
+        "time": "41:23",
+        "title": "42. Cybernoid II (1988) – Jeroen Tel"
+      },
+      {
+        "time": "42:23",
+        "title": "43. L.E.D. Storm (1989) – Tim Follin"
+      },
+      {
+        "time": "43:23",
+        "title": "44. Batman: The Movie (1989) – Matthew Cannon"
+      },
+      {
+        "time": "44:23",
+        "title": "45. The Untouchables (1989) – Jonathan Dunn & Matthew Cannon"
+      },
+      {
+        "time": "45:23",
+        "title": "46. Turbo Out Run (1989) – Jeroen Tel"
+      },
+      {
+        "time": "46:22",
+        "title": "47. Retrograde (1990) – Steve Rowlands"
+      },
+      {
+        "time": "47:22",
+        "title": "48. Ghouls 'n Ghosts (1990) – Tim Follin"
+      },
+      {
+        "time": "48:22",
+        "title": "49. Turrican (1990) – Chris Hülsbeck, Ramiro Vaca & Stefan Hartwig"
+      },
+      {
+        "time": "49:22",
+        "title": "50. Last Ninja 3 (1991) – Reyn Ouwehand"
+      },
+      {
+        "time": "50:22",
+        "title": "Honourable Mentions"
+      },
+      {
+        "time": "56:22",
+        "title": "Outro"
+      }
+    ],
+    "featureEditorial": {
+      "title": "Commodore 64 SID music through Zzap!64, 1985–1991",
+      "paragraphs": [
+        "From Rob Hubbard’s Monty on the Run and Commando to Martin Galway’s Wizball, Ben Daglish’s The Last Ninja and Jeroen Tel’s Cybernoid II, this chronological documentary revisits fifty tunes associated with Zzap!64’s original game reviews.",
+        "The fifty selections span 1985 to 1991. Each has a short spoken introduction and approximately one minute of music. They are not ranked by score: Zzap!64’s sound ratings assessed sound effects and music together, rather than assigning separate music marks.",
+        "Copyright note: the original SID music in the Sanxion and Last Ninja 2 segments could not be used following copyright claims, so substitute audio is heard instead. The original compositions remain credited for historical context; Last Ninja 3 is not one of the replaced tracks.",
+        "Browse the music hub for Commodore 64 composers and SID features, or explore the linked game archive and Zzap!64 coverage."
+      ],
+      "links": [
+        {
+          "title": "Explore SID music and composer profiles",
+          "url": "/music/"
+        },
+        {
+          "title": "Browse the Commodore game archive",
+          "url": "/games/"
+        },
+        {
+          "title": "Read Zzap!64 reviews and awards",
+          "url": "/zzap64/"
+        },
+        {
+          "title": "The SID chip story",
+          "url": "/retro-specials/sid-chip-story/"
+        }
+      ]
+    }
   }
 ]
