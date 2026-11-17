@@ -1,7 +1,7 @@
 /**
  * Crossfire High Score Arena: read-only public HelioHost leaderboard transport.
  * Only an explicitly mounted Crossfire preview may call this. The published
- * HelioHost API must be independently released; no Supabase, login or writes.
+ * HelioHost API must be independently released; no legacy database dependency, login or writes.
  */
 import { normaliseArenaBoard } from '../view/arena-board.mjs';
 
