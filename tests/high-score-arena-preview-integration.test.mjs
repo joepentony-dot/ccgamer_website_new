@@ -149,7 +149,9 @@ test('browser selection and source forbid legacy PRG or score submission',async(
   const app=readFileSync(new URL('../js/ccg-c64/app.js',import.meta.url),'utf8');
   assert.match(app,/ccg_arena_preview/);
   assert.match(app,/if \(queued && isVerifiedSierraCrossfireCrt\(entry\)\)/);
-  assert.doesNotMatch(app,/arenaSubmissionRequested|arenaArchiveEntry|entry\.id === "archive-02121"/);
+  assert.doesNotMatch(app,/arenaSubmissionRequested|arenaArchiveEntry|if \\(queued && entry\\.id === "archive-02121"\\)/);
+  assert.match(app,/formerCrossfireArchiveEntry/,
+    'Only the verified historical bookmark ID may be retained, never a PRG Arena mount');
   assert.match(app,/async function queueMedia\([^]*?clearArenaPreview\(\)/);
   assert.match(app,/function resetMachine\([^]*?clearArenaPreview\(\)/);
   assert.match(app,/async function loadGameVaultSlot\([^]*?clearArenaPreview\(\)/);
