@@ -1,23 +1,20 @@
 /**
  * CCG Crossfire High Score Arena: browser-side OPT-IN pilot only.
  *
- * This module only submits an UNVERIFIED automatic score when its separate,
- * authenticated HelioHost transport is explicitly armed. Otherwise it never
- * sends a score. The live emulator requires the exact checksum-verified PRG
+ * This is a READ-ONLY visual pilot for the Sierra Online CRT. The separate
+ * Atlantis/Pantheon PRG observer and backend are NOT this game. There is NO
+ * score detection, backend read, login handshake or submission until
+ * CRT-specific gameplay eligibility is independently verified.
+ * The live emulator requires the exact checksum-verified CRT
  * and the explicit ccg_arena_preview=crossfire pilot parameter.
  */
-import { identifyArenaMedia, createArenaDiagnosticObserver }
-  from "./arena/arena-game-profiles.mjs";
-import { renderArenaBoard, normaliseArenaBoard }
-  from "./arena/view/arena-board.mjs";
-import { readHelioHostArenaBoard }
-  from "./arena/client/heliohost-board.mjs";
-import { CrossfireAutomaticAttempt }
-  from "./arena/client/auto-run-controller.mjs";
+import { identifyArenaMedia } from "./arena/arena-game-profiles.mjs";
+import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
+import { renderArenaBoard, normaliseArenaBoard } from "./arena/view/arena-board.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_preview_v2";
-const GAME_KEY="c64-crossfire-atlantis";
-const EXPECTED_CATALOG_ID="archive-02121";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_crt_only_v1";
+const GAME_KEY="c64-crossfire-sierra-online";
+const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
 export function previewRequestEnabled(search) {
   if(typeof search!=="string")return false;
@@ -26,7 +23,7 @@ export function previewRequestEnabled(search) {
 }
 
 export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThis.crypto?.subtle) {
-  if(!entry || !(bytes instanceof Uint8Array) || !subtle ||
+  if(!isVerifiedSierraCrossfireCrt(entry) || !(bytes instanceof Uint8Array) || !subtle ||
      typeof subtle.digest!=="function") return false;
   const profile=identifyArenaMedia({
     platform:"c64",
@@ -47,28 +44,13 @@ export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThi
 }
 
 export async function mountCrossfirePreview({
-  entry, bytes, stage, doc=globalThis.document, subtle,
-  publicBoardRead=globalThis.window?.location?.origin==="https://www.cheekycommodoregamer.co.uk"
-    ? readHelioHostArenaBoard : null,
-  arenaAttempt=null,arenaAttemptFactory=null,isCurrent=()=>true
+  entry, bytes, stage, doc=globalThis.document, subtle, isCurrent=()=>true
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
   if(typeof isCurrent === "function" && !isCurrent()) return null;
-  const observer=createArenaDiagnosticObserver({
-    platform:"c64",catalogId:entry.id,format:"prg",
-    sha256:entry.sha256,byteLength:bytes.byteLength
-  });
-  if(!observer)return null;
-  // The member handshake starts only AFTER exact PRG checksum verification.
-  // Disabled by default and never constructs a visitor ID from browser input.
-  let eligibleAttempt=arenaAttempt;
-  if(!eligibleAttempt && typeof arenaAttemptFactory==='function') {
-    try { eligibleAttempt=await arenaAttemptFactory(); }
-    catch { eligibleAttempt=null; }
-  }
-  if(typeof isCurrent === "function" && !isCurrent()) return null;
-  const automaticAttempt=new CrossfireAutomaticAttempt(eligibleAttempt);
+  // Do not create a PRG observer, authenticate a member or query the Atlantis
+  // leaderboard. Only the exact Sierra CRT may get the visual frame.
 
   const link=doc.createElement("link");
   link.rel="stylesheet";
@@ -85,9 +67,7 @@ export async function mountCrossfirePreview({
   const title=doc.createElement("h2");
   title.textContent="CROSSFIRE · HIGH SCORE ARENA";
   const notice=doc.createElement("p");
-  notice.textContent=automaticAttempt.enabled
-    ?"PILOT · SCORES REQUIRE INDEPENDENT REVIEW"
-    :"PREVIEW ONLY · SCORES ARE NOT SUBMITTED";
+  notice.textContent="SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED";
   intro.append(title,notice);
 
   const modes=doc.createElement("div");
@@ -110,93 +90,43 @@ export async function mountCrossfirePreview({
   local.textContent="—";
   local.setAttribute("aria-label","Local score candidate");
   const hint=doc.createElement("p");
-  hint.textContent="START A NORMAL LEVEL 1 GAME TO SEE A LOCAL SCORE";
+  hint.textContent="CRT SCORE DETECTION NOT YET VERIFIED";
   run.append(local,hint);
   display.append(board,run);
   section.append(intro,modes,display);
   stage.setAttribute("data-ccg-arena-frame","crossfire");
   stage.insertAdjacentElement("afterend",section);
 
-  let mode="alltime", disposed=false, lastScore=null, final=false;
-  let boardRequest=0, boardAbort=null;
+  let mode="alltime", disposed=false;
   const expected=boardName=>({gameKey:GAME_KEY,board:boardName,challengeSlug:null});
-  const stopBoardRead=()=>{
-    boardRequest++;
-    boardAbort?.abort();
-    boardAbort=null;
-  };
   const show=()=>{
     if(disposed)return;
-    stopBoardRead();
-    const requestedMode=mode;
-    const serial=boardRequest;
     alltime.setAttribute("aria-pressed",String(mode==="alltime"));
     challenge.setAttribute("aria-pressed",String(mode==="challenge"));
-    // No fabricated ranks. Inert preview stays empty until the independently
-    // released HelioHost API supplies APPROVED public records.
+    // Never present scores from the unrelated Atlantis/Pantheon PRG backend
+    // as scores from Sierra Online's CRT. Empty ranks are not fabricated.
     renderArenaBoard(board,normaliseArenaBoard({
       ok:true,gameKey:GAME_KEY,board:mode,challengeSlug:null,
-      status:mode==="challenge" && !publicBoardRead
-        ?"no-published-challenge":"unavailable",
+      status:mode==="challenge"?"no-published-challenge":"unavailable",
       records:[]
     },expected(mode)),{mode});
-    if(typeof publicBoardRead!=="function")return;
-    boardAbort=typeof AbortController==="function"?new AbortController():null;
-    const signal=boardAbort?.signal;
-    Promise.resolve()
-      .then(()=>publicBoardRead({board:requestedMode,enabled:true,signal}))
-      .then(model=>{
-        if(disposed || serial!==boardRequest)return;
-        renderArenaBoard(board,model,{mode:requestedMode});
-      })
-      .catch(()=>{
-        // Offline or denied backend remains an empty board, never a claimed rank.
-      });
   };
   alltime.addEventListener("click",()=>{mode="alltime";show();});
   challenge.addEventListener("click",()=>{mode="challenge";show();});
   show();
-  let observerFrames=0;
   return Object.freeze({
-    observe(ram) {
-      if(disposed || final || !(ram instanceof Uint8Array) || ram.length!==65536) return;
-      observerFrames++;
-      // Run every emulated frame; the game-over sentinel must persist for
-      // twenty consecutive PAL frames. This is only loaded for opted-in PRG.
-      const candidate=observer.observe(ram);
-      const receipt=automaticAttempt.observe(observer,candidate);
-      if(observer.lastScore!==null && lastScore!==observer.lastScore){
-        lastScore=observer.lastScore;
-        local.textContent=lastScore.toLocaleString("en-GB");
-        hint.textContent="LOCAL DIAGNOSTIC ONLY · NOT A VERIFIED SUBMISSION";
-      }
-      if(candidate){
-        final=true;
-        local.textContent=candidate.score.toLocaleString("en-GB");
-        hint.textContent="GAME OVER · LOCAL RESULT NOT RECORDED";
-        if(receipt){
-          void receipt.then(result=>{
-            if(!disposed && result?.status==="pending-review" &&
-               result.scoreReceived===candidate.score){
-              hint.textContent="SUBMITTED FOR REVIEW · NOT YET RANKED";
-            }
-          });
-        }
-      }
+    observe(_ram) {
+      // The CRT has no verified score/lives/game-over memory signature.
+      // Intentionally never report an Atlantis PRG score for this edition.
     },
     invalidate() {
       if(disposed)return;
-      automaticAttempt.stop();
-      stopBoardRead();
-      final=true;
       local.textContent="—";
       hint.textContent="SESSION ENDED · NO SCORE RECORDED";
     },
     dispose() {
       if(disposed)return;
       disposed=true;
-      automaticAttempt.stop();
-      stopBoardRead();
       stage.removeAttribute("data-ccg-arena-frame");
       section.remove();
       link.remove();
