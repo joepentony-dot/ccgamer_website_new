@@ -88,6 +88,49 @@ test("verified PRG mounts an empty five-rank neon board, toggles views, and disp
   candidate.dispose();
 });
 
+test("real approved HelioHost reader populates opt-in board and switches to current challenge",async()=>{
+  const doc=fakeDocument(),stage=doc.createElement("div");
+  const selections=[];
+  const read=async ({board,enabled,signal})=>{
+    selections.push({board,enabled,signal});
+    return board==="alltime"
+      ?{status:"ranked",rows:[{rank:1,name:"Reviewed Player",score:2325}]}
+      :{status:"ranked",rows:[{rank:1,name:"Challenge Player",score:775}]};
+  };
+  const mounted=await mountCrossfirePreview({
+    entry,bytes,stage,doc,subtle:fakeCrypto,publicBoardRead:read
+  });
+  assert(mounted);
+  for(let i=0;i<4;i++)await Promise.resolve();
+  assert.equal(selections.length,1);
+  assert.equal(selections[0].board,"alltime");
+  assert.equal(selections[0].enabled,true);
+  assert(stage.after.find(x=>x.tag==="span"&&x.textContent==="#1 Reviewed Player"));
+  const buttons=[];
+  (function visit(n){if(n.tag==="button")buttons.push(n);for(const child of n.children)visit(child);})(stage.after);
+  buttons[1].click();
+  for(let i=0;i<4;i++)await Promise.resolve();
+  assert.equal(selections.length,2);
+  assert.equal(selections[1].board,"challenge");
+  assert(stage.after.find(x=>x.tag==="span"&&x.textContent==="#1 Challenge Player"));
+  mounted.dispose();
+});
+test("stale leaderboard response cannot paint after Crossfire reset or disposal",async()=>{
+  const doc=fakeDocument(),stage=doc.createElement("div");
+  let complete;
+  const read=()=>new Promise(resolve=>{complete=resolve;});
+  const mounted=await mountCrossfirePreview({
+    entry,bytes,stage,doc,subtle:fakeCrypto,publicBoardRead:read
+  });
+  await Promise.resolve();
+  mounted.invalidate();
+  complete({status:"ranked",rows:[{rank:1,name:"Stale Score",score:999999}]});
+  for(let i=0;i<4;i++)await Promise.resolve();
+  assert.equal(stage.after.find(x=>x.tag==="span"&&x.textContent?.includes("Stale Score")),null);
+  mounted.dispose();
+  assert.equal(stage.after.removed,true);
+});
+
 test("wrong game never mounts or loads any preview styles",async()=>{
   const doc=fakeDocument(),stage=doc.createElement("div");
   const mounted=await mountCrossfirePreview({
