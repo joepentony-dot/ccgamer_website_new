@@ -1,3 +1,9 @@
+## 17 November 2026 — first-paint game-hero credits candidate (BRANCH ONLY)
+
+- Existing Crossfire website PR #3089 staging release gate 44092236128 failed at `/games/ace-of-aces/`, Amiga 768px warm CLS 0.105490848 (0.10 ceiling). The largest shift, 0.082387, displaced the cover/3D box row down about 252px. The live release-staging pipeline **already** applied its separate 3D box-art prefill to 652 canonical pages, so asynchronous 3D box discovery alone does not explain this recorded shift.
+- Shared `js/load-single-game.js` calls `renderCreditsPanel(game)` after loading `games.json`; at 768px the existing hero CSS places the box-art row beneath hero content. Rendering the previously absent credits expands that first row and can move both artworks. Existing staging box-art prefill now adds the exact same source-backed credits markup to eligible pages before paint, without editing individual generated game pages or changing CSS/intro/JS/mobile behaviour. Source credit tokens, suppression of duplicate publisher/developer, escaping and `--check` idempotence are covered by a new isolated release test.
+- Candidate is **NOT RELEASE QUALIFIED**: require new real staged Chrome cold/warm C64 and Amiga 768px, full CLS matrices and exact-head CI, independent review and a guarded merge. No threshold was relaxed, and no live or backend change is claimed.
+
 ## 3 November 2026 — isolate and revert the 15-page loading-hint regression (BRANCH ONLY)
 
 - Measured exact-head #2964 Category Omega run 41567494667 PASSED its existing numeric gate **when the Role-Playing representative page was restored byte-for-byte to main HTML**, with the separate first-paint Amiga-mode overlay safeguard preserved: mobile CLS baseline 0.77764 vs candidate 0.06190; desktop CLS baseline 1.10339 vs candidate 0.20746. Mobile LCP 21476ms vs 16451ms, desktop LCP 3989ms vs 3959ms. Results vary substantially between runs; not a sitewide win or evidence of live improvement.
