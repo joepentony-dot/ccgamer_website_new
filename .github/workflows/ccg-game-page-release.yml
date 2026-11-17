@@ -17,6 +17,8 @@ on:
       - 'js/ccg-*.js'
       - 'resources/css/ccg-*.css'
       - 'scripts/audit-sitewide-cls.mjs'
+      - 'scripts/prefill-canonical-game-boxes.mjs'
+      - 'tests/game-hero-credits-first-paint.test.mjs'
       - 'tests/sitewide-cls-repair.test.mjs'
   workflow_dispatch:
 
@@ -40,7 +42,7 @@ jobs:
       - name: Verify fail-closed release regressions
         run: |
           python3 -m unittest discover -v -s tests -p test_ccg_game_page_release_audit.py
-          node --test tests/game-page-release-deployment.test.mjs tests/sitewide-cls-repair.test.mjs
+          node --test tests/game-page-release-deployment.test.mjs tests/sitewide-cls-repair.test.mjs tests/game-hero-credits-first-paint.test.mjs
       - name: Qualify exact Pages staging without publishing
         run: node tests/qualify-pages-staging.mjs --run
       - name: Install pinned browser measurement driver
