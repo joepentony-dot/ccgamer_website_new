@@ -124,6 +124,58 @@ const audioButton = document.querySelector("[data-audio-toggle]");
 const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
+
+// Crossfire High Score Arena is an opt-in, zero-write diagnostic pilot.
+// No extra modules, scores or CSS load on ordinary C64 emulator visits.
+const arenaPreviewRequested = new URLSearchParams(window.location.search)
+  .get("ccg_arena_preview") === "crossfire";
+// Score intake is separately opt-in until independently approved release.
+// It never activates on ordinary emulation or for any unrelated game.
+const arenaSubmissionRequested = arenaPreviewRequested &&
+  new URLSearchParams(window.location.search).get("ccg_arena_submit") === "1" &&
+  window.location.origin === "https://www.cheekycommodoregamer.co.uk";
+let activeArenaPreview = null;
+let arenaPreviewGeneration = 0;
+function clearArenaPreview() {
+  arenaPreviewGeneration++;
+  activeArenaPreview?.dispose();
+  activeArenaPreview = null;
+}
+function observeArenaPreviewFrame() {
+  if (!activeArenaPreview || !machine?.mem?.ram) return;
+  try { activeArenaPreview.observe(machine.mem.ram); }
+  catch (error) {
+    console.warn("[ccg-arena] Diagnostic preview stopped:", error);
+    clearArenaPreview();
+  }
+}
+async function mountSelectedArenaPreview(entry, bytes) {
+  if (!arenaPreviewRequested || !screenStage || entry?.id !== "archive-02121") return;
+  const generation = arenaPreviewGeneration;
+  try {
+    const module = await import("./arena-preview.js?ccg_rev=20261117_crossfire_preview_v2");
+    if (generation !== arenaPreviewGeneration) return;
+    // The lazy session handshake runs ONLY after this module verifies the
+    // actual Crossfire PRG checksum. No Supabase account or token is accessed.
+    const arenaAttemptFactory = arenaSubmissionRequested
+      ? async () => {
+          const session = await import("./arena/client/heliohost-member-session.mjs?ccg_rev=20261117_crossfire_member_v1");
+          return session.acquireCrossfireHelioHostAttempt({enabled:true});
+        }
+      : null;
+    const controller = await module.mountCrossfirePreview({
+      entry, bytes, stage: screenStage, arenaAttemptFactory,
+      isCurrent: () => generation === arenaPreviewGeneration
+    });
+    if (generation !== arenaPreviewGeneration) {
+      controller?.dispose();
+      return;
+    }
+    activeArenaPreview = controller;
+  } catch (error) {
+    console.warn("[ccg-arena] Read-only Crossfire preview unavailable:", error);
+  }
+}
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
 
@@ -1665,6 +1717,7 @@ function frameLoop(now) {
       const start = performance.now();
       do {
         machine.runFrame();
+        if (typeof observeArenaPreviewFrame === "function") observeArenaPreviewFrame();
         frames++;
         if (autoStartSteps) autoWarpFrameCount++;
         if (autoStartSteps && (frames & 3) === 0) serviceAutoStart();
@@ -1678,6 +1731,7 @@ function frameLoop(now) {
       frameAccumulator += delta;
       while (frameAccumulator >= PAL_FRAME_MS) {
         machine.runFrame();
+        if (typeof observeArenaPreviewFrame === "function") observeArenaPreviewFrame();
         if (autoStartSteps) autoWarpFrameCount++;
         frameAccumulator -= PAL_FRAME_MS;
         frames++;
@@ -1710,6 +1764,7 @@ function frameLoop(now) {
 }
 
 function powerOff() {
+  clearArenaPreview();
   if (typeof setMobilePlaying === "function") setMobilePlaying(false);
   captureMutableMedia();
   releaseAllInput();
@@ -1775,6 +1830,7 @@ async function powerOn() {
 
 function resetMachine() {
   if (!machine || !running) return;
+  clearArenaPreview();
   cancelAutoStart();
   machine.reset();
   resetAudioForMachine();
@@ -2253,6 +2309,7 @@ async function openMediaBytes(media) {
 }
 
 async function queueMedia(media, { freshBoot = false } = {}) {
+  clearArenaPreview();
   // LOAD must wait if a first-time visitor is still receiving the verified
   // original firmware. The chosen game is only queued after it has finished.
   if (typeof hostedFirmwareReadyPromise !== "undefined" && hostedFirmwareReadyPromise) {
@@ -2498,6 +2555,7 @@ async function initialiseOnlineLibrary() {
   // An absent marker is normal: the existing Blast/direct libraries keep working.
   let archived = [];
   let archiveError = null;
+  let arenaArchiveEntry = null;
   try {
     const readyResponse = await fetch(ARCHIVE_READY_URL, {
       cache: "no-store", credentials: "same-origin",
@@ -2532,6 +2590,11 @@ async function initialiseOnlineLibrary() {
           parsedArchive.packs.length !== ready.packCount) {
         throw new Error("PRG archive record or pack counts do not match.");
       }
+      // Keep the Arena's exact edition available even if the ordinary library
+      // already has a different PRG called Crossfire.
+      if (arenaPreviewRequested) {
+        arenaArchiveEntry = parsedArchive.entries.find(entry => entry.id === "archive-02121") ?? null;
+      }
       const alreadyListed = new Set([...regular, ...packed].map((entry) =>
         `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
       // The standalone Bruce Lee PRG remains deliberately withheld: the
@@ -2565,6 +2628,12 @@ async function initialiseOnlineLibrary() {
     linkedGameId = deepLink.get("game") || "";
     linkedGameAutoplay = deepLink.get("autoplay") === "1";
   } catch (_) { /* Invalid URL query is ignored. */ }
+  if (arenaArchiveEntry && linkedGameId === arenaArchiveEntry.id) {
+    const identity = catalogGameIdentity(arenaArchiveEntry.title);
+    onlineLibraryEntries = onlineLibraryEntries.filter(entry =>
+      catalogGameIdentity(entry.title) !== identity);
+    onlineLibraryEntries.push(arenaArchiveEntry);
+  }
   // Existing game pages still use some older BLAST/PRG IDs. Resolve the
   // bookmark to the selected CRT without changing unrelated game pages.
   const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
@@ -2734,6 +2803,10 @@ async function loadSelectedLibraryEntry() {
       name: filename, type, bytes, sourceKey: firstKey,
       gameKey: "library:" + entry.id, gameTitle: entry.title,
     }, { freshBoot: true });
+    if (queued && entry.id === "archive-02121") {
+      // Recompute the SHA-256 of the actual loaded PRG in the lazy module.
+      void mountSelectedArenaPreview(entry, bytes);
+    }
     if (!queued && !pendingMedia) activeLibraryEntryId = null;
     updateOnlineDiskUi();
     if (onlineLibraryStatus) onlineLibraryStatus.textContent =
@@ -3115,6 +3188,8 @@ async function saveGameVaultSlot() {
 }
 
 async function loadGameVaultSlot() {
+  // Any restore attempt invalidates a fresh-run preview.
+  clearArenaPreview();
   if (!vault.snapshot().allRequiredReady) {
     showVaultFeedback("System ROMs are needed before a saved game can resume. Open ROM SETTINGS.", true);
     showSetup();
@@ -3610,6 +3685,7 @@ async function bootWithHostedFirmware() {
 hostedFirmwareReadyPromise = bootWithHostedFirmware();
 
 window.addEventListener("pagehide", () => {
+  clearArenaPreview();
   releaseAllInput();
   stopFrameLoop();
 });

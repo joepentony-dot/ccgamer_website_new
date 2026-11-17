@@ -1,3 +1,52 @@
+## 17 November 2026 — Crossfire PR #3089 reconciled with qualified main
+
+- Main includes the guarded, independently reviewed game-hero CLS fix #3093 at `70519ad514bea6e78b90db69cda4aa147605d384`; its prior 768px Amiga warm result is 0.01109 versus 0.10. This is a source merge only: the Crossfire Arena remains opt-in, write-disabled and subject to its own new-head CI/browser review and separate HelioHost release gates. Both mainline Dungeon R166 and CLS source/test changes are retained without modifying protected runtime files.
+
+## 17 November 2026 — Cancel stale Crossfire member-session requests
+
+- Website PR #3089 checks the live launch generation after checksum verification and again after the member handshake. The regression test reproduced a stale session request before the fix. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
+## 17 November 2026 — Publish the Crossfire Arena browser modules
+
+- PR #3089 moves the Arena browser modules and board CSS into the published C64 assets. The Chromium fixture now excludes the tooling directories that Pages strips. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
+## 17 November 2026 — Crossfire selects the exact archive edition
+
+- Website PR #3089 isolates the exact opted-in archive launch from normal title deduplication. The ordinary BLAST Crossfire stays available. Backend PR #2 passed MariaDB lifecycle CI in run 43999313323. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
+## 17 November 2026 — Original Crossfire frame in the emulator preview
+
+- Website PR #3089 uses the owner-supplied frame around the live 4:3 canvas for the checksum-verified, opted-in Crossfire PRG. Normal play, fullscreen and immersive touch controls keep their existing layout. The neon board still has all-time and challenge modes. The local 48-test Arena suite and exact media/gameplay probe passed, including a 2,325-point terminal result. Chromium qualification is in the C64 browser workflow. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
+## 17 November 2026 — High Score Arena backend decision: HelioHost, not Supabase
+
+- The owner has explicitly directed Crossfire permanent rankings and challenge records to **HelioHost PHP/MariaDB**, coordinated with backend independence. New **draft backend PR #2** in `joepentony-dot/ccg-backend-independence` stages disabled MariaDB schema and private-only PHP score intake; source CI passed. Existing website draft PR #3089 retains exact PRG diagnostic/neon preview but retires only its NEW, UNDEPLOYED Arena-specific Supabase/PG candidates. New non-public, disabled-by-default HelioHost transport emits automatic final-score diagnostics as **pending review**, not public records. The actual HelioHost API route and real member migration are not yet live. No live Supabase, HelioHost stage, web assets or member data changed. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
+## 17 November 2026 — High Score Arena Crossfire preview wired into launcher (unmerged)
+
+- Draft PR #3089 now includes **opt-in actual C64 launcher integration** (`?ccg_arena_preview=crossfire`) for exact SHA-256-verified `archive-02121` only: blue empty five-rank board, no published challenge data or fake scores, local-only diagnostic score, and invalidation on reset/power/media switch/Game Vault restore/pagehide. New public CSS/JS requires Code Cache v235; the archive directory's strict version-string contract was preserved. Corrected regex test and missing challengeSlug test; dedicated Arena read/preview and existing data/performance gates passed on `823a752f`, but broader Chromium/CI still pending and all work remains on draft branch. No PRG, production Supabase, accounts or intro changed. The original user-supplied Crossfire frame is still V2 standalone in the Library, pending proper runtime asset packaging. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
+## 17 November 2026 — Crossfire Arena reusable scoreboard and read API (draft #3089)
+
+- The Crossfire-only, unmerged High Score Arena PR adds a reusable **public-key/RLS-only leaderboard reader** (all-time + timed challenges), exact-PRG game-profile registry and fail-closed 5-rank seven-segment board renderer. User-supplied Crossfire art remains game-specific; standalone mobile-responsive overlay V2 is preserved in the project's Library (separate from original), Chromium-checked at 1600/390 widths. New renderer code was **moved out of public JS/CSS into `scripts/high-score-arena/view/`** after Public Code Cache CI caught premature placement; no sitewide cache version bump or live site code change. Current production Supabase tables and emulator are unchanged, and public score submissions remain **disabled**. PR #3089 must pass exact-head CI and independent review; migration, auth, fairness and real browser integration are outstanding. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
+## 16 November 2026 — Crossfire Arena isolated score-storage design
+
+- Draft PR #3089 now has an **undeployed** seven-table leaderboard schema candidate and GitHub Actions PostgreSQL 17 security contract. CI run 43974322449 passed the ephemeral database test for RLS, denied browser writes/private attempt reads and pilot/published/retired visibility. Crossfire identity is digest-pinned but remains disabled; existing Supabase profile, Quest score and production website data are untouched. This is **not** a live migration or score ingestion. A production server validation/auth and anti-cheat design is required before enabling any leaderboard. See [High Score Arena Crossfire](ai-work/high-score-arena-crossfire.md).
+
+## 16 November 2026 — High Score Arena Crossfire 2325 + game-over diagnostic
+
+- Existing draft PR #3089 (not merged) has now demonstrated real cumulative scores **0, 775, 1550, 2325** and lives **2→1→0** on exact Atlantis/Pantheon `archive-02121` PRG. Grave-screen evidence persisted after final death at 2325 and on an independent 0-score run; it differs from title and ordinary blank transitions. Added fail-closed, read-only score/lives/final-screen observer plus authentic frame-fixture tests and in-emulator assertion. No website, game data, Supabase, score submission, overlay or other PRG changes; exact-head CI must pass before qualification. See [High Score Arena Crossfire](ai-work/high-score-arena-crossfire.md).
+
+## 16 November 2026 — Crossfire verified score HUD experiment (draft #3089)
+
+- Real headless Atlantis/Pantheon Crossfire gameplay confirmed 000775 after a lower-window shot, replicated from the same no-trainer Level 1 state with distinct enemy windows. The C64 screen-memory glyphs at $7443–$744e changed from 000000 to 000775. A fail-closed read-only decoder and real-capture regression tests have been added to existing draft #3089. This is NOT automatic final-score detection: end-of-game and scoring trust remain unverified; no account/network/production game change. See [Crossfire project](ai-work/high-score-arena-crossfire.md).
+
+## 16 November 2026 — High Score Arena — Crossfire offline RAM candidate gate
+
+- Existing isolated draft #3089 identifies the exact `archive-02121` Crossfire PRG (not `Crossfire - Tron`). GitHub Actions `43911950805` passed the immutable pack and PRG checksum check on source head `2c4aa46e`; job log confirms PRG load address `0x0801`.
+- On the same draft branch, added a read-only RAM snapshot candidate analyzer, synthetic-data regression tests and an isolated workflow check. This is **not** measured Crossfire score detection; no gameplay RAM snapshots, game-over signal, automatic submissions, Supabase writes, live rankings or blue-neon runtime overlay have been implemented. Await fresh CI on the new branch head.
+- Preserve #3089 as a non-production forensic stage; do not merge it as a working leaderboard. Existing active Dungeon #3080 release work and other website workstreams remain separate. Details: [Crossfire pilot](ai-work/high-score-arena-crossfire.md).
 ## 17 November 2026 — targeted tablet game-hero CLS correction candidate
 
 - User authorised bounded implementation and guarded merging. A new isolated website PR candidate `fix/game-hero-credits-first-paint-20261117` adds source-backed first-paint Game Credits through the existing disposable Pages box-art staging prefill and a new exact-head release regression, addressing the observed 252px cover-art-row shift on `/games/ace-of-aces/` in 768px Amiga mode. The 3D artwork itself was already prefetched in staging; the credits panel is the next falsifiable cause to test. Unqualified and unmerged pending full staged Chrome CLS results, exact-head CI and independent review. Crossfire #3089 and backend #2 remain unchanged and independently gated. See [site-wide Lighthouse workstream](ai-work/lighthouse-sitewide.md).
