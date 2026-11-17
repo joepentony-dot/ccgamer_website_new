@@ -130,3 +130,19 @@ test('Amiga decoration cannot occupy document flow before its deferred visual st
   assert.match(modeEngine, /ensureAmigaStyles\(\);\s*ensureAmigaChrome\(\);/, 'mode engine still owns the deferred visual layer');
   assert.match(amigaCss, /html\[data-ccg-mode="amiga"\]\s+\.ccg-amiga-chrome/, 'full Amiga visuals retain final mode ownership');
 });
+
+
+test('paired Category Omega Lighthouse measures a changed category and keeps strict limits', () => {
+  const workflow = fs.readFileSync('.github/workflows/category-omega-validation.yml', 'utf8');
+  assert.match(workflow, /id: benchmark/);
+  assert.match(workflow, /for family in games\/genres games\/collections; do/);
+  assert.match(workflow, /cmp -s "baseline\/\$relative" "\$page"/);
+  assert.match(workflow, /target="\$relative"/);
+  assert.match(workflow, /test -f "baseline\/\$target"/);
+  assert.match(workflow, /test -f "candidate\/\$target"/);
+  assert.match(workflow, /echo "target=\$target" >> "\$GITHUB_OUTPUT"/);
+  assert.match(workflow, /http:\/\/127\.0\.0\.1:\$port\/\$target/);
+  assert.match(workflow, /const clsAllowance = 0\.03;/);
+  assert.match(workflow, /const lcpAllowance = before\.lcp \* 0\.15 \+ 250;/);
+  assert.match(workflow, /if \(failure\) throw Error\('Genre Lighthouse regression exceeds bounded lab-variance tolerance'\);/);
+});
