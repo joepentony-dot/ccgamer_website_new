@@ -1,3 +1,9 @@
+## 17 November 2026 — PR #3090 Category Omega performance gate correction (branch only)
+
+- The original SID documentary head `f56ed20320776a92002e26d6808967fb4d673f4b` passed 14/15 workflow families, and Codex independently reviewed that exact head with no findings. Category Omega's hardcoded Role-Playing benchmark failed after two paired 4×2-device runs with opposite device failures, despite the benchmark HTML having identical GitHub blob `5e2f097c4e8757ce6f5ee4a052d66613701f4b5d` on base and candidate. Neither run proved a change attributable to the SID feature.
+- The existing Category Omega workflow now compares the first actually changed genre/collection HTML page when one exists, retaining the Role-Playing fallback for source-only changes. On this PR, that should be the modified Retro Specials collection; the routine compares exact base and candidate sources in Chromium. Existing 4-run/2-device pairing, Lighthouse 12.8.2, 0.03 CLS delta and original LCP tolerance remain unchanged. A new category regression guards the route selection and thresholds.
+- Current corrective branch is **UNQUALIFIED** until complete new-head CI, independent review for that head, guarded integration and live Pages verification. Do not waive another performance failure, pretend that an unrelated static control is meaningful regression evidence, or claim the video is live before the production check.
+
 ## 17 November 2026 — 50 C64 SID tunes documentary (separate draft candidate)
 
 - Owner-supplied YouTube video `7PU3GqBDnRI` is staged as a new public Retro Specials source record, crawlable collection fallback card, canonical watch page, noindex .html redirect, and 53 exact, chronological chapter links (fifty tracks, intro, honourable mentions, outro). Sanxion and Last Ninja 2 are expressly labelled as having substitute audio following copyright claims; Last Ninja 3 is not labelled as replaced.
