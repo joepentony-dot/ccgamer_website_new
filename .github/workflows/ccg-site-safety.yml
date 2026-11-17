@@ -43,6 +43,7 @@ on:
       - "scripts/audit-responsive-browser.js"
       - "scripts/audit-scroll-reachability.js"
       - ".github/workflows/ccg-site-safety.yml"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
       - "!arcade/lost-sizzler/**"
   workflow_dispatch:
 
@@ -194,6 +195,9 @@ jobs:
 
       - name: Run deployment and production identity regression guard
         run: node --test tests/deployment-current-main-contract.mjs
+
+      - name: Verify unique Pages artifact and fail-closed publication gate
+        run: node --test tests/pages-artifact-deploy-contract.test.mjs tests/pages-artifact-service-probe.test.mjs
 
       - name: Run home discovery dashboard regression guard
         run: node --test tests/home-discovery-dashboard.test.mjs
