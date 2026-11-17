@@ -164,20 +164,48 @@ test("member handshake executes only after verified Crossfire SHA and never for 
   valid.dispose();
 });
 
-test("stale preview mount cannot mutate the shared stage after a newer generation",async()=>{
-  const doc=fakeDocument(),stage=doc.createElement("div");
-  let release;
-  const stale=mountCrossfirePreview({
-    entry,bytes,stage,doc,subtle:fakeCrypto,
-    arenaAttemptFactory:()=>new Promise(resolve=>{release=resolve;}),
-    isCurrent:()=>false
+test("media invalidated during verification never requests a member session", async () => {
+  const doc = fakeDocument(), stage = doc.createElement("div");
+  let current = true;
+  let handshakeCalls = 0;
+  const stale = mountCrossfirePreview({
+    entry, bytes, stage, doc,
+    subtle: {
+      async digest(...args) {
+        const hash = await fakeCrypto.digest(...args);
+        current = false;
+        return hash;
+      }
+    },
+    arenaAttemptFactory: async () => { handshakeCalls++; },
+    isCurrent: () => current
   });
-  for(let i=0;i<8 && !release;i++) await Promise.resolve();
-  assert.equal(typeof release,"function");
-  release({enabled:false});
-  assert.equal(await stale,null);
-  assert.equal(stage.after,undefined);
-  assert.equal(doc.head.children.length,0);
+
+  assert.equal(await stale, null);
+  assert.equal(handshakeCalls, 0);
+  assert.equal(stage.after, undefined);
+  assert.equal(doc.head.children.length, 0);
+});
+
+test("media invalidated during the member handshake never mounts", async () => {
+  const doc = fakeDocument(), stage = doc.createElement("div");
+  let startHandshake;
+  const handshakeStarted = new Promise(resolve => { startHandshake = resolve; });
+  let current = true;
+  const stale = mountCrossfirePreview({
+    entry, bytes, stage, doc, subtle: fakeCrypto,
+    arenaAttemptFactory: async () => {
+      startHandshake();
+      return { enabled: true };
+    },
+    isCurrent: () => current
+  });
+
+  await handshakeStarted;
+  current = false;
+  assert.equal(await stale, null);
+  assert.equal(stage.after, undefined);
+  assert.equal(doc.head.children.length, 0);
 });
 test("failed HelioHost membership cannot enable automatic score submission",async()=>{
   const doc=fakeDocument(),stage=doc.createElement("div");

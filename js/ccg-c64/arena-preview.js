@@ -54,6 +54,7 @@ export async function mountCrossfirePreview({
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
+  if(typeof isCurrent === "function" && !isCurrent()) return null;
   const observer=createArenaDiagnosticObserver({
     platform:"c64",catalogId:entry.id,format:"prg",
     sha256:entry.sha256,byteLength:bytes.byteLength

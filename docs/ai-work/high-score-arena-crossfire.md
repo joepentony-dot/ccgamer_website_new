@@ -135,3 +135,8 @@ Chromium run 43999548038 found that the normal library suppresses the Crossfire 
 ## 17 November 2026 — Pages packaging review fix
 
 The real Chromium launch passed at 4038a0df, but review found that its repository-root fixture still served browser imports from scripts/, which Pages removes. The Arena browser modules and board CSS now live under js/ccg-c64/arena/. The Chromium fixture rejects scripts/, tests/ and docs/ URLs. The 54 targeted Node tests passed, and rendered acceptance must run again at the new head. The separate navigation audit failed twice while opening the More menu, at different viewport widths.
+
+
+## 17 November 2026 — Member handshake lifetime
+
+If the emulator changes media or resets while verifying the PRG, the obsolete launch exits before requesting a member session. A launch invalidated during an existing handshake also exits before attaching the board or frame. The new regression reproduced one stale session request on the previous revision and passed after the fix. All 70 targeted Arena and navigation Node tests passed. Public code cache advances to v241. The desktop More browser audit failure still requires browser qualification.

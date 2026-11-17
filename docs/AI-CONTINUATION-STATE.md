@@ -1,3 +1,7 @@
+## 17 November 2026 — Cancel stale Crossfire member-session requests
+
+- Website PR #3089 checks the live launch generation after checksum verification and again after the member handshake. The regression test reproduced a stale session request before the fix. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
 ## 17 November 2026 — Publish the Crossfire Arena browser modules
 
 - PR #3089 moves the Arena browser modules and board CSS into the published C64 assets. The Chromium fixture now excludes the tooling directories that Pages strips. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
