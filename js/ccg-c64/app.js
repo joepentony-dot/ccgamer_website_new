@@ -1701,7 +1701,7 @@ function frameLoop(now) {
       const start = performance.now();
       do {
         machine.runFrame();
-        observeArenaPreviewFrame();
+        if (typeof observeArenaPreviewFrame === "function") observeArenaPreviewFrame();
         frames++;
         if (autoStartSteps) autoWarpFrameCount++;
         if (autoStartSteps && (frames & 3) === 0) serviceAutoStart();
@@ -1715,7 +1715,7 @@ function frameLoop(now) {
       frameAccumulator += delta;
       while (frameAccumulator >= PAL_FRAME_MS) {
         machine.runFrame();
-        observeArenaPreviewFrame();
+        if (typeof observeArenaPreviewFrame === "function") observeArenaPreviewFrame();
         if (autoStartSteps) autoWarpFrameCount++;
         frameAccumulator -= PAL_FRAME_MS;
         frames++;
