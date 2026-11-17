@@ -1,3 +1,7 @@
+## 17 November 2026 — Crossfire selects the exact archive edition
+
+- Website PR #3089 isolates the exact opted-in archive launch from normal title deduplication. The ordinary BLAST Crossfire stays available. Backend PR #2 passed MariaDB lifecycle CI in run 43999313323. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
 ## 17 November 2026 — Original Crossfire frame in the emulator preview
 
 - Website PR #3089 uses the owner-supplied frame around the live 4:3 canvas for the checksum-verified, opted-in Crossfire PRG. Normal play, fullscreen and immersive touch controls keep their existing layout. The neon board still has all-time and challenge modes. The local 48-test Arena suite and exact media/gameplay probe passed, including a 2,325-point terminal result. Chromium qualification is in the C64 browser workflow. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).

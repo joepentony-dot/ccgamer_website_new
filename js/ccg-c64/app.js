@@ -2554,6 +2554,7 @@ async function initialiseOnlineLibrary() {
   // An absent marker is normal: the existing Blast/direct libraries keep working.
   let archived = [];
   let archiveError = null;
+  let arenaArchiveEntry = null;
   try {
     const readyResponse = await fetch(ARCHIVE_READY_URL, {
       cache: "no-store", credentials: "same-origin",
@@ -2588,6 +2589,11 @@ async function initialiseOnlineLibrary() {
           parsedArchive.packs.length !== ready.packCount) {
         throw new Error("PRG archive record or pack counts do not match.");
       }
+      // Keep the Arena's exact edition available even if the ordinary library
+      // already has a different PRG called Crossfire.
+      if (arenaPreviewRequested) {
+        arenaArchiveEntry = parsedArchive.entries.find(entry => entry.id === "archive-02121") ?? null;
+      }
       const alreadyListed = new Set([...regular, ...packed].map((entry) =>
         `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
       // The standalone Bruce Lee PRG remains deliberately withheld: the
@@ -2621,6 +2627,12 @@ async function initialiseOnlineLibrary() {
     linkedGameId = deepLink.get("game") || "";
     linkedGameAutoplay = deepLink.get("autoplay") === "1";
   } catch (_) { /* Invalid URL query is ignored. */ }
+  if (arenaArchiveEntry && linkedGameId === arenaArchiveEntry.id) {
+    const identity = catalogGameIdentity(arenaArchiveEntry.title);
+    onlineLibraryEntries = onlineLibraryEntries.filter(entry =>
+      catalogGameIdentity(entry.title) !== identity);
+    onlineLibraryEntries.push(arenaArchiveEntry);
+  }
   // Existing game pages still use some older BLAST/PRG IDs. Resolve the
   // bookmark to the selected CRT without changing unrelated game pages.
   const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);

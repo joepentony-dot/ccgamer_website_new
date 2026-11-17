@@ -127,3 +127,7 @@ The existing Crossfire local score observer and opt-in neon preview remain intac
 The checksum-verified opt-in preview applies the original WebP as a responsive frame around the existing 4:3 canvas on desktop. The scoreboard sits below the stage and retains both all-time and challenge modes. Desktop fullscreen and immersive touch play retain their native stage geometry. The preview removes its frame and panel when disposed. Public code cache is v238.
 
 All 48 Arena Node tests and the local exact-PRG forensic and headless gameplay probes passed. The real headless run emitted a 2,325-point candidate after 20 grave frames and a separate zero-score run also reached the final grave state. The existing Chromium qualification test now starts the actual archive entry with and without the preview and checks artwork alignment and challenge selection. The work container could not launch Chromium because socket creation was denied, so rendered acceptance is pending GitHub CI.
+
+## 17 November 2026 — Select the exact archived edition
+
+Chromium run 43999548038 found that the normal library suppresses the Crossfire archive PRG because BLAST already contains a different PRG under the same title. An exact opted-in Arena deep link now selects the archive entry after catalogue verification, while the ordinary BLAST launch keeps its existing path. Browser qualification exercises both editions.

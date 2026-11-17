@@ -257,7 +257,7 @@ try {
   assert.equal(await evaluate(session, `
     return document.querySelector('.ccg-arena-preview__modes button:last-child').getAttribute('aria-pressed');
   `), "true", "The challenge board must be selectable during gameplay");
-  await wd("POST", "/session/"+session+"/url", {url:crossfireUrl});
+  await wd("POST", "/session/"+session+"/url", {url:crossfireUrl.replace("archive-02121", "blast-0448")});
   let regular;
   for (let attempt = 0; attempt < 100; attempt++) {
     regular = await evaluate(session, `
