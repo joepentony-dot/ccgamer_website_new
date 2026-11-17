@@ -164,7 +164,8 @@ async function mountSelectedArenaPreview(entry, bytes) {
         }
       : null;
     const controller = await module.mountCrossfirePreview({
-      entry, bytes, stage: screenStage, arenaAttemptFactory
+      entry, bytes, stage: screenStage, arenaAttemptFactory,
+      isCurrent: () => generation === arenaPreviewGeneration
     });
     if (generation !== arenaPreviewGeneration) {
       controller?.dispose();
