@@ -9,6 +9,8 @@ import { identifyArenaMedia, createArenaDiagnosticObserver }
   from "../../scripts/high-score-arena/arena-game-profiles.mjs";
 import { renderArenaBoard, normaliseArenaBoard }
   from "../../scripts/high-score-arena/view/arena-board.mjs";
+import { readHelioHostArenaBoard }
+  from "../../scripts/high-score-arena/client/heliohost-board.mjs";
 
 const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_preview_v1";
 const GAME_KEY="c64-crossfire-atlantis";
@@ -41,7 +43,11 @@ export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThi
   }
 }
 
-export async function mountCrossfirePreview({ entry, bytes, stage, doc=globalThis.document, subtle }={}) {
+export async function mountCrossfirePreview({
+  entry, bytes, stage, doc=globalThis.document, subtle,
+  publicBoardRead=globalThis.window?.location?.origin==="https://www.cheekycommodoregamer.co.uk"
+    ? readHelioHostArenaBoard : null
+}={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
   const observer=createArenaDiagnosticObserver({
@@ -95,17 +101,40 @@ export async function mountCrossfirePreview({ entry, bytes, stage, doc=globalThi
   stage.insertAdjacentElement("afterend",section);
 
   let mode="alltime", disposed=false, lastScore=null, final=false;
+  let boardRequest=0, boardAbort=null;
   const expected=boardName=>({gameKey:GAME_KEY,board:boardName,challengeSlug:null});
+  const stopBoardRead=()=>{
+    boardRequest++;
+    boardAbort?.abort();
+    boardAbort=null;
+  };
   const show=()=>{
     if(disposed)return;
+    stopBoardRead();
+    const requestedMode=mode;
+    const serial=boardRequest;
     alltime.setAttribute("aria-pressed",String(mode==="alltime"));
     challenge.setAttribute("aria-pressed",String(mode==="challenge"));
-    // No backend exists in production yet. Empty is mandatory and never a fake rank.
+    // No fabricated ranks. Inert preview stays empty until the independently
+    // released HelioHost API supplies APPROVED public records.
     renderArenaBoard(board,normaliseArenaBoard({
       ok:true,gameKey:GAME_KEY,board:mode,challengeSlug:null,
-      status:mode==="challenge"?"no-published-challenge":"unavailable",
+      status:mode==="challenge" && !publicBoardRead
+        ?"no-published-challenge":"unavailable",
       records:[]
     },expected(mode)),{mode});
+    if(typeof publicBoardRead!=="function")return;
+    boardAbort=typeof AbortController==="function"?new AbortController():null;
+    const signal=boardAbort?.signal;
+    Promise.resolve()
+      .then(()=>publicBoardRead({board:requestedMode,enabled:true,signal}))
+      .then(model=>{
+        if(disposed || serial!==boardRequest)return;
+        renderArenaBoard(board,model,{mode:requestedMode});
+      })
+      .catch(()=>{
+        // Offline or denied backend remains an empty board, never a claimed rank.
+      });
   };
   alltime.addEventListener("click",()=>{mode="alltime";show();});
   challenge.addEventListener("click",()=>{mode="challenge";show();});
@@ -131,6 +160,7 @@ export async function mountCrossfirePreview({ entry, bytes, stage, doc=globalThi
     },
     invalidate() {
       if(disposed)return;
+      stopBoardRead();
       final=true;
       local.textContent="—";
       hint.textContent="SESSION ENDED · NO SCORE RECORDED";
@@ -138,6 +168,7 @@ export async function mountCrossfirePreview({ entry, bytes, stage, doc=globalThi
     dispose() {
       if(disposed)return;
       disposed=true;
+      stopBoardRead();
       section.remove();
       link.remove();
     }
