@@ -172,6 +172,8 @@ test("stale preview mount cannot mutate the shared stage after a newer generatio
     arenaAttemptFactory:()=>new Promise(resolve=>{release=resolve;}),
     isCurrent:()=>false
   });
+  for(let i=0;i<8 && !release;i++) await Promise.resolve();
+  assert.equal(typeof release,"function");
   release({enabled:false});
   assert.equal(await stale,null);
   assert.equal(stage.after,undefined);
