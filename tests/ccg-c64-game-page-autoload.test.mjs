@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import test from "node:test";
-import { preferSelectedCartridges, selectVerifiedExactCrtEdition, findVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
+import { preferSelectedCartridges, preferSierraCrossfireCrt, isVerifiedSierraCrossfireCrt, selectVerifiedExactCrtEdition, findVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
 
 const app = fs.readFileSync("js/ccg-c64/app.js", "utf8");
 const begin = app.indexOf("async function initialiseOnlineLibrary() {");
@@ -50,6 +50,8 @@ async function initialiseFor(query, options = {}) {
     updateSelectedLibraryGame() {},
     catalogueBrowser: { refresh() { refreshes++; } },
     preferSelectedCartridges,
+    preferSierraCrossfireCrt,
+    isVerifiedSierraCrossfireCrt,
     selectVerifiedExactCrtEdition,
     findVerifiedExactCrtEdition,
     stageNote: { textContent: "" },
