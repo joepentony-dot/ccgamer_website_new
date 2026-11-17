@@ -1,3 +1,8 @@
+## 17 November 2026 — Retro Specials SID video PR #3090 performance qualification correction
+
+- Existing ready-for-review [PR #3090](https://github.com/joepentony-dot/ccgamer_website_new/pull/3090) retains the C64 SID documentary, 53 source-owned chapters, SEO watch/collection pages, strict deferred-player delivery and publisher regression. Initial head `f56ed203` passed 14 of 15 CI workflow families and a clean exact-head independent Codex review. The unrelated fixed Role-Playing genre Lighthouse comparison failed twice despite identical benchmark HTML and alternating mobile/desktop regressions.
+- On the **same branch and PR**, Category Omega's paired Lighthouse job now selects an actually changed category or collection HTML when present, falling back to the original Role-Playing page if no such HTML changed. All numeric CLS/LCP limits, paired runner alternation and audit artefacts remain intact; the existing Category Omega test protects these. New exact-head CI/independent review, guarded merge and production acceptance are still **PENDING**. No main or live changes.
+
 ## 17 November 2026 — SID music Retro Specials content candidate
 
 - Separate branch `content/50-c64-sid-tunes-zzap64-20261117` from main `b85d1876267cc241cbe4f742f2529ccfc18ec3fb` stages YouTube `7PU3GqBDnRI` in the Retro Specials source/collection, SEO watch page and redirect, plus 53 chapter links and accurate Sanxion / Last Ninja 2 copyright substitutions. The two generator owners preserve the authored guide; an isolated regression has been added. See [SEO/generated-output workstream](ai-work/seo-and-generated-output.md). BRANCH ONLY; unqualified, unmerged, not deployed. Existing priority implementation PRs are unchanged.
