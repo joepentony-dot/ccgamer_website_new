@@ -181,7 +181,7 @@ for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
 assert.equal(activated.fetchRequests.filter(x =>
   x.url === ADDITIONAL_CRT_CATALOG_URL).length, 1);
 const visibleCrossfire = activated.context.onlineLibraryEntries.filter(entry =>
-  /cross\\s*fire/i.test(entry.title));
+  /cross\s*fire/i.test(entry.title));
 assert.deepEqual(Array.from(visibleCrossfire, item => [item.title, item.format]).sort(
   (a, b) => a[0].localeCompare(b[0])), [
   ["Crossfire (Sierra Online)", "crt"]
