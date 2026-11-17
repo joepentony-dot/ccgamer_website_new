@@ -247,6 +247,48 @@ function buildPlayAlongGuide(entry, pagePrefix) {
     '</ol></div></div>';
 }
 
+// Opt-in, source-owned chapter links for long-form documentary videos.
+// Only entries declaring chapterGuide are affected; the C64/Amiga
+// play-along has its own locked 111-chapter renderer.
+function parseTimedChapterSeconds(value) {
+  const match = /^(\d+):([0-5]\d)(?::([0-5]\d))?$/.exec(String(value || '').trim());
+  if (!match) throw new Error('Invalid documentary chapter timestamp: ' + value);
+  return match[3] === undefined
+    ? Number(match[1]) * 60 + Number(match[2])
+    : Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]);
+}
+
+function buildTimedChaptersGuide(entry, pagePrefix) {
+  if (!entry?.chapterGuide) return '';
+  if (entry?.playAlong) {
+    throw new Error('Timed chapter guide cannot replace an existing play-along guide');
+  }
+  const chapters = entry.chapters;
+  if (!Array.isArray(chapters) || chapters.length < 2 || chapters.length > 150) {
+    throw new Error('Documentary chapter guide requires between 2 and 150 chapters: ' + entry.slug);
+  }
+  const offsets = chapters.map((chapter) => parseTimedChapterSeconds(chapter.time));
+  if (offsets[0] !== 0 || offsets.some((seconds, index) => index > 0 && seconds <= offsets[index - 1])) {
+    throw new Error('Documentary chapters must start at zero and increase strictly: ' + entry.slug);
+  }
+  if (chapters.some((chapter) => !String(chapter.title || '').trim())) {
+    throw new Error('Documentary chapter titles must not be empty: ' + entry.slug);
+  }
+  const chapterLinks = chapters.map((chapter, index) =>
+    '<li><a class="retro-video-page__chapter-link" href="' +
+    escapeHtml(SITE_ORIGIN + pagePrefix + entry.slug + '/?t=' + offsets[index] + '#watch-video') +
+    '" data-video-chapter="' + offsets[index] + '"><span class="retro-video-page__chapter-time">' +
+    escapeHtml(chapter.time) + '</span><span class="retro-video-page__chapter-name">' +
+    escapeHtml(chapter.title) + '</span></a></li>'
+  ).join('\n');
+  const guide = entry.chapterGuide;
+  const introduction = String(guide.intro || '').trim();
+  return '<div class="retro-video-page__discovery"><div class="retro-video-page__discovery-panel">' +
+    '<h3 class="retro-video-page__discovery-title">' + escapeHtml(guide.title || 'Video chapters') + '</h3>' +
+    (introduction ? '<p>' + escapeHtml(introduction) + '</p>' : '') +
+    '<ol class="retro-video-page__chapters">' + chapterLinks + '</ol></div></div>';
+}
+
 function buildPlayAlongEditorial(entry) {
   if (entry?.playAlong?.kind !== 'c64-vs-amiga-lemon-reader-rating') return '';
   const data = entry.playAlong;
@@ -428,6 +470,7 @@ function generateDatasetPages(config, template) {
     const manualsHtml = buildManualsSection(entry);
     const relatedItemsHtml = buildRelatedItems(normalizedItems, slug, config.pagePrefix);
     const playAlongGuideHtml = buildPlayAlongGuide(entry, config.pagePrefix);
+    const timedChaptersGuideHtml = buildTimedChaptersGuide(entry, config.pagePrefix);
     const playAlongEditorialHtml = buildPlayAlongEditorial(entry);
     const featureEditorialHtml = buildFeatureEditorial(entry);
     const deferredPlayer = entry.deferYouTubePlayer === true;
@@ -468,21 +511,23 @@ function generateDatasetPages(config, template) {
       RELATED_ITEMS: [manualsHtml, playAlongEditorialHtml, featureEditorialHtml, relatedItemsHtml].filter(Boolean).join('\n\n')
     });
 
-    if (playAlongGuideHtml) {
+    if (playAlongGuideHtml || timedChaptersGuideHtml) {
       const begin = '<!-- CCG_VIDEO_DISCOVERY_START -->';
       const end = '<!-- CCG_VIDEO_DISCOVERY_END -->';
       const from = renderedHtml.indexOf(begin);
       const to = renderedHtml.indexOf(end, from);
       if (from < 0 || to < 0) {
-        throw new Error('Showdown guide template markers are missing');
+        throw new Error('Video guide template markers are missing');
       }
+      const guideHtml = playAlongGuideHtml || timedChaptersGuideHtml;
+      const guideOptions = playAlongGuideHtml ? entry.playAlong : entry.chapterGuide;
       renderedHtml = renderedHtml.slice(0, from + begin.length) + '\n' +
-        playAlongGuideHtml + '\n      ' + renderedHtml.slice(to);
+        guideHtml + '\n      ' + renderedHtml.slice(to);
       renderedHtml = renderedHtml
         .replace('<h2 id="retro-watch-title">Video guide</h2>',
-          '<h2 id="retro-watch-title">' + escapeHtml(entry.playAlong.title) + '</h2>')
+          '<h2 id="retro-watch-title">' + escapeHtml(guideOptions.title || 'Video chapters') + '</h2>')
         .replace('<span>Chapters and linked CCG game pages</span>',
-          '<span>' + escapeHtml(entry.playAlong.subtitle) + '</span>');
+          '<span>' + escapeHtml(guideOptions.subtitle || 'Jump to a section') + '</span>');
     }
 
     const shellResult = normaliseHtml(renderedHtml);
@@ -502,6 +547,13 @@ function generateDatasetPages(config, template) {
       }
       if (!html.includes('data-ccg-seo-editorial="' + escapeHtml(slug) + '"')) {
         htmlProblems.push('showdown editorial disappeared from generated HTML');
+      }
+    }
+    if (timedChaptersGuideHtml) {
+      const chapterCount = (html.match(/data-video-chapter="/g) || []).length;
+      if (chapterCount !== entry.chapters.length) {
+        htmlProblems.push('documentary generated chapter count is ' + chapterCount +
+          '; expected ' + entry.chapters.length);
       }
     }
     if (featureEditorialHtml && !html.includes('data-ccg-feature-editorial="' + escapeHtml(slug) + '"')) {
@@ -566,6 +618,7 @@ if (require.main === module) generateRetroPages();
 module.exports = {
   buildRelatedItems,
   buildPlayAlongGuide,
+  buildTimedChaptersGuide,
   buildPlayAlongEditorial,
   youtubeThumbnailIntrinsicAttributes
 };
