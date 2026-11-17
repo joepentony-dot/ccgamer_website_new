@@ -50,7 +50,7 @@ export async function mountCrossfirePreview({
   entry, bytes, stage, doc=globalThis.document, subtle,
   publicBoardRead=globalThis.window?.location?.origin==="https://www.cheekycommodoregamer.co.uk"
     ? readHelioHostArenaBoard : null,
-  arenaAttempt=null,arenaAttemptFactory=null
+  arenaAttempt=null,arenaAttemptFactory=null,isCurrent=()=>true
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
@@ -66,6 +66,7 @@ export async function mountCrossfirePreview({
     try { eligibleAttempt=await arenaAttemptFactory(); }
     catch { eligibleAttempt=null; }
   }
+  if(typeof isCurrent === "function" && !isCurrent()) return null;
   const automaticAttempt=new CrossfireAutomaticAttempt(eligibleAttempt);
 
   const link=doc.createElement("link");
