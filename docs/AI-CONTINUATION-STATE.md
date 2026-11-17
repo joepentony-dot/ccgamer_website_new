@@ -1,3 +1,7 @@
+## 17 November 2026 — Pages artifact probe JS action context correction (BRANCH ONLY)
+
+- Current website source Crossfire merge is qualified but actual Pages deployment failed twice due to artifact-name/visibility issues in historical run 44181038487. Codex found REST/Twirp metadata inconsistency (P2) and then shell/JS-action runtime token isolation (P1). Existing Pages fix PR #3094 now uses a pinned Twirp client inside an official JavaScript action with fail-closed credentials, unique run-attempt artifact naming and executable negative checks; old shell CLI was removed. Exact-head CI and independent review must pass before any merge, then a new push-triggered deploy and served-page acceptance must be observed. No live score intake is authorised.
+
 ## 17 November 2026 — Pages PR #3094 internal artifact-service check (BRANCH ONLY)
 
 - The first code review identified an internal GitHub Actions Twirp/REST visibility mismatch in the Pages artifact retry fix. Corrected on the SAME PR to use the same `DefaultArtifactClient.listArtifacts()` service as `deploy-pages@v4`, retaining unique run-attempt artifact names and fail-closed bounded retries, with executable negative tests. No site source, emulator, 3D artwork, intro, backend release flag or member data change. New exact-head qualification and clean review are required before a guarded merge and fresh live Pages acceptance.

@@ -2,7 +2,6 @@
 
 // Fail-closed read-only probe of the SAME Twirp ArtifactService used by
 // actions/deploy-pages@v4. Do not use the REST API's eventually-consistent view.
-const path = require('node:path');
 
 async function waitForArtifact({ listArtifacts, artifactName, maxAttempts = 18,
   intervalMs = 5000, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)),
@@ -48,28 +47,3 @@ async function waitForArtifact({ listArtifacts, artifactName, maxAttempts = 18,
 }
 
 module.exports = { waitForArtifact };
-
-if (require.main === module) {
-  const temp = process.env.RUNNER_TEMP;
-  const artifactName = process.env.CCG_PAGES_ARTIFACT_NAME;
-  if (!temp || !artifactName) {
-    console.error('Pages artifact probe environment missing; deployment refused');
-    process.exitCode = 1;
-  } else {
-    // Pinned official toolkit package installed only into the runner temp.
-    // Do not log artifact-service tokens or response metadata.
-    const artifactModule = path.join(temp, 'ccg-pages-artifact-probe',
-      'node_modules', '@actions', 'artifact');
-    const { DefaultArtifactClient } = require(artifactModule);
-    const client = new DefaultArtifactClient();
-    waitForArtifact({
-      listArtifacts: () => client.listArtifacts(),
-      artifactName,
-      onRetry: attempt => console.log('Waiting for internal Pages artifact metadata (' + attempt + '/18)')
-    }).then(() => console.log('Exactly one current-attempt Pages artifact is visible to deploy-pages.'),
-      error => {
-        console.error('Pages artifact admission failed: ' + error.message);
-        process.exitCode = 1;
-      });
-  }
-}
