@@ -2546,6 +2546,7 @@ async function initialiseOnlineLibrary() {
   // An absent marker is normal: the existing Blast/direct libraries keep working.
   let archived = [];
   let archiveError = null;
+  let formerCrossfireArchiveEntry = null;
   try {
     const readyResponse = await fetch(ARCHIVE_READY_URL, {
       cache: "no-store", credentials: "same-origin",
@@ -2580,6 +2581,13 @@ async function initialiseOnlineLibrary() {
           parsedArchive.packs.length !== ready.packCount) {
         throw new Error("PRG archive record or pack counts do not match.");
       }
+      // Remember this one verified historical ID BEFORE normal title dedup.
+      // Its old preview link must resolve to the Sierra CRT without putting
+      // the Atlantis/Pantheon PRG back in search or mounting its RAM observer.
+      formerCrossfireArchiveEntry = parsedArchive.entries.find(entry =>
+        entry.id === "archive-02121" && entry.title === "Crossfire" &&
+        entry.format === "prg" && entry.byteLength === 23637 &&
+        entry.sha256 === "ddc3ab84c98fc065fd39e69bfe68b7ee6de38ebab4b51b607bbcea64cad570a9") || null;
       const alreadyListed = new Set([...regular, ...packed].map((entry) =>
         `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
       // The standalone Bruce Lee PRG remains deliberately withheld: the
@@ -2617,7 +2625,10 @@ async function initialiseOnlineLibrary() {
   // bookmark to the selected CRT without changing unrelated game pages.
   const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
   const linkedOriginal = validLinkedId
-    ? allHostedEntries.find(entry => entry.id === linkedGameId) : null;
+    ? (allHostedEntries.find(entry => entry.id === linkedGameId) ||
+       (linkedGameId === formerCrossfireArchiveEntry?.id
+         ? formerCrossfireArchiveEntry : null))
+    : null;
   // Preserve the verified Domark cartridge on its game-page deep link even
   // when an older same-title CRT wins the normal one-row catalogue view.
   onlineLibraryEntries = selectVerifiedExactCrtEdition(
