@@ -1781,6 +1781,11 @@
           "url": "/retro-specials/sid-chip-story/"
         }
       ]
+    },
+    "chapterGuide": {
+      "title": "SID music chapters",
+      "subtitle": "Jump to any of the 50 C64 tracks, with composer credits and exact timestamps",
+      "intro": "The chronological listening guide runs from 1985 to 1991. Original SID audio was replaced for Sanxion and Last Ninja 2 following copyright claims."
     }
   }
 ]
