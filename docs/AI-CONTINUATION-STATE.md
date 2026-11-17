@@ -1,3 +1,7 @@
+## 17 November 2026 — Pages PR #3094 internal artifact-service check (BRANCH ONLY)
+
+- The first code review identified an internal GitHub Actions Twirp/REST visibility mismatch in the Pages artifact retry fix. Corrected on the SAME PR to use the same `DefaultArtifactClient.listArtifacts()` service as `deploy-pages@v4`, retaining unique run-attempt artifact names and fail-closed bounded retries, with executable negative tests. No site source, emulator, 3D artwork, intro, backend release flag or member data change. New exact-head qualification and clean review are required before a guarded merge and fresh live Pages acceptance.
+
 ## 17 November 2026 — Pages publication artifact retry fix (BRANCH ONLY)
 
 - Current merged Crossfire main `7146b1a72e1c538cbc7039b010babc96f2de0aa0` passed feature CI but the actual Pages production workflow failed twice within run 44181038487: first artifact metadata was briefly invisible (0 matches); its failed-job retry then produced two identically named artifacts, and deploy-pages correctly rejected ambiguity. New isolated source candidate uses run-attempt-specific artifact names, a bounded read-only metadata gate and a regression in Site Safety. Preserve all existing public staged content and live checks; do not claim a successful production deployment until a newly qualified main run finishes.

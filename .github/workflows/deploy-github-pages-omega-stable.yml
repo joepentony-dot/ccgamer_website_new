@@ -347,32 +347,18 @@ jobs:
       # Upload metadata can lag the successful archive upload. Re-running the
       # same workflow also retains the previous attempt's artifact; always
       # identify only this run attempt's artifact before publishing.
+      # Use the SAME internal Actions artifact service as deploy-pages@v4,
+      # not the REST API, which can become visible sooner than the service.
       - name: Wait for this attempt's Pages artifact metadata
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
-          PAGES_ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
+          CCG_PAGES_ARTIFACT_NAME: github-pages-${{ github.run_attempt }}
         run: |
           set -euo pipefail
-          for attempt in {1..18}; do
-            artifacts_json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100")"
-            artifact_count="$(jq -r --arg name "$PAGES_ARTIFACT_NAME" --argjson run "$GITHUB_RUN_ID" \
-              '[.artifacts[] | select(.name == $name and .expired == false and .workflow_run.id == $run)] | length' \
-              <<< "$artifacts_json")"
-            if [ "$artifact_count" -eq 1 ]; then
-              echo "This run attempt's Pages artifact is discoverable."
-              exit 0
-            fi
-            if [ "$artifact_count" -gt 1 ]; then
-              echo "Ambiguous Pages artifacts for this run attempt; refusing deployment." >&2
-              exit 1
-            fi
-            echo "Waiting for Pages artifact metadata (attempt ${attempt}/18)"
-            sleep 5
-          done
-          echo "Pages artifact was not discoverable within the bounded wait; refusing deployment." >&2
-          exit 1
-
+          npm install --prefix "$RUNNER_TEMP/ccg-pages-artifact-probe" \
+            --no-save --ignore-scripts --no-audit --no-fund \
+            @actions/artifact@2.3.2
+          node scripts/wait-for-pages-artifact-service.cjs
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
