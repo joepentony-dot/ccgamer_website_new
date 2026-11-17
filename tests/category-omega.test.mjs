@@ -146,3 +146,20 @@ test('paired Category Omega Lighthouse measures a changed category and keeps str
   assert.match(workflow, /const lcpAllowance = before\.lcp \* 0\.15 \+ 250;/);
   assert.match(workflow, /if \(failure\) throw Error\('Genre Lighthouse regression exceeds bounded lab-variance tolerance'\);/);
 });
+
+test('Retro Specials paints its Omega hero and archive discovery before deferred enhancement', () => {
+  const page = fs.readFileSync('games/collections/retro-specials.html', 'utf8');
+  assert.match(page, /data-ccg-category-theme="retro-specials"/);
+  assert.match(page, /data-ccg-category-kind="collection"/);
+  assert.match(page, /ccg-collection-hero ccg-category-omega__hero" data-ccg-category-icon="CCG"/);
+  assert.equal((page.match(/class="ccg-category-omega__kicker"/g) || []).length, 1);
+  assert.match(page, /Curated C64 &amp; Amiga archive/);
+  assert.equal((page.match(/data-ccg-category-discovery="true"/g) || []).length, 1);
+  assert.match(page, /<h2>More from Retro Specials<\/h2>/);
+  assert.match(page, /href="\/games\/collections\/top-picks\.html"/);
+  assert.match(page, /href="\/games\/collections\/retro-events\.html"/);
+  assert.match(page, /href="\/games\/collections\/amiga-demo-music\.html"/);
+  assert.match(runtime, /heroInner\.querySelector\("\.ccg-category-omega__kicker"\)/);
+  assert.match(runtime, /document\.querySelector\("\[data-ccg-category-discovery\]"\)/);
+  assert.match(page, /href="\/retro-specials\/50-commodore-64-sid-tunes-zzap64\//);
+});
