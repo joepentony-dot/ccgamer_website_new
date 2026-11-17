@@ -163,6 +163,20 @@ test("member handshake executes only after verified Crossfire SHA and never for 
     && x.textContent==="PILOT · SCORES REQUIRE INDEPENDENT REVIEW"));
   valid.dispose();
 });
+
+test("stale preview mount cannot mutate the shared stage after a newer generation",async()=>{
+  const doc=fakeDocument(),stage=doc.createElement("div");
+  let release;
+  const stale=mountCrossfirePreview({
+    entry,bytes,stage,doc,subtle:fakeCrypto,
+    arenaAttemptFactory:()=>new Promise(resolve=>{release=resolve;}),
+    isCurrent:()=>false
+  });
+  release({enabled:false});
+  assert.equal(await stale,null);
+  assert.equal(stage.after,undefined);
+  assert.equal(doc.head.children.length,0);
+});
 test("failed HelioHost membership cannot enable automatic score submission",async()=>{
   const doc=fakeDocument(),stage=doc.createElement("div");
   const controller=await mountCrossfirePreview({
