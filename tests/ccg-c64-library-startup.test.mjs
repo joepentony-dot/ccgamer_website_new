@@ -8,7 +8,8 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 import { parsePackedCatalog, PACK_CATALOG_URL, ARCHIVE_READY_URL,
   ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
-  preferSelectedCartridges, catalogGameIdentity,
+  preferSelectedCartridges, preferSierraCrossfireCrt,
+  isVerifiedSierraCrossfireCrt, catalogGameIdentity,
   selectVerifiedExactCrtEdition, findVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -46,6 +47,8 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
     parseAdditionalCrtCatalog,
     parsePackedCatalog,
     preferSelectedCartridges,
+    preferSierraCrossfireCrt,
+    isVerifiedSierraCrossfireCrt,
     catalogGameIdentity,
     selectVerifiedExactCrtEdition,
     findVerifiedExactCrtEdition,
@@ -177,6 +180,18 @@ for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
 }
 assert.equal(activated.fetchRequests.filter(x =>
   x.url === ADDITIONAL_CRT_CATALOG_URL).length, 1);
+const visibleCrossfire = activated.context.onlineLibraryEntries.filter(entry =>
+  /cross\\s*fire/i.test(entry.title));
+assert.deepEqual(Array.from(visibleCrossfire, item => [item.title, item.format]).sort(
+  (a, b) => a[0].localeCompare(b[0])), [
+  ["Crossfire (Sierra Online)", "crt"],
+  ["Crossfire - Tron", "prg"]
+].sort((a, b) => a[0].localeCompare(b[0])),
+  "Only the verified Sierra Online CRT and the separate Tron PRG may be visible");
+assert.equal(activated.context.onlineLibraryEntries.some(entry =>
+  entry.id === "archive-02121"), false,
+  "The Atlantis/Pantheon Arena PRG must not reappear when preview is opted in");
+
 // One of the 728 retired IDs resolves to a second approved edition of a
 // previously selected CRT. The older canonical H.E.R.O cartridge must remain
 // visible, and its former packed PRG bookmark must still launch that selection.
