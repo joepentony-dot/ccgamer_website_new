@@ -1,3 +1,8 @@
+## 17 November 2026 — SID Retro Specials targeted first-paint stabilisation, PR #3090
+
+- The strict Category Omega job now measures the actually modified Retro Specials collection rather than a fixed unrelated Role-Playing genre. Measured mobile/desktop LCP passed but CLS failed on `d60179367` (see [SEO workstream](ai-work/seo-and-generated-output.md)), and source review identified the existing category runtime adding a hero kicker/discovery after first paint, with font-related shifting in the Lighthouse reports.
+- A **new, unqualified branch-only candidate** pre-renders the same established Omega hero class/icon/body theme, kicker and existing discovery links in `games/collections/retro-specials.html`, guarded by category regression tests and idempotent runtime checks; final visual content is preserved. Repeat exact-head CI, independent review and real paired Lighthouse; merge only after all performance gates qualify and owner consent. No live deployment.
+
 ## 17 November 2026 — Retro Specials SID video PR #3090 performance qualification correction
 
 - Existing ready-for-review [PR #3090](https://github.com/joepentony-dot/ccgamer_website_new/pull/3090) retains the C64 SID documentary, 53 source-owned chapters, SEO watch/collection pages, strict deferred-player delivery and publisher regression. Initial head `f56ed203` passed 14 of 15 CI workflow families and a clean exact-head independent Codex review. The unrelated fixed Role-Playing genre Lighthouse comparison failed twice despite identical benchmark HTML and alternating mobile/desktop regressions.
