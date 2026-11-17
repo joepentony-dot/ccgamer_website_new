@@ -6,8 +6,10 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 import { parsePackedCatalog, PACK_CATALOG_URL, ARCHIVE_READY_URL,
-  ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
+  ADDITIONAL_CRT_CATALOG_URL, ARCHIVE_CATALOG_URL, ARCHIVE_PACK_ROOT,
+  SIERRA_CROSSFIRE_CRT, parseAdditionalCrtCatalog,
   preferSelectedCartridges, preferSierraCrossfireCrt,
   isVerifiedSierraCrossfireCrt, catalogGameIdentity,
   selectVerifiedExactCrtEdition, findVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
@@ -19,17 +21,38 @@ const blast = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/bla
 const retiredBlast = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/blast/retired-ids.json"), "utf8"));
 const retiredArchive = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/prg-archive/retired-ids.json"), "utf8"));
 const moreCrt = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/cartridge-replacements/active.json"), "utf8"));
+const archivedCrossfireFixture = {
+  version: 2, recordCount: 1,
+  packs: [{ file: "pack-00.bin", bytes: 23637, sha256: "f".repeat(64) }],
+  games: [[
+    "archive-02121", "Crossfire", "prg", 0, 0, 23637,
+    "ddc3ab84c98fc065fd39e69bfe68b7ee6de38ebab4b51b607bbcea64cad570a9"
+  ]]
+};
+const archivedCrossfireText = JSON.stringify(archivedCrossfireFixture);
+const archivedCrossfireReady = {
+  version: 1, recordCount: 1, packCount: 1,
+  catalogSHA256: createHash("sha256").update(archivedCrossfireText).digest("hex")
+};
 const begin = app.indexOf("async function initialiseOnlineLibrary() {");
 const end = app.indexOf("async function loadSelectedLibraryEntry()", begin);
 assert(begin >= 0 && end > begin, "Library startup must be identifiable");
 const code = app.slice(begin, end) + "\nglobalThis.startLibrary = initialiseOnlineLibrary;";
 
-async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId = "") {
+async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId = "", archiveAvailable = false) {
   const statuses = {};
   const fetchRequests = [];
   const context = vm.createContext({
     window: { location: { search: deepLinkId ? "?game=" + encodeURIComponent(deepLinkId) : "" } },
     URLSearchParams,
+    TextEncoder,
+    crypto: { subtle: {
+      async digest(algorithm, input) {
+        assert.equal(algorithm, "SHA-256");
+        const hash = createHash("sha256").update(new Uint8Array(input)).digest();
+        return hash.buffer.slice(hash.byteOffset, hash.byteOffset + hash.byteLength);
+      }
+    } },
     stageNote: { textContent: "" },
     selectOnlineLibraryEntry(id) { statuses.selected = id; },
     onlineLibraryGrid: {},
@@ -43,6 +66,8 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
     SUPPORTED_MEDIA_TYPES: new Set(["prg", "d64", "crt", "tap", "t64", "d71", "d81", "g64"]),
     PACK_CATALOG_URL,
     ARCHIVE_READY_URL,
+    ARCHIVE_CATALOG_URL,
+    ARCHIVE_PACK_ROOT,
     ADDITIONAL_CRT_CATALOG_URL,
     parseAdditionalCrtCatalog,
     parsePackedCatalog,
@@ -75,7 +100,12 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
           : { ok: false, status: 404 };
       }
       if (url === ARCHIVE_READY_URL) {
-        return { ok: false, status: 404 }; // Simulate archive temporarily unavailable; direct CRT fallback must still work.
+        return archiveAvailable
+          ? { ok: true, json: async () => archivedCrossfireReady }
+          : { ok: false, status: 404 }; // CRT fallback without the optional archive.
+      }
+      if (url === ARCHIVE_CATALOG_URL && archiveAvailable) {
+        return { ok: true, text: async () => archivedCrossfireText };
       }
       if (url === PACK_CATALOG_URL) {
         // Simulate a physically retired historic PRG when checking its alias.
@@ -180,6 +210,14 @@ for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
 }
 assert.equal(activated.fetchRequests.filter(x =>
   x.url === ADDITIONAL_CRT_CATALOG_URL).length, 1);
+const historicalCrossfireLink = await execute(true, true, "archive-02121", true);
+assert.equal(historicalCrossfireLink.statuses.selected, SIERRA_CROSSFIRE_CRT.id,
+  "Former Atlantis archive preview bookmark must select Sierra CRT after archive dedup");
+assert(!historicalCrossfireLink.context.onlineLibraryEntries.some(entry =>
+  entry.id === "archive-02121"), "Retired PRG must not return to visible catalogue");
+assert(historicalCrossfireLink.context.onlineLibraryEntries.some(isVerifiedSierraCrossfireCrt),
+  "Only the pinned Sierra CRT may replace the legacy archive link");
+
 const visibleCrossfire = activated.context.onlineLibraryEntries.filter(entry =>
   /cross\s*fire/i.test(entry.title));
 assert.deepEqual(Array.from(visibleCrossfire, item => [item.title, item.format]).sort(
