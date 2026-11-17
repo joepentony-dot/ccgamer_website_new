@@ -57,6 +57,10 @@ create table public.ccg_arena_attempts (
   check (reviewed_at is null or status in ('approved','rejected')),
   unique (id, game_key, user_id)
 );
+-- Guard overlapping starts atomically, even if both pass read-side rate limit.
+create unique index ccg_arena_one_active_attempt_per_user_idx
+  on public.ccg_arena_attempts (user_id) where status = 'started';
+
 create index ccg_arena_attempts_user_recent_idx
   on public.ccg_arena_attempts (user_id, game_key, started_at desc);
 create index ccg_arena_attempts_review_idx

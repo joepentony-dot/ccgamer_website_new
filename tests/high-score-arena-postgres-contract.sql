@@ -95,6 +95,63 @@ values
    '44444444-4444-4444-8444-444444444444','c64-crossfire-atlantis',
    'Test Player',775,now()-interval '2 minutes');
 
+-- One currently running attempt per account, with a database uniqueness
+-- guarantee. A submitted attempt does NOT automatically become a leaderboard
+-- record, even when its score is within the accepted bounds.
+do $$
+declare n integer;
+begin
+ select count(*) into n from pg_index i
+ join pg_class x on x.oid=i.indexrelid
+ join pg_namespace s on s.oid=x.relnamespace
+ where s.nspname='public'
+   and x.relname='ccg_arena_one_active_attempt_per_user_idx'
+   and i.indisunique and i.indpred is not null;
+ if n<>1 then raise exception 'Missing unique active user attempt index'; end if;
+end $$;
+insert into public.ccg_arena_attempts
+ (id,game_key,user_id,nonce_sha256,media_sha256,rules_version,status)
+values
+ ('66666666-6666-4666-8666-666666666666','c64-crossfire-atlantis',
+  '11111111-1111-4111-8111-111111111111',repeat('b',64),
+  'ddc3ab84c98fc065fd39e69bfe68b7ee6de38ebab4b51b607bbcea64cad570a9',
+  1,'started');
+
+do $$
+begin
+  begin
+    insert into public.ccg_arena_attempts
+      (id,game_key,user_id,nonce_sha256,media_sha256,rules_version,status)
+    values
+      ('77777777-7777-4777-8777-777777777777','c64-crossfire-atlantis',
+       '11111111-1111-4111-8111-111111111111',repeat('c',64),
+       'ddc3ab84c98fc065fd39e69bfe68b7ee6de38ebab4b51b607bbcea64cad570a9',
+       1,'started');
+    raise exception 'Multiple active runs allowed for same user';
+  exception when unique_violation then null;
+  end;
+end $$;
+
+update public.ccg_arena_attempts set status='expired'
+ where id='66666666-6666-4666-8666-666666666666';
+insert into public.ccg_arena_attempts
+ (id,game_key,user_id,nonce_sha256,media_sha256,rules_version,status)
+values
+ ('77777777-7777-4777-8777-777777777777','c64-crossfire-atlantis',
+  '11111111-1111-4111-8111-111111111111',repeat('c',64),
+  'ddc3ab84c98fc065fd39e69bfe68b7ee6de38ebab4b51b607bbcea64cad570a9',
+  1,'started');
+update public.ccg_arena_attempts set status='submitted',
+  claimed_score=2325,finished_at=now()
+ where id='77777777-7777-4777-8777-777777777777';
+do $$
+begin
+  if exists(select 1 from public.ccg_arena_alltime_public
+    where score=2325) then
+    raise exception 'Submitted unreviewed scores leaked to public rankings';
+  end if;
+end $$;
+
 set role anon;
 do $$
 begin
