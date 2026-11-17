@@ -24,7 +24,7 @@ export function makeArenaStartRequest({board='alltime',challengeSlug=null}={}) {
   if(board==='alltime'&&challengeSlug!==null)return null;
   if(board==='challenge'&&(typeof challengeSlug!=='string'||!SLUG.test(challengeSlug)))return null;
   return Object.freeze({
-    action:'start',gameKey:GAME_KEY,catalogId:CATAL,
+    action:'start',gameKey:GAME_KEY,catalogId:CATALOG,
     mediaSha256:SHA,mediaBytes:23637,rulesVersion:1,
     board,challengeSlug
   });
@@ -33,7 +33,7 @@ export function makeArenaFinishRequest(attempt,diagnostic) {
   if(!attempt || !UUID.test(attempt.attemptId||'')||
     !NONCE.test(attempt.nonce||'') || !diagnostic ||
     diagnostic.kind!=='diagnostic-final-score-candidate' ||
-    diagnostic.gameId!==CATAL ||
+    diagnostic.gameId!==CATALOG ||
     diagnostic.trust!=='unverified-client-session' ||
     diagnostic.livesAtLastHud!==0 ||
     !Number.isInteger(diagnostic.score) || diagnostic.score<0||
