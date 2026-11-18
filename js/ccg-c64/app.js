@@ -126,10 +126,9 @@ const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
 
-// Crossfire High Score Arena is an opt-in, zero-write diagnostic pilot.
-// No extra modules, scores or CSS load on ordinary C64 emulator visits.
-const arenaPreviewRequested = new URLSearchParams(window.location.search)
-  .get("ccg_arena_preview") === "crossfire";
+// Automatically recognise the verified Sierra CRT after its normal LOAD.
+// All other games remain unchanged: no Arena modules, styles or network.
+// This is presentation only; CRT score detection and submissions are OFF.
 // Sierra Online's CRT is a visual-only pilot. The Atlantis PRG's score
 // observer and HelioHost submission endpoint must never be used for it.
 let activeArenaPreview = null;
@@ -148,11 +147,10 @@ function observeArenaPreviewFrame() {
   }
 }
 async function mountSelectedArenaPreview(entry, bytes) {
-  if (!arenaPreviewRequested || !screenStage ||
-      !isVerifiedSierraCrossfireCrt(entry)) return;
+  if (!screenStage || !isVerifiedSierraCrossfireCrt(entry)) return;
   const generation = arenaPreviewGeneration;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261117_crossfire_crt_only_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261118_crossfire_auto_arena_v1");
     if (generation !== arenaPreviewGeneration) return;
     const controller = await module.mountCrossfirePreview({
       entry, bytes, stage: screenStage,
@@ -2800,8 +2798,8 @@ async function loadSelectedLibraryEntry() {
       gameKey: "library:" + entry.id, gameTitle: entry.title,
     }, { freshBoot: true });
     if (queued && isVerifiedSierraCrossfireCrt(entry)) {
-      // Recompute the exact Sierra CRT digest inside the lazy visual module.
-      // No score observer or HelioHost session is armed for this edition.
+      // Normal LOAD is the trigger. Recompute the Sierra CRT digest inside
+      // the lazy visual module; no score observer or HelioHost session runs.
       void mountSelectedArenaPreview(entry, bytes);
     }
     if (!queued && !pendingMedia) activeLibraryEntryId = null;

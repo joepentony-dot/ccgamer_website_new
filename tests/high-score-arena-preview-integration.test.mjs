@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  previewRequestEnabled, verifyCrossfirePreviewMedia, mountCrossfirePreview
+  verifyCrossfirePreviewMedia, mountCrossfirePreview
 } from '../js/ccg-c64/arena-preview.js';
 import { SIERRA_CROSSFIRE_CRT } from '../js/ccg-c64/game-catalog.js';
 
@@ -19,11 +19,11 @@ const fakeCrypto={
   }
 };
 
-test('preview requires the explicit Crossfire query parameter',()=>{
-  assert.equal(previewRequestEnabled(''),false);
-  assert.equal(previewRequestEnabled('?ccg_arena_preview=crossfire'),true);
-  assert.equal(previewRequestEnabled('?ccg_arena_preview=crossfire-tron'),false);
-  assert.equal(previewRequestEnabled('?foo=bar'),false);
+test('normal verified Sierra CRT LOAD enables Arena without a special URL',()=>{
+  const app=readFileSync(new URL('../js/ccg-c64/app.js',import.meta.url),'utf8');
+  assert.doesNotMatch(app,/arenaPreviewRequested|ccg_arena_preview/);
+  assert.match(app,/if \(!screenStage \|\| !isVerifiedSierraCrossfireCrt\(entry\)\) return;/);
+  assert.match(app,/if \(queued && isVerifiedSierraCrossfireCrt\(entry\)\)/);
 });
 
 test('exact SHA-verified Sierra Online CRT only; Tron and old Atlantis PRG are refused',async()=>{
@@ -147,7 +147,7 @@ test('browser selection and source forbid legacy PRG or score submission',async(
   assert.doesNotMatch(source,/CrossfireAutomaticAttempt|readHelioHostArenaBoard|createArenaDiagnosticObserver/);
   assert.doesNotMatch(source,/\.from\s*\(\s*['"]ccg_arena_attempts|\.insert\(|\.upsert\(/);
   const app=readFileSync(new URL('../js/ccg-c64/app.js',import.meta.url),'utf8');
-  assert.match(app,/ccg_arena_preview/);
+  assert.doesNotMatch(app,/arenaPreviewRequested|ccg_arena_preview/);
   assert.match(app,/if \(queued && isVerifiedSierraCrossfireCrt\(entry\)\)/);
   assert.doesNotMatch(app,/arenaSubmissionRequested|arenaArchiveEntry|if \\(queued && entry\\.id === "archive-02121"\\)/);
   assert.match(app,/formerCrossfireArchiveEntry/,
