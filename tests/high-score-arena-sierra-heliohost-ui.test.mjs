@@ -74,7 +74,7 @@ test('actual Sierra HUD F1/gameover drives two authenticated HelioHost POSTs onl
  assert(controller);
  const panel=stage.after;
  assert(panel.find(x=>x.tag==='p'&&x.textContent==='SIERRA ONLINE CRT · HELIOHOST SUBMISSION REQUESTED'));
- await turn();await turn();
+ assert.equal(await controller.whenHelioHostReady(),true);
  controller.observe(ram(0,true));
  assert.equal(controller.armFromUserF1(),true);
  controller.observe(ram(0));
@@ -106,7 +106,7 @@ test('without score opt-in, visitor and wrong-origin browser make no HelioHost r
    entry,bytes,stage,doc,subtle,scoreQuery:query,
    websiteOrigin:origin,scoreFetchImpl:async()=>{count++;throw Error('Forbidden');}
   });
-  await turn();await turn();
+  assert.equal(await controller.whenHelioHostReady(),false);
   controller.observe(ram(0,true));
   controller.armFromUserF1();
   controller.observe(ram(0));
@@ -126,7 +126,7 @@ test('authenticated session failure does not forge submitted receipt or alter lo
    return {ok:false,headers:{get:()=> 'application/json'},text:async()=>''};
   }
  });
- await turn();await turn();
+ assert.equal(await controller.whenHelioHostReady(),false);
  controller.observe(ram(0,true));
  controller.armFromUserF1();
  controller.observe(ram(0));
