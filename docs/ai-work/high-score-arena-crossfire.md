@@ -1,3 +1,10 @@
+## 18 November 2026 — Mobile Sierra Arena access treatment (unmerged)
+
+- PR #3099 is merged and desktop live normal-load verification is complete: the Sierra CRT search result loads, mounts the empty Arena, and explicitly shows score submissions disabled.
+- The coarse-pointer CSS intentionally hid the full panel during immersive touch play. New branch `fix/c64-mobile-arena-access-20261118` adds a playbar ARENA toggle and fixed, dismissible panel so the board is reachable without shifting the screen, fixed touch controls or mobile layout.
+- Scope remains visual-only: no Sierra score forensics, auth, HelioHost reads/writes, member submissions or Supabase changes. Real Chromium mobile geometry assertions cover panel open/close and unchanged touch-control bounds.
+- Qualification required: exact-head CI, independent review and deployed mobile browser verification.
+
 ## 17 November 2026 — OWNER CORRECTION: Sierra Online CRT only (PR #3097, BRANCH ONLY)
 
 - The owner's real mobile emulator search showed four titles. Required visible result when the trusted cartridge manifest is available: **Crossfire (Sierra Online) — CRT** and the distinct **Crossfire - Tron — PRG**, with exact-title **Crossfire — PRG** and **Cross Fire — PRG** suppressed from the displayed library. Archive bytes, original catalogue IDs, deep links and every unrelated game remain preserved; absent or changed verified CRT manifest fails back to original options, not missing games.
