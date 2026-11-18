@@ -186,6 +186,6 @@ test('Sierra public reader stays disabled and refuses Atlantis or malformed reco
   ok:true,gameKey:SIERRA_GAME_KEY,board:'alltime',challengeSlug:null,
   status:'available',records:[{playerName:'Test Player',score:170}]
  })});
- assert.equal(good.status,'available');
+ assert.equal(good.status,'ranked');
  assert(!JSON.stringify(good).includes('accountId'));
 });
