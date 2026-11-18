@@ -58,9 +58,47 @@
   }
 }
 
-/* The fixed touch console allocates its height to gameplay and controls. */
+/* The fixed touch console allocates its height to gameplay and controls.
+   Keep the board out of normal flow; mobile users open it from the playbar. */
 @media (pointer: coarse) {
   .ccg-c64-console.is-mobile-playing > .ccg-arena-preview {
     display: none;
   }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open {
+    display: block;
+    position: fixed;
+    z-index: 90;
+    left: max(8px, env(safe-area-inset-left));
+    right: max(8px, env(safe-area-inset-right));
+    bottom: max(8px, env(safe-area-inset-bottom));
+    max-height: min(70vh, 480px);
+    overflow: auto;
+    margin: 0;
+    border-radius: 8px;
+    box-shadow: 0 10px 36px rgba(0,0,0,.78), inset 0 0 18px #0b346d;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open
+    .ccg-arena-preview__board {
+    height: 220px;
+    min-height: 180px;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open
+    .ccg-arena-preview__run {
+    min-height: 76px;
+  }
+}
+
+.ccg-c64-mobile-arena-toggle[hidden] { display:none; }
+.ccg-c64-mobile-arena-toggle {
+  background:#102a59;
+  border:1px solid #63bdff;
+  color:#d9ecff;
+  border-radius:5px;
+  padding:6px 9px;
+  font:700 11px Arial,sans-serif;
+  cursor:pointer;
+  min-height:32px;
 }
