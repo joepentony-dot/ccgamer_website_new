@@ -1,3 +1,8 @@
+## 18 November 2026 — SID documentary replacement YouTube upload (branch only)
+
+- Owner supplied replacement public YouTube ID `icwCrzfKxhk` for removed `7PU3GqBDnRI`. This isolated branch updates the authoritative Retro Specials JSON record, its generated collection thumbnail and canonical watch-page player/button/OG/Twitter imagery, preserving the original URL slug, 53 timestamped chapters, deferred iframe loading, SEO editorial and copyright-substitution notes.
+- The existing focused SID regression now rejects the removed upload on the public watch and collection pages and checks the replacement thumbnail. Branch `fix/sid-documentary-new-youtube-id-20261118` began from main `d9de767cad9c2d89f90d87dfcf6fce3ec3b9c3a7`; no production changes are asserted. Exact-head CI, independent review, guarded merge and live Pages verification remain required.
+
 ## 17 November 2026 — Retro Specials first-paint layout repair candidate (same PR #3090)
 
 - The updated Category Omega benchmark correctly selected the changed `games/collections/retro-specials.html` at head `d60179367`. Its [run 44015272825](https://github.com/joepentony-dot/ccgamer_website_new/actions/runs/44015272825) failed strict paired CLS: mobile baseline/candidate medians 0.07600/0.12660 (delta +0.05099), desktop 0.17003/0.32819 (+0.15816), allowance +0.03. LCP passed both. Full [Lighthouse artifact 14298926331](https://github.com/joepentony-dot/ccgamer_website_new/actions/runs/44015272825/artifacts/14298926331) was inspected; large shift records attribute changes to late Roboto font loading and deferred hero/main enhancement, with substantial baseline variance.
