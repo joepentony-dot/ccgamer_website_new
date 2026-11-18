@@ -13,6 +13,7 @@ import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
 import { renderArenaBoard, normaliseArenaBoard } from "./arena/view/arena-board.mjs";
 import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-screen-score.mjs";
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
+import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
 const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f1_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
@@ -40,7 +41,8 @@ export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThi
 }
 
 export async function mountCrossfirePreview({
-  entry, bytes, stage, doc=globalThis.document, subtle, isCurrent=()=>true
+  entry, bytes, stage, doc=globalThis.document, subtle, isCurrent=()=>true,
+  launchQuery="", startF1=null, releaseF1=null
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
@@ -130,7 +132,17 @@ export async function mountCrossfirePreview({
   show();
   let lastVisibleScore=null;
   const localRun=new SierraCrossfireLocalRunObserver();
+  // The only permitted automatic F1 is an explicit exact-edition deep link
+  // after a successful independent Sierra cartridge SHA-256 verification.
+  const autoStarter=isSierraOneClickLaunchQuery(launchQuery) &&
+    typeof startF1==="function" && typeof releaseF1==="function"
+      ? new SierraOneClickStarter({
+          onArm:()=>localRun.armFromUserF1(),
+          onPress:startF1,
+          onRelease:releaseF1
+        }) : null;
   return Object.freeze({
+    cancelOneClick() { autoStarter?.cancel(); },
     armFromUserF1() {
       if(disposed)return false;
       const armed=localRun.armFromUserF1();
@@ -143,6 +155,8 @@ export async function mountCrossfirePreview({
       // emulator RAM; no member or score network traffic is ever initiated.
       const candidate=readSierraCrossfireScreenScores(ram);
       const completed=localRun.observe(ram);
+      // Drive one user-requested F1 only from actual emulated PAL frames.
+      autoStarter?.tick(ram);
       if(candidate && candidate.score!==lastVisibleScore) {
         lastVisibleScore=candidate.score;
         local.textContent=String(candidate.score).padStart(6,"0");
@@ -155,6 +169,7 @@ export async function mountCrossfirePreview({
     },
     invalidate() {
       if(disposed)return;
+      autoStarter?.cancel();
       localRun.invalidate();
       lastVisibleScore=null;
       local.textContent="—";
@@ -163,6 +178,7 @@ export async function mountCrossfirePreview({
     dispose() {
       if(disposed)return;
       disposed=true;
+      autoStarter?.cancel();
       setMobileOpen(false);
       mobileToggle?.removeEventListener("click",onMobileToggle);
       if(mobileToggle){
