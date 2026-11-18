@@ -79,6 +79,28 @@ test('one authenticated 170-point run submits ONCE and only pending-review recei
  assert.equal(calls.length,2);
  bridge.stop();
 });
+test('a successful member handshake cannot start a run before verified F1',async()=>{
+ const calls=[];
+ const bridge=new SierraHelioHostScoreBridge({
+  enabled:true,origin:CCG_SITE_ORIGIN,
+  acquire:async()=>({enabled:true,
+   start:async()=>{calls.push('start');return {status:'started'};},
+   finish:async()=>{calls.push('finish');return null;}
+  }),
+  readBoard:async()=>({status:'unavailable'})
+ });
+ assert.equal(await bridge.connect(),true);
+ bridge.observe({phase:'running',lastScore:0});
+ bridge.observe({phase:'completed',lastScore:20},final(20));
+ await nextTurn();
+ assert.deepEqual(calls,[],'member login is not sufficient to arm scoring');
+ assert.equal(bridge.armed(),true);
+ bridge.observe({phase:'running',lastScore:0});
+ bridge.observe({phase:'completed',lastScore:20},final(20));
+ await nextTurn();
+ assert.deepEqual(calls,['start','finish'],'only explicit F1 permits one start and one pending finish');
+ bridge.stop();
+});
 test('server denial never claims receipt, even for a legitimate local game-over',async()=>{
  const statuses=[],calls=[];
  const bridge=new SierraHelioHostScoreBridge({

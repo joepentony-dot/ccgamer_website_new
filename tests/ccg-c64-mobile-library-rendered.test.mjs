@@ -300,14 +300,25 @@ try {
       'panel=document.querySelector("[data-ccg-arena-preview=\\"crossfire\\"]"),',
       'touch=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
       'var er=exit.getBoundingClientRect(),tr=toggle.getBoundingClientRect(),kr=keyboard.getBoundingClientRect();',
+      'var rect=panel.getBoundingClientRect();',
       'return {toggleHidden:toggle.hidden,toggleDisplay:getComputedStyle(toggle).display,',
       'panelDisplay:getComputedStyle(panel).display,',
+      'panelStatus:panel.getAttribute("data-ccg-arena-mobile-status"),',
+      'boardDisplay:getComputedStyle(panel.querySelector(".ccg-arena-preview__board")).display,',
+      'runDisplay:getComputedStyle(panel.querySelector(".ccg-arena-preview__run")).display,',
+      'stripFits:rect.width>0 && rect.left>=-1 && rect.right<=innerWidth+1,',
+      'touchUncovered:rect.bottom<=touch.top+1 || rect.top>=touch.bottom-1,',
       'touch:{top:touch.top,bottom:touch.bottom,height:touch.height},',
       'playbarFits:er.right<=tr.left+1 && tr.right<=kr.left+1};'
     ].join("\n"));
     assert.equal(mobileArena.toggleHidden,false,"Mobile Sierra LOAD must expose the Arena toggle at "+width);
     assert.notEqual(mobileArena.toggleDisplay,"none","Mobile Arena toggle must be visible at "+width);
-    assert.equal(mobileArena.panelDisplay,"none","Arena stays out of touch layout until opened at "+width);
+    assert.notEqual(mobileArena.panelDisplay,"none","Compact local score/status stays visible at "+width);
+    assert.equal(mobileArena.panelStatus,"compact","Mobile Arena starts in compact state at "+width);
+    assert.equal(mobileArena.boardDisplay,"none","Ranked grid hides until ARENA opens at "+width);
+    assert.notEqual(mobileArena.runDisplay,"none","Current local score is visible at "+width);
+    assert.equal(mobileArena.stripFits,true,"Compact score/status strip fits viewport at "+width);
+    assert.equal(mobileArena.touchUncovered,true,"Compact status cannot overlap joystick at "+width);
     assert.equal(mobileArena.playbarFits,true,"Arena toggle must not overlap playbar controls at "+width);
     const mobileArenaOpen = await evaluate(session, [
       'var before=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
@@ -315,11 +326,18 @@ try {
       'var opened=document.querySelector("[data-ccg-arena-preview=\\"crossfire\\"]"),',
       'after=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
       'var closeWidth=document.querySelector("[data-mobile-arena-toggle]").getBoundingClientRect().width;',
+      'var bounds=opened.getBoundingClientRect();',
       'return {open:opened.classList.contains("is-mobile-open"),display:getComputedStyle(opened).display,',
+      'panelStatus:opened.getAttribute("data-ccg-arena-mobile-status"),',
+      'gridVisible:getComputedStyle(opened.querySelector(".ccg-arena-preview__board")).display!=="none",',
+      'fitsViewport:bounds.width>0 && bounds.height>0 && bounds.left>=-1 && bounds.right<=innerWidth+1,',
       'sameTop:Math.abs(before.top-after.top)<1,sameHeight:Math.abs(before.height-after.height)<1,closeWidth};'
     ].join("\n"));
     assert.equal(mobileArenaOpen.open,true,"Mobile Arena toggle must open the panel at "+width);
     assert.notEqual(mobileArenaOpen.display,"none","Opened mobile Arena must be visible at "+width);
+    assert.equal(mobileArenaOpen.panelStatus,"expanded","ARENA open reports expanded state at "+width);
+    assert.equal(mobileArenaOpen.gridVisible,true,"Opening ARENA reveals leaderboard grid at "+width);
+    assert.equal(mobileArenaOpen.fitsViewport,true,"Expanded panel must remain inside viewport at "+width);
     assert.equal(mobileArenaOpen.sameTop,true,"Opening Arena must not move touch controls at "+width);
     assert.equal(mobileArenaOpen.sameHeight,true,"Opening Arena must not resize touch controls at "+width);
     assert(mobileArenaOpen.closeWidth>0,"CLOSE ARENA must remain a visible touch target at "+width);

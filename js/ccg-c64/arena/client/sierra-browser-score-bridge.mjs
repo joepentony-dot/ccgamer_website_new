@@ -69,13 +69,8 @@ export class SierraHelioHostScoreBridge {
     this.#transport=transport;
     this.#run=new SierraAutomaticAttempt(transport);
     this.#status('SIGNED IN · START A NEW GAME TO REQUEST SCORE');
-    // Preserve an explicit F1 start that arrived before the member/CSRF
-    // handshake completed. The emulator cancels this bridge on reset/media
-    // change, so this cannot leak an old run into a new cartridge.
-    if(this.#armPending) {
-      this.#armPending=false;
-      this.#armNow();
-    }
+    // Deferred F1 intent is retained by the parent Arena controller until
+    // member/CSRF is ready. This bridge only arms on explicit armed().
     // Public reads are optional, have no cookies, and can only project
     // approved records for this exact Sierra edition.
     void this.loadBoard('alltime');
