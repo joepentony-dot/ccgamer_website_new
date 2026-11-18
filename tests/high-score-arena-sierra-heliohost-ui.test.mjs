@@ -202,7 +202,7 @@ test('a hung HelioHost member request times out without holding the game hostage
   startF1:()=>{keys.push('press');return true;},releaseF1:()=>keys.push('release')});
  for(let i=0;i<100&&!late;i++)await turn();
  assert.equal(typeof late,'function');
- for(let i=0;i<280;i++)player.observe(ram(0,true));
+ for(let i=0;i<292;i++)player.observe(ram(0,true));
  assert.deepEqual(keys,['press','release']);
  assert.equal(await player.whenHelioHostReady(),false);
  late(reply({account:{id:'01234567-89ab-4abc-8def-0123456789ab'}}));
