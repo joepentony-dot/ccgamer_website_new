@@ -15,7 +15,7 @@ import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-s
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f1_v1";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f2";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
@@ -71,6 +71,7 @@ export async function mountCrossfirePreview({
   section.id="ccg-mobile-arena-panel";
   section.setAttribute("data-ccg-arena-preview","crossfire");
   section.setAttribute("aria-label","Crossfire High Score Arena preview");
+  section.setAttribute("data-ccg-arena-mobile-status","compact");
   const intro=doc.createElement("div");
   intro.className="ccg-arena-preview__intro";
   const title=doc.createElement("h2");
@@ -123,6 +124,7 @@ export async function mountCrossfirePreview({
   const mobileToggle=mobileConsole?.querySelector?.("[data-mobile-arena-toggle]");
   const setMobileOpen=open=>{
     section.classList?.toggle?.("is-mobile-open",open);
+    section.setAttribute("data-ccg-arena-mobile-status",open?"expanded":"compact");
     mobileConsole?.classList?.toggle?.("ccg-arena-mobile-open",open);
     mobileToggle?.setAttribute("aria-expanded",String(open));
     if(mobileToggle) mobileToggle.textContent=open?"CLOSE ARENA":"ARENA";
