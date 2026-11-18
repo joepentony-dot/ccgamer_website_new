@@ -1,3 +1,7 @@
+## 18 November 2026 — SID documentary new upload link (branch only)
+
+- Isolated source/generated-page and existing test correction on `fix/sid-documentary-new-youtube-id-20261118`: replace removed YouTube ID `7PU3GqBDnRI` with owner-supplied `icwCrzfKxhk` across the authoritative video record, Retro Specials thumbnail and canonical watch-player metadata. Preserve the 53 timed chapter links, copy, route, deferred loading and video SEO; require exact-head qualification and live acceptance before calling it deployed. See [SEO workstream](ai-work/seo-and-generated-output.md).
+
 ## 17 November 2026 — OWNER CORRECTION: Sierra Online CRT only (PR #3097, BRANCH ONLY)
 
 - The owner's real mobile emulator search showed four titles. Required visible result when the trusted cartridge manifest is available: **Crossfire (Sierra Online) — CRT** and the distinct **Crossfire - Tron — PRG**, with exact-title **Crossfire — PRG** and **Cross Fire — PRG** suppressed from the displayed library. Archive bytes, original catalogue IDs, deep links and every unrelated game remain preserved; absent or changed verified CRT manifest fails back to original options, not missing games.
