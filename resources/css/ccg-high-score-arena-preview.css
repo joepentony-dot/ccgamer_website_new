@@ -72,6 +72,12 @@
 /* Keep Sierra's score panel and controls in separate rows. The stage
    takes the remaining height and the panel scrolls independently. */
 @media (pointer: coarse) {
+  /* The immersive playbar is the navigation while Sierra is running. */
+  .ccg-c64-lab-body.is-mobile-playing:has(.ccg-c64-console > .ccg-arena-preview)
+    > :is(.ccg-c64-topbar, .ccg-c64-site-nav) {
+    display: none;
+  }
+
   .ccg-c64-console.is-mobile-playing
     .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
     container-type: size;

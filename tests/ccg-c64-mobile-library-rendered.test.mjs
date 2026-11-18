@@ -329,7 +329,15 @@ try {
     const fits = box => box.width > 0 && box.height > 0 && box.top >= viewport.top - 1
       && box.bottom <= viewport.bottom + 1 && box.left >= viewport.left - 1 && box.right <= viewport.right + 1;
     const toggle = node("[data-mobile-arena-toggle]");
+    const blocked = ["[data-mobile-exit-game]", "[data-mobile-zoom-toggle]", "[data-mobile-arena-toggle]",
+      "[data-mobile-keyboard-toggle]", "[data-mobile-pause]", "[data-mobile-save-state]", "[data-mobile-load-state]",
+      ".ccg-c64-touch-fire", ".ccg-c64-touch-jump", "[data-joy-mask='1']"].filter(selector => {
+      const element = node(selector);
+      const box = rect(element);
+      return !element.contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2));
+    });
     return {
+      blocked,
       expanded: toggle.getAttribute("aria-expanded"),
       boardVisible: getComputedStyle(board).display !== "none",
       panelFits: fits(bounds),
@@ -359,6 +367,7 @@ try {
       assert.equal(layout.boardVisible, open, state);
       assert(layout.panelFits && layout.screenFits && layout.controlsFit, state);
       assert.deepEqual(layout.panelOverlaps, [], state);
+      assert.deepEqual(layout.blocked, [], state);
       assert(Math.abs(layout.touchTop - compact.touchTop) < 1, state);
     }
     await evaluate(session, 'document.querySelector("[data-mobile-zoom-toggle]").click();');

@@ -216,3 +216,5 @@ If the emulator changes media or resets while verifying the PRG, the obsolete la
 - Independent review identified that a six-digit HUD also appears in attract mode. The rendered acceptance now requires the real local observer to reach running and the one-shot F1 controller to finish its key release. The DOM attributes mirror those states only on transitions. Cache v253.
 
 - Rendered Chromium passed the narrow portrait cases and 680×320, then caught the desktop loading instructions taking over the mobile landscape grid above 760px. Hide that duplicated loading help only in Sierra immersive landscape. Capture the rendered desktop and mobile layouts in the existing Chromium job. Cache v254.
+
+- Chromium passed all six geometries, but its saved screenshots exposed the emulator header and site navigation painted on top of the landscape playbar. Suppressed those two rows during Sierra immersive play, with a rendered hit-test for the playbar, joystick, FIRE/JUMP and save-state buttons. Cache v255.
