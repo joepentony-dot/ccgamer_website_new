@@ -285,6 +285,49 @@ try {
   assert.equal(sierraScoresDisabled,true,
     "Unverified Sierra cartridge runs must never claim real score recording");
 
+  // Mobile touch controls stay in their existing flow. The Arena is opened
+  // from the playbar as a fixed, dismissible panel so it cannot steal space
+  // from the C64 display or fixed joystick controls.
+  for (const [width,height] of [[320,680],[360,780],[390,844]]) {
+    await emulate(session,width,height,true);
+    const mobileArena = await evaluate(session, [
+      'document.querySelector(".ccg-c64-console").classList.add("is-mobile-playing");',
+      'document.body.classList.add("is-mobile-playing");',
+      'document.querySelector("[data-mobile-playbar]").hidden=false;',
+      'var exit=document.querySelector("[data-mobile-exit-game]"),',
+      'toggle=document.querySelector("[data-mobile-arena-toggle]"),',
+      'keyboard=document.querySelector("[data-mobile-keyboard-toggle]"),',
+      'panel=document.querySelector("[data-ccg-arena-preview=\\"crossfire\\"]"),',
+      'touch=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
+      'var er=exit.getBoundingClientRect(),tr=toggle.getBoundingClientRect(),kr=keyboard.getBoundingClientRect();',
+      'return {toggleHidden:toggle.hidden,toggleDisplay:getComputedStyle(toggle).display,',
+      'panelDisplay:getComputedStyle(panel).display,',
+      'touch:{top:touch.top,bottom:touch.bottom,height:touch.height},',
+      'playbarFits:er.right<=tr.left+1 && tr.right<=kr.left+1};'
+    ].join("\n"));
+    assert.equal(mobileArena.toggleHidden,false,"Mobile Sierra LOAD must expose the Arena toggle at "+width);
+    assert.notEqual(mobileArena.toggleDisplay,"none","Mobile Arena toggle must be visible at "+width);
+    assert.equal(mobileArena.panelDisplay,"none","Arena stays out of touch layout until opened at "+width);
+    assert.equal(mobileArena.playbarFits,true,"Arena toggle must not overlap playbar controls at "+width);
+    const mobileArenaOpen = await evaluate(session, [
+      'var before=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
+      'document.querySelector("[data-mobile-arena-toggle]").click();',
+      'var opened=document.querySelector("[data-ccg-arena-preview=\\"crossfire\\"]"),',
+      'after=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
+      'var closeWidth=document.querySelector("[data-mobile-arena-toggle]").getBoundingClientRect().width;',
+      'return {open:opened.classList.contains("is-mobile-open"),display:getComputedStyle(opened).display,',
+      'sameTop:Math.abs(before.top-after.top)<1,sameHeight:Math.abs(before.height-after.height)<1,closeWidth};'
+    ].join("\n"));
+    assert.equal(mobileArenaOpen.open,true,"Mobile Arena toggle must open the panel at "+width);
+    assert.notEqual(mobileArenaOpen.display,"none","Opened mobile Arena must be visible at "+width);
+    assert.equal(mobileArenaOpen.sameTop,true,"Opening Arena must not move touch controls at "+width);
+    assert.equal(mobileArenaOpen.sameHeight,true,"Opening Arena must not resize touch controls at "+width);
+    assert(mobileArenaOpen.closeWidth>0,"CLOSE ARENA must remain a visible touch target at "+width);
+    await evaluate(session,'document.querySelector("[data-mobile-arena-toggle]").click();return true;');
+    assert.equal(await evaluate(session,'return !document.querySelector("[data-ccg-arena-preview=\\"crossfire\\"]").classList.contains("is-mobile-open");'),true,
+      "Mobile Arena toggle must close the panel at "+width);
+  }
+
   // Crossfire - Tron is a different PRG; keep its normal launch completely
   // separate, without a Sierra Arena panel, frame or any HelioHost score call.
   await wd("POST", "/session/"+session+"/url", {url:crossfireUrl.replace("archive-02121", "archive-02122")});

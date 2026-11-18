@@ -79,6 +79,7 @@ test('Sierra CRT gets neon frame and empty rankings, never an invented score',as
   assert.equal(stage.attributes['data-ccg-arena-frame'],'crossfire');
   assert.equal(doc.head.children.length,1);
   assert.equal(panel.find(x=>x.tag==='p'&&x.textContent==='SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED')!==null,true);
+  assert.equal(panel.find(x=>x.tag==='p'&&x.textContent==='PRESS F1 TO START')!==null,true);
   assert.equal(panel.find(x=>x.tag==='p'&&x.textContent==='CRT SCORE DETECTION NOT YET VERIFIED')!==null,true);
   const slots=panel.find(x=>x.tag==='ol');
   assert.equal(slots.children.length,5);
