@@ -128,9 +128,9 @@ const screenStage = document.querySelector(".ccg-c64-screen-stage");
 
 // Automatically recognise the verified Sierra CRT after its normal LOAD.
 // All other games remain unchanged: no Arena modules, styles or network.
-// This is presentation only; CRT score detection and submissions are OFF.
-// Sierra Online's CRT is a visual-only pilot. The Atlantis PRG's score
-// observer and HelioHost submission endpoint must never be used for it.
+// Sierra CRT now supports read-only LOCAL scores and an untrusted F1-armed
+// GAME OVER candidate. Network scores, rankings and member writes remain OFF.
+// Atlantis/Pantheon PRG observers/backend must never be used for this CRT.
 let activeArenaPreview = null;
 let arenaPreviewGeneration = 0;
 function clearArenaPreview() {
@@ -1312,6 +1312,11 @@ function handleC64Key(event, pressed) {
     const binding = physicalMatrixBinding(event);
     if (!binding) return;
     event.preventDefault();
+    // The original Sierra CRT must have shown its actual GAME OVER before
+    // an unmodified F1 key can arm a new LOCAL run. This never sends scores.
+    if (event.code === "F1" && !event.shiftKey && !event.ctrlKey) {
+      activeArenaPreview?.armFromUserF1?.();
+    }
     pressMatrixBinding(heldKey, binding);
     return;
   }
@@ -3608,6 +3613,8 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     if (prior?.timer) clearTimeout(prior.timer);
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
     pollGamepad();
+    // Mirror physical F1 arming on mobile; never wire touch joystick actions.
+    if (code === "F1") activeArenaPreview?.armFromUserF1?.();
     machine.cia1.setKey(col, row, true);
     button.classList.add("is-pressed");
     if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;
