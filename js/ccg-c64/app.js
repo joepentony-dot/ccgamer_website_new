@@ -153,12 +153,14 @@ async function mountSelectedArenaPreview(entry, bytes) {
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261118_crossfire_sierra_one_click_v2");
+    const module = await import("./arena-preview.js?ccg_rev=20261118_sierra_arena_layout_v5");
     if (generation !== arenaPreviewGeneration) return;
     const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({
       entry, bytes, stage: screenStage,
       launchQuery: sierraOneClickConsumed ? "" : window.location.search,
+      scoreQuery: window.location.search,
+      websiteOrigin: window.location.origin,
       // Never dispatch browser keys. Direct original C64 CIA input is scoped
       // to the same checksum-verified machine, and released on cancellation.
       startF1: () => {

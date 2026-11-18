@@ -36,8 +36,10 @@ export function isSierraOneClickLaunchQuery(search) {
  */
 export class SierraOneClickStarter {
   constructor({
-    onArm,onPress,onRelease,stableFrames=25,holdFrames=8,maxWaitFrames=2000
+    onArm,onPress,onRelease,canStart=()=>true,
+    stableFrames=25,holdFrames=8,maxWaitFrames=2000
   }={}) {
+    if(typeof canStart!=='function')throw new TypeError('F1 readiness callback required');
     if (![onArm,onPress,onRelease].every(fn=>typeof fn==='function')) {
       throw new TypeError('A verified machine must supply F1 callbacks');
     }
@@ -47,6 +49,7 @@ export class SierraOneClickStarter {
         maxWaitFrames<stableFrames || maxWaitFrames>10000) {
       throw new RangeError('Invalid Sierra one-click PAL-frame limits');
     }
+    this.canStart=canStart;
     this.onArm=onArm;
     this.onPress=onPress;
     this.onRelease=onRelease;
@@ -69,6 +72,9 @@ export class SierraOneClickStarter {
       this.gameOverFrames=isSierraCrossfireGameOver(ram)
         ? this.gameOverFrames+1 : 0;
       if (this.gameOverFrames<this.stableFrames) return false;
+      // For opt-in ranked attempts, allow the member/CSRF check to finish
+      // before F1. Do not consume or repeat the one-shot key while pending.
+      if(this.canStart()!==true)return false;
       if (this.onArm()!==true || this.onPress()!==true) {
         this.cancel();
         return false;

@@ -12,6 +12,13 @@ import { spawn, spawnSync } from "node:child_process";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const host = "127.0.0.1", driverPort = 19751;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const screenshotDir = process.env.CCG_C64_RENDERED_SCREENSHOTS;
+async function screenshot(id, name) {
+  if (!screenshotDir) return;
+  fs.mkdirSync(screenshotDir, {recursive:true});
+  const png = await wd("GET", "/session/" + id + "/screenshot");
+  fs.writeFileSync(path.join(screenshotDir, name + ".png"), Buffer.from(png, "base64"));
+}
 const mime = { ".html":"text/html", ".css":"text/css", ".js":"text/javascript", ".mjs":"text/javascript",
   ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png",
   ".webp":"image/webp", ".woff2":"font/woff2", ".ico":"image/x-icon" };
@@ -253,6 +260,7 @@ try {
     await sleep(250);
   }
   assert(framed?.board, "Verified Crossfire must start with its preview and artwork");
+  await screenshot(session, "sierra-desktop");
   assert(Math.abs(framed.ratio - 4 / 3) < 0.01, "Crossfire artwork must frame a 4:3 canvas");
   assert(framed.left > .18 && framed.right < .82 && framed.top > .19 && framed.bottom < .86,
     "The gameplay canvas must fit in the artwork opening: " + JSON.stringify(framed));
@@ -285,48 +293,87 @@ try {
   assert.equal(sierraScoresDisabled,true,
     "Unverified Sierra cartridge runs must never claim real score recording");
 
-  // Mobile touch controls stay in their existing flow. The Arena is opened
-  // from the playbar as a fixed, dismissible panel so it cannot steal space
-  // from the C64 display or fixed joystick controls.
-  for (const [width,height] of [[320,680],[360,780],[390,844]]) {
-    await emulate(session,width,height,true);
-    const mobileArena = await evaluate(session, [
-      'document.querySelector(".ccg-c64-console").classList.add("is-mobile-playing");',
-      'document.body.classList.add("is-mobile-playing");',
-      'document.querySelector("[data-mobile-playbar]").hidden=false;',
-      'var exit=document.querySelector("[data-mobile-exit-game]"),',
-      'toggle=document.querySelector("[data-mobile-arena-toggle]"),',
-      'keyboard=document.querySelector("[data-mobile-keyboard-toggle]"),',
-      'panel=document.querySelector("[data-ccg-arena-preview=\\"crossfire\\"]"),',
-      'touch=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
-      'var er=exit.getBoundingClientRect(),tr=toggle.getBoundingClientRect(),kr=keyboard.getBoundingClientRect();',
-      'return {toggleHidden:toggle.hidden,toggleDisplay:getComputedStyle(toggle).display,',
-      'panelDisplay:getComputedStyle(panel).display,',
-      'touch:{top:touch.top,bottom:touch.bottom,height:touch.height},',
-      'playbarFits:er.right<=tr.left+1 && tr.right<=kr.left+1};'
-    ].join("\n"));
-    assert.equal(mobileArena.toggleHidden,false,"Mobile Sierra LOAD must expose the Arena toggle at "+width);
-    assert.notEqual(mobileArena.toggleDisplay,"none","Mobile Arena toggle must be visible at "+width);
-    assert.equal(mobileArena.panelDisplay,"none","Arena stays out of touch layout until opened at "+width);
-    assert.equal(mobileArena.playbarFits,true,"Arena toggle must not overlap playbar controls at "+width);
-    const mobileArenaOpen = await evaluate(session, [
-      'var before=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
-      'document.querySelector("[data-mobile-arena-toggle]").click();',
-      'var opened=document.querySelector("[data-ccg-arena-preview=\\"crossfire\\"]"),',
-      'after=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
-      'var closeWidth=document.querySelector("[data-mobile-arena-toggle]").getBoundingClientRect().width;',
-      'return {open:opened.classList.contains("is-mobile-open"),display:getComputedStyle(opened).display,',
-      'sameTop:Math.abs(before.top-after.top)<1,sameHeight:Math.abs(before.height-after.height)<1,closeWidth};'
-    ].join("\n"));
-    assert.equal(mobileArenaOpen.open,true,"Mobile Arena toggle must open the panel at "+width);
-    assert.notEqual(mobileArenaOpen.display,"none","Opened mobile Arena must be visible at "+width);
-    assert.equal(mobileArenaOpen.sameTop,true,"Opening Arena must not move touch controls at "+width);
-    assert.equal(mobileArenaOpen.sameHeight,true,"Opening Arena must not resize touch controls at "+width);
-    assert(mobileArenaOpen.closeWidth>0,"CLOSE ARENA must remain a visible touch target at "+width);
-    await evaluate(session,'document.querySelector("[data-mobile-arena-toggle]").click();return true;');
-    assert.equal(await evaluate(session,'return !document.querySelector("[data-ccg-arena-preview=\\"crossfire\\"]").classList.contains("is-mobile-open");'),true,
-      "Mobile Arena toggle must close the panel at "+width);
+  // Launch the pinned cartridge on a coarse-pointer device. Exercise the
+  // actual mobile controls and measure what paints, including rotated phones.
+  await emulate(session, 390, 844, true);
+  const sierraUrl = crossfireUrl.replace("archive-02121", "owner-crt-more-crossfiresierraonline-0c60e852f438") + "&start=1";
+  await wd("POST", "/session/" + session + "/url", { url: sierraUrl });
+  let mobileStarted = false;
+  for (let attempt = 0; attempt < 120; attempt++) {
+    mobileStarted = await evaluate(session, `
+      const console = document.querySelector(".ccg-c64-console.is-mobile-playing");
+      const run = console?.querySelector('[data-local-run-phase="running"][data-one-click-phase="done"]');
+      return Boolean(run?.querySelector(".ccg-arena-preview__run strong")?.textContent.match(/^\\d{6}$/)
+        && console.querySelector("[data-mobile-joystick-swap]")?.textContent.includes("PORT 2")
+        && getComputedStyle(console.querySelector(".ccg-c64-screen-stage")).backgroundImage.includes("crossfire-original-frame.webp"));
+    `);
+    if (mobileStarted) break;
+    await sleep(250);
   }
+  assert(mobileStarted, "One-click mobile Sierra boot must show a real local score, artwork and port 2");
+
+  const mobileArenaLayout = `
+    const rect = el => el.getBoundingClientRect();
+    const node = selector => document.querySelector(selector);
+    const panel = node("[data-ccg-arena-preview]");
+    const board = panel.querySelector(".ccg-arena-preview__board");
+    const viewport = rect(node(".ccg-c64-console"));
+    const bounds = rect(panel);
+    const bezel = rect(node(".ccg-c64-screen-bezel"));
+    const screen = rect(node(".ccg-c64-screen-stage"));
+    const touch = rect(node(".ccg-c64-touch-controls"));
+    const protectedSelectors = [".ccg-c64-screen-stage", "[data-mobile-playbar]",
+      "[data-mobile-game-actions]", ".ccg-c64-touch-controls", ".ccg-c64-touch-options"];
+    const overlap = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1
+      && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1;
+    const fits = box => box.width > 0 && box.height > 0 && box.top >= viewport.top - 1
+      && box.bottom <= viewport.bottom + 1 && box.left >= viewport.left - 1 && box.right <= viewport.right + 1;
+    const toggle = node("[data-mobile-arena-toggle]");
+    const blocked = ["[data-mobile-exit-game]", "[data-mobile-zoom-toggle]", "[data-mobile-arena-toggle]",
+      "[data-mobile-keyboard-toggle]", "[data-mobile-pause]", "[data-mobile-save-state]", "[data-mobile-load-state]",
+      ".ccg-c64-touch-fire", ".ccg-c64-touch-jump", "[data-joy-mask='1']"].filter(selector => {
+      const element = node(selector);
+      const box = rect(element);
+      return !element.contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2));
+    });
+    return {
+      blocked,
+      expanded: toggle.getAttribute("aria-expanded"),
+      boardVisible: getComputedStyle(board).display !== "none",
+      panelFits: fits(bounds),
+      gameSize: {width: bezel.width, height: bezel.height, stageHeight: screen.height},
+      screenFits: bezel.top >= screen.top - 1 && bezel.bottom <= screen.bottom + 1 && fits(bezel) && bezel.width >= 48 && Math.abs(bezel.width / bezel.height - 4 / 3) < 0.03,
+      controlsFit: [toggle, node(".ccg-c64-touch-fire"), node(".ccg-c64-touch-jump")].every(el => fits(rect(el))),
+      panelOverlaps: protectedSelectors.filter(selector => overlap(bounds, rect(node(selector)))),
+      touchTop: touch.top,
+      zoomed: node("[data-mobile-zoom-toggle]").getAttribute("aria-pressed")
+    };
+  `;
+  for (const [width, height] of [[320,680], [360,780], [390,844], [680,320], [780,360], [844,390]]) {
+    await emulate(session, width, height, true);
+    const compact = await evaluate(session, mobileArenaLayout);
+    for (const [open, zoom] of [[false,false], [true,false], [true,true], [false,true]]) {
+      if (open !== (await evaluate(session, mobileArenaLayout)).boardVisible) {
+        await evaluate(session, 'document.querySelector("[data-mobile-arena-toggle]").click();');
+      }
+      if (zoom !== ((await evaluate(session, mobileArenaLayout)).zoomed === "true")) {
+        await evaluate(session, 'document.querySelector("[data-mobile-zoom-toggle]").click();');
+      }
+      const layout = await evaluate(session, mobileArenaLayout);
+      const state = `${width}x${height} Arena=${open} Zoom=${zoom}: ${JSON.stringify(layout)}`;
+      if (!zoom) await screenshot(session, `sierra-${width}x${height}-${open ? "leaderboard" : "score-strip"}`);
+      assert.equal(layout.expanded, String(open), state);
+      assert.equal(layout.zoomed, String(zoom), state);
+      assert.equal(layout.boardVisible, open, state);
+      assert(layout.panelFits && layout.screenFits && layout.controlsFit, state);
+      assert.deepEqual(layout.panelOverlaps, [], state);
+      assert.deepEqual(layout.blocked, [], state);
+      assert(Math.abs(layout.touchTop - compact.touchTop) < 1, state);
+    }
+    await evaluate(session, 'document.querySelector("[data-mobile-zoom-toggle]").click();');
+    console.log("PASS Sierra mobile Arena geometry " + width + "x" + height);
+  }
+  await emulate(session, 1440, 900, false);
 
   // Crossfire - Tron is a different PRG; keep its normal launch completely
   // separate, without a Sierra Arena panel, frame or any HelioHost score call.
