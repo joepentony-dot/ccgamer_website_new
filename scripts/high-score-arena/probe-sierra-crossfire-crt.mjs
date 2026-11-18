@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 import { C64Machine } from '../../js/ccg-c64/core/machine.js';
 import { KEY_MAP } from '../../js/ccg-c64/core/cia.js';
+import { readSierraCrossfireScreenScores } from './read-sierra-crossfire-screen-score.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const expected = Object.freeze({
@@ -91,7 +92,8 @@ function capture(label) {
  }
  const result={label,frames,pc:machine.cpu.pc,screenBase:base,
    vicD011:registers[0x11],vicD018:registers[0x18],
-   ramSha256:sha(ram),screenRows,asciiDigits};
+   ramSha256:sha(ram),screenRows,asciiDigits,
+   localScoreCandidate:readSierraCrossfireScreenScores(ram)};
  const previous=captures.at(-1);
  if(previous) {
   const changed=[];for(let i=0;i<65536;i++)if(ram[i]!==previous.ram[i])changed.push(i);
@@ -106,7 +108,8 @@ function capture(label) {
    label,frames,pc:result.pc,screenBase:base,ramSha256:result.ramSha256,
    visibleRows:screenRows.map((text,index)=>({index,text:text.trim()}))
      .filter(item=>/[A-Z0-9]/.test(item.text)).slice(0,22),
-   asciiDigits:asciiDigits.slice(0,12),changedRamCount:result.changedRam?.count??null
+   asciiDigits:asciiDigits.slice(0,12),localScoreCandidate:result.localScoreCandidate,
+   changedRamCount:result.changedRam?.count??null
  }));
 }
 advance(400);capture('01-title');
