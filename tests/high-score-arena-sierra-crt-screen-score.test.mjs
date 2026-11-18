@@ -121,3 +121,25 @@ test('authentic 2026-11-18 no-F1 ROM capture decodes zero score and rejects demo
  assert.equal(observer.finished,false);
  assert.equal(fixture.expected.submittable,false);
 });
+
+
+test('two authentic original CRT 000010 RAM captures decode as score ten, not GAME OVER',()=>{
+ const fixture=JSON.parse(readFileSync(new URL('./fixtures/sierra-crossfire-crt-real-zero-gameover.json',import.meta.url),'utf8'));
+ assert.equal(fixture.positiveScoreCaptures.length,2);
+ for(const capture of fixture.positiveScoreCaptures){
+  assert.match(capture.fullRamSha256,/^[0-9a-f]{64}$/);
+  const ram=new Uint8Array(65536);
+  ram.set(fixture.digitFont,0x2800);
+  for(let row=0;row<25;row++)ram[0x400+row*40+39]=fixture.edgeColumn[row];
+  for(let i=0;i<6;i++){
+   ram[0x400+(19+i)*40+39]=capture.scoreDigits[i];
+   ram[0x400+(6+i)*40+39]=capture.previousHighDigits[i];
+  }
+  ram.set(capture.gameOverTextRow13,0x400+13*40+10);
+  const decoded=readSierraCrossfireScreenScores(ram);
+  assert.equal(decoded.score,capture.expected.score,capture.strategy);
+  assert.equal(decoded.highScore,capture.expected.highScore,capture.strategy);
+  assert.equal(sierraCrossfireGameOverVisible(ram),false,capture.strategy);
+  assert.equal(capture.expected.submittable,false);
+ }
+});
