@@ -66,34 +66,116 @@
   }
 }
 
-/* The fixed touch console allocates its height to gameplay and controls.
-   Keep the board out of normal flow; mobile users open it from the playbar. */
+/* The fixed touch console keeps the game canvas and controls stable. On
+   coarse-pointer play, show a compact, honest local-score strip in normal
+   layout and promote the same panel to a fixed, bounded surface when ARENA
+   is opened. Use descendant selectors rather than assuming the panel is a
+   direct child of the screen stage. */
 @media (pointer: coarse) {
-  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview {
-    display: none;
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"] {
+    display: block !important;
+    position: relative;
+    z-index: 4;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    margin: 6px 0;
+    padding: 6px 8px;
+    overflow: visible;
+    border-radius: 6px;
   }
 
-  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open {
-    display: block;
-    position: fixed;
-    z-index: 90;
-    left: max(8px, env(safe-area-inset-left));
-    right: max(8px, env(safe-area-inset-right));
-    bottom: max(8px, env(safe-area-inset-bottom));
-    max-height: min(70vh, 480px);
-    overflow: auto;
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
+    .ccg-arena-preview__start,
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
+    .ccg-arena-preview__modes,
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
+    .ccg-arena-preview__board {
+    display: none !important;
+  }
+
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
+    .ccg-arena-preview__display {
+    display: block !important;
+    min-height: 0 !important;
+  }
+
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
+    .ccg-arena-preview__intro {
+    gap: 4px;
     margin: 0;
-    border-radius: 8px;
+  }
+
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
+    .ccg-arena-preview__intro h2 {
+    font-size: 12px;
+  }
+
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
+    .ccg-arena-preview__run {
+    display: grid;
+    grid-template-columns: minmax(74px, auto) minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 5px 8px;
+    text-align: left;
+  }
+
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
+    .ccg-arena-preview__run strong {
+    font-size: 20px;
+  }
+
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open {
+    display: block !important;
+    position: fixed !important;
+    z-index: 2147483000 !important;
+    left: max(8px, env(safe-area-inset-left)) !important;
+    right: max(8px, env(safe-area-inset-right)) !important;
+    bottom: max(52px, calc(44px + env(safe-area-inset-bottom))) !important;
+    width: auto !important;
+    max-height: min(70vh, 480px) !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    overflow: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    isolation: isolate;
     box-shadow: 0 10px 36px rgba(0,0,0,.78), inset 0 0 18px #0b346d;
   }
 
-  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
+    .ccg-arena-preview__display {
+    display: flex !important;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
     .ccg-arena-preview__board {
     height: 220px;
     min-height: 180px;
   }
 
-  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open
+  .ccg-c64-console.is-mobile-playing
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
     .ccg-arena-preview__run {
     min-height: 76px;
   }
