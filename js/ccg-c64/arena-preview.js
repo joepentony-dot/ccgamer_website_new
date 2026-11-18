@@ -142,6 +142,7 @@ export async function mountCrossfirePreview({
           onRelease:releaseF1
         }) : null;
   return Object.freeze({
+    oneClickEnabled: Boolean(autoStarter),
     cancelOneClick() { autoStarter?.cancel(); },
     armFromUserF1() {
       if(disposed)return false;
