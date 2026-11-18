@@ -133,6 +133,8 @@ const screenStage = document.querySelector(".ccg-c64-screen-stage");
 // Atlantis/Pantheon PRG observers/backend must never be used for this CRT.
 let activeArenaPreview = null;
 let arenaPreviewGeneration = 0;
+// Start=1 is an explicit ONE-SHOT action on a newly opened deep link only.
+let sierraOneClickConsumed = false;
 function clearArenaPreview() {
   arenaPreviewGeneration++;
   activeArenaPreview?.dispose();
@@ -156,7 +158,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
     const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({
       entry, bytes, stage: screenStage,
-      launchQuery: window.location.search,
+      launchQuery: sierraOneClickConsumed ? "" : window.location.search,
       // Never dispatch browser keys. Direct original C64 CIA input is scoped
       // to the same checksum-verified machine, and released on cancellation.
       startF1: () => {
@@ -174,6 +176,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
       return;
     }
     activeArenaPreview = controller;
+    if (controller?.oneClickEnabled) sierraOneClickConsumed = true;
   } catch (error) {
     console.warn("[ccg-arena] Sierra CRT-only preview unavailable:", error);
   }
