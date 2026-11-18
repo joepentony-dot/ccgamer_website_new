@@ -110,14 +110,41 @@ function capture(label) {
  }));
 }
 advance(400);capture('01-title');
-press('F1',16);advance(150);capture('02-f1-start');
-const actions=[['right-fire',0xe7],['up-fire',0xee],['left-fire',0xeb],
- ['down-fire',0xed],['right-fire-2',0xe7],['fire',0xef],
- ['left-fire-2',0xeb],['neutral',0xff]];
-for(let i=0;i<actions.length;i++) {
- const [label,port]=actions[i];
- machine.joyPort2=port;advance(150);machine.joyPort2=0xff;
- if(i===1||i===3||i===5||i===7)capture((i+3)+'-'+label);
+const titleState=machine.serializeState();
+// Re-run the SAME authentic cartridge title state against several read-only
+// controlled input routes, capturing BEFORE the short-lived round ends.
+// Crossfire can reach GAME OVER rapidly if no movement/fire is supplied.
+const trials=[
+  {name:'no-input',port:2,mask:0xff},
+  {name:'joy2-right-fire',port:2,mask:0xe7},
+  {name:'joy2-up-fire',port:2,mask:0xee},
+  {name:'joy2-left-fire',port:2,mask:0xeb},
+  {name:'joy2-down-fire',port:2,mask:0xed},
+  {name:'joy2-fire',port:2,mask:0xef},
+  {name:'joy1-right-fire',port:1,mask:0xe7},
+  {name:'key-fire-up',key:'KeyE'},
+  {name:'key-fire-right',key:'KeyF'},
+  {name:'key-fire-left',key:'KeyS'},
+  {name:'key-fire-down',key:'KeyD'}
+];
+for(let n=0;n<trials.length;n++){
+ const trial=trials[n];
+ machine.restoreState(titleState);
+ machine.joyPort1=0xff;machine.joyPort2=0xff;
+ press('F1',4);
+ // At this early frame the original game's round should still be in progress.
+ // Only look for genuine HUD differences; never force a numeric score.
+ if(n===0)capture('02-after-f1-four-frames');
+ const pos=trial.key?KEY_MAP[trial.key]:null;
+ if(pos)machine.cia1.setKey(...pos,true);
+ if(trial.port===1)machine.joyPort1=trial.mask;
+ if(trial.port===2)machine.joyPort2=trial.mask;
+ advance(42);
+ capture(String(n+3).padStart(2,'0')+'-'+trial.name+'-early');
+ advance(65);
+ capture(String(n+3).padStart(2,'0')+'-'+trial.name+'-late');
+ if(pos)machine.cia1.setKey(...pos,false);
+ machine.joyPort1=0xff;machine.joyPort2=0xff;
 }
 writeFileSync(resolve(output,'manifest.json'),JSON.stringify({
  game:expected.title,mediaSha256:expected.digest,captureFrames:frames,
