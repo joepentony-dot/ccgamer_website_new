@@ -120,6 +120,17 @@ const titleState=machine.serializeState();
 // key holds and capture very early frames before gameplay advances.
 const positiveCandidates=[];
 if(process.argv.includes('--hunt-score')) {
+ // Begin AFTER the CRT's automatic demonstration has reached GAME OVER.
+ // F1 during its initial SierraVision credits is too early and was ignored;
+ // all previous 24 strategies merely observed the same ~57-frame demo end.
+ let attractFrames=0;
+ while(!sierraCrossfireGameOverVisible(machine.mem.ram)&&attractFrames<400) {
+  advance(1);attractFrames++;
+ }
+ assert(sierraCrossfireGameOverVisible(machine.mem.ram),
+  'Expected real ROM attract-mode GAME OVER before explicit player F1');
+ capture('02-gameover-before-user-f1');
+ const gameOverState=machine.serializeState();
  // Genuine Sierra CRT C64Machine, no synthetic RAM modifications.
  // Each trial independently restarts from the pre-game title state.
  // Joystick FIRE changes from movement mode to firing mode; keyboard offers
@@ -136,7 +147,7 @@ if(process.argv.includes('--hunt-score')) {
  let attempt=0;
  for(const strategy of strategies) {
   attempt++;
-  machine.restoreState(titleState);
+  machine.restoreState(gameOverState);
   machine.joyPort1=0xff;machine.joyPort2=0xff;
   press('F1',8);
   const held=[];
