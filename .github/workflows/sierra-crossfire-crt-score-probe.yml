@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - "scripts/high-score-arena/probe-sierra-crossfire-crt.mjs"
+      - "scripts/high-score-arena/read-sierra-crossfire-screen-score.mjs"
+      - "scripts/high-score-arena/observe-sierra-crossfire-run.mjs"
+      - "tests/high-score-arena-sierra-crt-screen-score.test.mjs"
       - ".github/workflows/sierra-crossfire-crt-score-probe.yml"
       - "js/ccg-c64/core/**"
       - "emulator/c64/media/cartridge-replacements/active.json"
@@ -28,6 +31,7 @@ jobs:
           node --check scripts/high-score-arena/probe-sierra-crossfire-crt.mjs
           node --test tests/high-score-arena-sierra-crt-screen-score.test.mjs
           node scripts/high-score-arena/probe-sierra-crossfire-crt.mjs --output-dir "$RUNNER_TEMP/sierra-crossfire-crt"
+          node scripts/high-score-arena/probe-sierra-crossfire-crt.mjs --hunt-score --output-dir "$RUNNER_TEMP/sierra-crossfire-crt/hunt"
       - name: Preserve real frames and RAM captures
         if: always()
         uses: actions/upload-artifact@v4
