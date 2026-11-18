@@ -43,11 +43,20 @@ export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThi
 export async function mountCrossfirePreview({
   entry, bytes, stage, doc=globalThis.document, subtle, isCurrent=()=>true,
   launchQuery="", startF1=null, releaseF1=null,
-  scoreQuery="", websiteOrigin=""
+  scoreQuery="", websiteOrigin="", scoreFetchImpl=globalThis.fetch
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
   if(typeof isCurrent === "function" && !isCurrent()) return null;
+  // Only a deliberate official-site Sierra deep link may request member
+  // score transport; the server still independently admits every attempt.
+  let scoreRequested=false;
+  try {
+    const q=new URLSearchParams(scoreQuery);
+    scoreRequested=websiteOrigin==="https://www.cheekycommodoregamer.co.uk" &&
+      q.getAll("scores").length===1 && q.get("scores")==="1" &&
+      q.getAll("game").length===1 && q.get("game")===EXPECTED_CATALOG_ID;
+  } catch { scoreRequested=false; }
   // Do not create a PRG observer, authenticate a member or query the Atlantis
   // leaderboard. Only the exact Sierra CRT may get the visual frame.
 
@@ -67,7 +76,9 @@ export async function mountCrossfirePreview({
   const title=doc.createElement("h2");
   title.textContent="CROSSFIRE · HIGH SCORE ARENA";
   const notice=doc.createElement("p");
-  notice.textContent="SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED";
+  notice.textContent=scoreRequested
+    ? "SIERRA ONLINE CRT · HELIOHOST SUBMISSION REQUESTED"
+    : "SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED";
   intro.append(title,notice);
   const startHint=doc.createElement("p");
   startHint.className="ccg-arena-preview__start";
@@ -99,8 +110,6 @@ export async function mountCrossfirePreview({
   remoteHint.className="ccg-arena-preview__submission";
   // Only display a submission status if explicitly requested on the official
   // website for this checksum-verified Sierra cartridge.
-  const scoreRequested=websiteOrigin==="https://www.cheekycommodoregamer.co.uk" &&
-    typeof scoreQuery==="string" && scoreQuery.includes("scores=1");
   if(scoreRequested){
     remoteHint.textContent="HELIOHOST SUBMISSION · CHECKING CONNECTION";
     run.append(remoteHint);
@@ -156,8 +165,14 @@ export async function mountCrossfirePreview({
         return;
       }
       scoreBridge=new mod.SierraHelioHostScoreBridge({
-        enabled:true,origin:websiteOrigin,
-        onStatus:value=>{if(!disposed) remoteHint.textContent=value;},
+        enabled:true,origin:websiteOrigin,fetchImpl:scoreFetchImpl,
+        onStatus:value=>{
+          if(disposed)return;
+          remoteHint.textContent=value;
+          if(value.startsWith("SCORE ") && value.includes("RECEIVED · PENDING REVIEW")){
+            hint.textContent="GAME OVER · SCORE SUBMITTED FOR REVIEW";
+          }
+        },
         onBoard:(view,data)=>{
           if(!disposed && mode===view)renderArenaBoard(board,data,{mode});
         }
