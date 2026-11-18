@@ -177,6 +177,53 @@ if(process.argv.includes('--hunt-score')) {
     strategy:strategy.name,frames,terminal,hit
   }));
  }
+ if(process.argv.includes('--full-run')) {
+  // Long original-ROM sessions. Capture actual score transitions and an
+  // end-of-run only when 25 consecutive frames show genuine GAME OVER.
+  // This produces evidence, NEVER a trusted/eligible public attempt.
+  for(const [name,mask] of [['up-fire',0xee],['left-fire',0xeb]]) {
+   machine.restoreState(gameOverState);
+   machine.joyPort1=0xff;machine.joyPort2=0xff;
+   press('F1',8);
+   machine.joyPort2=mask;
+   const changes=[];
+   let sawZero=false,sawPositive=false,gameOverFrames=0,finished=false;
+   let lastScore=null,lastActiveScore=null;
+   for(let i=0;i<1500;i++) {
+    advance(1);
+    const ram=machine.mem.ram;
+    const hud=readSierraCrossfireScreenScores(ram);
+    const over=sierraCrossfireGameOverVisible(ram);
+    if(hud&&!over) {
+     gameOverFrames=0;
+     if(hud.score===0)sawZero=true;
+     if(hud.score>0)sawPositive=true;
+     if(hud.score!==lastScore) {
+      lastScore=hud.score;
+      changes.push({frame:i+1,score:hud.score,highScore:hud.highScore});
+      if(changes.length<=15)capture('run-'+name+'-score-'+String(changes.length).padStart(2,'0'));
+     }
+     lastActiveScore=hud.score;
+    } else if(over&&sawZero&&sawPositive) {
+     gameOverFrames++;
+     if(gameOverFrames>=25) {
+      finished=true;
+      capture('run-'+name+'-gameover');
+      break;
+     }
+    } else {
+     gameOverFrames=0;
+    }
+   }
+   machine.joyPort2=0xff;
+   console.log('SIERRA_CRT_FULL_RUN',JSON.stringify({
+    name,mediaSha256:expected.digest,sawActiveZero:sawZero,
+    sawPositiveScore:sawPositive,positiveTransitions:changes.filter(x=>x.score>0),
+    changes,stableTerminal25Frames:finished,lastActiveScore,
+    publicScoreEligible:false,submitted:false
+   }));
+  }
+ }
  console.log('SIERRA_CRT_SCORE_HUNT_COMPLETE',JSON.stringify({
    strategies:strategies.length,positiveCandidates:positiveCandidates.length,
    automaticSubmissionEnabled:false
