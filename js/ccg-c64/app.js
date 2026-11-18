@@ -149,12 +149,25 @@ function observeArenaPreviewFrame() {
 async function mountSelectedArenaPreview(entry, bytes) {
   if (!screenStage || !isVerifiedSierraCrossfireCrt(entry)) return;
   const generation = arenaPreviewGeneration;
+  const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261118_crossfire_sierra_local_score_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261118_crossfire_sierra_one_click_v1");
     if (generation !== arenaPreviewGeneration) return;
+    const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({
       entry, bytes, stage: screenStage,
-      isCurrent: () => generation === arenaPreviewGeneration
+      launchQuery: window.location.search,
+      // Never dispatch browser keys. Direct original C64 CIA input is scoped
+      // to the same checksum-verified machine, and released on cancellation.
+      startF1: () => {
+        if(generation!==arenaPreviewGeneration || machine!==verifiedMachine ||
+           !running || paused || !f1 || !verifiedMachine?.cia1) return false;
+        verifiedMachine.cia1.setKey(f1[0],f1[1],true);
+        return true;
+      },
+      releaseF1: () => verifiedMachine?.cia1?.setKey(f1[0],f1[1],false),
+      isCurrent: () => generation === arenaPreviewGeneration &&
+        machine === verifiedMachine
     });
     if (generation !== arenaPreviewGeneration) {
       controller?.dispose();
@@ -1315,6 +1328,7 @@ function handleC64Key(event, pressed) {
     // The original Sierra CRT must have shown its actual GAME OVER before
     // an unmodified F1 key can arm a new LOCAL run. This never sends scores.
     if (event.code === "F1" && !event.shiftKey && !event.ctrlKey) {
+      activeArenaPreview?.cancelOneClick?.();
       activeArenaPreview?.armFromUserF1?.();
     }
     pressMatrixBinding(heldKey, binding);
@@ -3614,7 +3628,10 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
     pollGamepad();
     // Mirror physical F1 arming on mobile; never wire touch joystick actions.
-    if (code === "F1") activeArenaPreview?.armFromUserF1?.();
+    if (code === "F1") {
+      activeArenaPreview?.cancelOneClick?.();
+      activeArenaPreview?.armFromUserF1?.();
+    }
     machine.cia1.setKey(col, row, true);
     button.classList.add("is-pressed");
     if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;
