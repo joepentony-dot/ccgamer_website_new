@@ -212,3 +212,5 @@ If the emulator changes media or resets while verifying the PRG, the obsolete la
 - Browser acceptance depends on the new CI run because this shell cannot start Chromium. The physical Android and full HelioHost receipt, private moderation and ranking checks remain outstanding.
 
 - First rendered CI run reached real Sierra mobile play and found the shared inline native-PAL width could distort the 4:3 picture with the board open at 320px. Sierra now limits both dimensions to the stage and uses a scoped width override. Cache advances to v252 for the correction. The acceptance test still checks every layout state and now reports the picture and stage dimensions on failure.
+
+- Independent review identified that a six-digit HUD also appears in attract mode. The rendered acceptance now requires the real local observer to reach running and the one-shot F1 controller to finish its key release. The DOM attributes mirror those states only on transitions. Cache v253.

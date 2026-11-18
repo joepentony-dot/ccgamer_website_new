@@ -15,7 +15,7 @@ import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-s
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_sierra_arena_layout_v2";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_sierra_arena_layout_v3";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
@@ -255,6 +255,19 @@ export async function mountCrossfirePreview({
           onPress:startF1,
           onRelease:releaseF1
         }) : null;
+  let shownRunPhase;
+  let shownStartPhase;
+  const syncRunState=()=>{
+    if (shownRunPhase!==localRun.phase) {
+      shownRunPhase=localRun.phase;
+      section.setAttribute("data-local-run-phase",shownRunPhase);
+    }
+    if (autoStarter && shownStartPhase!==autoStarter.phase) {
+      shownStartPhase=autoStarter.phase;
+      section.setAttribute("data-one-click-phase",shownStartPhase);
+    }
+  };
+  syncRunState();
   return Object.freeze({
     oneClickEnabled: Boolean(autoStarter),
     whenHelioHostReady() { return scoreReadyPromise; },
@@ -278,6 +291,7 @@ export async function mountCrossfirePreview({
       scoreBridge?.observe(localRun,completed);
       // Drive one user-requested F1 only from actual emulated PAL frames.
       autoStarter?.tick(ram);
+      syncRunState();
       if(candidate && candidate.score!==lastVisibleScore) {
         lastVisibleScore=candidate.score;
         local.textContent=String(candidate.score).padStart(6,"0");
@@ -294,6 +308,7 @@ export async function mountCrossfirePreview({
       scoreBridge?.stop();
       finishScoreHandshake("unavailable");
       localRun.invalidate();
+      syncRunState();
       lastVisibleScore=null;
       local.textContent="—";
       hint.textContent="SESSION ENDED · NO SCORE RECORDED";

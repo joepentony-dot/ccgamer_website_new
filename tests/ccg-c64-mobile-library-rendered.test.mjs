@@ -294,7 +294,8 @@ try {
   for (let attempt = 0; attempt < 120; attempt++) {
     mobileStarted = await evaluate(session, `
       const console = document.querySelector(".ccg-c64-console.is-mobile-playing");
-      return Boolean(console?.querySelector(".ccg-arena-preview__run strong")?.textContent.match(/^\\d{6}$/)
+      const run = console?.querySelector('[data-local-run-phase="running"][data-one-click-phase="done"]');
+      return Boolean(run?.querySelector(".ccg-arena-preview__run strong")?.textContent.match(/^\\d{6}$/)
         && console.querySelector("[data-mobile-joystick-swap]")?.textContent.includes("PORT 2")
         && getComputedStyle(console.querySelector(".ccg-c64-screen-stage")).backgroundImage.includes("crossfire-original-frame.webp"));
     `);
