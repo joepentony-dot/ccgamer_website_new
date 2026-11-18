@@ -1,12 +1,12 @@
 /**
- * CCG Crossfire High Score Arena: browser-side OPT-IN pilot only.
+ * CCG Crossfire High Score Arena: verified-CRT automatic visual pilot.
  *
  * This is a READ-ONLY visual pilot for the Sierra Online CRT. The separate
  * Atlantis/Pantheon PRG observer and backend are NOT this game. There is NO
  * score detection, backend read, login handshake or submission until
  * CRT-specific gameplay eligibility is independently verified.
- * The live emulator requires the exact checksum-verified CRT
- * and the explicit ccg_arena_preview=crossfire pilot parameter.
+ * The live emulator mounts automatically after normal LOAD of the exact
+ * checksum-verified Sierra CRT, without a special query parameter.
  */
 import { identifyArenaMedia } from "./arena/arena-game-profiles.mjs";
 import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
@@ -15,12 +15,6 @@ import { renderArenaBoard, normaliseArenaBoard } from "./arena/view/arena-board.
 const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_crt_only_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
-
-export function previewRequestEnabled(search) {
-  if(typeof search!=="string")return false;
-  try { return new URLSearchParams(search).get("ccg_arena_preview")==="crossfire"; }
-  catch { return false; }
-}
 
 export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThis.crypto?.subtle) {
   if(!isVerifiedSierraCrossfireCrt(entry) || !(bytes instanceof Uint8Array) || !subtle ||

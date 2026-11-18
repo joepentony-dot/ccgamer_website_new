@@ -1,3 +1,7 @@
+## 18 November 2026 — Sierra CRT Arena auto-detection candidate (BRANCH ONLY)
+
+- Owner expects the High Score Arena to appear automatically after normal LOAD of the verified Sierra Online Crossfire CRT, not via `?ccg_arena_preview=crossfire`. Targeted source candidate removes that query gate while retaining exact catalogue/byte SHA verification, cancellation, old PRG/Tron isolation and **zero score/API/auth writes**. The empty blue board remains a preview until Sierra-specific score/game-over forensics and HelioHost security acceptance. Cache and exact LOAD regressions updated, no production release until CI/review/live acceptance. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+
 ## 17 November 2026 — OWNER CORRECTION: Sierra Online CRT only (PR #3097, BRANCH ONLY)
 
 - The owner's real mobile emulator search showed four titles. Required visible result when the trusted cartridge manifest is available: **Crossfire (Sierra Online) — CRT** and the distinct **Crossfire - Tron — PRG**, with exact-title **Crossfire — PRG** and **Cross Fire — PRG** suppressed from the displayed library. Archive bytes, original catalogue IDs, deep links and every unrelated game remain preserved; absent or changed verified CRT manifest fails back to original options, not missing games.

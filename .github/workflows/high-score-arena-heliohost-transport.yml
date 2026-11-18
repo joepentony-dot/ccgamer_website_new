@@ -16,6 +16,7 @@ on:
       - "tests/high-score-arena-auto-run-controller.test.mjs"
       - "tests/high-score-arena-board-model.test.mjs"
       - "tests/high-score-arena-preview-integration.test.mjs"
+      - "tests/high-score-arena-auto-mount.test.mjs"
       - ".github/workflows/high-score-arena-heliohost-transport.yml"
   workflow_dispatch:
 
@@ -44,6 +45,7 @@ jobs:
           node --test tests/high-score-arena-auto-run-controller.test.mjs
           node --test tests/high-score-arena-board-model.test.mjs
           node --test tests/high-score-arena-preview-integration.test.mjs
+          node tests/high-score-arena-auto-mount.test.mjs
       - name: Ensure no Supabase score route is reintroduced
         shell: bash
         run: |
