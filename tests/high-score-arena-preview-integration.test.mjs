@@ -157,3 +157,43 @@ test('browser selection and source forbid legacy PRG or score submission',async(
   assert.match(app,/function resetMachine\([^]*?clearArenaPreview\(\)/);
   assert.match(app,/async function loadGameVaultSlot\([^]*?clearArenaPreview\(\)/);
 });
+
+
+test('authentic Sierra CRT score 000010 is displayed locally without inventing ranked scores',async()=>{
+  // Values reproduce screen-memory and custom glyph strips from real 65,728
+  // byte Sierra cartridge captures 44340060196 (two independent 10-point runs).
+  // No simulated backend score row or manual score submission is ever created.
+  const hud=(score)=>{
+    const ram=new Uint8Array(65536);
+    for(const [row,value] of [[0,20],[1,21],[3,22],[4,23],
+      [13,20],[14,21],[16,22],[17,23]])ram[0x400+row*40+39]=value;
+    ram.set([126,255,231,231,231,255,126,0],0x2800);
+    ram.set([126,231,231,126,231,231,126,0],0x2840);
+    for(const [rows,value] of [
+      [[19,20,21,22,23,24],score],[[6,7,8,9,10,11],score]
+    ])String(value).padStart(6,'0').split('').forEach((digit,i)=>{
+      ram[0x400+rows[i]*40+39]=Number(digit);
+    });
+    return ram;
+  };
+  const doc=fakeDocument(),stage=doc.createElement('div');
+  const candidate=await mountCrossfirePreview({entry,bytes,stage,doc,subtle:fakeCrypto});
+  assert(candidate);
+  const panel=stage.after;
+  const value=panel.find(x=>x.tag==='strong' && x.attributes['aria-label']?.includes('local score'));
+  assert(value);
+  assert.equal(value.textContent,'—');
+  candidate.observe(hud(0));
+  assert.equal(value.textContent,'000000');
+  candidate.observe(hud(10));
+  assert.equal(value.textContent,'000010');
+  assert(panel.find(x=>x.tag==='p' && x.textContent.includes('NOT VERIFIED OR SUBMITTED')));
+  const slots=panel.find(x=>x.tag==='ol');
+  assert.equal(slots.children.length,5);
+  assert(slots.children.every(x=>!String(x.textContent||'').includes('000010')));
+  candidate.observe(new Uint8Array(65536)); // unrelated RAM fails closed
+  assert.equal(value.textContent,'000010');
+  candidate.invalidate();
+  assert.equal(value.textContent,'—');
+  candidate.dispose();
+});
