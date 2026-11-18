@@ -229,7 +229,7 @@ try {
   assert.equal(drop.position,"absolute");
   assert(Math.abs(drop.before-drop.after)<1,"Autocomplete pushed the mobile panels down");
 
-  // Boot the checksum-pinned PRG through the real game-page launch path.
+  // Boot the SHA-pinned Sierra CRT through the real game-page launch path.
   await emulate(session, 1440, 900, false);
   const crossfireUrl = "http://" + host + ":" + port + "/emulator/c64/?game=archive-02121&autoplay=1";
   await wd("POST", "/session/"+session+"/url", {url:crossfireUrl + "&ccg_arena_preview=crossfire"});
@@ -263,20 +263,44 @@ try {
   assert.equal(await evaluate(session, `
     return document.querySelector('.ccg-arena-preview__modes button:last-child').getAttribute('aria-pressed');
   `), "true", "The challenge board must be selectable during gameplay");
+  // Old Crossfire PRG bookmarks now redirect to the verified Sierra CRT.
+  // Without ANY special query parameter, that ordinary LOAD must auto-mount
+  // the Arena, retaining the original artwork and empty (unranked) slots.
   await wd("POST", "/session/"+session+"/url", {url:crossfireUrl.replace("archive-02121", "blast-0448")});
-  let regular;
+  let automaticallyFramed = false;
   for (let attempt = 0; attempt < 100; attempt++) {
-    regular = await evaluate(session, `
-      return document.querySelector('[data-online-library-status]')?.textContent === "GAME STARTED";
+    automaticallyFramed = await evaluate(session, `
+      return document.querySelector('[data-online-library-status]')?.textContent === "GAME STARTED" &&
+        document.querySelector('[data-ccg-arena-frame="crossfire"]') !== null &&
+        document.querySelector('[data-ccg-arena-preview="crossfire"]') !== null;
     `);
-    if (regular) break;
+    if (automaticallyFramed) break;
     await sleep(250);
   }
-  assert(regular, "Crossfire must still launch without the preview");
+  assert(automaticallyFramed,
+    "An ordinary verified Sierra CRT LOAD must automatically mount its Arena, without URL opt-in");
+  const sierraScoresDisabled = await evaluate(session, `
+    return document.querySelector('[data-ccg-arena-preview="crossfire"]')?.textContent.includes("SCORE SUBMISSIONS DISABLED");
+  `);
+  assert.equal(sierraScoresDisabled,true,
+    "Unverified Sierra cartridge runs must never claim real score recording");
+
+  // Crossfire - Tron is a different PRG; keep its normal launch completely
+  // separate, without a Sierra Arena panel, frame or any HelioHost score call.
+  await wd("POST", "/session/"+session+"/url", {url:crossfireUrl.replace("archive-02121", "archive-02122")});
+  let tronStarted = false;
+  for (let attempt = 0; attempt < 100; attempt++) {
+    tronStarted = await evaluate(session, `
+      return document.querySelector('[data-online-library-status]')?.textContent === "GAME STARTED";
+    `);
+    if (tronStarted) break;
+    await sleep(250);
+  }
+  assert(tronStarted, "Crossfire - Tron must remain launchable");
   assert.equal(await evaluate(session, `
-    return document.querySelector('[data-ccg-arena-frame], [data-ccg-arena-style]') !== null;
-  `), false, "An ordinary Crossfire launch must not load the Arena");
-  console.log("PASS Crossfire real PRG launch with and without the original frame");
+    return document.querySelector('[data-ccg-arena-frame], [data-ccg-arena-style], [data-ccg-arena-preview]') !== null;
+  `), false, "Crossfire - Tron must never mount Sierra's high-score panel");
+  console.log("PASS verified Sierra CRT automatic Arena, blank score state and Tron isolation");
 
   console.log("PASS C64 rendered mobile game library and desktop audit");
 } finally {
