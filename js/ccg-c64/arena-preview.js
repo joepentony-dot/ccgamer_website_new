@@ -42,7 +42,8 @@ export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThi
 
 export async function mountCrossfirePreview({
   entry, bytes, stage, doc=globalThis.document, subtle, isCurrent=()=>true,
-  launchQuery="", startF1=null, releaseF1=null
+  launchQuery="", startF1=null, releaseF1=null,
+  scoreQuery="", websiteOrigin=""
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
@@ -94,6 +95,16 @@ export async function mountCrossfirePreview({
   const hint=doc.createElement("p");
   hint.textContent="CRT SCORE DETECTION NOT YET VERIFIED";
   run.append(local,hint);
+  const remoteHint=doc.createElement("p");
+  remoteHint.className="ccg-arena-preview__submission";
+  // Only display a submission status if explicitly requested on the official
+  // website for this checksum-verified Sierra cartridge.
+  const scoreRequested=websiteOrigin==="https://www.cheekycommodoregamer.co.uk" &&
+    typeof scoreQuery==="string" && scoreQuery.includes("scores=1");
+  if(scoreRequested){
+    remoteHint.textContent="HELIOHOST SUBMISSION · CHECKING CONNECTION";
+    run.append(remoteHint);
+  }
   display.append(board,run);
   section.append(intro,startHint,modes,display);
   stage.setAttribute("data-ccg-arena-frame","crossfire");
@@ -113,7 +124,7 @@ export async function mountCrossfirePreview({
     mobileToggle.addEventListener("click",onMobileToggle);
   }
 
-  let mode="alltime", disposed=false;
+  let mode="alltime", disposed=false, scoreBridge=null;
   const expected=boardName=>({gameKey:GAME_KEY,board:boardName,challengeSlug:null});
   const show=()=>{
     if(disposed)return;
@@ -127,9 +138,35 @@ export async function mountCrossfirePreview({
       records:[]
     },expected(mode)),{mode});
   };
-  alltime.addEventListener("click",()=>{mode="alltime";show();});
-  challenge.addEventListener("click",()=>{mode="challenge";show();});
+  alltime.addEventListener("click",()=>{
+    mode="alltime";show();void scoreBridge?.loadBoard("alltime");
+  });
+  challenge.addEventListener("click",()=>{
+    mode="challenge";show();void scoreBridge?.loadBoard("challenge");
+  });
   show();
+  // A server score session is opt-in and only belongs to the exact verified
+  // Sierra CRT. The server independently checks member auth, CSRF, game state,
+  // nonce and release switches; a browser can never approve its own score.
+  if(scoreRequested) {
+    void import("./arena/client/sierra-browser-score-bridge.mjs").then(mod=>{
+      if(disposed || typeof isCurrent==="function" && !isCurrent()) return;
+      if(!mod.isSierraHelioHostScoreIntent(scoreQuery,websiteOrigin)) {
+        remoteHint.textContent="INVALID HELIOHOST SCORE LINK";
+        return;
+      }
+      scoreBridge=new mod.SierraHelioHostScoreBridge({
+        enabled:true,origin:websiteOrigin,
+        onStatus:value=>{if(!disposed) remoteHint.textContent=value;},
+        onBoard:(view,data)=>{
+          if(!disposed && mode===view)renderArenaBoard(board,data,{mode});
+        }
+      });
+      void scoreBridge.connect();
+    }).catch(()=>{
+      if(!disposed)remoteHint.textContent="HELIOHOST UNAVAILABLE · SCORE LOCAL ONLY";
+    });
+  }
   let lastVisibleScore=null;
   const localRun=new SierraCrossfireLocalRunObserver();
   // The only permitted automatic F1 is an explicit exact-edition deep link
@@ -137,7 +174,11 @@ export async function mountCrossfirePreview({
   const autoStarter=isSierraOneClickLaunchQuery(launchQuery) &&
     typeof startF1==="function" && typeof releaseF1==="function"
       ? new SierraOneClickStarter({
-          onArm:()=>localRun.armFromUserF1(),
+          onArm:()=>{
+            const started=localRun.armFromUserF1();
+            if(started) scoreBridge?.armed();
+            return started;
+          },
           onPress:startF1,
           onRelease:releaseF1
         }) : null;
@@ -147,7 +188,10 @@ export async function mountCrossfirePreview({
     armFromUserF1() {
       if(disposed)return false;
       const armed=localRun.armFromUserF1();
-      if(armed) hint.textContent="RUN START REQUESTED · LOCAL ONLY";
+      if(armed) {
+        hint.textContent="RUN START REQUESTED · LOCAL ONLY";
+        scoreBridge?.armed();
+      }
       return armed;
     },
     observe(ram) {
@@ -156,6 +200,7 @@ export async function mountCrossfirePreview({
       // emulator RAM; no member or score network traffic is ever initiated.
       const candidate=readSierraCrossfireScreenScores(ram);
       const completed=localRun.observe(ram);
+      scoreBridge?.observe(localRun,completed);
       // Drive one user-requested F1 only from actual emulated PAL frames.
       autoStarter?.tick(ram);
       if(candidate && candidate.score!==lastVisibleScore) {
@@ -171,6 +216,7 @@ export async function mountCrossfirePreview({
     invalidate() {
       if(disposed)return;
       autoStarter?.cancel();
+      scoreBridge?.stop();
       localRun.invalidate();
       lastVisibleScore=null;
       local.textContent="—";
@@ -180,6 +226,7 @@ export async function mountCrossfirePreview({
       if(disposed)return;
       disposed=true;
       autoStarter?.cancel();
+      scoreBridge?.stop();
       setMobileOpen(false);
       mobileToggle?.removeEventListener("click",onMobileToggle);
       if(mobileToggle){
