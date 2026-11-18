@@ -173,3 +173,43 @@ test('one-click F1 waits for real asynchronous member readiness',async()=>{
  assert(stage.after.find(n=>n.tag==='p'&&n.textContent.includes('RECEIVED · PENDING REVIEW')));
  player.dispose();
 });
+
+test('offline handshake permits local one-click F1 with zero HelioHost POSTs',async()=>{
+ const keys=[],calls=[];
+ const doc=fakeDocument(),stage=doc.createElement('div');
+ const player=await mountCrossfirePreview({entry,bytes,stage,doc,subtle,launchQuery:link,scoreQuery:link,websiteOrigin:ORIGIN,
+  scoreFetchImpl:async(url,options)=>{calls.push(options.method);return {ok:false};},
+  startF1:()=>{keys.push('press');return true;},releaseF1:()=>keys.push('release')});
+ assert.equal(await player.whenHelioHostReady(),false);
+ for(let i=0;i<34;i++)player.observe(ram(0,true));
+ assert.deepEqual(keys,['press','release']);
+ player.observe(ram(0));player.observe(ram(30));
+ for(let i=0;i<25;i++)player.observe(ram(30,true));
+ assert(!calls.includes('POST'));
+ assert(!stage.after.find(n=>n.tag==='p'&&n.textContent.includes('RECEIVED · PENDING REVIEW')));
+ player.dispose();
+});
+
+test('a hung HelioHost member request times out without holding the game hostage',async()=>{
+ let late;const keys=[],calls=[];
+ const doc=fakeDocument(),stage=doc.createElement('div');
+ const player=await mountCrossfirePreview({entry,bytes,stage,doc,subtle,launchQuery:link,scoreQuery:link,websiteOrigin:ORIGIN,
+  scoreFetchImpl:async(url,options)=>{
+   calls.push(options.method);
+   if(url.endsWith('/v1/member/me'))return new Promise(resolve=>{late=resolve});
+   return {ok:false};
+  },
+  startF1:()=>{keys.push('press');return true;},releaseF1:()=>keys.push('release')});
+ for(let i=0;i<100&&!late;i++)await turn();
+ assert.equal(typeof late,'function');
+ for(let i=0;i<280;i++)player.observe(ram(0,true));
+ assert.deepEqual(keys,['press','release']);
+ assert.equal(await player.whenHelioHostReady(),false);
+ late(reply({account:{id:'01234567-89ab-4abc-8def-0123456789ab'}}));
+ await turn();await turn();
+ player.observe(ram(0));player.observe(ram(20));
+ for(let i=0;i<25;i++)player.observe(ram(20,true));
+ assert(!calls.includes('POST'));
+ assert(stage.after.find(n=>n.tag==='p'&&String(n.textContent).includes('TIMED OUT')));
+ player.dispose();
+});
