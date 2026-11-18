@@ -154,6 +154,8 @@
       / minmax(0, 3fr) minmax(0, 2fr);
   }
 
+  /* The mobile deck already provides WARP and the virtual keyboard. */
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-play-help { display: none; }
   .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-mobile-playbar { grid-area: playbar; }
   .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-mobile-game-actions { grid-area: actions; }
   .ccg-c64-console.is-mobile-playing > .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {

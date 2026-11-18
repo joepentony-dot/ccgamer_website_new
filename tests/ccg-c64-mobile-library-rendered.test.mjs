@@ -12,6 +12,13 @@ import { spawn, spawnSync } from "node:child_process";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const host = "127.0.0.1", driverPort = 19751;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const screenshotDir = process.env.CCG_C64_RENDERED_SCREENSHOTS;
+async function screenshot(id, name) {
+  if (!screenshotDir) return;
+  fs.mkdirSync(screenshotDir, {recursive:true});
+  const png = await wd("GET", "/session/" + id + "/screenshot");
+  fs.writeFileSync(path.join(screenshotDir, name + ".png"), Buffer.from(png, "base64"));
+}
 const mime = { ".html":"text/html", ".css":"text/css", ".js":"text/javascript", ".mjs":"text/javascript",
   ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png",
   ".webp":"image/webp", ".woff2":"font/woff2", ".ico":"image/x-icon" };
@@ -253,6 +260,7 @@ try {
     await sleep(250);
   }
   assert(framed?.board, "Verified Crossfire must start with its preview and artwork");
+  await screenshot(session, "sierra-desktop");
   assert(Math.abs(framed.ratio - 4 / 3) < 0.01, "Crossfire artwork must frame a 4:3 canvas");
   assert(framed.left > .18 && framed.right < .82 && framed.top > .19 && framed.bottom < .86,
     "The gameplay canvas must fit in the artwork opening: " + JSON.stringify(framed));
@@ -345,6 +353,7 @@ try {
       }
       const layout = await evaluate(session, mobileArenaLayout);
       const state = `${width}x${height} Arena=${open} Zoom=${zoom}: ${JSON.stringify(layout)}`;
+      if (!zoom) await screenshot(session, `sierra-${width}x${height}-${open ? "leaderboard" : "score-strip"}`);
       assert.equal(layout.expanded, String(open), state);
       assert.equal(layout.zoomed, String(zoom), state);
       assert.equal(layout.boardVisible, open, state);
