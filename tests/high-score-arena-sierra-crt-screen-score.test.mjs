@@ -111,6 +111,10 @@ test('authentic 2026-11-18 no-F1 ROM capture decodes zero score and rejects demo
  assert.equal(decoded.score,fixture.expected.score);
  assert.equal(decoded.highScore,fixture.expected.highScore);
  assert.equal(sierraCrossfireGameOverVisible(ram),fixture.expected.gameOverVisible);
+ const active=ram.slice();
+ active.set(fixture.activeScreenshot.centerRow13,0x400+13*40+10);
+ assert.equal(readSierraCrossfireScreenScores(active).score,fixture.activeScreenshot.expected.score);
+ assert.equal(sierraCrossfireGameOverVisible(active),false);
  const observer=new SierraCrossfireRunObserver({stableFrames:20});
  for(let i=0;i<40;i++)assert.equal(observer.observe(ram),null);
  assert.equal(observer.armed,false);
