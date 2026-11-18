@@ -45,3 +45,56 @@ test('corrupt font, signature or non-digit fails closed',()=>{
  const wrong=screen();wrong[0x400+13*40+39]=0;
  assert.equal(readSierraCrossfireScreenScores(wrong),null);
 });
+
+
+import { SierraCrossfireRunObserver, sierraCrossfireGameOverVisible } from '../scripts/high-score-arena/observe-sierra-crossfire-run.mjs';
+
+// The marker bytes below were recorded from the *real* original cartridge's
+// GAME OVER screen at frame 503 in Actions run 44336498842. This test uses
+// a constructed 64K RAM to exercise the decoder; it is NOT a real positive run.
+function gameOver(ram) {
+ for(const [col,value] of [
+  [10,0x13],[11,0x0a],[12,0xfc],[13,0x0a],[14,0xfd],[15,0x0a],
+  [16,0x17],[20,0],[21,0x0a],[22,0xfe],[23,0x0a],
+  [24,0x17],[25,0x0a],[26,0x16]
+ ])ram[0x400+13*40+col]=value;
+ return ram;
+}
+test('original CRT game-over glyph signature is recognised but not mistaken for submission',()=>{
+ const ram=screen(0);assert.equal(sierraCrossfireGameOverVisible(ram),false);
+ assert.equal(sierraCrossfireGameOverVisible(gameOver(ram)),true);
+ assert.equal(sierraCrossfireGameOverVisible(new Uint8Array(65536)),false);
+});
+test('attract-mode GAME OVER without deliberate F1 must not complete a player run',()=>{
+ const observer=new SierraCrossfireRunObserver({stableFrames:20});
+ for(let i=0;i<60;i++)assert.equal(observer.observe(gameOver(screen(0))),null);
+ assert.equal(observer.finished,false);
+});
+test('F1 arming plus distinct active HUD and 20 stable terminal frames remains local and unverified',()=>{
+ const observer=new SierraCrossfireRunObserver({stableFrames:20});
+ observer.armFromUserF1();
+ assert.equal(observer.observe(screen(0)),null);
+ assert.equal(observer.observe(screen(800)),null);
+ for(let i=0;i<19;i++)assert.equal(observer.observe(gameOver(screen(800))),null);
+ const final=observer.observe(gameOver(screen(800)));
+ assert.equal(final.score,800);
+ assert.equal(final.verified,false);
+ assert.equal(final.maySubmit,false);
+ assert.equal(final.kind,'sierra-crt-unverified-local-terminal-candidate');
+ assert.equal(observer.observe(gameOver(screen(800))),null);
+});
+test('restore or score decrement invalidates candidate and prevents repeated completion',()=>{
+ const observer=new SierraCrossfireRunObserver({stableFrames:20});
+ observer.armFromUserF1();
+ observer.observe(screen(0));observer.observe(screen(800));
+ assert.equal(observer.observe(screen(10)),null);
+ assert.equal(observer.invalidated,true);
+ for(let i=0;i<40;i++)assert.equal(observer.observe(gameOver(screen(10))),null);
+});
+test('invalid states refuse fake start and early terminal',()=>{
+ const observer=new SierraCrossfireRunObserver({stableFrames:20});
+ observer.armFromUserF1();
+ for(let i=0;i<40;i++)assert.equal(observer.observe(gameOver(screen(100))),null);
+ assert.equal(observer.started,false);
+ assert.throws(()=>new SierraCrossfireRunObserver({stableFrames:1}),RangeError);
+});
