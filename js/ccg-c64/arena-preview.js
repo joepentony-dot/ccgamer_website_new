@@ -11,6 +11,7 @@
 import { identifyArenaMedia } from "./arena/arena-game-profiles.mjs";
 import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
 import { renderArenaBoard, normaliseArenaBoard } from "./arena/view/arena-board.mjs";
+import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-screen-score.mjs";
 
 const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f1_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
@@ -86,7 +87,7 @@ export async function mountCrossfirePreview({
   run.className="ccg-arena-preview__run";
   const local=doc.createElement("strong");
   local.textContent="—";
-  local.setAttribute("aria-label","Local score candidate");
+  local.setAttribute("aria-label","Unverified current local score; not ranked");
   const hint=doc.createElement("p");
   hint.textContent="CRT SCORE DETECTION NOT YET VERIFIED";
   run.append(local,hint);
@@ -126,13 +127,20 @@ export async function mountCrossfirePreview({
   alltime.addEventListener("click",()=>{mode="alltime";show();});
   challenge.addEventListener("click",()=>{mode="challenge";show();});
   show();
+  let lastVisibleScore=null;
   return Object.freeze({
-    observe(_ram) {
-      // The CRT has no verified score/lives/game-over memory signature.
-      // Intentionally never report an Atlantis PRG score for this edition.
+    observe(ram) {
+      // The exact Sierra CRT media SHA has already been verified before mount.
+      // Read-only 64KB RAM inspection: never send to accounts, APIs or ranks.
+      const candidate=readSierraCrossfireScreenScores(ram);
+      if(!candidate || candidate.score===lastVisibleScore) return;
+      lastVisibleScore=candidate.score;
+      local.textContent=String(candidate.score).padStart(6,"0");
+      hint.textContent="LIVE LOCAL SCORE · NOT VERIFIED OR SUBMITTED";
     },
     invalidate() {
       if(disposed)return;
+      lastVisibleScore=null;
       local.textContent="—";
       hint.textContent="SESSION ENDED · NO SCORE RECORDED";
     },
