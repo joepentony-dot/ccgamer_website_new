@@ -227,6 +227,7 @@ test('mobile Arena keeps a visible compact status contract and fixed open-panel 
  assert.match(css,/\.ccg-c64-console\.is-mobile-playing[\\s\\S]*\.ccg-arena-preview\\[data-ccg-arena-preview="crossfire"\\][\\s\\S]*display: block !important/);
  assert.match(css,/\.ccg-arena-preview__run[\\s\\S]*min-height: 44px/);
  assert.match(css,/\.ccg-arena-preview\\[data-ccg-arena-preview="crossfire"\\]\.is-mobile-open[\\s\\S]*position: fixed !important/);
+ assert.match(css,/\\.ccg-c64-screen-stage\\[data-ccg-arena-frame="crossfire"\\][\\s\\S]*crossfire-original-frame\\.webp/);
  const doc=fakeDocument(),stage=doc.createElement('div');
  const controller=await mountCrossfirePreview({entry,bytes,stage,doc,subtle});
  assert(controller);
