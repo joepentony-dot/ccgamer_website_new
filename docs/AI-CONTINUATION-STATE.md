@@ -1,6 +1,9 @@
 ## 18 November 2026 — Sierra CRT Arena auto-detection candidate (BRANCH ONLY)
 
 - Owner expects the High Score Arena to appear automatically after normal LOAD of the verified Sierra Online Crossfire CRT, not via `?ccg_arena_preview=crossfire`. Targeted source candidate removes that query gate while retaining exact catalogue/byte SHA verification, cancellation, old PRG/Tron isolation and **zero score/API/auth writes**. The empty blue board remains a preview until Sierra-specific score/game-over forensics and HelioHost security acceptance. Cache and exact LOAD regressions updated, no production release until CI/review/live acceptance. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
+## 18 November 2026 — SID documentary new upload link (branch only)
+
+- Isolated source/generated-page and existing test correction on `fix/sid-documentary-new-youtube-id-20261118`: replace removed YouTube ID `7PU3GqBDnRI` with owner-supplied `icwCrzfKxhk` across the authoritative video record, Retro Specials thumbnail and canonical watch-player metadata. Preserve the 53 timed chapter links, copy, route, deferred loading and video SEO; require exact-head qualification and live acceptance before calling it deployed. See [SEO workstream](ai-work/seo-and-generated-output.md).
 
 ## 17 November 2026 — OWNER CORRECTION: Sierra Online CRT only (PR #3097, BRANCH ONLY)
 
