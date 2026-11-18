@@ -64,6 +64,9 @@ export async function mountCrossfirePreview({
   const notice=doc.createElement("p");
   notice.textContent="SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED";
   intro.append(title,notice);
+  const startHint=doc.createElement("p");
+  startHint.className="ccg-arena-preview__start";
+  startHint.textContent="PRESS F1 TO START";
 
   const modes=doc.createElement("div");
   modes.className="ccg-arena-preview__modes";
@@ -88,7 +91,7 @@ export async function mountCrossfirePreview({
   hint.textContent="CRT SCORE DETECTION NOT YET VERIFIED";
   run.append(local,hint);
   display.append(board,run);
-  section.append(intro,modes,display);
+  section.append(intro,startHint,modes,display);
   stage.setAttribute("data-ccg-arena-frame","crossfire");
   stage.insertAdjacentElement("afterend",section);
 
