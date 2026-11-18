@@ -161,5 +161,101 @@
       "score": 0,
       "gameOverVisible": false
     }
-  }
+  },
+  "positiveScoreCaptures": [
+    {
+      "source": "Original Sierra CRT C64Machine, GitHub Actions 44340060196, hunt/positive-01.ram and .png",
+      "strategy": "joy2-up-fire",
+      "frameWithinRun": 59,
+      "fullRamSha256": "82577257a2ff01b4d758247818ed133b6763d46383210f94bdab0e5cb563909f",
+      "scoreDigits": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "previousHighDigits": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "gameOverTextRow13": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ],
+      "expected": {
+        "score": 10,
+        "highScore": 10,
+        "gameOverVisible": false,
+        "submittable": false
+      }
+    },
+    {
+      "source": "Original Sierra CRT C64Machine, GitHub Actions 44340060196, hunt/positive-04.ram and .png",
+      "strategy": "joy2-left-fire",
+      "frameWithinRun": 26,
+      "fullRamSha256": "d7b2e74c134f1d5cc33896406460d80aebf5c1e37ebe604ab52e51350a99bbb4",
+      "scoreDigits": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "previousHighDigits": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "gameOverTextRow13": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ],
+      "expected": {
+        "score": 10,
+        "highScore": 10,
+        "gameOverVisible": false,
+        "submittable": false
+      }
+    }
+  ]
 }
