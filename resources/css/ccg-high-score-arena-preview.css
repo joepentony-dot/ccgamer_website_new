@@ -83,7 +83,9 @@
 
   .ccg-c64-console.is-mobile-playing
     .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] > .ccg-c64-screen-bezel {
-    width: min(100%, calc(100cqh * 4 / 3));
+    /* The shared emulator writes an inline width for the native PAL ratio. */
+    width: min(100cqw, calc(100cqh * 4 / 3)) !important;
+    height: min(100cqh, calc(100cqw * 3 / 4));
     aspect-ratio: 4 / 3;
     border: 0;
     transition: none;

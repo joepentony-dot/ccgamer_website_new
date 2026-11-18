@@ -311,6 +311,7 @@ try {
     const viewport = rect(node(".ccg-c64-console"));
     const bounds = rect(panel);
     const bezel = rect(node(".ccg-c64-screen-bezel"));
+    const screen = rect(node(".ccg-c64-screen-stage"));
     const touch = rect(node(".ccg-c64-touch-controls"));
     const protectedSelectors = [".ccg-c64-screen-stage", "[data-mobile-playbar]",
       "[data-mobile-game-actions]", ".ccg-c64-touch-controls", ".ccg-c64-touch-options"];
@@ -323,7 +324,8 @@ try {
       expanded: toggle.getAttribute("aria-expanded"),
       boardVisible: getComputedStyle(board).display !== "none",
       panelFits: fits(bounds),
-      screenFits: fits(bezel) && bezel.width >= 48 && Math.abs(bezel.width / bezel.height - 4 / 3) < 0.03,
+      gameSize: {width: bezel.width, height: bezel.height, stageHeight: screen.height},
+      screenFits: bezel.top >= screen.top - 1 && bezel.bottom <= screen.bottom + 1 && fits(bezel) && bezel.width >= 48 && Math.abs(bezel.width / bezel.height - 4 / 3) < 0.03,
       controlsFit: [toggle, node(".ccg-c64-touch-fire"), node(".ccg-c64-touch-jump")].every(el => fits(rect(el))),
       panelOverlaps: protectedSelectors.filter(selector => overlap(bounds, rect(node(selector)))),
       touchTop: touch.top,
