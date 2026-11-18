@@ -31,7 +31,7 @@ export function isSierraHelioHostScoreIntent(query,origin) {
 
 export class SierraHelioHostScoreBridge {
  #closed=false;#transport=null;#run=null;#connecting=null;
- #abort=null;#confirmed=false;#armedForRun=false;#finished=false;
+ #abort=null;#armedForRun=false;#finished=false;
  constructor({enabled=false,origin='',fetchImpl=globalThis.fetch,
               onStatus=()=>{},onBoard=()=>{},acquire=acquireSierraAttempt,
               readBoard=readHelioHostSierraBoard}={}) {
@@ -63,12 +63,12 @@ export class SierraHelioHostScoreBridge {
       return false;
     }
     if(!transport?.enabled) {
-      this.#status('HE LIOHOST OFFLINE OR SIGN-IN REQUIRED'.replace('HE LIO','HELIO'));
+      this.#status('HELIOHOST UNAVAILABLE OR SIGN-IN REQUIRED');
       return false;
     }
     this.#transport=transport;
     this.#run=new SierraAutomaticAttempt(transport);
-    this.#status('SIGNED IN · START A NEW GAME TO RECORD SCORE');
+    this.#status('SIGNED IN · START A NEW GAME TO REQUEST SCORE');
     // Public reads are optional, have no cookies, and can only project
     // approved records for this exact Sierra edition.
     void this.loadBoard('alltime');
@@ -96,7 +96,7 @@ export class SierraHelioHostScoreBridge {
    if(this.enabled)this.#status('HELIOHOST NOT READY · SCORE LOCAL ONLY');
    return false;
   }
-  if(this.#finished) {
+  if(this.#finished || this.#run?.stopped) {
    this.#status('RELOAD TO RECORD ANOTHER RUN');
    return false;
   }
@@ -115,7 +115,7 @@ export class SierraHelioHostScoreBridge {
   const wasStarted=this.#run.started;
   const result=this.#run.observe(observer,final);
   if(!wasStarted && this.#run.started) {
-   this.#status('HE LIOHOST ATTEMPT REQUESTED'.replace('HE LIO','HELIO'));
+   this.#status('HELIOHOST ATTEMPT REQUESTED');
   }
   if(!result || this.#finished)return;
   this.#finished=true;
@@ -124,7 +124,6 @@ export class SierraHelioHostScoreBridge {
   void Promise.resolve(result).then(receipt=>{
    if(this.#closed)return;
    if(receipt?.status==='pending-review'&&receipt.scoreReceived===score) {
-    this.#confirmed=true;
     this.#status('SCORE '+String(score).padStart(6,'0')+' RECEIVED · PENDING REVIEW');
     void this.loadBoard('alltime');
    }else this.#status('SUBMISSION NOT CONFIRMED · LOCAL SCORE ONLY');
