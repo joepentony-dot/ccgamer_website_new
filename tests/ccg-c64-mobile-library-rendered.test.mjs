@@ -299,7 +299,7 @@ try {
     'return {toggleHidden:toggle.hidden,toggleDisplay:getComputedStyle(toggle).display,',
     'panelDisplay:getComputedStyle(panel).display,',
     'touch:{top:touch.top,bottom:touch.bottom,height:touch.height}};'
-  ].join("\\n"));
+  ].join("\n"));
   assert.equal(mobileArena.toggleHidden,false,"Mobile Sierra LOAD must expose the Arena toggle");
   assert.notEqual(mobileArena.toggleDisplay,"none","Mobile Arena toggle must be visible");
   assert.equal(mobileArena.panelDisplay,"none","Arena stays out of touch layout until opened");
@@ -310,7 +310,7 @@ try {
     'after=document.querySelector(".ccg-c64-touch-controls").getBoundingClientRect();',
     'return {open:opened.classList.contains("is-mobile-open"),display:getComputedStyle(opened).display,',
     'sameTop:Math.abs(before.top-after.top)<1,sameHeight:Math.abs(before.height-after.height)<1};'
-  ].join("\\n"));
+  ].join("\n"));
   assert.equal(mobileArenaOpen.open,true,"Mobile Arena toggle must open the panel");
   assert.notEqual(mobileArenaOpen.display,"none","Opened mobile Arena must be visible");
   assert.equal(mobileArenaOpen.sameTop,true,"Opening Arena must not move touch controls");
