@@ -134,6 +134,17 @@ export async function mountCrossfirePreview({
   }
 
   let mode="alltime", disposed=false, scoreBridge=null;
+  let scoreGate=scoreRequested?"checking":"disabled";
+  let scoreWaitFrames=0, scoreArmPending=false, resolveScoreReady=null;
+  let scoreReadySettled=!scoreRequested;
+  const scoreReadyPromise=scoreRequested
+    ? new Promise(resolve=>{resolveScoreReady=resolve;}) : Promise.resolve(false);
+  const finishScoreHandshake=state=>{
+    if(scoreReadySettled)return;
+    scoreReadySettled=true;
+    scoreGate=state;
+    resolveScoreReady?.(state==="ready");
+  };
   const expected=boardName=>({gameKey:GAME_KEY,board:boardName,challengeSlug:null});
   const show=()=>{
     if(disposed)return;
@@ -159,9 +170,14 @@ export async function mountCrossfirePreview({
   // nonce and release switches; a browser can never approve its own score.
   if(scoreRequested) {
     void import("./arena/client/sierra-browser-score-bridge.mjs").then(mod=>{
-      if(disposed || typeof isCurrent==="function" && !isCurrent()) return;
+      if(disposed || (typeof isCurrent==="function" && !isCurrent()) ||
+         scoreGate!=="checking") {
+        finishScoreHandshake("unavailable");
+        return;
+      }
       if(!mod.isSierraHelioHostScoreIntent(scoreQuery,websiteOrigin)) {
         remoteHint.textContent="INVALID HELIOHOST SCORE LINK";
+        finishScoreHandshake("unavailable");
         return;
       }
       scoreBridge=new mod.SierraHelioHostScoreBridge({
@@ -177,9 +193,22 @@ export async function mountCrossfirePreview({
           if(!disposed && mode===view)renderArenaBoard(board,data,{mode});
         }
       });
-      void scoreBridge.connect();
+      void scoreBridge.connect().then(connected=>{
+        if(disposed)return finishScoreHandshake("unavailable");
+        finishScoreHandshake(connected?"ready":"unavailable");
+        // Manual F1 may have occurred while the dynamic import/authentication
+        // was pending. Re-arm only when that SAME genuine game is still at 0.
+        if(connected && scoreArmPending &&
+           (localRun.phase==="armed" ||
+            (localRun.phase==="running" && localRun.lastScore===0))) {
+          scoreBridge.armed();
+        } else if(connected && scoreArmPending) {
+          remoteHint.textContent="CURRENT RUN LOCAL ONLY · HELIOHOST WAS NOT READY";
+        }
+      }).catch(()=>finishScoreHandshake("unavailable"));
     }).catch(()=>{
       if(!disposed)remoteHint.textContent="HELIOHOST UNAVAILABLE · SCORE LOCAL ONLY";
+      finishScoreHandshake("unavailable");
     });
   }
   let lastVisibleScore=null;
@@ -191,20 +220,37 @@ export async function mountCrossfirePreview({
       ? new SierraOneClickStarter({
           onArm:()=>{
             const started=localRun.armFromUserF1();
-            if(started) scoreBridge?.armed();
+            if(started) {
+              scoreArmPending=scoreRequested;
+              if(scoreBridge?.connected)scoreBridge.armed();
+            }
             return started;
+          },
+          canStart:()=>{
+            if(!scoreRequested || scoreGate!=="checking")return true;
+            // A slow/nonexistent auth server must not block offline play
+            // indefinitely. After five seconds of *ready gameover* frames,
+            // decline online submission and launch a local-only game.
+            if(++scoreWaitFrames>=250) {
+              remoteHint.textContent="HELIOHOST TIMED OUT · LOCAL GAME ONLY";
+              scoreBridge?.stop();
+              finishScoreHandshake("unavailable");
+            }
+            return scoreGate!=="checking";
           },
           onPress:startF1,
           onRelease:releaseF1
         }) : null;
   return Object.freeze({
     oneClickEnabled: Boolean(autoStarter),
+    whenHelioHostReady() { return scoreReadyPromise; },
     cancelOneClick() { autoStarter?.cancel(); },
     armFromUserF1() {
       if(disposed)return false;
       const armed=localRun.armFromUserF1();
       if(armed) {
         hint.textContent="RUN START REQUESTED · LOCAL ONLY";
+        scoreArmPending=scoreRequested;
         scoreBridge?.armed();
       }
       return armed;
@@ -232,6 +278,7 @@ export async function mountCrossfirePreview({
       if(disposed)return;
       autoStarter?.cancel();
       scoreBridge?.stop();
+      finishScoreHandshake("unavailable");
       localRun.invalidate();
       lastVisibleScore=null;
       local.textContent="—";
@@ -242,6 +289,7 @@ export async function mountCrossfirePreview({
       disposed=true;
       autoStarter?.cancel();
       scoreBridge?.stop();
+      finishScoreHandshake("unavailable");
       setMobileOpen(false);
       mobileToggle?.removeEventListener("click",onMobileToggle);
       if(mobileToggle){
