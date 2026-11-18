@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
  readSierraCrossfireScreenScores,SIERRA_SCORE_SCREEN_BASE,
  SIERRA_SCORE_ROWS,SIERRA_HIGHSCORE_ROWS,SIERRA_SCORE_COL
@@ -97,4 +98,22 @@ test('invalid states refuse fake start and early terminal',()=>{
  for(let i=0;i<40;i++)assert.equal(observer.observe(gameOver(screen(100))),null);
  assert.equal(observer.started,false);
  assert.throws(()=>new SierraCrossfireRunObserver({stableFrames:1}),RangeError);
+});
+
+
+test('authentic 2026-11-18 no-F1 ROM capture decodes zero score and rejects demo submission',()=>{
+ const fixture=JSON.parse(readFileSync(new URL('./fixtures/sierra-crossfire-crt-real-zero-gameover.json',import.meta.url),'utf8'));
+ const ram=new Uint8Array(65536);
+ ram.set(fixture.digitFont,0x2800);
+ for(let row=0;row<25;row++)ram[0x400+row*40+39]=fixture.edgeColumn[row];
+ ram.set(fixture.gameOverTextRow13,0x400+13*40+10);
+ const decoded=readSierraCrossfireScreenScores(ram);
+ assert.equal(decoded.score,fixture.expected.score);
+ assert.equal(decoded.highScore,fixture.expected.highScore);
+ assert.equal(sierraCrossfireGameOverVisible(ram),fixture.expected.gameOverVisible);
+ const observer=new SierraCrossfireRunObserver({stableFrames:20});
+ for(let i=0;i<40;i++)assert.equal(observer.observe(ram),null);
+ assert.equal(observer.armed,false);
+ assert.equal(observer.finished,false);
+ assert.equal(fixture.expected.submittable,false);
 });
