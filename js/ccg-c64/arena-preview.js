@@ -15,7 +15,7 @@ import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-s
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f1_v1";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_sierra_arena_layout_v5";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
@@ -42,11 +42,21 @@ export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThi
 
 export async function mountCrossfirePreview({
   entry, bytes, stage, doc=globalThis.document, subtle, isCurrent=()=>true,
-  launchQuery="", startF1=null, releaseF1=null
+  launchQuery="", startF1=null, releaseF1=null,
+  scoreQuery="", websiteOrigin="", scoreFetchImpl=globalThis.fetch
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
   if(typeof isCurrent === "function" && !isCurrent()) return null;
+  // Only a deliberate official-site Sierra deep link may request member
+  // score transport; the server still independently admits every attempt.
+  let scoreRequested=false;
+  try {
+    const q=new URLSearchParams(scoreQuery);
+    scoreRequested=websiteOrigin==="https://www.cheekycommodoregamer.co.uk" &&
+      q.getAll("scores").length===1 && q.get("scores")==="1" &&
+      q.getAll("game").length===1 && q.get("game")===EXPECTED_CATALOG_ID;
+  } catch { scoreRequested=false; }
   // Do not create a PRG observer, authenticate a member or query the Atlantis
   // leaderboard. Only the exact Sierra CRT may get the visual frame.
 
@@ -61,12 +71,15 @@ export async function mountCrossfirePreview({
   section.id="ccg-mobile-arena-panel";
   section.setAttribute("data-ccg-arena-preview","crossfire");
   section.setAttribute("aria-label","Crossfire High Score Arena preview");
+  section.setAttribute("data-ccg-arena-mobile-status","compact");
   const intro=doc.createElement("div");
   intro.className="ccg-arena-preview__intro";
   const title=doc.createElement("h2");
   title.textContent="CROSSFIRE · HIGH SCORE ARENA";
   const notice=doc.createElement("p");
-  notice.textContent="SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED";
+  notice.textContent=scoreRequested
+    ? "SIERRA ONLINE CRT · HELIOHOST SUBMISSION REQUESTED"
+    : "SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED";
   intro.append(title,notice);
   const startHint=doc.createElement("p");
   startHint.className="ccg-arena-preview__start";
@@ -81,6 +94,18 @@ export async function mountCrossfirePreview({
   const challenge=doc.createElement("button");
   challenge.type="button";challenge.textContent="CHALLENGE";
   modes.append(alltime,challenge);
+  // The existing Supabase website login does NOT create a HelioHost member
+  // session. Provide an isolated, intentional sign-in path for Sierra scores.
+  // The link is available inside the expanded mobile Arena, not over gameplay.
+  if(scoreRequested){
+    const scoreSignIn=doc.createElement("a");
+    scoreSignIn.href="/auth/heliohost-score-login.html?returnTo="+encodeURIComponent(
+      "/emulator/c64/?game="+EXPECTED_CATALOG_ID+"&autoplay=1&start=1&scores=1"
+    );
+    scoreSignIn.textContent="SIGN IN FOR SCORES";
+    scoreSignIn.setAttribute("data-ccg-sierra-member-signin","true");
+    modes.append(scoreSignIn);
+  }
 
   const display=doc.createElement("div");
   display.className="ccg-arena-preview__display";
@@ -94,6 +119,14 @@ export async function mountCrossfirePreview({
   const hint=doc.createElement("p");
   hint.textContent="CRT SCORE DETECTION NOT YET VERIFIED";
   run.append(local,hint);
+  const remoteHint=doc.createElement("p");
+  remoteHint.className="ccg-arena-preview__submission";
+  // Only display a submission status if explicitly requested on the official
+  // website for this checksum-verified Sierra cartridge.
+  if(scoreRequested){
+    remoteHint.textContent="HELIOHOST SUBMISSION · CHECKING CONNECTION";
+    run.append(remoteHint);
+  }
   display.append(board,run);
   section.append(intro,startHint,modes,display);
   stage.setAttribute("data-ccg-arena-frame","crossfire");
@@ -103,6 +136,7 @@ export async function mountCrossfirePreview({
   const mobileToggle=mobileConsole?.querySelector?.("[data-mobile-arena-toggle]");
   const setMobileOpen=open=>{
     section.classList?.toggle?.("is-mobile-open",open);
+    section.setAttribute("data-ccg-arena-mobile-status",open?"expanded":"compact");
     mobileConsole?.classList?.toggle?.("ccg-arena-mobile-open",open);
     mobileToggle?.setAttribute("aria-expanded",String(open));
     if(mobileToggle) mobileToggle.textContent=open?"CLOSE ARENA":"ARENA";
@@ -113,7 +147,18 @@ export async function mountCrossfirePreview({
     mobileToggle.addEventListener("click",onMobileToggle);
   }
 
-  let mode="alltime", disposed=false;
+  let mode="alltime", disposed=false, scoreBridge=null;
+  let scoreGate=scoreRequested?"checking":"disabled";
+  let scoreWaitFrames=0, scoreArmPending=false, resolveScoreReady=null;
+  let scoreReadySettled=!scoreRequested;
+  const scoreReadyPromise=scoreRequested
+    ? new Promise(resolve=>{resolveScoreReady=resolve;}) : Promise.resolve(false);
+  const finishScoreHandshake=state=>{
+    if(scoreReadySettled)return;
+    scoreReadySettled=true;
+    scoreGate=state;
+    resolveScoreReady?.(state==="ready");
+  };
   const expected=boardName=>({gameKey:GAME_KEY,board:boardName,challengeSlug:null});
   const show=()=>{
     if(disposed)return;
@@ -127,9 +172,59 @@ export async function mountCrossfirePreview({
       records:[]
     },expected(mode)),{mode});
   };
-  alltime.addEventListener("click",()=>{mode="alltime";show();});
-  challenge.addEventListener("click",()=>{mode="challenge";show();});
+  alltime.addEventListener("click",()=>{
+    mode="alltime";show();void scoreBridge?.loadBoard("alltime");
+  });
+  challenge.addEventListener("click",()=>{
+    mode="challenge";show();void scoreBridge?.loadBoard("challenge");
+  });
   show();
+  // A server score session is opt-in and only belongs to the exact verified
+  // Sierra CRT. The server independently checks member auth, CSRF, game state,
+  // nonce and release switches; a browser can never approve its own score.
+  if(scoreRequested) {
+    void import("./arena/client/sierra-browser-score-bridge.mjs").then(mod=>{
+      if(disposed || (typeof isCurrent==="function" && !isCurrent()) ||
+         scoreGate!=="checking") {
+        finishScoreHandshake("unavailable");
+        return;
+      }
+      if(!mod.isSierraHelioHostScoreIntent(scoreQuery,websiteOrigin)) {
+        remoteHint.textContent="INVALID HELIOHOST SCORE LINK";
+        finishScoreHandshake("unavailable");
+        return;
+      }
+      scoreBridge=new mod.SierraHelioHostScoreBridge({
+        enabled:true,origin:websiteOrigin,fetchImpl:scoreFetchImpl,
+        onStatus:value=>{
+          if(disposed)return;
+          remoteHint.textContent=value;
+          if(value.startsWith("SCORE ") && value.includes("RECEIVED · PENDING REVIEW")){
+            hint.textContent="GAME OVER · SCORE SUBMITTED FOR REVIEW";
+          }
+        },
+        onBoard:(view,data)=>{
+          if(!disposed && mode===view)renderArenaBoard(board,data,{mode});
+        }
+      });
+      void scoreBridge.connect().then(connected=>{
+        if(disposed)return finishScoreHandshake("unavailable");
+        finishScoreHandshake(connected?"ready":"unavailable");
+        // Manual F1 may have occurred while the dynamic import/authentication
+        // was pending. Re-arm only when that SAME genuine game is still at 0.
+        if(connected && scoreArmPending &&
+           (localRun.phase==="armed" ||
+            (localRun.phase==="running" && localRun.lastScore===0))) {
+          scoreBridge.armed();
+        } else if(connected && scoreArmPending) {
+          remoteHint.textContent="CURRENT RUN LOCAL ONLY · HELIOHOST WAS NOT READY";
+        }
+      }).catch(()=>finishScoreHandshake("unavailable"));
+    }).catch(()=>{
+      if(!disposed)remoteHint.textContent="HELIOHOST UNAVAILABLE · SCORE LOCAL ONLY";
+      finishScoreHandshake("unavailable");
+    });
+  }
   let lastVisibleScore=null;
   const localRun=new SierraCrossfireLocalRunObserver();
   // The only permitted automatic F1 is an explicit exact-edition deep link
@@ -137,17 +232,54 @@ export async function mountCrossfirePreview({
   const autoStarter=isSierraOneClickLaunchQuery(launchQuery) &&
     typeof startF1==="function" && typeof releaseF1==="function"
       ? new SierraOneClickStarter({
-          onArm:()=>localRun.armFromUserF1(),
+          onArm:()=>{
+            const started=localRun.armFromUserF1();
+            if(started) {
+              scoreArmPending=scoreRequested;
+              if(scoreBridge?.connected)scoreBridge.armed();
+            }
+            return started;
+          },
+          canStart:()=>{
+            if(!scoreRequested || scoreGate!=="checking")return true;
+            // A slow/nonexistent auth server must not block offline play
+            // indefinitely. After five seconds of *ready gameover* frames,
+            // decline online submission and launch a local-only game.
+            if(++scoreWaitFrames>=250) {
+              remoteHint.textContent="HELIOHOST TIMED OUT · LOCAL GAME ONLY";
+              scoreBridge?.stop();
+              finishScoreHandshake("unavailable");
+            }
+            return scoreGate!=="checking";
+          },
           onPress:startF1,
           onRelease:releaseF1
         }) : null;
+  let shownRunPhase;
+  let shownStartPhase;
+  const syncRunState=()=>{
+    if (shownRunPhase!==localRun.phase) {
+      shownRunPhase=localRun.phase;
+      section.setAttribute("data-local-run-phase",shownRunPhase);
+    }
+    if (autoStarter && shownStartPhase!==autoStarter.phase) {
+      shownStartPhase=autoStarter.phase;
+      section.setAttribute("data-one-click-phase",shownStartPhase);
+    }
+  };
+  syncRunState();
   return Object.freeze({
     oneClickEnabled: Boolean(autoStarter),
+    whenHelioHostReady() { return scoreReadyPromise; },
     cancelOneClick() { autoStarter?.cancel(); },
     armFromUserF1() {
       if(disposed)return false;
       const armed=localRun.armFromUserF1();
-      if(armed) hint.textContent="RUN START REQUESTED · LOCAL ONLY";
+      if(armed) {
+        hint.textContent="RUN START REQUESTED · LOCAL ONLY";
+        scoreArmPending=scoreRequested;
+        scoreBridge?.armed();
+      }
       return armed;
     },
     observe(ram) {
@@ -156,8 +288,10 @@ export async function mountCrossfirePreview({
       // emulator RAM; no member or score network traffic is ever initiated.
       const candidate=readSierraCrossfireScreenScores(ram);
       const completed=localRun.observe(ram);
+      scoreBridge?.observe(localRun,completed);
       // Drive one user-requested F1 only from actual emulated PAL frames.
       autoStarter?.tick(ram);
+      syncRunState();
       if(candidate && candidate.score!==lastVisibleScore) {
         lastVisibleScore=candidate.score;
         local.textContent=String(candidate.score).padStart(6,"0");
@@ -171,7 +305,10 @@ export async function mountCrossfirePreview({
     invalidate() {
       if(disposed)return;
       autoStarter?.cancel();
+      scoreBridge?.stop();
+      finishScoreHandshake("unavailable");
       localRun.invalidate();
+      syncRunState();
       lastVisibleScore=null;
       local.textContent="—";
       hint.textContent="SESSION ENDED · NO SCORE RECORDED";
@@ -180,6 +317,8 @@ export async function mountCrossfirePreview({
       if(disposed)return;
       disposed=true;
       autoStarter?.cancel();
+      scoreBridge?.stop();
+      finishScoreHandshake("unavailable");
       setMobileOpen(false);
       mobileToggle?.removeEventListener("click",onMobileToggle);
       if(mobileToggle){

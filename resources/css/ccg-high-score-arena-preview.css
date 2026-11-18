@@ -18,10 +18,13 @@
   background:linear-gradient(90deg,#061527,#0b2c4c,#061527);
   text-shadow:0 0 8px rgba(34,161,255,.55);
 }
-.ccg-arena-preview__modes{display:flex;gap:6px;padding:10px 0}
-.ccg-arena-preview__modes button{
+.ccg-arena-preview__modes{display:flex;gap:6px;flex-wrap:wrap;padding:10px 0}
+.ccg-arena-preview__modes button,
+.ccg-arena-preview__modes a[data-ccg-sierra-member-signin]{
   background:#102a59;border:1px solid #2c85cb;color:#c4ebff;
-  border-radius:5px;padding:7px 12px;font:700 12px Arial,sans-serif;cursor:pointer}
+  border-radius:5px;padding:9px 12px;font:700 12px Arial,sans-serif;cursor:pointer;
+  min-height:44px;box-sizing:border-box;display:inline-flex;align-items:center;
+  justify-content:center;text-decoration:none}
 .ccg-arena-preview__modes button[aria-pressed=true]{background:#154b88;border-color:#63bdff;box-shadow:0 0 9px #137bd2}
 .ccg-arena-preview__display{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,33%);gap:12px;min-height:260px}
 .ccg-arena-preview__board{min-height:260px;min-width:0}
@@ -66,37 +69,113 @@
   }
 }
 
-/* The fixed touch console allocates its height to gameplay and controls.
-   Keep the board out of normal flow; mobile users open it from the playbar. */
+/* Keep Sierra's score panel and controls in separate rows. The stage
+   takes the remaining height and the panel scrolls independently. */
 @media (pointer: coarse) {
-  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview {
+  /* The immersive playbar is the navigation while Sierra is running. */
+  .ccg-c64-lab-body.is-mobile-playing:has(.ccg-c64-console > .ccg-arena-preview)
+    > :is(.ccg-c64-topbar, .ccg-c64-site-nav) {
     display: none;
   }
 
-  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open {
-    display: block;
-    position: fixed;
-    z-index: 90;
-    left: max(8px, env(safe-area-inset-left));
-    right: max(8px, env(safe-area-inset-right));
-    bottom: max(8px, env(safe-area-inset-bottom));
-    max-height: min(70vh, 480px);
-    overflow: auto;
+  .ccg-c64-console.is-mobile-playing
+    .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
+    container-type: size;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    background: #02050b url("/resources/images/high-score-arena/crossfire-original-frame.webp") center / 100% 100% no-repeat;
+    border-color: #3673a8;
+    box-shadow: 0 0 12px rgba(17,114,232,.28);
+  }
+
+  .ccg-c64-console.is-mobile-playing
+    .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] > .ccg-c64-screen-bezel {
+    /* The shared emulator writes an inline width for the native PAL ratio. */
+    width: min(100cqw, calc(100cqh * 4 / 3)) !important;
+    height: min(100cqh, calc(100cqw * 3 / 4));
+    aspect-ratio: 4 / 3;
+    border: 0;
+    transition: none;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview {
+    order: 2;
+    flex: 0 0 auto;
     margin: 0;
-    border-radius: 8px;
-    box-shadow: 0 10px 36px rgba(0,0,0,.78), inset 0 0 18px #0b346d;
+    padding: 4px 8px;
+    border-radius: 6px;
   }
 
-  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open
-    .ccg-arena-preview__board {
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview:not(.is-mobile-open)
+    :is(.ccg-arena-preview__intro, .ccg-arena-preview__start,
+        .ccg-arena-preview__modes, .ccg-arena-preview__board) {
+    display: none;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview .ccg-arena-preview__display {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview:not(.is-mobile-open) .ccg-arena-preview__run {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 0;
+    padding: 3px 8px;
+    text-align: left;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview:not(.is-mobile-open) .ccg-arena-preview__run strong {
+    font-size: 20px;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview:not(.is-mobile-open) .ccg-arena-preview__run p {
+    margin: 0;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open {
+    max-height: min(36dvh, 320px);
+    padding: 8px;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open .ccg-arena-preview__board {
     height: 220px;
-    min-height: 180px;
+    min-height: 220px;
   }
 
-  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open
-    .ccg-arena-preview__run {
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open .ccg-arena-preview__run {
     min-height: 76px;
   }
+}
+
+@media (pointer: coarse) and (orientation: landscape) {
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) {
+    display: grid;
+    grid-template: "playbar playbar" auto "actions actions" auto
+      "game arena" minmax(0, 1fr) "touch touch" auto "options options" auto
+      / minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  /* The mobile deck already provides WARP and the virtual keyboard. */
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-play-help { display: none; }
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-mobile-playbar { grid-area: playbar; }
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-mobile-game-actions { grid-area: actions; }
+  .ccg-c64-console.is-mobile-playing > .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
+    grid-area: game;
+    height: 100%;
+  }
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-touch-controls { grid-area: touch; }
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-touch-options { grid-area: options; }
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview {
+    grid-area: arena;
+    min-height: 0;
+    overflow: auto;
+  }
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open { max-height: 100%; }
 }
 
 .ccg-c64-mobile-arena-toggle[hidden] { display:none; }
