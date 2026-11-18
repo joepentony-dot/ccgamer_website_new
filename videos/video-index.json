@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "eciifDta8Kk",
+      "kind": "game",
+      "filter": "amiga",
+      "badge": "Amiga Game",
+      "title": "Gloom (1995) – Was This the Amiga's Answer to DOOM?",
+      "description": "Released in 1995 by Black Magic Software and published by Guildhall Leisure, Gloom is a fast-paced first-person shooter developed for the Commodore Amiga. Programmed by Mark Sibly, the game…",
+      "url": "/games/gloom/",
+      "thumbnail": "https://i.ytimg.com/vi/eciifDta8Kk/mqdefault.jpg",
+      "platform": "Amiga",
+      "year": 1995,
+      "publisher": "Guildhall"
+    },
+    {
       "id": "ygPOtslHRfk",
       "kind": "retro",
       "filter": "retro-specials",
@@ -9267,19 +9280,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "eciifDta8Kk",
-      "kind": "game",
-      "filter": "amiga",
-      "badge": "Amiga Game",
-      "title": "Gloom",
-      "description": "Released in 1995 by Black Magic Software and published by Guildhall Leisure, Gloom is a fast-paced first-person shooter developed for the Commodore Amiga. Programmed by Mark Sibly, the game…",
-      "url": "/games/gloom/",
-      "thumbnail": "https://i.ytimg.com/vi/eciifDta8Kk/mqdefault.jpg",
-      "platform": "Amiga",
-      "year": 1995,
-      "publisher": "Guildhall"
     }
   ]
 }
