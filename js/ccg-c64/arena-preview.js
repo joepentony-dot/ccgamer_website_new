@@ -12,7 +12,7 @@ import { identifyArenaMedia } from "./arena/arena-game-profiles.mjs";
 import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
 import { renderArenaBoard, normaliseArenaBoard } from "./arena/view/arena-board.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_crt_only_v1";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f1_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
