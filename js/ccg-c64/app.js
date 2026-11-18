@@ -1330,7 +1330,8 @@ function handleC64Key(event, pressed) {
     event.preventDefault();
     // The original Sierra CRT must have shown its actual GAME OVER before
     // an unmodified F1 key can arm a new LOCAL run. This never sends scores.
-    if (event.code === "F1" && !event.shiftKey && !event.ctrlKey) {
+    if (event.code === "F1" && !event.shiftKey && !event.ctrlKey &&
+        typeof activeArenaPreview !== "undefined") {
       activeArenaPreview?.cancelOneClick?.();
       activeArenaPreview?.armFromUserF1?.();
     }
@@ -3631,7 +3632,7 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
     pollGamepad();
     // Mirror physical F1 arming on mobile; never wire touch joystick actions.
-    if (code === "F1") {
+    if (code === "F1" && typeof activeArenaPreview !== "undefined") {
       activeArenaPreview?.cancelOneClick?.();
       activeArenaPreview?.armFromUserF1?.();
     }
