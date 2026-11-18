@@ -12,6 +12,7 @@ import { identifyArenaMedia } from "./arena/arena-game-profiles.mjs";
 import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
 import { renderArenaBoard, normaliseArenaBoard } from "./arena/view/arena-board.mjs";
 import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-screen-score.mjs";
+import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 
 const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f1_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
@@ -128,18 +129,33 @@ export async function mountCrossfirePreview({
   challenge.addEventListener("click",()=>{mode="challenge";show();});
   show();
   let lastVisibleScore=null;
+  const localRun=new SierraCrossfireLocalRunObserver();
   return Object.freeze({
+    armFromUserF1() {
+      if(disposed)return false;
+      const armed=localRun.armFromUserF1();
+      if(armed) hint.textContent="RUN START REQUESTED · LOCAL ONLY";
+      return armed;
+    },
     observe(ram) {
-      // The exact Sierra CRT media SHA has already been verified before mount.
-      // Read-only 64KB RAM inspection: never send to accounts, APIs or ranks.
+      if(disposed)return;
+      // Original Sierra cartridge was SHA verified during mount. Inspect only
+      // emulator RAM; no member or score network traffic is ever initiated.
       const candidate=readSierraCrossfireScreenScores(ram);
-      if(!candidate || candidate.score===lastVisibleScore) return;
-      lastVisibleScore=candidate.score;
-      local.textContent=String(candidate.score).padStart(6,"0");
-      hint.textContent="LIVE LOCAL SCORE · NOT VERIFIED OR SUBMITTED";
+      const completed=localRun.observe(ram);
+      if(candidate && candidate.score!==lastVisibleScore) {
+        lastVisibleScore=candidate.score;
+        local.textContent=String(candidate.score).padStart(6,"0");
+        hint.textContent="LIVE LOCAL SCORE · NOT VERIFIED OR SUBMITTED";
+      }
+      if(completed) {
+        local.textContent=String(completed.score).padStart(6,"0");
+        hint.textContent="GAME OVER · LOCAL FINAL · NOT SUBMITTED";
+      }
     },
     invalidate() {
       if(disposed)return;
+      localRun.invalidate();
       lastVisibleScore=null;
       local.textContent="—";
       hint.textContent="SESSION ENDED · NO SCORE RECORDED";
