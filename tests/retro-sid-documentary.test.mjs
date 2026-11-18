@@ -13,7 +13,7 @@ const { buildTimedChaptersGuide } = require('../scripts/generate-retro-pages.js'
 const { chaptersFor } = require('../scripts/generate-video-library.js');
 const catalogue = JSON.parse(fs.readFileSync(path.join(root, 'data/retro-specials.json'), 'utf8'));
 const slug = '50-commodore-64-sid-tunes-zzap64';
-const videoId = '7PU3GqBDnRI';
+const videoId = 'icwCrzfKxhk';
 const entry = catalogue.find(item => item.slug === slug);
 const route = '/retro-specials/' + slug + '/';
 
@@ -47,11 +47,15 @@ test('published collection card and watch page preserve canonical, SEO, 53 jumps
   const watch = read('retro-specials/' + slug + '/index.html');
   const redirect = read('retro-specials/' + slug + '.html');
   assert.match(collection, new RegExp(videoId));
+  assert.doesNotMatch(collection, /7PU3GqBDnRI/, 'Old removed upload must not remain on collection');
+  assert.ok(collection.includes('https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg'));
   assert.match(collection, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.match(watch, /<meta name="description" content="Listen through 50 classic Commodore 64 SID music/);
   assert.ok(watch.includes('rel="canonical" href="https://www.cheekycommodoregamer.co.uk' + route + '"'));
   assert.ok(watch.includes('data-ccg-youtube-src="https://www.youtube-nocookie.com/embed/' + videoId + '"'));
   assert.ok(watch.includes('data-ccg-video-facade-play'));
+  assert.doesNotMatch(watch, /7PU3GqBDnRI/, 'Old removed upload must not remain on watch page');
+  assert.ok(watch.includes('https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg'));
   assert.doesNotMatch(watch, /<iframe src="https:\/\/www\.youtube(?:-nocookie)?\.com/);
   assert.equal((watch.match(/data-video-chapter="/g) || []).length, 53);
   assert.ok(watch.includes('data-ccg-feature-editorial="' + slug + '"'));
