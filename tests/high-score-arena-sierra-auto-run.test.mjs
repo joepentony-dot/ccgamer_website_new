@@ -71,7 +71,9 @@ test('score reset/invalidation cancels active nonce and does not finish',async()
  run.observe(running);
  await turn();await turn();
  run.observe({phase:'invalid'});
- await turn();await turn();
+ // The cancellation is scheduled off the resolved start promise: let the
+ // event loop complete that microtask chain before asserting the call order.
+ await new Promise(resolve=>setImmediate(resolve));
  assert.deepEqual(calls,['start','cancel']);
  assert.equal(run.observe({phase:'completed'},final()),null);
 });
