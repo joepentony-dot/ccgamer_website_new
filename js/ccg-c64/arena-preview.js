@@ -54,6 +54,7 @@ export async function mountCrossfirePreview({
 
   const section=doc.createElement("section");
   section.className="ccg-arena-preview";
+  section.id="ccg-mobile-arena-panel";
   section.setAttribute("data-ccg-arena-preview","crossfire");
   section.setAttribute("aria-label","Crossfire High Score Arena preview");
   const intro=doc.createElement("div");
@@ -91,6 +92,20 @@ export async function mountCrossfirePreview({
   stage.setAttribute("data-ccg-arena-frame","crossfire");
   stage.insertAdjacentElement("afterend",section);
 
+  const mobileConsole=stage.closest?.(".ccg-c64-console");
+  const mobileToggle=mobileConsole?.querySelector?.("[data-mobile-arena-toggle]");
+  const setMobileOpen=open=>{
+    section.classList.toggle("is-mobile-open",open);
+    mobileConsole?.classList.toggle("ccg-arena-mobile-open",open);
+    mobileToggle?.setAttribute("aria-expanded",String(open));
+    if(mobileToggle) mobileToggle.textContent=open?"CLOSE ARENA":"ARENA";
+  };
+  const onMobileToggle=()=>setMobileOpen(!section.classList.contains("is-mobile-open"));
+  if(mobileToggle){
+    mobileToggle.hidden=false;
+    mobileToggle.addEventListener("click",onMobileToggle);
+  }
+
   let mode="alltime", disposed=false;
   const expected=boardName=>({gameKey:GAME_KEY,board:boardName,challengeSlug:null});
   const show=()=>{
@@ -121,6 +136,13 @@ export async function mountCrossfirePreview({
     dispose() {
       if(disposed)return;
       disposed=true;
+      setMobileOpen(false);
+      mobileToggle?.removeEventListener("click",onMobileToggle);
+      if(mobileToggle){
+        mobileToggle.hidden=true;
+        mobileToggle.setAttribute("aria-expanded","false");
+        mobileToggle.textContent="ARENA";
+      }
       stage.removeAttribute("data-ccg-arena-frame");
       section.remove();
       link.remove();
