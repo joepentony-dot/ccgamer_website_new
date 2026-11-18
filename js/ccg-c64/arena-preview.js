@@ -15,7 +15,7 @@ import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-s
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f2";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f3";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
@@ -94,6 +94,18 @@ export async function mountCrossfirePreview({
   const challenge=doc.createElement("button");
   challenge.type="button";challenge.textContent="CHALLENGE";
   modes.append(alltime,challenge);
+  // The existing Supabase website login does NOT create a HelioHost member
+  // session. Provide an isolated, intentional sign-in path for Sierra scores.
+  // The link is available inside the expanded mobile Arena, not over gameplay.
+  if(scoreRequested){
+    const scoreSignIn=doc.createElement("a");
+    scoreSignIn.href="/auth/heliohost-score-login.html?returnTo="+encodeURIComponent(
+      "/emulator/c64/?game="+EXPECTED_CATALOG_ID+"&autoplay=1&start=1&scores=1"
+    );
+    scoreSignIn.textContent="SIGN IN FOR SCORES";
+    scoreSignIn.setAttribute("data-ccg-sierra-member-signin","true");
+    modes.append(scoreSignIn);
+  }
 
   const display=doc.createElement("div");
   display.className="ccg-arena-preview__display";

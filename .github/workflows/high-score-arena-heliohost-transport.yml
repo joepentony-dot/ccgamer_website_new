@@ -12,6 +12,9 @@ on:
       - "js/ccg-c64/arena/client/sierra-heliohost-board.mjs"
       - "js/ccg-c64/arena/client/sierra-auto-run-controller.mjs"
       - "js/ccg-c64/arena/client/sierra-browser-score-bridge.mjs"
+      - "auth/heliohost-score-login.html"
+      - "resources/js/auth/heliohost-score-login.js"
+      - "tests/high-score-arena-sierra-member-login.test.mjs"
       - "tests/high-score-arena-sierra-browser-score-bridge.test.mjs"
       - "tests/high-score-arena-sierra-heliohost-ui.test.mjs"
       - "tests/high-score-arena-sierra-auto-run.test.mjs"
@@ -71,6 +74,8 @@ jobs:
           node --test tests/high-score-arena-sierra-auto-run.test.mjs
           node --check js/ccg-c64/arena/client/sierra-browser-score-bridge.mjs
           node --test tests/high-score-arena-sierra-browser-score-bridge.test.mjs
+          node --check resources/js/auth/heliohost-score-login.js
+          node --test tests/high-score-arena-sierra-member-login.test.mjs
           node --test tests/high-score-arena-sierra-heliohost-ui.test.mjs
           node tests/high-score-arena-auto-mount.test.mjs
       - name: Ensure no Supabase score route is reintroduced

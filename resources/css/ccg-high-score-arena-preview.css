@@ -18,10 +18,13 @@
   background:linear-gradient(90deg,#061527,#0b2c4c,#061527);
   text-shadow:0 0 8px rgba(34,161,255,.55);
 }
-.ccg-arena-preview__modes{display:flex;gap:6px;padding:10px 0}
-.ccg-arena-preview__modes button{
+.ccg-arena-preview__modes{display:flex;gap:6px;flex-wrap:wrap;padding:10px 0}
+.ccg-arena-preview__modes button,
+.ccg-arena-preview__modes a[data-ccg-sierra-member-signin]{
   background:#102a59;border:1px solid #2c85cb;color:#c4ebff;
-  border-radius:5px;padding:7px 12px;font:700 12px Arial,sans-serif;cursor:pointer}
+  border-radius:5px;padding:9px 12px;font:700 12px Arial,sans-serif;cursor:pointer;
+  min-height:44px;box-sizing:border-box;display:inline-flex;align-items:center;
+  justify-content:center;text-decoration:none}
 .ccg-arena-preview__modes button[aria-pressed=true]{background:#154b88;border-color:#63bdff;box-shadow:0 0 9px #137bd2}
 .ccg-arena-preview__display{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,33%);gap:12px;min-height:260px}
 .ccg-arena-preview__board{min-height:260px;min-width:0}

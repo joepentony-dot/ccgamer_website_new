@@ -153,7 +153,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261118_sierra_heliohost_optin_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261118_sierra_member_signin_v1");
     if (generation !== arenaPreviewGeneration) return;
     const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({

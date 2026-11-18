@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Crossfire Score Sign-In | Cheeky Commodore Gamer</title>
+  <link rel="stylesheet" href="/resources/css/auth.css">
+  <script src="/js/analytics.js" defer></script>
+  <script type="module" src="/resources/js/auth/heliohost-score-login.js?ccg_rev=20261118_sierra_member_signin_v1"></script>
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-card" aria-labelledby="scoreLoginHeading">
+      <h1 id="scoreLoginHeading">Crossfire High Score Sign-In</h1>
+      <p class="auth-subtitle">This is the separate HelioHost member sign-in used for verified Sierra On-Line Crossfire score submissions. Your existing website and Supabase login is not automatically a HelioHost session.</p>
+      <p class="auth-field-help">Only accounts activated on the new HelioHost member service can sign in here. Scores are submitted privately for human review, never automatically added to the public leaderboard.</p>
+      <form id="scoreMemberLogin" novalidate>
+        <div class="auth-field">
+          <label for="scoreEmail">Member email</label>
+          <input id="scoreEmail" name="email" type="email" autocomplete="email" maxlength="255" required>
+        </div>
+        <div class="auth-field">
+          <label for="scorePassword">HelioHost member password</label>
+          <input id="scorePassword" name="password" type="password" autocomplete="current-password" maxlength="4096" required>
+        </div>
+        <p class="auth-field-help">Never enter your Plesk password, private owner key, authenticator setup key or recovery codes here.</p>
+        <div id="scoreLoginStatus" class="auth-message is-info" role="status" aria-live="polite">The HelioHost member service must be released before scores can be submitted.</div>
+        <button id="scoreLoginSubmit" class="auth-btn" type="submit">Sign in for Crossfire scores</button>
+      </form>
+      <nav class="auth-links" aria-label="Other destinations">
+        <a id="scoreReturnLink" href="/emulator/c64/?game=owner-crt-more-crossfiresierraonline-0c60e852f438&amp;autoplay=1&amp;start=1&amp;scores=1">Return to Crossfire</a>
+        <a href="/auth/login.html">Existing website sign-in</a>
+      </nav>
+    </section>
+  </main>
+</body>
+</html>
