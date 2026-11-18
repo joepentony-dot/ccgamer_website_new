@@ -430,6 +430,13 @@ if (mobileKeyboardKeys) {
         const held = { ...binding, started: performance.now(), pointerId: event.pointerId, timer: null };
         mobileVirtualHeld.set(button, held);
         pollGamepad();
+        // Mobile KEYBOARD F1 is a separate CIA input route from the dedicated
+        // touch function button: it must cancel pending one-click F1 and arm
+        // the Sierra local run observer just like physical F1.
+        if (code === "F1" && typeof activeArenaPreview !== "undefined") {
+          activeArenaPreview?.cancelOneClick?.();
+          activeArenaPreview?.armFromUserF1?.();
+        }
         if (held.restore) machine.setRestoreNmiLine(true);
         else {
           if (held.shift) syncMobileMatrixBit(1, 7);
