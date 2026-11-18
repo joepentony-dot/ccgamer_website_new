@@ -304,7 +304,7 @@ try {
       'panelDisplay:getComputedStyle(panel).display,',
       'touch:{top:touch.top,bottom:touch.bottom,height:touch.height},',
       'playbarFits:er.right<=tr.left+1 && tr.right<=kr.left+1};'
-    ].join("\\n"));
+    ].join("\n"));
     assert.equal(mobileArena.toggleHidden,false,"Mobile Sierra LOAD must expose the Arena toggle at "+width);
     assert.notEqual(mobileArena.toggleDisplay,"none","Mobile Arena toggle must be visible at "+width);
     assert.equal(mobileArena.panelDisplay,"none","Arena stays out of touch layout until opened at "+width);
@@ -317,7 +317,7 @@ try {
       'var closeWidth=document.querySelector("[data-mobile-arena-toggle]").getBoundingClientRect().width;',
       'return {open:opened.classList.contains("is-mobile-open"),display:getComputedStyle(opened).display,',
       'sameTop:Math.abs(before.top-after.top)<1,sameHeight:Math.abs(before.height-after.height)<1,closeWidth};'
-    ].join("\\n"));
+    ].join("\n"));
     assert.equal(mobileArenaOpen.open,true,"Mobile Arena toggle must open the panel at "+width);
     assert.notEqual(mobileArenaOpen.display,"none","Opened mobile Arena must be visible at "+width);
     assert.equal(mobileArenaOpen.sameTop,true,"Opening Arena must not move touch controls at "+width);
