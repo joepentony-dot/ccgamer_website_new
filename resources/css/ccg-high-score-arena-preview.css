@@ -69,132 +69,103 @@
   }
 }
 
-/* The fixed touch console keeps the game canvas and controls stable. On
-   coarse-pointer play, show a compact, honest local-score strip in normal
-   layout and promote the same panel to a fixed, bounded surface when ARENA
-   is opened. Use descendant selectors rather than assuming the panel is a
-   direct child of the screen stage. */
+/* Keep Sierra's score panel and controls in separate rows. The stage
+   takes the remaining height and the panel scrolls independently. */
 @media (pointer: coarse) {
-  /* Mobile keeps the emulator's measured 4:3 geometry. The verified frame
-     is a visual surround only; no aspect-ratio, width or control-grid rule
-     is changed here. */
   .ccg-c64-console.is-mobile-playing
     .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
-    background-color: #02050b;
-    background-image: url("/resources/images/high-score-arena/crossfire-original-frame.webp");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
+    container-type: size;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    background: #02050b url("/resources/images/high-score-arena/crossfire-original-frame.webp") center / 100% 100% no-repeat;
     border-color: #3673a8;
     box-shadow: 0 0 12px rgba(17,114,232,.28);
   }
+
   .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"] {
-    display: block !important;
-    position: relative;
-    z-index: 4;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto;
-    width: 100%;
-    max-width: 100%;
-    min-height: 0;
-    margin: 6px 0;
-    padding: 6px 8px;
-    overflow: visible;
+    .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] > .ccg-c64-screen-bezel {
+    width: min(100%, calc(100cqh * 4 / 3));
+    aspect-ratio: 4 / 3;
+    border: 0;
+    transition: none;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview {
+    order: 2;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 4px 8px;
     border-radius: 6px;
   }
 
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
-    .ccg-arena-preview__start,
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
-    .ccg-arena-preview__modes,
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
-    .ccg-arena-preview__board {
-    display: none !important;
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview:not(.is-mobile-open)
+    :is(.ccg-arena-preview__intro, .ccg-arena-preview__start,
+        .ccg-arena-preview__modes, .ccg-arena-preview__board) {
+    display: none;
   }
 
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
-    .ccg-arena-preview__display {
-    display: block !important;
-    min-height: 0 !important;
-  }
-
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
-    .ccg-arena-preview__intro {
-    gap: 4px;
-    margin: 0;
-  }
-
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
-    .ccg-arena-preview__intro h2 {
-    font-size: 12px;
-  }
-
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
-    .ccg-arena-preview__run {
-    display: grid;
-    grid-template-columns: minmax(74px, auto) minmax(0, 1fr);
-    align-items: center;
-    gap: 8px;
-    min-height: 44px;
-    padding: 5px 8px;
-    text-align: left;
-  }
-
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]:not(.is-mobile-open)
-    .ccg-arena-preview__run strong {
-    font-size: 20px;
-  }
-
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open {
-    display: block !important;
-    position: fixed !important;
-    z-index: 2147483000 !important;
-    left: max(8px, env(safe-area-inset-left)) !important;
-    right: max(8px, env(safe-area-inset-right)) !important;
-    bottom: max(52px, calc(44px + env(safe-area-inset-bottom))) !important;
-    width: auto !important;
-    max-height: min(70vh, 480px) !important;
-    margin: 0 !important;
-    padding: 10px !important;
-    overflow: auto !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    isolation: isolate;
-    box-shadow: 0 10px 36px rgba(0,0,0,.78), inset 0 0 18px #0b346d;
-  }
-
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
-    .ccg-arena-preview__display {
-    display: flex !important;
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview .ccg-arena-preview__display {
+    display: flex;
     flex-direction: column;
     min-height: 0;
   }
 
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
-    .ccg-arena-preview__board {
-    height: 220px;
-    min-height: 180px;
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview:not(.is-mobile-open) .ccg-arena-preview__run {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 0;
+    padding: 3px 8px;
+    text-align: left;
   }
 
-  .ccg-c64-console.is-mobile-playing
-    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
-    .ccg-arena-preview__run {
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview:not(.is-mobile-open) .ccg-arena-preview__run strong {
+    font-size: 20px;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview:not(.is-mobile-open) .ccg-arena-preview__run p {
+    margin: 0;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open {
+    max-height: min(36dvh, 320px);
+    padding: 8px;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open .ccg-arena-preview__board {
+    height: 220px;
+    min-height: 220px;
+  }
+
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open .ccg-arena-preview__run {
     min-height: 76px;
   }
+}
+
+@media (pointer: coarse) and (orientation: landscape) {
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) {
+    display: grid;
+    grid-template: "playbar playbar" auto "actions actions" auto
+      "game arena" minmax(0, 1fr) "touch touch" auto "options options" auto
+      / minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-mobile-playbar { grid-area: playbar; }
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-mobile-game-actions { grid-area: actions; }
+  .ccg-c64-console.is-mobile-playing > .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
+    grid-area: game;
+    height: 100%;
+  }
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-touch-controls { grid-area: touch; }
+  .ccg-c64-console.is-mobile-playing:has(> .ccg-arena-preview) > .ccg-c64-touch-options { grid-area: options; }
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview {
+    grid-area: arena;
+    min-height: 0;
+    overflow: auto;
+  }
+  .ccg-c64-console.is-mobile-playing > .ccg-arena-preview.is-mobile-open { max-height: 100%; }
 }
 
 .ccg-c64-mobile-arena-toggle[hidden] { display:none; }

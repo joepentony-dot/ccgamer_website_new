@@ -107,6 +107,7 @@ export function initHelioHostScoreLogin(doc=globalThis.document,loc=globalThis.l
    busy=false;button.disabled=false;
   }
  });
+ button.disabled=false;
  return true;
 }
 if(typeof document!=="undefined")initHelioHostScoreLogin();

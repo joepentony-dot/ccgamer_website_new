@@ -1,3 +1,7 @@
+## 18 November 2026 — Crossfire Arena mobile qualification on PR #3108
+
+- The current PR candidate separates the Arena leaderboard from gameplay and touch controls, adds six viewport checks to the existing Chromium test, and makes the isolated score login fail closed if its module is unavailable. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md). Merge and release require fresh CI and independent review. Hosted authentication, private moderation and physical Android acceptance are still open.
+
 ## 18 November 2026 — Mobile Sierra Arena access treatment (new branch)
 
 - After PR #3099 merged as `237600046da51141eb4992c7a616acf7867abc15`, live desktop verification confirmed normal Sierra CRT LOAD mounts the empty, score-disabled Arena. The existing coarse-pointer rule intentionally hid the panel during immersive touch play.

@@ -83,3 +83,10 @@ test('opt-in sign-in is isolated from existing Supabase login, admin credentials
  assert(style.includes('a[data-ccg-sierra-member-signin]'));
  assert(!arena.includes('CCG_STAGING_MFA_KEY_HEX'));
 });
+
+test('native form fallback cannot send credentials if the module does not load', async () => {
+ const login=await readFile(new URL('../auth/heliohost-score-login.html',import.meta.url),'utf8');
+ assert.match(login, /<form[^>]+method="post"/);
+ assert.match(login, /<button[^>]+id="scoreLoginSubmit"[^>]+disabled/);
+ for (const input of login.matchAll(/<input[^>]*>/g)) assert.doesNotMatch(input[0], /\bname=/);
+});

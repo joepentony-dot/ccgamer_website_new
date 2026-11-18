@@ -220,18 +220,19 @@ test('a hung HelioHost member request times out without holding the game hostage
  player.dispose();
 });
 
-test('mobile Arena keeps a visible compact score strip and fixed open selectors',async()=>{
+test('mobile Arena keeps a compact score strip and an independently scrolling expanded panel',async()=>{
  const css=await (await import('node:fs/promises')).readFile(
   new URL('../resources/css/ccg-high-score-arena-preview.css',import.meta.url),'utf8'
  );
  for(const expected of [
   '.ccg-c64-console.is-mobile-playing',
-  '.ccg-arena-preview[data-ccg-arena-preview="crossfire"]',
-  'display: block !important;',
+  '.ccg-c64-console.is-mobile-playing > .ccg-arena-preview {',
+  'flex: 0 0 auto;',
   '.ccg-arena-preview__run {',
-  'min-height: 44px;',
-  '.ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open {',
-  'position: fixed !important;',
+  '.ccg-arena-preview.is-mobile-open {',
+  'overflow: auto;',
+  'overscroll-behavior: contain;',
+  '"game arena" minmax(0, 1fr)',
   '.ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"]',
   'crossfire-original-frame.webp'
  ])assert(css.includes(expected),'Missing mobile Arena contract: '+expected);
