@@ -74,7 +74,13 @@ test('actual Sierra HUD F1/gameover drives two authenticated HelioHost POSTs onl
  assert(controller);
  const panel=stage.after;
  assert(panel.find(x=>x.tag==='p'&&x.textContent==='SIERRA ONLINE CRT · HELIOHOST SUBMISSION REQUESTED'));
- assert.equal(await controller.whenHelioHostReady(),true);
+ // The happy-path driver must wait on the explicit bridge readiness promise,
+ // then yield once so the dynamic import/status update is observable before
+ // any synthetic F1/game-over frames are delivered.
+ const ready=await controller.whenHelioHostReady();
+ await turn();
+ assert.equal(ready,true);
+ assert(panel.find(x=>x.tag==='p'&&x.textContent==='SIGNED IN · START A NEW GAME TO REQUEST SCORE'));
  controller.observe(ram(0,true));
  assert.equal(controller.armFromUserF1(),true);
  controller.observe(ram(0));
