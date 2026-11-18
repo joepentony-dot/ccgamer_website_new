@@ -140,3 +140,36 @@ test('authenticated session failure does not forge submitted receipt or alter lo
  assert(!p.find(x=>x.tag==='p'&&x.textContent.includes('RECEIVED · PENDING REVIEW')));
  controller.dispose();
 });
+
+test('one-click F1 waits for real asynchronous member readiness',async()=>{
+ let releaseMember;
+ const keys=[],posts=[];
+ const transport=async(url,options)=>{
+  if(url.endsWith('/v1/member/me'))return new Promise(resolve=>{releaseMember=resolve;});
+  if(url.endsWith('/v1/member/csrf'))return reply({csrf:'b'.repeat(64)});
+  if(url.includes('/leaderboard'))return reply({ok:true,gameKey:'c64-crossfire-sierra-online',board:'alltime',status:'available',challengeSlug:null,records:[]});
+  const body=JSON.parse(options.body);posts.push(body);
+  if(body.action==='start')return reply({ok:true,status:'started',attemptId:'01234567-89ab-4abc-8def-0123456789ab',nonce:'a'.repeat(64),reviewRequired:true,publicRankingUpdated:false});
+  if(body.action==='finish')return reply({ok:true,status:'pending-review',scoreReceived:10,reviewRequired:true,publicRankingUpdated:false});
+  throw Error('Unexpected score operation');
+ };
+ const doc=fakeDocument(),stage=doc.createElement('div');
+ const player=await mountCrossfirePreview({entry,bytes,stage,doc,subtle,launchQuery:link,scoreQuery:link,websiteOrigin:ORIGIN,scoreFetchImpl:transport,
+  startF1:()=>{keys.push('press');return true;},releaseF1:()=>keys.push('release')});
+ for(let i=0;i<100&&!releaseMember;i++)await turn();
+ assert.equal(typeof releaseMember,'function');
+ for(let i=0;i<60;i++)player.observe(ram(0,true));
+ assert.deepEqual(keys,[]);
+ releaseMember(reply({account:{id:'01234567-89ab-4abc-8def-0123456789ab'}}));
+ assert.equal(await player.whenHelioHostReady(),true);
+ player.observe(ram(0,true));
+ for(let i=0;i<8;i++)player.observe(ram(0,true));
+ assert.deepEqual(keys,['press','release']);
+ player.observe(ram(0));await turn();
+ player.observe(ram(10));
+ for(let i=0;i<25;i++)player.observe(ram(10,true));
+ await turn();await turn();
+ assert.deepEqual(posts.map(p=>p.action),['start','finish']);
+ assert(stage.after.find(n=>n.tag==='p'&&n.textContent.includes('RECEIVED · PENDING REVIEW')));
+ player.dispose();
+});
