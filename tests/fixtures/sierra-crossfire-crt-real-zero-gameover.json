@@ -135,5 +135,31 @@
     "gameOverVisible": true,
     "userInitiatedRun": false,
     "submittable": false
+  },
+  "activeScreenshot": {
+    "provenance": "Original Sierra CRT genuine active-game capture 06-f1-90-53f at Actions run 44336498842; full RAM SHA-256 1a8fd4b382ce1d6f9be1be5d0280edc3bc4ddf63eaf0fe9bd41cdeef7efba38e",
+    "centerRow13": [
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10
+    ],
+    "expected": {
+      "score": 0,
+      "gameOverVisible": false
+    }
   }
 }
