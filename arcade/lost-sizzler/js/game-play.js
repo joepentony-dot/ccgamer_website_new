@@ -142,15 +142,20 @@ function queueAttack(p,requestedDirection=null){
   if(isP2)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;
   return true
 }
-let gamepadDashDown=false,gamepadFireDown=false;
+let gamepadDashDown=false,gamepadFireDown=false,activeGamepad=null;
 function gamepadDirection(){
-  const pads=typeof navigator!=="undefined"&&navigator.getGamepads?navigator.getGamepads():[];const gp=pads&&[...pads].find(Boolean);if(!gp)return null;
+  const pads=typeof navigator!=="undefined"&&navigator.getGamepads?navigator.getGamepads():[];
+  const gp=pads&&[...pads].find(pad=>pad&&pad.connected!==false);
+  if(!gp)return null;
   let x=Number(gp.axes?.[0]||0),y=Number(gp.axes?.[1]||0);const dead=.35;x=Math.abs(x)>=dead?Math.sign(x):0;y=Math.abs(y)>=dead?Math.sign(y):0;
   if(gp.buttons?.[14]?.pressed)x=-1;if(gp.buttons?.[15]?.pressed)x=1;if(gp.buttons?.[12]?.pressed)y=-1;if(gp.buttons?.[13]?.pressed)y=1;
   return{x,y,gp,dir:x||y?{x,y}:null}
 }
 function updateGamepad(){
-  if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){gamepadDashDown=false;gamepadFireDown=false;return}const {gp,dir}=state;if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
+  if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){activeGamepad=null;gamepadDashDown=false;gamepadFireDown=false;return}const {gp,dir}=state;
+  // A replacement controller must not inherit held-button edges from the previous pad.
+  if(activeGamepad!==gp){activeGamepad=gp;gamepadDashDown=false;gamepadFireDown=false}
+  if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
   const firePressed=Boolean(gp.buttons?.[0]?.pressed);
   if(firePressed){
     const direction=attackDirection(p1,dir);
