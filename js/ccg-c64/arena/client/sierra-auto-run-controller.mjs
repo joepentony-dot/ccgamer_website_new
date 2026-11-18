@@ -10,6 +10,7 @@ export class SierraAutomaticAttempt {
   #stopped=false;
   #startPromise=null;
   #finishPromise=null;
+  #finishDispatched=false;
 
   constructor(transport=null) {
     this.#transport=transport?.enabled===true ? transport : null;
@@ -57,6 +58,7 @@ export class SierraAutomaticAttempt {
     });
     this.#finishPromise=this.#startPromise.then(started=>{
       if(this.#stopped||started?.status!=='started')return null;
+      this.#finishDispatched=true;
       return this.#transport.finish(final);
     }).catch(()=>null);
     return this.#finishPromise;
@@ -71,7 +73,7 @@ export class SierraAutomaticAttempt {
     }
     // If an attempt was started but no valid final was posted, cancellation
     // invalidates its server-issued nonce. No retry or public promotion.
-    if(!this.#finished){
+    if(!this.#finishDispatched){
       void this.#startPromise.then(result=>{
         if(result?.status==='started')return this.#transport.cancel?.();
       }).catch(()=>{});
