@@ -95,8 +95,8 @@ export async function mountCrossfirePreview({
   const mobileConsole=stage.closest?.(".ccg-c64-console");
   const mobileToggle=mobileConsole?.querySelector?.("[data-mobile-arena-toggle]");
   const setMobileOpen=open=>{
-    section.classList.toggle("is-mobile-open",open);
-    mobileConsole?.classList.toggle("ccg-arena-mobile-open",open);
+    section.classList?.toggle?.("is-mobile-open",open);
+    mobileConsole?.classList?.toggle?.("ccg-arena-mobile-open",open);
     mobileToggle?.setAttribute("aria-expanded",String(open));
     if(mobileToggle) mobileToggle.textContent=open?"CLOSE ARENA":"ARENA";
   };
