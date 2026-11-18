@@ -220,14 +220,21 @@ test('a hung HelioHost member request times out without holding the game hostage
  player.dispose();
 });
 
-test('mobile Arena keeps a visible compact status contract and fixed open-panel selectors',async()=>{
+test('mobile Arena keeps a visible compact score strip and fixed open selectors',async()=>{
  const css=await (await import('node:fs/promises')).readFile(
   new URL('../resources/css/ccg-high-score-arena-preview.css',import.meta.url),'utf8'
  );
- assert.match(css,/\.ccg-c64-console\.is-mobile-playing[\\s\\S]*\.ccg-arena-preview\\[data-ccg-arena-preview="crossfire"\\][\\s\\S]*display: block !important/);
- assert.match(css,/\.ccg-arena-preview__run[\\s\\S]*min-height: 44px/);
- assert.match(css,/\.ccg-arena-preview\\[data-ccg-arena-preview="crossfire"\\]\.is-mobile-open[\\s\\S]*position: fixed !important/);
- assert.match(css,/\\.ccg-c64-screen-stage\\[data-ccg-arena-frame="crossfire"\\][\\s\\S]*crossfire-original-frame\\.webp/);
+ for(const expected of [
+  '.ccg-c64-console.is-mobile-playing',
+  '.ccg-arena-preview[data-ccg-arena-preview="crossfire"]',
+  'display: block !important;',
+  '.ccg-arena-preview__run {',
+  'min-height: 44px;',
+  '.ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open {',
+  'position: fixed !important;',
+  '.ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"]',
+  'crossfire-original-frame.webp'
+ ])assert(css.includes(expected),'Missing mobile Arena contract: '+expected);
  const doc=fakeDocument(),stage=doc.createElement('div');
  const controller=await mountCrossfirePreview({entry,bytes,stage,doc,subtle});
  assert(controller);
