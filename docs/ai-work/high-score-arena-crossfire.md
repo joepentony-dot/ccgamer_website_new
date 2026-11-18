@@ -1,3 +1,10 @@
+## 18 November 2026 — Mobile Sierra Arena access treatment (unmerged)
+
+- PR #3099 is merged and desktop live normal-load verification is complete: the Sierra CRT search result loads, mounts the empty Arena, and explicitly shows score submissions disabled.
+- The coarse-pointer CSS intentionally hid the full panel during immersive touch play. New branch `fix/c64-mobile-arena-access-20261118` adds a playbar ARENA toggle and fixed, dismissible panel so the board is reachable without shifting the screen, fixed touch controls or mobile layout.
+- Scope remains visual-only: no Sierra score forensics, auth, HelioHost reads/writes, member submissions or Supabase changes. Real Chromium mobile geometry assertions cover panel open/close and unchanged touch-control bounds.
+- Qualification required: exact-head CI, independent review and deployed mobile browser verification.
+
 ## 17 November 2026 — OWNER CORRECTION: Sierra Online CRT only (PR #3097, BRANCH ONLY)
 
 - The owner's real mobile emulator search showed four titles. Required visible result when the trusted cartridge manifest is available: **Crossfire (Sierra Online) — CRT** and the distinct **Crossfire - Tron — PRG**, with exact-title **Crossfire — PRG** and **Cross Fire — PRG** suppressed from the displayed library. Archive bytes, original catalogue IDs, deep links and every unrelated game remain preserved; absent or changed verified CRT manifest fails back to original options, not missing games.
@@ -154,3 +161,10 @@ If the emulator changes media or resets while verifying the PRG, the obsolete la
 - Owner confirmed that the High Score Arena must appear when the user **normally loads** the Sierra Online Crossfire CRT; a special `ccg_arena_preview` URL is not acceptable for normal play. The existing catalogue route already pins ID, format, byte length and SHA-256; the LOAD path verifies actual cartridge bytes before queueing, and the visual module independently verifies them again.
 - This targeted change removes only the URL preview gate, so a successful ordinary LOAD of the exact verified Sierra CRT automatically mounts the original frame and five-slot blue neon board. All other games, including Crossfire – Tron, retain their normal emulator behaviour with no Arena imports. Existing reset/media-change/Game Vault cancellation remains intact. The visual board remains explicitly **unranked/empty** until Sierra-specific score/game-over forensics, proper independent member identity, verified PHP/MariaDB backend, moderation and security release acceptance are complete. Never transfer Atlantis/Pantheon PRG RAM offsets or leaderboard records to Sierra.
 - New executable synthetic actual-LOAD harness tests automatic mount, wrong edition, wrong digest and unsuccessful queue. Public code cache advances to v243; emulator bootstrap and lazy visual imports are versioned. The game media, owner site catalogue, Omega intro, protected page templates and backend are unchanged. This is an **unmerged** candidate until its exact-head CI, independently reviewed PR and live browser confirmation.
+
+## 18 November 2026 — Mobile Arena F1 instruction (PR #3103)
+
+- After owner observed the Sierra CRT Arena on desktop but not mobile, PR #3103 added an immersive-play ARENA/CLOSE ARENA toggle while preserving the existing fixed joystick/gameplay and 320/360/390px narrow controls. This branch now also adds a visible `PRESS F1 TO START` instruction to the Arena panel, styles it consistently on mobile and desktop, and asserts its presence in the existing DOM regression.
+- Updated versioned lazy Arena CSS, emulator app/bootstrap, the C64 HTML entry and public code cache v245 so the revised display is not held behind old browser service-worker assets.
+- This PR remains VISUAL AND READ-ONLY: no score detection, member handshake, public board retrieval, or submission. Concurrent independent draft #3105 researches real Sierra CRT screen score memory and game-over conditions. The two branches must be reconciled on current main before any later score activation, without transferring Atlantis/Pantheon PRG backend records.
+- The amended PR #3103 head requires fresh exact-head CI and independent review of both the narrow mobile controls and F1 display, followed by guarded merge and a deployed phone-browser acceptance test before claiming it live.

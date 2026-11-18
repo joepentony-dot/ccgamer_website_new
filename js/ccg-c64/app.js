@@ -150,7 +150,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
   if (!screenStage || !isVerifiedSierraCrossfireCrt(entry)) return;
   const generation = arenaPreviewGeneration;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261118_crossfire_auto_arena_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261118_crossfire_mobile_arena_f1_v1");
     if (generation !== arenaPreviewGeneration) return;
     const controller = await module.mountCrossfirePreview({
       entry, bytes, stage: screenStage,

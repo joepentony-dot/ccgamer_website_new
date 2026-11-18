@@ -12,7 +12,7 @@ import { identifyArenaMedia } from "./arena/arena-game-profiles.mjs";
 import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
 import { renderArenaBoard, normaliseArenaBoard } from "./arena/view/arena-board.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261117_crossfire_crt_only_v1";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f1_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
@@ -54,6 +54,7 @@ export async function mountCrossfirePreview({
 
   const section=doc.createElement("section");
   section.className="ccg-arena-preview";
+  section.id="ccg-mobile-arena-panel";
   section.setAttribute("data-ccg-arena-preview","crossfire");
   section.setAttribute("aria-label","Crossfire High Score Arena preview");
   const intro=doc.createElement("div");
@@ -63,6 +64,9 @@ export async function mountCrossfirePreview({
   const notice=doc.createElement("p");
   notice.textContent="SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED";
   intro.append(title,notice);
+  const startHint=doc.createElement("p");
+  startHint.className="ccg-arena-preview__start";
+  startHint.textContent="PRESS F1 TO START";
 
   const modes=doc.createElement("div");
   modes.className="ccg-arena-preview__modes";
@@ -87,9 +91,23 @@ export async function mountCrossfirePreview({
   hint.textContent="CRT SCORE DETECTION NOT YET VERIFIED";
   run.append(local,hint);
   display.append(board,run);
-  section.append(intro,modes,display);
+  section.append(intro,startHint,modes,display);
   stage.setAttribute("data-ccg-arena-frame","crossfire");
   stage.insertAdjacentElement("afterend",section);
+
+  const mobileConsole=stage.closest?.(".ccg-c64-console");
+  const mobileToggle=mobileConsole?.querySelector?.("[data-mobile-arena-toggle]");
+  const setMobileOpen=open=>{
+    section.classList?.toggle?.("is-mobile-open",open);
+    mobileConsole?.classList?.toggle?.("ccg-arena-mobile-open",open);
+    mobileToggle?.setAttribute("aria-expanded",String(open));
+    if(mobileToggle) mobileToggle.textContent=open?"CLOSE ARENA":"ARENA";
+  };
+  const onMobileToggle=()=>setMobileOpen(!section.classList.contains("is-mobile-open"));
+  if(mobileToggle){
+    mobileToggle.hidden=false;
+    mobileToggle.addEventListener("click",onMobileToggle);
+  }
 
   let mode="alltime", disposed=false;
   const expected=boardName=>({gameKey:GAME_KEY,board:boardName,challengeSlug:null});
@@ -121,6 +139,13 @@ export async function mountCrossfirePreview({
     dispose() {
       if(disposed)return;
       disposed=true;
+      setMobileOpen(false);
+      mobileToggle?.removeEventListener("click",onMobileToggle);
+      if(mobileToggle){
+        mobileToggle.hidden=true;
+        mobileToggle.setAttribute("aria-expanded","false");
+        mobileToggle.textContent="ARENA";
+      }
       stage.removeAttribute("data-ccg-arena-frame");
       section.remove();
       link.remove();

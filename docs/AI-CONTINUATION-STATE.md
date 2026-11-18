@@ -1,3 +1,9 @@
+## 18 November 2026 — Mobile Sierra Arena access treatment (new branch)
+
+- After PR #3099 merged as `237600046da51141eb4992c7a616acf7867abc15`, live desktop verification confirmed normal Sierra CRT LOAD mounts the empty, score-disabled Arena. The existing coarse-pointer rule intentionally hid the panel during immersive touch play.
+- New branch `fix/c64-mobile-arena-access-20261118` adds an accessible ARENA/CLOSE ARENA control to the existing mobile playbar. The panel remains out of normal touch layout and opens as a fixed, dismissible overlay; no score observer, auth, backend read/write or Supabase path is added.
+- Added real Chromium mobile assertions that opening/closing the panel preserves touch-control geometry. Require exact-head CI, independent review and live mobile verification before merge.
+
 ## 18 November 2026 — Sierra CRT Arena auto-detection candidate (BRANCH ONLY)
 
 - Owner expects the High Score Arena to appear automatically after normal LOAD of the verified Sierra Online Crossfire CRT, not via `?ccg_arena_preview=crossfire`. Targeted source candidate removes that query gate while retaining exact catalogue/byte SHA verification, cancellation, old PRG/Tron isolation and **zero score/API/auth writes**. The empty blue board remains a preview until Sierra-specific score/game-over forensics and HelioHost security acceptance. Cache and exact LOAD regressions updated, no production release until CI/review/live acceptance. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md).
