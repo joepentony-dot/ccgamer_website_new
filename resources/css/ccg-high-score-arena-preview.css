@@ -72,6 +72,19 @@
    is opened. Use descendant selectors rather than assuming the panel is a
    direct child of the screen stage. */
 @media (pointer: coarse) {
+  /* Mobile keeps the emulator's measured 4:3 geometry. The verified frame
+     is a visual surround only; no aspect-ratio, width or control-grid rule
+     is changed here. */
+  .ccg-c64-console.is-mobile-playing
+    .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
+    background-color: #02050b;
+    background-image: url("/resources/images/high-score-arena/crossfire-original-frame.webp");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border-color: #3673a8;
+    box-shadow: 0 0 12px rgba(17,114,232,.28);
+  }
   .ccg-c64-console.is-mobile-playing
     .ccg-arena-preview[data-ccg-arena-preview="crossfire"] {
     display: block !important;
