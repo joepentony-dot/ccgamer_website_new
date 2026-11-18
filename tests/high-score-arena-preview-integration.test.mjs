@@ -228,6 +228,7 @@ test('one-click Sierra link waits for genuine GAME OVER and taps F1 once, withou
     releaseF1:()=>{calls.push('releaseF1');}
   });
   assert(controller);
+  assert.equal(controller.oneClickEnabled,true);
   for(let i=0;i<120;i++)controller.observe(ram(0));
   assert.deepEqual(calls,[],'SierraVision/active screen must not start automatically');
   for(let i=0;i<24;i++)controller.observe(ram(0,true));
@@ -261,6 +262,7 @@ test('normal deep links and Crossfire-Tron can never invoke Sierra automatic F1'
     ...callbacks
   });
   assert(controller);
+  assert.equal(controller.oneClickEnabled,false);
   controller.observe(new Uint8Array(65536));
   controller.dispose();
   assert.deepEqual(calls,[]);
