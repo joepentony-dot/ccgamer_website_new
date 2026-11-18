@@ -170,7 +170,8 @@ test("the automatic launch still uses firmware gating and SHA-verified media", (
 
 
 test("Sierra one-click game link still autoloads the exact SHA-bound CRT just once",async()=>{
- const entry={...SIERRA_CROSSFIRE_CRT,approved:true,preferOverOtherFormats:true};
+ const entry={...SIERRA_CROSSFIRE_CRT,approved:true,preferOverOtherFormats:true,
+  license:"Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)"};
  const query="?game="+entry.id+"&autoplay=1&start=1";
  const r=await initialiseFor(query,{entries:[entry],retry:true});
  assert.deepEqual(r.selected.map(x=>x.id),[entry.id,entry.id]);
