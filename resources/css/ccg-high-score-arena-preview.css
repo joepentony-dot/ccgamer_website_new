@@ -10,6 +10,14 @@
 .ccg-arena-preview__intro{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .ccg-arena-preview__intro h2{margin:0;font-size:clamp(13px,1.45vw,20px);letter-spacing:.06em;color:#ffb24f}
 .ccg-arena-preview__intro p{margin:0;font-size:clamp(10px,.83vw,13px);color:#a4c1e6}
+.ccg-arena-preview__start{
+  margin:10px 0 0;padding:9px 12px;text-align:center;
+  font:700 clamp(13px,1.25vw,19px)/1.35 Arial,sans-serif;
+  letter-spacing:.13em;color:#63bdff;
+  border:1px solid #205987;border-radius:6px;
+  background:linear-gradient(90deg,#061527,#0b2c4c,#061527);
+  text-shadow:0 0 8px rgba(34,161,255,.55);
+}
 .ccg-arena-preview__modes{display:flex;gap:6px;padding:10px 0}
 .ccg-arena-preview__modes button{
   background:#102a59;border:1px solid #2c85cb;color:#c4ebff;
