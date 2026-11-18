@@ -183,7 +183,9 @@ test("Sierra one-click game link still autoloads the exact SHA-bound CRT just on
  assert.deepEqual(wrong.starts,[]);
 });
 test("new Sierra direct-launch F1 uses exact verified live cartridge, not generic autoplay",()=>{
- assert.match(app,/launchQuery: window\.location\.search/);
+ assert.match(app,/launchQuery: sierraOneClickConsumed \? "" : window\.location\.search/);
+ assert.match(app,/let sierraOneClickConsumed = false/);
+ assert.match(app,/if \(controller\?\.oneClickEnabled\) sierraOneClickConsumed = true/);
  assert.match(app,/machine === verifiedMachine/);
  assert.match(app,/startF1: \(\) =>/);
  assert.match(app,/releaseF1: \(\) =>/);
