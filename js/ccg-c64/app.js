@@ -128,11 +128,13 @@ const screenStage = document.querySelector(".ccg-c64-screen-stage");
 
 // Automatically recognise the verified Sierra CRT after its normal LOAD.
 // All other games remain unchanged: no Arena modules, styles or network.
-// This is presentation only; CRT score detection and submissions are OFF.
-// Sierra Online's CRT is a visual-only pilot. The Atlantis PRG's score
-// observer and HelioHost submission endpoint must never be used for it.
+// Sierra CRT now supports read-only LOCAL scores and an untrusted F1-armed
+// GAME OVER candidate. Network scores, rankings and member writes remain OFF.
+// Atlantis/Pantheon PRG observers/backend must never be used for this CRT.
 let activeArenaPreview = null;
 let arenaPreviewGeneration = 0;
+// Start=1 is an explicit ONE-SHOT action on a newly opened deep link only.
+let sierraOneClickConsumed = false;
 function clearArenaPreview() {
   arenaPreviewGeneration++;
   activeArenaPreview?.dispose();
@@ -149,18 +151,32 @@ function observeArenaPreviewFrame() {
 async function mountSelectedArenaPreview(entry, bytes) {
   if (!screenStage || !isVerifiedSierraCrossfireCrt(entry)) return;
   const generation = arenaPreviewGeneration;
+  const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261118_crossfire_mobile_arena_f1_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261118_crossfire_sierra_one_click_v2");
     if (generation !== arenaPreviewGeneration) return;
+    const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({
       entry, bytes, stage: screenStage,
-      isCurrent: () => generation === arenaPreviewGeneration
+      launchQuery: sierraOneClickConsumed ? "" : window.location.search,
+      // Never dispatch browser keys. Direct original C64 CIA input is scoped
+      // to the same checksum-verified machine, and released on cancellation.
+      startF1: () => {
+        if(generation!==arenaPreviewGeneration || machine!==verifiedMachine ||
+           !running || paused || !f1 || !verifiedMachine?.cia1) return false;
+        verifiedMachine.cia1.setKey(f1[0],f1[1],true);
+        return true;
+      },
+      releaseF1: () => verifiedMachine?.cia1?.setKey(f1[0],f1[1],false),
+      isCurrent: () => generation === arenaPreviewGeneration &&
+        machine === verifiedMachine
     });
     if (generation !== arenaPreviewGeneration) {
       controller?.dispose();
       return;
     }
     activeArenaPreview = controller;
+    if (controller?.oneClickEnabled) sierraOneClickConsumed = true;
   } catch (error) {
     console.warn("[ccg-arena] Sierra CRT-only preview unavailable:", error);
   }
@@ -414,6 +430,13 @@ if (mobileKeyboardKeys) {
         const held = { ...binding, started: performance.now(), pointerId: event.pointerId, timer: null };
         mobileVirtualHeld.set(button, held);
         pollGamepad();
+        // Mobile KEYBOARD F1 is a separate CIA input route from the dedicated
+        // touch function button: it must cancel pending one-click F1 and arm
+        // the Sierra local run observer just like physical F1.
+        if (code === "F1" && typeof activeArenaPreview !== "undefined") {
+          activeArenaPreview?.cancelOneClick?.();
+          activeArenaPreview?.armFromUserF1?.();
+        }
         if (held.restore) machine.setRestoreNmiLine(true);
         else {
           if (held.shift) syncMobileMatrixBit(1, 7);
@@ -1312,6 +1335,13 @@ function handleC64Key(event, pressed) {
     const binding = physicalMatrixBinding(event);
     if (!binding) return;
     event.preventDefault();
+    // The original Sierra CRT must have shown its actual GAME OVER before
+    // an unmodified F1 key can arm a new LOCAL run. This never sends scores.
+    if (event.code === "F1" && !event.shiftKey && !event.ctrlKey &&
+        typeof activeArenaPreview !== "undefined") {
+      activeArenaPreview?.cancelOneClick?.();
+      activeArenaPreview?.armFromUserF1?.();
+    }
     pressMatrixBinding(heldKey, binding);
     return;
   }
@@ -3608,6 +3638,11 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     if (prior?.timer) clearTimeout(prior.timer);
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
     pollGamepad();
+    // Mirror physical F1 arming on mobile; never wire touch joystick actions.
+    if (code === "F1" && typeof activeArenaPreview !== "undefined") {
+      activeArenaPreview?.cancelOneClick?.();
+      activeArenaPreview?.armFromUserF1?.();
+    }
     machine.cia1.setKey(col, row, true);
     button.classList.add("is-pressed");
     if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;

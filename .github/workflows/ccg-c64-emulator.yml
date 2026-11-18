@@ -117,6 +117,13 @@ jobs:
         timeout-minutes: 5
         run: node --test tests/ccg-c64-bruce-lee-real-crt.test.mjs
 
+      - name: Verify original Sierra Crossfire CRT one-click F1 and scored game over
+        timeout-minutes: 5
+        run: node --test tests/ccg-c64-sierra-real-oneclick.test.mjs
+      - name: Verify Sierra phone virtual KEYBOARD F1 cancellation and arming
+        run: node --test tests/ccg-c64-sierra-mobile-virtual-f1.test.mjs
+
+
       - name: Verify CIA1 reverse keyboard scan and releases
         run: node --test tests/ccg-c64-keyboard-reverse-scan.test.mjs
 
