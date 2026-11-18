@@ -111,38 +111,32 @@ function capture(label) {
 }
 advance(400);capture('01-title');
 const titleState=machine.serializeState();
-// Re-run the SAME authentic cartridge title state against several read-only
-// controlled input routes, capturing BEFORE the short-lived round ends.
-// Crossfire can reach GAME OVER rapidly if no movement/fire is supplied.
+// A short four-frame keypress was not sufficient: the prior trials reached
+// the automatic attract/game-over sequence with zero score. Check longer F1
+// key holds and capture very early frames before gameplay advances.
 const trials=[
-  {name:'no-input',port:2,mask:0xff},
-  {name:'joy2-right-fire',port:2,mask:0xe7},
-  {name:'joy2-up-fire',port:2,mask:0xee},
-  {name:'joy2-left-fire',port:2,mask:0xeb},
-  {name:'joy2-down-fire',port:2,mask:0xed},
-  {name:'joy2-fire',port:2,mask:0xef},
-  {name:'joy1-right-fire',port:1,mask:0xe7},
-  {name:'key-fire-up',key:'KeyE'},
-  {name:'key-fire-right',key:'KeyF'},
-  {name:'key-fire-left',key:'KeyS'},
-  {name:'key-fire-down',key:'KeyD'}
+ {name:'no-f1-control',hold:0,port:2,mask:0xff},
+ {name:'f1-16',hold:16,port:2,mask:0xff},
+ {name:'f1-30',hold:30,port:2,mask:0xff},
+ {name:'f1-60',hold:60,port:2,mask:0xff},
+ {name:'f1-90',hold:90,port:2,mask:0xff},
+ {name:'f1-30-joystick-fire',hold:30,port:2,mask:0xe7},
+ {name:'f1-60-joystick-fire',hold:60,port:2,mask:0xe7},
+ {name:'f1-30-key-fire',hold:30,key:'KeyE'}
 ];
 for(let n=0;n<trials.length;n++){
  const trial=trials[n];
  machine.restoreState(titleState);
  machine.joyPort1=0xff;machine.joyPort2=0xff;
- press('F1',4);
- // At this early frame the original game's round should still be in progress.
- // Only look for genuine HUD differences; never force a numeric score.
- if(n===0)capture('02-after-f1-four-frames');
+ if(trial.hold>0)press('F1',trial.hold);
+ const name=String(n+2).padStart(2,'0')+'-'+trial.name;
+ capture(name+'-immediate');
  const pos=trial.key?KEY_MAP[trial.key]:null;
  if(pos)machine.cia1.setKey(...pos,true);
- if(trial.port===1)machine.joyPort1=trial.mask;
  if(trial.port===2)machine.joyPort2=trial.mask;
- advance(42);
- capture(String(n+3).padStart(2,'0')+'-'+trial.name+'-early');
- advance(65);
- capture(String(n+3).padStart(2,'0')+'-'+trial.name+'-late');
+ advance(18);capture(name+'-18f');
+ advance(35);capture(name+'-53f');
+ advance(50);capture(name+'-103f');
  if(pos)machine.cia1.setKey(...pos,false);
  machine.joyPort1=0xff;machine.joyPort2=0xff;
 }
