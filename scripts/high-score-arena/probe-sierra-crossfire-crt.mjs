@@ -12,6 +12,7 @@ import { deflateSync } from 'node:zlib';
 import { C64Machine } from '../../js/ccg-c64/core/machine.js';
 import { KEY_MAP } from '../../js/ccg-c64/core/cia.js';
 import { readSierraCrossfireScreenScores } from './read-sierra-crossfire-screen-score.mjs';
+import { sierraCrossfireGameOverVisible } from './observe-sierra-crossfire-run.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const expected = Object.freeze({
@@ -117,6 +118,59 @@ const titleState=machine.serializeState();
 // A short four-frame keypress was not sufficient: the prior trials reached
 // the automatic attract/game-over sequence with zero score. Check longer F1
 // key holds and capture very early frames before gameplay advances.
+const positiveCandidates=[];
+if(process.argv.includes('--hunt-score')) {
+ // Genuine Sierra CRT C64Machine, no synthetic RAM modifications.
+ // Each trial independently restarts from the pre-game title state.
+ // Joystick FIRE changes from movement mode to firing mode; keyboard offers
+ // independent IJKL movement and ESDF firing (Sierra manual).
+ const strategies=[
+  ...[['up',0xee],['right',0xe7],['down',0xed],['left',0xeb]]
+    .map(([name,mask])=>({name:'joy2-'+name+'-fire',mask})),
+  ...['KeyE','KeyD','KeyS','KeyF'].map(fire=>({name:'shoot-'+fire,fire})),
+  ...['KeyI','KeyK','KeyJ','KeyL'].flatMap(move=>
+    ['KeyE','KeyD','KeyS','KeyF'].map(fire=>({
+      name:'move-'+move+'-fire-'+fire,move,fire
+    })))
+ ];
+ let attempt=0;
+ for(const strategy of strategies) {
+  attempt++;
+  machine.restoreState(titleState);
+  machine.joyPort1=0xff;machine.joyPort2=0xff;
+  press('F1',8);
+  const held=[];
+  for(const k of [strategy.move,strategy.fire]) {
+   if(!k)continue;
+   const pair=KEY_MAP[k];assert(pair,'Invalid input '+k);
+   machine.cia1.setKey(...pair,true);held.push(pair);
+  }
+  if(strategy.mask)machine.joyPort2=strategy.mask;
+  let hit=null, terminal=false;
+  for(let n=0;n<240;n++) {
+   advance(1);
+   const hud=readSierraCrossfireScreenScores(machine.mem.ram);
+   const isOver=sierraCrossfireGameOverVisible(machine.mem.ram);
+   if(hud?.score>0&&!isOver) {
+    hit={strategy:strategy.name,frameWithinRun:n+1,score:hud.score,
+      oldHighScore:hud.highScore,originalMedia:expected.digest};
+    capture('positive-'+String(attempt).padStart(2,'0'));
+    positiveCandidates.push(hit);
+    break;
+   }
+   if(isOver&&n>15){terminal=true;break;}
+  }
+  for(const key of held)machine.cia1.setKey(...key,false);
+  machine.joyPort2=0xff;
+  console.log('SIERRA_CRT_HUNT_TRIAL',JSON.stringify({
+    strategy:strategy.name,frames,terminal,hit
+  }));
+ }
+ console.log('SIERRA_CRT_SCORE_HUNT_COMPLETE',JSON.stringify({
+   strategies:strategies.length,positiveCandidates:positiveCandidates.length,
+   automaticSubmissionEnabled:false
+ }));
+} else {
 const trials=[
  {name:'no-f1-control',hold:0,port:2,mask:0xff},
  {name:'f1-16',hold:16,port:2,mask:0xff},
@@ -143,10 +197,11 @@ for(let n=0;n<trials.length;n++){
  if(pos)machine.cia1.setKey(...pos,false);
  machine.joyPort1=0xff;machine.joyPort2=0xff;
 }
+}
 writeFileSync(resolve(output,'manifest.json'),JSON.stringify({
  game:expected.title,mediaSha256:expected.digest,captureFrames:frames,
  captures:captures.map(item=>({label:item.result.label,frame:item.result.frames,ramSha256:item.result.ramSha256})),
- verifiedScores:[],verifiedGameOver:false,submissions:0,
+ observedPositiveScoreCandidates:positiveCandidates,verifiedScores:[],verifiedGameOver:false,submissions:0,
  caution:'Controlled positive displayed scores, score bytes and final game-over must be independently verified.'
 },null,2));
 console.log('SIERRA_CRT_FORENSIC_COMPLETE',JSON.stringify({
