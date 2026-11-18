@@ -143,3 +143,35 @@ test('two authentic original CRT 000010 RAM captures decode as score ten, not GA
   assert.equal(capture.expected.submittable,false);
  }
 });
+
+
+test('two original 170/150 CRT score histories each yield exactly one local final candidate',()=>{
+ const runs=JSON.parse(readFileSync(new URL('./fixtures/sierra-crossfire-crt-two-completed-runs.json',import.meta.url),'utf8'));
+ assert.equal(runs.runSessions.length,2);
+ assert.equal(runs.networkSubmissions,0);
+ for(const session of runs.runSessions) {
+  const observer=new SierraCrossfireRunObserver({stableFrames:25});
+  observer.armFromUserF1();
+  let prior=-1;
+  for(const change of session.scoreTransitions) {
+   assert(change.score>=prior,session.name+' should not have a decreasing score');
+   assert.match(change.ramSha256,/^[a-f0-9]{64}$/);
+   prior=change.score;
+   const ram=screen(change.score,change.score);
+   assert.equal(readSierraCrossfireScreenScores(ram).score,change.score);
+   assert.equal(sierraCrossfireGameOverVisible(ram),false);
+   assert.equal(observer.observe(ram),null);
+  }
+  assert.equal(prior,session.terminal.score);
+  const last=gameOver(screen(prior,prior));
+  assert.equal(sierraCrossfireGameOverVisible(last),true);
+  for(let i=0;i<session.terminal.stableGameOverFrames-1;i++)
+   assert.equal(observer.observe(last),null);
+  const candidate=observer.observe(last);
+  assert.equal(candidate.score,session.terminal.score,session.name);
+  assert.equal(candidate.terminalFrames,25);
+  assert.equal(candidate.verified,false);
+  assert.equal(candidate.maySubmit,false);
+  assert.equal(observer.observe(last),null);
+ }
+});
