@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import test from "node:test";
-import { preferSelectedCartridges, preferSierraCrossfireCrt, isVerifiedSierraCrossfireCrt, selectVerifiedExactCrtEdition, findVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
+import { preferSelectedCartridges, preferSierraCrossfireCrt, isVerifiedSierraCrossfireCrt, selectVerifiedExactCrtEdition, findVerifiedExactCrtEdition, SIERRA_CROSSFIRE_CRT } from "../js/ccg-c64/game-catalog.js";
 
 const app = fs.readFileSync("js/ccg-c64/app.js", "utf8");
 const begin = app.indexOf("async function initialiseOnlineLibrary() {");
@@ -166,4 +166,26 @@ test("the automatic launch still uses firmware gating and SHA-verified media", (
   assert.match(app, /\}, \{ freshBoot: true \}\);/);
   assert.match(app, /Cartridge SHA-256 mismatch/);
   assert.match(app, /Downloaded C64 game pack failed its integrity check|loadPackedGameBytes/);
+});
+
+
+test("Sierra one-click game link still autoloads the exact SHA-bound CRT just once",async()=>{
+ const entry={...SIERRA_CROSSFIRE_CRT,approved:true,preferOverOtherFormats:true};
+ const query="?game="+entry.id+"&autoplay=1&start=1";
+ const r=await initialiseFor(query,{entries:[entry],retry:true});
+ assert.deepEqual(r.selected.map(x=>x.id),[entry.id,entry.id]);
+ assert.deepEqual(r.starts,[entry.id],'existing game-autoload consumes once');
+ assert.equal(r.context.gamePageAutoloadConsumed,true);
+ assert.match(r.context.stageNote.textContent,/Starting Crossfire/i);
+ const wrong=await initialiseFor('?game=archive-02122&autoplay=1&start=1',
+  {entries:[entry]});
+ assert.deepEqual(wrong.starts,[]);
+});
+test("new Sierra direct-launch F1 uses exact verified live cartridge, not generic autoplay",()=>{
+ assert.match(app,/launchQuery: window\.location\.search/);
+ assert.match(app,/machine === verifiedMachine/);
+ assert.match(app,/startF1: \(\) =>/);
+ assert.match(app,/releaseF1: \(\) =>/);
+ assert.match(app,/activeArenaPreview\?\.cancelOneClick\?\.\(\)/);
+ assert.match(app,/activeArenaPreview\?\.armFromUserF1\?\.\(\)/);
 });
