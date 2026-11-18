@@ -219,3 +219,17 @@ test('a hung HelioHost member request times out without holding the game hostage
  assert(stage.after.find(n=>n.tag==='p'&&String(n.textContent).includes('TIMED OUT')));
  player.dispose();
 });
+
+test('mobile Arena keeps a visible compact status contract and fixed open-panel selectors',async()=>{
+ const css=await (await import('node:fs/promises')).readFile(
+  new URL('../resources/css/ccg-high-score-arena-preview.css',import.meta.url),'utf8'
+ );
+ assert.match(css,/\.ccg-c64-console\.is-mobile-playing[\\s\\S]*\.ccg-arena-preview\\[data-ccg-arena-preview="crossfire"\\][\\s\\S]*display: block !important/);
+ assert.match(css,/\.ccg-arena-preview__run[\\s\\S]*min-height: 44px/);
+ assert.match(css,/\.ccg-arena-preview\\[data-ccg-arena-preview="crossfire"\\]\.is-mobile-open[\\s\\S]*position: fixed !important/);
+ const doc=fakeDocument(),stage=doc.createElement('div');
+ const controller=await mountCrossfirePreview({entry,bytes,stage,doc,subtle});
+ assert(controller);
+ assert.equal(stage.after.attributes['data-ccg-arena-mobile-status'],'compact');
+ controller.dispose();
+});
