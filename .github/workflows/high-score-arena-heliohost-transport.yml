@@ -8,6 +8,12 @@ on:
       - "js/ccg-c64/arena/client/heliohost-board.mjs"
       - "js/ccg-c64/arena/client/auto-run-controller.mjs"
       - "js/ccg-c64/arena-preview.js"
+      - "js/ccg-c64/arena/read-sierra-crossfire-screen-score.mjs"
+      - "js/ccg-c64/arena/observe-sierra-crossfire-run.mjs"
+      - "js/ccg-c64/arena/sierra-one-click-launch.mjs"
+      - "tests/high-score-arena-sierra-one-click.test.mjs"
+      - "tests/high-score-arena-sierra-local-run.test.mjs"
+      - "tests/fixtures/sierra-crossfire-local-run-histories.json"
       - "js/ccg-c64/app.js"
       - "service-worker.js"
       - "tests/high-score-arena-heliohost-transport.test.mjs"
@@ -39,6 +45,11 @@ jobs:
           node --check js/ccg-c64/arena/client/heliohost-board.mjs
           node --check js/ccg-c64/arena/client/auto-run-controller.mjs
           node --check js/ccg-c64/arena-preview.js
+          node --check js/ccg-c64/arena/read-sierra-crossfire-screen-score.mjs
+          node --check js/ccg-c64/arena/observe-sierra-crossfire-run.mjs
+          node --check js/ccg-c64/arena/sierra-one-click-launch.mjs
+          node --test tests/high-score-arena-sierra-local-run.test.mjs
+          node --test tests/high-score-arena-sierra-one-click.test.mjs
           node --test tests/high-score-arena-heliohost-transport.test.mjs
           node --test tests/high-score-arena-heliohost-board.test.mjs
           node --test tests/high-score-arena-heliohost-member-session.test.mjs

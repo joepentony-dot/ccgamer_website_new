@@ -11,6 +11,9 @@
 import { identifyArenaMedia } from "./arena/arena-game-profiles.mjs";
 import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
 import { renderArenaBoard, normaliseArenaBoard } from "./arena/view/arena-board.mjs";
+import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-screen-score.mjs";
+import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
+import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
 const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_crossfire_mobile_arena_f1_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
@@ -38,7 +41,8 @@ export async function verifyCrossfirePreviewMedia(entry, bytes, subtle=globalThi
 }
 
 export async function mountCrossfirePreview({
-  entry, bytes, stage, doc=globalThis.document, subtle, isCurrent=()=>true
+  entry, bytes, stage, doc=globalThis.document, subtle, isCurrent=()=>true,
+  launchQuery="", startF1=null, releaseF1=null
 }={}) {
   if(!stage || !doc?.createElement || !doc.head ||
      !(await verifyCrossfirePreviewMedia(entry,bytes,subtle??globalThis.crypto?.subtle)))return null;
@@ -86,7 +90,7 @@ export async function mountCrossfirePreview({
   run.className="ccg-arena-preview__run";
   const local=doc.createElement("strong");
   local.textContent="—";
-  local.setAttribute("aria-label","Local score candidate");
+  local.setAttribute("aria-label","Unverified current local score; not ranked");
   const hint=doc.createElement("p");
   hint.textContent="CRT SCORE DETECTION NOT YET VERIFIED";
   run.append(local,hint);
@@ -126,19 +130,56 @@ export async function mountCrossfirePreview({
   alltime.addEventListener("click",()=>{mode="alltime";show();});
   challenge.addEventListener("click",()=>{mode="challenge";show();});
   show();
+  let lastVisibleScore=null;
+  const localRun=new SierraCrossfireLocalRunObserver();
+  // The only permitted automatic F1 is an explicit exact-edition deep link
+  // after a successful independent Sierra cartridge SHA-256 verification.
+  const autoStarter=isSierraOneClickLaunchQuery(launchQuery) &&
+    typeof startF1==="function" && typeof releaseF1==="function"
+      ? new SierraOneClickStarter({
+          onArm:()=>localRun.armFromUserF1(),
+          onPress:startF1,
+          onRelease:releaseF1
+        }) : null;
   return Object.freeze({
-    observe(_ram) {
-      // The CRT has no verified score/lives/game-over memory signature.
-      // Intentionally never report an Atlantis PRG score for this edition.
+    oneClickEnabled: Boolean(autoStarter),
+    cancelOneClick() { autoStarter?.cancel(); },
+    armFromUserF1() {
+      if(disposed)return false;
+      const armed=localRun.armFromUserF1();
+      if(armed) hint.textContent="RUN START REQUESTED · LOCAL ONLY";
+      return armed;
+    },
+    observe(ram) {
+      if(disposed)return;
+      // Original Sierra cartridge was SHA verified during mount. Inspect only
+      // emulator RAM; no member or score network traffic is ever initiated.
+      const candidate=readSierraCrossfireScreenScores(ram);
+      const completed=localRun.observe(ram);
+      // Drive one user-requested F1 only from actual emulated PAL frames.
+      autoStarter?.tick(ram);
+      if(candidate && candidate.score!==lastVisibleScore) {
+        lastVisibleScore=candidate.score;
+        local.textContent=String(candidate.score).padStart(6,"0");
+        hint.textContent="LIVE LOCAL SCORE · NOT VERIFIED OR SUBMITTED";
+      }
+      if(completed) {
+        local.textContent=String(completed.score).padStart(6,"0");
+        hint.textContent="GAME OVER · LOCAL FINAL · NOT SUBMITTED";
+      }
     },
     invalidate() {
       if(disposed)return;
+      autoStarter?.cancel();
+      localRun.invalidate();
+      lastVisibleScore=null;
       local.textContent="—";
       hint.textContent="SESSION ENDED · NO SCORE RECORDED";
     },
     dispose() {
       if(disposed)return;
       disposed=true;
+      autoStarter?.cancel();
       setMobileOpen(false);
       mobileToggle?.removeEventListener("click",onMobileToggle);
       if(mobileToggle){
