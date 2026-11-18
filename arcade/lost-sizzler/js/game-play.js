@@ -154,7 +154,8 @@ function gamepadDirection(){
 function updateGamepad(){
   if(mode!=="playing"||!p1)return;const state=gamepadDirection();if(!state){activeGamepad=null;gamepadDashDown=false;gamepadFireDown=false;return}const {gp,dir}=state;
   // A replacement controller must not inherit held-button edges from the previous pad.
-  if(activeGamepad!==gp){activeGamepad=gp;gamepadDashDown=false;gamepadFireDown=false}
+  const gamepadIdentity=String(gp.index??0)+":"+String(gp.id||"");
+  if(activeGamepad!==gamepadIdentity){activeGamepad=gamepadIdentity;gamepadDashDown=false;gamepadFireDown=false}
   if(dir){p1.dir=dir;if(move1<=0){movePlayer(p1,dir.x,dir.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}
   const firePressed=Boolean(gp.buttons?.[0]?.pressed);
   if(firePressed){
