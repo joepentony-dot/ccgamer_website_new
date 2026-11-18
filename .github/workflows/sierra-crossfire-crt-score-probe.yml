@@ -31,7 +31,7 @@ jobs:
           node --check scripts/high-score-arena/probe-sierra-crossfire-crt.mjs
           node --test tests/high-score-arena-sierra-crt-screen-score.test.mjs
           node scripts/high-score-arena/probe-sierra-crossfire-crt.mjs --output-dir "$RUNNER_TEMP/sierra-crossfire-crt"
-          node scripts/high-score-arena/probe-sierra-crossfire-crt.mjs --hunt-score --output-dir "$RUNNER_TEMP/sierra-crossfire-crt/hunt"
+          node scripts/high-score-arena/probe-sierra-crossfire-crt.mjs --hunt-score --full-run --output-dir "$RUNNER_TEMP/sierra-crossfire-crt/hunt"
       - name: Preserve real frames and RAM captures
         if: always()
         uses: actions/upload-artifact@v4
