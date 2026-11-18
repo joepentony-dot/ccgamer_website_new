@@ -138,6 +138,47 @@ export function preferSelectedCartridges(entries) {
 
 
  
+
+// Owner-selected Crossfire is the exact Sierra Online CRT, not Atlantis/
+// Pantheon "Crossfire" PRG or "Cross Fire" PRG. The other title
+// "Crossfire - Tron" is a DIFFERENT game and must always remain searchable.
+// Preserve the original hosted PRG bytes and IDs for existing bookmarks and
+// rollback; this is a displayed library choice, never a catalogue rewrite.
+export const SIERRA_CROSSFIRE_CRT = Object.freeze({
+  id: "owner-crt-more-crossfiresierraonline-0c60e852f438",
+  title: "Crossfire (Sierra Online)",
+  format: "crt",
+  bytes: 65728,
+  sha256: "0c60e852f438ab9b6b325a1ecedb69ae1bbff9d1519584e52d6bb31df26c14ab",
+  url: "/emulator/c64/media/cartridge-replacements/crossfiresierraonline-0c60e852f438.crt"
+});
+
+export function isVerifiedSierraCrossfireCrt(entry) {
+  return Boolean(entry && entry.id === SIERRA_CROSSFIRE_CRT.id &&
+    entry.title === SIERRA_CROSSFIRE_CRT.title &&
+    entry.format === SIERRA_CROSSFIRE_CRT.format &&
+    entry.bytes === SIERRA_CROSSFIRE_CRT.bytes &&
+    entry.sha256 === SIERRA_CROSSFIRE_CRT.sha256 &&
+    entry.url === SIERRA_CROSSFIRE_CRT.url &&
+    entry.approved === true &&
+    entry.preferOverOtherFormats === true &&
+    !entry.packed && !Object.hasOwn(entry, "dataBase64"));
+}
+
+export function preferSierraCrossfireCrt(entries) {
+  if (!Array.isArray(entries)) return [];
+  // If the verified CRT manifest is unavailable, retain legacy game choices.
+  // Never hide playable media based on a mere same-name or untrusted CRT row.
+  if (!entries.some(isVerifiedSierraCrossfireCrt)) return entries.slice();
+  return entries.filter(entry => {
+    if (!entry || typeof entry.title !== "string") return true;
+    const title = normaliseCatalogSearch(entry.title);
+    const unwanted = (title === "crossfire" || title === "cross fire") &&
+      String(entry.format || "").toLowerCase() === "prg";
+    return !unwanted;
+  });
+}
+
 // An owner-verified game-page deep link may request a different CRT edition
 // from the single visible winner. Replace only that row for this navigation,
 // after verifying the exact hosted bytes' catalogue identity and digest.
