@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "gameKey": "c64-crossfire-sierra-online",
+  "displayTitle": "Crossfire (Sierra Online)",
+  "media": {
+    "catalogId": "owner-crt-more-crossfiresierraonline-0c60e852f438",
+    "file": "crossfiresierraonline-0c60e852f438.crt",
+    "format": "crt",
+    "byteLength": 65728,
+    "sha256": "0c60e852f438ab9b6b325a1ecedb69ae1bbff9d1519584e52d6bb31df26c14ab"
+  },
+  "overlay": {
+    "status": "active-legacy-path",
+    "path": "/resources/images/high-score-arena/crossfire-original-frame.webp",
+    "futurePath": "/resources/images/high-score-arena/crossfire/overlay.webp",
+    "width": 1672,
+    "height": 941
+  },
+  "controls": {
+    "joystickPort": null,
+    "notes": "Preserve the current Sierra runtime setting; no change proposed"
+  },
+  "score": {
+    "status": "existing-local-observer",
+    "hudLocation": "right-hand vertical column",
+    "screenMemoryBase": "0x0400",
+    "screenColumn": 39,
+    "scoreRows": [
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "reader": "/js/ccg-c64/arena/read-sierra-crossfire-screen-score.mjs",
+    "runObserver": "/js/ccg-c64/arena/observe-sierra-crossfire-run.mjs",
+    "note": "Existing integration only. Server admission and any live eligibility remain separate."
+  },
+  "rules": {
+    "allowTrainers": false,
+    "allowUnlimitedLives": false,
+    "allowUnlimitedTime": false,
+    "allowSaveStateRuns": false
+  },
+  "rollout": {
+    "runtimeWired": true,
+    "notes": "Existing code in js/ccg-c64/arena-preview.js is authoritative; this profile is informational until an explicitly reviewed registry migration."
+  }
+}

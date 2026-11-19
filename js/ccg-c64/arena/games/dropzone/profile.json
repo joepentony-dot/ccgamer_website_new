@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "gameKey": "c64-dropzone",
+  "displayTitle": "Dropzone",
+  "media": {
+    "catalogId": null,
+    "file": "dropzone.crt",
+    "format": "crt",
+    "byteLength": 82144,
+    "sha256": "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7"
+  },
+  "overlay": {
+    "status": "asset-created-not-in-repo",
+    "path": "/resources/images/high-score-arena/dropzone/overlay.webp",
+    "width": 1672,
+    "height": 941,
+    "notes": "Use the generated Dropzone WebP with the exact Crossfire transparent opening; file must be uploaded before wiring."
+  },
+  "controls": {
+    "joystickPort": 2
+  },
+  "score": {
+    "status": "not-measured",
+    "hudLocation": "bottom-left",
+    "screenMemoryBase": null,
+    "screenColumn": null,
+    "scoreRows": null,
+    "screenPixelRectangle": null,
+    "charsetEncoding": null,
+    "gameOverSignature": null,
+    "reader": "./score-reader.mjs",
+    "runObserver": "./run-observer.mjs",
+    "notes": "The screenshot shows the HUD location, not a verified C64 memory address. Verify this exact CRT against real RAM/game-over captures."
+  },
+  "rules": {
+    "allowTrainers": false,
+    "allowUnlimitedLives": false,
+    "allowUnlimitedTime": false,
+    "allowSaveStateRuns": false,
+    "requiresFreshRun": true,
+    "requiresVerifiedGameOver": true
+  },
+  "rollout": {
+    "runtimeWired": false,
+    "publicSubmissionEnabled": false,
+    "notes": "No score collection or remote submissions until exact CRT/media, score decoder, game over, backend game key and integrity are verified."
+  }
+}
