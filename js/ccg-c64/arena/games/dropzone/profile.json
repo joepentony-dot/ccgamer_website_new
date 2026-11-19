@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "gameKey": "c64-dropzone",
+  "displayTitle": "Dropzone",
+  "media": {
+    "catalogId": "owner-crt-more-dropzone",
+    "file": "dropzone.crt",
+    "format": "crt",
+    "byteLength": 82144,
+    "sha256": "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7"
+  },
+  "overlay": {
+    "status": "visual-frame-wired-draft-only",
+    "path": "/resources/images/high-score-arena/dropzone/overlay.webp",
+    "width": 1672,
+    "height": 941,
+    "notes": "Real generated WebP, 1672x941, preserved from supplied Dropzone artwork; transparent gameplay opening compared pixel-for-pixel with legacy Crossfire art. Draft only: no active runtime CSS selector yet.",
+    "sha256": "ed372b3192cfbcd7131c559c6f61d3eb4edc10d4ce19ac486cb923ad0183ce98",
+    "byteLength": 354446
+  },
+  "controls": {
+    "joystickPort": 2
+  },
+  "score": {
+    "status": "local-0-10-280-reader-and-gameover-video-observer-no-submission",
+    "hudLocation": "bottom-left",
+    "screenMemoryBase": "0xB800",
+    "screenColumn": 0,
+    "scoreRows": [
+      20
+    ],
+    "screenPixelRectangle": {
+      "x": 26,
+      "y": 162,
+      "width": 30,
+      "height": 7,
+      "coordinateSpace": "320x200 user screenshot",
+      "meaning": "yellow four-digit current score; not a RAM address"
+    },
+    "charsetEncoding": null,
+    "gameOverSignature": {
+      "format": "C64 PAL VIC-II presentationBuffer, 384x272 RGBA",
+      "evidenceWorkflowRun": 44555004560,
+      "originalCartridgeSha256": "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7",
+      "bands": [
+        {
+          "label": "GAME OVER",
+          "xStart": 135,
+          "xEndExclusive": 262,
+          "yStart": 77,
+          "yEndExclusive": 84,
+          "stepX": 2
+        },
+        {
+          "label": "YOUR RANK IS",
+          "xStart": 151,
+          "xEndExclusive": 246,
+          "yStart": 93,
+          "yEndExclusive": 100,
+          "stepX": 2
+        }
+      ],
+      "requireConsecutiveFrames": 25,
+      "requireActiveZeroAndPositiveScoreTransition": true,
+      "trust": "local-unverified-display-only"
+    },
+    "reader": "./score-reader.mjs",
+    "runObserver": "./run-observer.mjs",
+    "notes": "Exact CRT real PAL capture recorded active score 0, 10, 280; GAME OVER white text visible at diagnostic relative frames 2750..3350, absent at 2600 and 3425. Local video observer requires 25 consecutive matching frames plus zero-to-positive score transition. Native in-game ranking varies; only first two text lines are matched. Server score eligibility remains disabled.",
+    "screenDigitLayout": {
+      "startX": 26,
+      "topY": 162,
+      "digitWidth": 6,
+      "digitHeight": 7,
+      "digitStride": 8,
+      "digitsObserved": 4,
+      "observedColourRgb": [
+        227,
+        231,
+        110
+      ],
+      "scope": "only these two screenshots"
+    },
+    "livesIndicator": {
+      "type": "purple spaceman sprites",
+      "screenPixelRectangle": {
+        "x": 36,
+        "y": 174,
+        "width": 12,
+        "height": 18,
+        "coordinateSpace": "320x200 user screenshot"
+      },
+      "inActiveSample": true,
+      "inGameOverSample": false,
+      "notes": "This is a visual clue. Confirm the genuine remaining-life semantics and ROM/RAM address from a verified running cartridge."
+    },
+    "gameOverVisibleText": [
+      "GAME OVER",
+      "YOUR RANK IS",
+      "NOT LISTED",
+      "PRACTICE RECOMMENDED"
+    ],
+    "screenCharAddresses": [
+      "0xBB20",
+      "0xBB21",
+      "0xBB22",
+      "0xBB23",
+      "0xBB24",
+      "0xBB25",
+      "0xBB26"
+    ],
+    "blankCharCode": 10,
+    "hudSentinelAddresses": [
+      "0xBB27",
+      "0xBB28",
+      "0xBB29",
+      "0xBB2A",
+      "0xBB2B",
+      "0xBB2C",
+      "0xBB2D",
+      "0xBB2E",
+      "0xBB2F"
+    ]
+  },
+  "rules": {
+    "allowTrainers": false,
+    "allowUnlimitedLives": false,
+    "allowUnlimitedTime": false,
+    "allowSaveStateRuns": false,
+    "requiresFreshRun": true,
+    "requiresVerifiedGameOver": true
+  },
+  "rollout": {
+    "runtimeWired": true,
+    "publicSubmissionEnabled": false,
+    "notes": "Exact SHA-pinned CRT mounts Dropzone overlay, reads score 0/10/280 locally and freezes end-of-run score after 25 stable GAME OVER PAL frames. NO HelioHost or authenticated scoring. Requires independent CI, browser acceptance and backend admission before release."
+  },
+  "evidence": {
+    "type": "owner-supplied-screenshots",
+    "coordinateSpace": "320x200 RGB",
+    "screenshots": [
+      {
+        "path": "/tests/fixtures/high-score-arena/dropzone/active-9220.png",
+        "sha256": "6105f4b58f45964f12a3b8e28554d6256118d456c66e0718b3822b07e0fc9438",
+        "observedScore": 9220,
+        "observedState": "active-play",
+        "gameOverTextVisible": false,
+        "purpleLifeFigureVisible": true
+      },
+      {
+        "path": "/tests/fixtures/high-score-arena/dropzone/game-over-9230.png",
+        "sha256": "18e921656d34da6053358ac2821a946d3ee1ddf0296ed8fad78c741606cb6e4c",
+        "observedScore": 9230,
+        "observedState": "game-over",
+        "gameOverTextVisible": true,
+        "purpleLifeFigureVisible": false
+      }
+    ],
+    "limitations": "Images do not establish any C64 emulated RAM address, original cartridge SHA, trusted score provenance, or a server-authorised submission."
+  }
+}

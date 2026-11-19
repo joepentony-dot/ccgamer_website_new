@@ -127,6 +127,17 @@ const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
 
+// Game-specific Arena registration: exact hosted CRT identity only.
+// The lazy Dropzone module independently verifies every media byte again.
+const isDropzoneArenaEntry = entry => Boolean(entry &&
+  entry.id === "owner-crt-more-dropzone" &&
+  entry.title === "Dropzone" && entry.format === "crt" &&
+  entry.filename === "dropzone.crt" &&
+  entry.url === "/emulator/c64/media/cartridge-replacements/dropzone.crt" &&
+  entry.bytes === 82144 &&
+  entry.sha256 === "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7" &&
+  entry.approved === true);
+
 // Automatically recognise the verified Sierra CRT after its normal LOAD.
 // All other games remain unchanged: no Arena modules, styles or network.
 // Sierra CRT now supports read-only LOCAL scores and an untrusted F1-armed
@@ -152,6 +163,29 @@ function observeArenaPreviewFrame() {
   }
 }
 async function mountSelectedArenaPreview(entry, bytes) {
+  if (!screenStage) return;
+  if (isDropzoneArenaEntry(entry)) {
+    const generation = arenaPreviewGeneration;
+    const verifiedMachine = machine;
+    try {
+      const module = await import("./arena/games/dropzone/preview.mjs?ccg_rev=20261119_dropzone_arena_visual_v1");
+      if (generation !== arenaPreviewGeneration || machine !== verifiedMachine) return;
+      const controller = await module.mountDropzoneArenaPreview({
+        entry, bytes, stage: screenStage,
+        getMachine: () => verifiedMachine,
+        isCurrent: () => generation === arenaPreviewGeneration &&
+          machine === verifiedMachine
+      });
+      if (generation !== arenaPreviewGeneration || machine !== verifiedMachine) {
+        controller?.dispose();
+        return;
+      }
+      activeArenaPreview = controller;
+    } catch (error) {
+      console.warn("[ccg-arena] Dropzone local-only overlay unavailable:", error);
+    }
+    return;
+  }
   if (!screenStage || !isVerifiedSierraCrossfireCrt(entry)) return;
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
@@ -2841,9 +2875,16 @@ async function loadSelectedLibraryEntry() {
       name: filename, type, bytes, sourceKey: firstKey,
       gameKey: "library:" + entry.id, gameTitle: entry.title,
     }, { freshBoot: true });
-    if (queued && isVerifiedSierraCrossfireCrt(entry)) {
-      // Normal LOAD is the trigger. Recompute the Sierra CRT digest inside
-      // the lazy visual module; no score observer or HelioHost session runs.
+    if (queued && entry.id === "owner-crt-more-dropzone") {
+      // Dropzone uses port 2 by default, independent of the previous game.
+      // Users retain the existing joystick-swap control during gameplay.
+      joystickPort = 2;
+      applyJoystickInput();
+      updateJoystickUi();
+      // An isolated, checksum-bound visual Arena; no score API requests.
+      void mountSelectedArenaPreview(entry, bytes);
+    } else if (queued && isVerifiedSierraCrossfireCrt(entry)) {
+      // Preserve Sierra Crossfire's existing mounting, F1 and score behavior.
       void mountSelectedArenaPreview(entry, bytes);
     }
     if (!queued && !pendingMedia) activeLibraryEntryId = null;

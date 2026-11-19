@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "gameKey": "c64-space-taxi",
+  "displayTitle": "Space Taxi",
+  "media": {
+    "catalogId": null,
+    "file": null,
+    "format": null,
+    "byteLength": null,
+    "sha256": null
+  },
+  "overlay": {
+    "status": "awaiting-artwork",
+    "path": "/resources/images/high-score-arena/space-taxi/overlay.webp",
+    "width": 1672,
+    "height": 941
+  },
+  "controls": {
+    "joystickPort": null
+  },
+  "score": {
+    "status": "not-measured",
+    "hudLocation": null,
+    "screenMemoryBase": null,
+    "screenColumn": null,
+    "scoreRows": null,
+    "screenPixelRectangle": null,
+    "charsetEncoding": null,
+    "gameOverSignature": null,
+    "reader": null,
+    "runObserver": null,
+    "notes": "No edition/score position verified. Do not reuse Dropzone or Crossfire memory addresses."
+  },
+  "rules": {
+    "allowTrainers": false,
+    "allowUnlimitedLives": false,
+    "allowUnlimitedTime": false,
+    "allowSaveStateRuns": false,
+    "requiresFreshRun": true,
+    "requiresVerifiedGameOver": true
+  },
+  "rollout": {
+    "runtimeWired": false,
+    "publicSubmissionEnabled": false,
+    "notes": "Do not activate until exact hosted media and score decoder are verified."
+  }
+}
