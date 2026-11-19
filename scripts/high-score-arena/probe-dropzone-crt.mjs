@@ -11,6 +11,7 @@ import { resolve } from "node:path";
 import { deflateSync } from "node:zlib";
 import { C64Machine } from "../../js/ccg-c64/core/machine.js";
 import { KEY_MAP } from "../../js/ccg-c64/core/cia.js";
+import { readDropzoneHudScore } from "../../js/ccg-c64/arena/games/dropzone/score-reader.mjs";
 const root=resolve(import.meta.dirname,"../..");
 const game=Object.freeze({
   title:"Dropzone",file:"dropzone.crt",bytes:82144,hardware:19,
@@ -101,8 +102,11 @@ function screenText(){
 const snapshots=[];
 function capture(name){
  const mem=machine.mem.ram;
+ const screen=screenText();
+ const screenBase=parseInt(screen.base,16);
+ const localHudScore=readDropzoneHudScore(mem,{screenBase});
  const status={name,frame:frames,pc:machine.cpu.pc,
-  sha256:digest(mem),screen:screenText(),scoreYellowRows:yellowHud(),
+  sha256:digest(mem),screen,localHudScore,scoreYellowRows:yellowHud(),
   vic:{d011:machine.vic2.regs[0x11],d016:machine.vic2.regs[0x16],
     d018:machine.vic2.regs[0x18]}};
  const ram=Buffer.from(mem);
@@ -166,13 +170,36 @@ for(const trial of trials){
  observed.push(report);
  console.log("DROPZONE_START_TRIAL",JSON.stringify(report));
 }
+// Assert that the untouched, checksum-pinned CRT exposed genuine scores
+// at both capture points across two independent FIRE press/release trials.
+for(const name of ["fire2-edge3","fire2-edge8"]){
+ const early=JSON.parse(readFileSync(resolve(output,name+"-350f.json"),"utf8"));
+ const late=JSON.parse(readFileSync(resolve(output,name+"-800f.json"),"utf8"));
+ assert.equal(early.localHudScore,0,name+" genuine active 0");
+ assert.equal(late.localHudScore,10,name+" genuine active 10");
+}
+// Continue a real game without joystick input, observing natural score,
+// life and terminal-video evolution. NO game RAM or scores are fabricated.
+machine.restoreState(titleState);
+machine.joyPort1=0xff;machine.joyPort2=0xef;
+advance(3);
+machine.joyPort1=0xff;machine.joyPort2=0xff;
+for(const [name,increment] of [
+ ["no-input-1200",1200],
+ ["no-input-2600",1400],
+ ["no-input-4400",1800],
+ ["no-input-6600",2200]
+]){
+ advance(increment);
+ capture(name);
+}
 writeFileSync(resolve(output,"manifest.json"),JSON.stringify({
  kind:"dropzone-exact-crt-start-edge-diagnostic",
  exactMediaSha256:game.sha256,originalGameBytes:game.bytes,
  snapshots,observedStartTrials:observed,
  verifiedScoreRamAddresses:[],gameOverRamSignatureVerified:false,
  publicSubmissionEnabled:false,
- note:"Real-ROM title/start capture, not a verified active-game score decoder. Inspect images and RAM before deriving memory signatures."
+ note:"Exact CRT score HUD 0-to-10 tested on untouched emulator RAM. Natural terminal states still to be interpreted; no server submission."
 },null,2));
 console.log("DROPZONE_FORENSICS_COMPLETE",JSON.stringify({
  mediaSha256:game.sha256,snapshots:snapshots.length,
