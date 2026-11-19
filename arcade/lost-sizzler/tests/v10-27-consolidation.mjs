@@ -28,7 +28,8 @@ assert.match(voice,/window\.addEventListener\("ccg:run-started",onAuthoritativeR
 assert.match(voice,/sayKey\("welcome",\{cooldown:0\}\)/,'Authoritative non-Tutorial run start must request the owner-recorded Welcome cue');
 assert.doesNotMatch(voice,/greetingRoll<\.1\?"welcomeRare"/,'Solo start must not randomly replace the expected Welcome cue');
 assert.match(voice,/function playSprite\(/,'approved recorded voice playback must remain present');
-assert.match(voice,/const src=assetFor\(key\);let started=false;[\s\S]*if\(src\)started=playClip\(src,priority,key\);if\(!started\)started=playSprite\(key,priority\);/,'admin voice override must be checked before approved game recording playback');
+assert.match(voice,/ownerAvailable\?playSprite\(key,priority\):false/,'R169 recorded owner game cue must play before any remote admin voice override');
+assert.match(voice,/if\(!started&&!ownerAvailable&&src\)started=playClip\(src,priority,key\)/,'unrecorded keys may still use historical admin voice fallback without overriding newly recorded owner cues');
 assert.doesNotMatch(voice,/SpeechSynthesisUtterance|speechSynthesis\.speak/,'production voice playback must not fall back to browser TTS');
 assert.doesNotMatch(voice,/state\.queue\.push\(/,'voice cues must never accumulate into a playback backlog');
 

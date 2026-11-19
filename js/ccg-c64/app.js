@@ -126,6 +126,7 @@ const audioButton = document.querySelector("[data-audio-toggle]");
 const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
+
 // Game-specific Arena registration: exact hosted CRT identity only.
 // The lazy Dropzone module independently verifies every media byte again.
 const isDropzoneArenaEntry = entry => Boolean(entry &&
@@ -189,7 +190,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261119_crossfire_mobile_start_score_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261119_sierra_public_rankings_independent_auth_v1");
     if (generation !== arenaPreviewGeneration) return;
     const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({

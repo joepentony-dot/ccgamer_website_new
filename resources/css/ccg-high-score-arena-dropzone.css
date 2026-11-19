@@ -1,5 +1,5 @@
 /* Dropzone-specific frame. Crossfire's original rules/assets are untouched. */
-@import url("/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_sierra_arena_layout_v5");
+@import url("/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261119_crossfire_phone_leaderboard_only_v1");
 @media (min-width: 761px) {
   .ccg-c64-console:not(.is-mobile-playing, :fullscreen)
     .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"]:not(:fullscreen) {
