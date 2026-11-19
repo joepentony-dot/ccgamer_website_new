@@ -64,3 +64,27 @@ test('Dropzone visual wiring is exact-media-only and cannot post unverified scor
   assert.doesNotMatch(mod,/\b(fetch|XMLHttpRequest|sendBeacon)\s*\(/);
   assert.equal(load('dropzone').rollout.publicSubmissionEnabled,false);
 });
+
+
+test("Dropzone local HUD decoder reproduces real-ROM 0 and 10 transitions and rejects title RAM",async()=>{
+  const {readDropzoneHudScore,DROPZONE_SCORE_LAYOUT}=await import("../js/ccg-c64/arena/games/dropzone/score-reader.mjs");
+  const capture=JSON.parse(readFileSync(new URL("../tests/fixtures/high-score-arena/dropzone/real-ram-score-observations.json",import.meta.url),"utf8"));
+  assert.equal(DROPZONE_SCORE_LAYOUT.firstAddress,0xBB20);
+  assert.equal(DROPZONE_SCORE_LAYOUT.lastAddress,0xBB26);
+  for(const observation of capture.observations){
+    const ram=new Uint8Array(65536);
+    ram.set(observation.rawScreen16,0xBB20);
+    const actual=readDropzoneHudScore(ram,{screenBase:observation.screenBase??capture.screenBase});
+    assert.equal(actual,observation.expectedScore,observation.label);
+  }
+  const ram=new Uint8Array(65536);ram.set(capture.observations[1].rawScreen16,0xBB20);
+  assert.equal(readDropzoneHudScore(ram,{screenBase:0xF000}),null);
+  assert.equal(readDropzoneHudScore(ram.subarray(0,100),{screenBase:0xB800}),null);
+  ram[0xBB2A]=0;
+  assert.equal(readDropzoneHudScore(ram,{screenBase:0xB800}),null);
+  ram.set(capture.observations[1].rawScreen16,0xBB20);
+  ram[0xBB21]=11;
+  assert.equal(readDropzoneHudScore(ram,{screenBase:0xB800}),null);
+  assert.equal(load("dropzone").rollout.publicSubmissionEnabled,false);
+  assert.equal(load("dropzone").score.runObserver,null);
+});

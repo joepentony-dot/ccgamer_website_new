@@ -1,0 +1,131 @@
+{
+  "evidenceType": "derived-from-real-ram-github-actions-diagnostics",
+  "originalArtifact": "dropzone-crt-forensic-frames",
+  "workflowRunId": 44551661979,
+  "gameCrtSha256": "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7",
+  "screenBase": 47104,
+  "scoreScreenRange": {
+    "firstAddress": 47904,
+    "lastAddress": 47910,
+    "row": 20
+  },
+  "note": "These are byte excerpts from real captured 65536-byte C64 RAM files; full raw originals remain in the Actions artifact through 2026-11-26. No scored run or end-of-run has been verified.",
+  "observations": [
+    {
+      "label": "fire2-edge3-350f",
+      "originalRamSha256": "5b3bee6716b44328196200436206de789a6cc7f49625856ab172dd63872ca3f6",
+      "expectedScore": 0,
+      "rawScreen16": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        0,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ]
+    },
+    {
+      "label": "fire2-edge3-800f",
+      "originalRamSha256": "a59788a5ef573a6e8b48106f204e8680fdcc69168784df352baaa4d175483c0e",
+      "expectedScore": 10,
+      "rawScreen16": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        1,
+        0,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ]
+    },
+    {
+      "label": "fire2-edge8-350f",
+      "originalRamSha256": "d19d7e00969bf83ce0ec904731159be932396e30a002aa48b1f480588ac76896",
+      "expectedScore": 0,
+      "rawScreen16": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        0,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ]
+    },
+    {
+      "label": "fire2-edge8-800f",
+      "originalRamSha256": "e4c3585cd399deb78ebcfc55b22c26c7f0f26c56decfc077717f26e5c867cdd1",
+      "expectedScore": 10,
+      "rawScreen16": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        1,
+        0,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ]
+    },
+    {
+      "label": "fire1-control-800f",
+      "originalRamSha256": "4198aac8ec7cf9691be7eb7225427a516fb60391969aadc7dcb7699f4ff6b2d1",
+      "expectedScore": null,
+      "screenBase": 61440,
+      "rawScreen16": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ]
+    }
+  ]
+}

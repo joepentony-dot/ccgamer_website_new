@@ -5,6 +5,7 @@
  * read/write remote leaderboards, or submit fabricated score candidates.
  */
 import { renderArenaBoard, normaliseArenaBoard } from "../../view/arena-board.mjs";
+import { readDropzoneHudScore } from "./score-reader.mjs";
 const GAME_KEY = "c64-dropzone";
 export const DROPZONE_CRT = Object.freeze({
   id: "owner-crt-more-dropzone",
@@ -33,7 +34,7 @@ export async function verifyDropzoneMedia(entry, bytes, subtle=globalThis.crypto
 
 export async function mountDropzoneArenaPreview({
   entry,bytes,stage,doc=globalThis.document,subtle,
-  isCurrent=()=>true
+  getMachine=()=>null,isCurrent=()=>true
 }={}) {
   if (!stage || !doc?.createElement || !doc.head ||
       !(await verifyDropzoneMedia(entry,bytes,subtle??globalThis.crypto?.subtle)) ||
@@ -83,7 +84,7 @@ export async function mountDropzoneArenaPreview({
   score.textContent="—";
   score.setAttribute("aria-label","Local score unavailable until Dropzone's game-specific reader is verified");
   const hint=doc.createElement("p");
-  hint.textContent="LOCAL SCORE DETECTION PENDING · NO RANKED SUBMISSIONS";
+  hint.textContent="LOCAL HUD SCORE · UNVERIFIED · NO RANKED SUBMISSIONS";
   run.append(score,hint);
   display.append(board,run);
   section.append(intro,startHint,modes,display);
@@ -104,7 +105,7 @@ export async function mountDropzoneArenaPreview({
     mobileToggle.hidden=false;
     mobileToggle.addEventListener("click",onToggle);
   }
-  let mode="alltime",disposed=false;
+  let mode="alltime",disposed=false,lastScore=null;
   function show(){
     if(disposed)return;
     alltime.setAttribute("aria-pressed",String(mode==="alltime"));
@@ -122,8 +123,25 @@ export async function mountDropzoneArenaPreview({
   show();
   return Object.freeze({
     // Until actual cartridge-specific memory forensics: no guessed score.
-    observe(_ram){},
-    invalidate(){if(!disposed){score.textContent="—";hint.textContent="SESSION ENDED · NO SCORE RECORDED";}},
+    observe(ram){
+      if(disposed||!isCurrent())return;
+      const machine=getMachine();
+      if(!machine||machine.mem?.ram!==ram||!machine.vic2?.regs||
+         !Number.isInteger(machine.cia2?.vicBank))return;
+      const screenBase=(machine.cia2.vicBank+
+        (((machine.vic2.regs[0x18]>>>4)&15)*1024))&65535;
+      const local=readDropzoneHudScore(ram,{screenBase});
+      if(local===null||local===lastScore)return;
+      lastScore=local;
+      score.textContent=local.toLocaleString("en-GB");
+      score.setAttribute("aria-label","Local displayed Dropzone score "+local);
+      hint.textContent="LOCAL HUD SCORE · NOT VERIFIED FOR SUBMISSION";
+    },
+    invalidate(){if(!disposed){
+      lastScore=null;
+      score.textContent="—";
+      hint.textContent="SESSION ENDED · NO SCORE RECORDED";
+    }},
     dispose(){
       if(disposed)return;
       disposed=true;

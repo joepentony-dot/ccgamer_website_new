@@ -22,11 +22,13 @@
     "joystickPort": 2
   },
   "score": {
-    "status": "screenshot-evidence-only-no-runtime-reader",
+    "status": "local-hud-reader-0-and-10-observed-in-real-emulator-no-gameover",
     "hudLocation": "bottom-left",
-    "screenMemoryBase": null,
-    "screenColumn": null,
-    "scoreRows": null,
+    "screenMemoryBase": "0xB800",
+    "screenColumn": 0,
+    "scoreRows": [
+      20
+    ],
     "screenPixelRectangle": {
       "x": 26,
       "y": 162,
@@ -37,9 +39,9 @@
     },
     "charsetEncoding": null,
     "gameOverSignature": null,
-    "reader": null,
+    "reader": "./score-reader.mjs",
     "runObserver": null,
-    "notes": "Two owner-supplied screenshots show current HUD scores 9220 during play and 9230 on a GAME OVER screen. HUD coordinates and visual banners are observed. Exact cartridge version behind the screenshots, RAM/charset encoding, end-of-run states, and final-score eligibility are not established. Do not submit ranked scores based on visual observations alone.",
+    "notes": "Real exact-CRT emulator capture (Actions run 44551661979) shows 0 and 10 during active play, with VIC screen base $B800 and score at $BB20..$BB26. Mapping numeric char codes beyond 0 and 1 remains inferred, not individually observed. Game-over detection, eligible score transport and server verification remain disabled.",
     "screenDigitLayout": {
       "startX": 26,
       "topY": 162,
@@ -72,6 +74,27 @@
       "YOUR RANK IS",
       "NOT LISTED",
       "PRACTICE RECOMMENDED"
+    ],
+    "screenCharAddresses": [
+      "0xBB20",
+      "0xBB21",
+      "0xBB22",
+      "0xBB23",
+      "0xBB24",
+      "0xBB25",
+      "0xBB26"
+    ],
+    "blankCharCode": 10,
+    "hudSentinelAddresses": [
+      "0xBB27",
+      "0xBB28",
+      "0xBB29",
+      "0xBB2A",
+      "0xBB2B",
+      "0xBB2C",
+      "0xBB2D",
+      "0xBB2E",
+      "0xBB2F"
     ]
   },
   "rules": {
@@ -85,7 +108,7 @@
   "rollout": {
     "runtimeWired": true,
     "publicSubmissionEnabled": false,
-    "notes": "Visual artwork and scoreboard shell mount only for SHA-verified hosted Dropzone CRT. Score remains unavailable; no RAM decoder/game-over observer and no network leaderboard. Do not describe scoring as live."
+    "notes": "Verified SHA-256 CRT mounts own themed artwork and local read-only HUD score 0/10. Later digits inferred by contiguous custom character code mapping; no end-of-run signal and no network score submission. Crossfire unaffected."
   },
   "evidence": {
     "type": "owner-supplied-screenshots",

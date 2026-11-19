@@ -171,6 +171,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
       if (generation !== arenaPreviewGeneration || machine !== verifiedMachine) return;
       const controller = await module.mountDropzoneArenaPreview({
         entry, bytes, stage: screenStage,
+        getMachine: () => verifiedMachine,
         isCurrent: () => generation === arenaPreviewGeneration &&
           machine === verifiedMachine
       });
