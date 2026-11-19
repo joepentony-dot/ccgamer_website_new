@@ -45,7 +45,8 @@ class FakeButton {
   }
   setPointerCapture() {}
 }
-const buttons = names.map(name => new FakeButton(name));
+const sierraStart = new FakeButton("F1");
+const buttons = [...names.map(name => new FakeButton(name)), sierraStart];
 const start = app.indexOf("// On phones, make short taps long enough");
 const end = app.indexOf("void refreshVaultGameList();", start);
 assert(start >= 0 && end > start, "Touch function-key handlers must be installed");
@@ -94,4 +95,23 @@ assert.equal(cia.read(1) & (1 << 3), 0, "Physical F7 hold must survive touch rel
 ctx.heldMatrixKeys.clear();
 cia.setKey(0, 3, false);
 assert.equal(cia.read(1), 0xff, "All function keys must be released");
+
+// The Crossfire mobile START button is another F1 touch-function key, not a
+// joystick-UP action. Exercise the actual pointer listeners, timer and observer.
+const f1Lifecycle = [];
+ctx.activeArenaPreview = {
+  cancelOneClick: () => f1Lifecycle.push("cancel-auto"),
+  armFromUserF1: () => f1Lifecycle.push("arm-local")
+};
+sierraStart.dispatch("pointerdown");
+assert.deepEqual(f1Lifecycle, ["cancel-auto", "arm-local"]);
+assert.equal(cia.read(1) & (1 << KEY_MAP.F1[1]), 0,
+  "Mobile Crossfire START must hold the real C64 F1 matrix key");
+sierraStart.dispatch("pointerup");
+assert.equal(cia.read(1) & (1 << KEY_MAP.F1[1]), 0,
+  "A quick START tap must survive the C64 scan");
+now += 130;
+for (const [id, callback] of [...timers]) { timers.delete(id); callback(); }
+assert.equal(cia.read(1), 0xff,
+  "Mobile Crossfire START must release F1 and leave no stuck key");
 console.log("PASS: C64 physical function-key matrix and mobile pointer press/tap/cancel/release");
