@@ -18,7 +18,9 @@ assert.match(html, /<link rel="canonical" href="https:\/\/www\.cheekycommodorega
 assert.match(html, /As an Amazon Associate I earn from qualifying purchases\./);
 assert.match(html, /href="\/affiliate-disclosure\.html"/);
 assert.match(home, /href="\/retro-shop\.html"/);
-assert.match(home, /src="\/js\/affiliate-products\.js\?v=20261119-thea1200-dec15" defer/);
+assert.match(home, /src="js\/ccg-livestream-status\.js" defer/);
+const homeAffiliateLoader = read("js/ccg-livestream-status.js");
+assert.match(homeAffiliateLoader, /script\.src = "\/js\/affiliate-products\.js"/);
 assert.match(support, /href="\/retro-shop\.html"/);
 assert.match(game, /data-ccg-retro-shop-link/);
 assert.match(game, /header && !header\.querySelector/);
