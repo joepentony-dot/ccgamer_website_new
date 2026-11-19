@@ -156,7 +156,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261119_crossfire_mobile_start_score_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261119_sierra_public_rankings_independent_auth_v1");
     if (generation !== arenaPreviewGeneration) return;
     const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({
