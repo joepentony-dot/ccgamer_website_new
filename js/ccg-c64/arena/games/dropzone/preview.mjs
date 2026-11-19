@@ -17,7 +17,7 @@ export const DROPZONE_CRT = Object.freeze({
   sha256: "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7",
   url: "/emulator/c64/media/cartridge-replacements/dropzone.crt"
 });
-const CSS_URL = "/resources/css/ccg-high-score-arena-dropzone.css?ccg_rev=20261119_dropzone_arena_visual_v1";
+const CSS_URL = "/resources/css/ccg-high-score-arena-dropzone.css?ccg_rev=20261119_dropzone_phone_leaderboard_only_v1";
 
 export async function verifyDropzoneMedia(entry, bytes, subtle=globalThis.crypto?.subtle) {
   if (!entry || !bytes || !(bytes instanceof Uint8Array) ||
