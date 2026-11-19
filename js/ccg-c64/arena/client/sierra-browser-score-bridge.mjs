@@ -51,6 +51,10 @@ export class SierraHelioHostScoreBridge {
   if(this.#connecting)return this.#connecting;
   this.#status('CHECKING HELIOHOST MEMBER SESSION');
   this.#abort=new AbortController();
+  // Public, approved-only Sierra rankings are independent of member login.
+  // This is a credential-free GET, and only the explicit scores=1 Sierra
+  // preview constructs this bridge. Submission still requires auth and CSRF.
+  void this.loadBoard('alltime');
   this.#connecting=(async()=>{
    let transport=null;
    try {
@@ -71,9 +75,7 @@ export class SierraHelioHostScoreBridge {
     this.#status('SIGNED IN · START A NEW GAME TO REQUEST SCORE');
     // Deferred F1 intent is retained by the parent Arena controller until
     // member/CSRF is ready. This bridge only arms on explicit armed().
-    // Public reads are optional, have no cookies, and can only project
-    // approved records for this exact Sierra edition.
-    void this.loadBoard('alltime');
+    // The public board read started independently of authentication.
     return true;
    }catch{
     this.#status('HELIOHOST UNAVAILABLE · SCORE LOCAL ONLY');

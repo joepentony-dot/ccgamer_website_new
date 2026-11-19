@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Crossfire Member Registration | Cheeky Commodore Gamer</title>
+  <link rel="stylesheet" href="/resources/css/auth.css">
+  <script type="module" src="/resources/js/auth/heliohost-score-register.js?ccg_rev=20261119_sierra_member_registration_candidate_v1"></script>
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-card" aria-labelledby="scoreRegisterHeading">
+      <h1 id="scoreRegisterHeading">Crossfire High Score Registration</h1>
+      <p class="auth-subtitle">A separate HelioHost member account will be required to submit Sierra On-Line Crossfire scores. This is not your existing Cheeky Commodore Gamer website login.</p>
+      <p class="auth-field-help">Registration and verification are being prepared for release. Until HelioHost enables verified email delivery, registration requests will not be accepted. Any submitted score will still require human approval before appearing on a public leaderboard.</p>
+      <form id="scoreMemberRegistration" method="post" novalidate>
+        <div class="auth-field">
+          <label for="scoreRegisterEmail">Email address</label>
+          <input id="scoreRegisterEmail" type="email" autocomplete="email" maxlength="255" required>
+        </div>
+        <div class="auth-field">
+          <label for="scoreRegisterPassword">New HelioHost member password</label>
+          <input id="scoreRegisterPassword" type="password" autocomplete="new-password" minlength="14" maxlength="1024" required>
+        </div>
+        <p class="auth-field-help">Use a new password of at least 14 characters. Never enter your Plesk password, administrator credentials, authenticator secret or recovery codes here.</p>
+        <div id="scoreSignupStatus" class="auth-message is-info" role="status" aria-live="polite">The HelioHost service must enable verified registration before accounts can be created.</div>
+        <button id="scoreSignupSubmit" class="auth-btn" type="submit" disabled>Request member registration</button>
+      </form>
+      <hr aria-hidden="true">
+      <h2>Email verification</h2>
+      <p class="auth-field-help">If the service has sent you a one-use verification code, copy it into the field below. Never put the verification code in a URL, a public chat or a support message.</p>
+      <form id="scoreMemberVerification" method="post" novalidate>
+        <div class="auth-field">
+          <label for="scoreVerifyToken">Email verification code (64 characters)</label>
+          <input id="scoreVerifyToken" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="64" required>
+        </div>
+        <div id="scoreVerifyStatus" class="auth-message is-info" role="status" aria-live="polite">Codes are valid once and expire. Verification does not sign you in automatically.</div>
+        <button id="scoreVerifySubmit" class="auth-btn" type="submit" disabled>Verify email address</button>
+      </form>
+      <nav class="auth-links" aria-label="Other destinations">
+        <a href="/auth/heliohost-score-login.html">HelioHost member sign-in</a>
+        <a href="/emulator/c64/?game=owner-crt-more-crossfiresierraonline-0c60e852f438&amp;autoplay=1&amp;start=1&amp;scores=1">Return to Crossfire</a>
+        <a href="/auth/login.html">Existing website sign-in</a>
+      </nav>
+    </section>
+  </main>
+</body>
+</html>

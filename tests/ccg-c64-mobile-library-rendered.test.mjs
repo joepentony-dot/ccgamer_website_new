@@ -305,12 +305,13 @@ try {
       const run = console?.querySelector('[data-local-run-phase="running"][data-one-click-phase="done"]');
       return Boolean(run?.querySelector(".ccg-arena-preview__run strong")?.textContent.match(/^\\d{6}$/)
         && console.querySelector("[data-mobile-joystick-swap]")?.textContent.includes("PORT 2")
-        && getComputedStyle(console.querySelector(".ccg-c64-screen-stage")).backgroundImage.includes("crossfire-original-frame.webp"));
+        && getComputedStyle(console.querySelector(".ccg-c64-screen-stage")).backgroundImage === "none"
+        && getComputedStyle(console.querySelector('[data-ccg-arena-preview="crossfire"]')).display === "none");
     `);
     if (mobileStarted) break;
     await sleep(250);
   }
-  assert(mobileStarted, "One-click mobile Sierra boot must show a real local score, artwork and port 2");
+  assert(mobileStarted, "One-click Sierra phone boot must retain local scoring and port 2 while hiding decorative artwork and score strip");
 
   const mobileArenaLayout = `
     const rect = el => el.getBoundingClientRect();
@@ -322,16 +323,15 @@ try {
     const bezel = rect(node(".ccg-c64-screen-bezel"));
     const screen = rect(node(".ccg-c64-screen-stage"));
     const touch = rect(node(".ccg-c64-touch-controls"));
-    const protectedSelectors = [".ccg-c64-screen-stage", "[data-mobile-playbar]",
-      "[data-mobile-game-actions]", ".ccg-c64-touch-controls", ".ccg-c64-touch-options"];
+    // SCORE overlays the game and lower controls, but never the phone playbar.
+    const protectedSelectors = ["[data-mobile-playbar]"];
     const overlap = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1
       && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1;
     const fits = box => box.width > 0 && box.height > 0 && box.top >= viewport.top - 1
       && box.bottom <= viewport.bottom + 1 && box.left >= viewport.left - 1 && box.right <= viewport.right + 1;
     const toggle = node("[data-mobile-arena-toggle]");
     const blocked = ["[data-mobile-exit-game]", "[data-mobile-zoom-toggle]", "[data-mobile-arena-toggle]",
-      "[data-mobile-keyboard-toggle]", "[data-mobile-pause]", "[data-mobile-save-state]", "[data-mobile-load-state]",
-      ".ccg-c64-touch-fire", ".ccg-c64-touch-start", "[data-joy-mask='1']"].filter(selector => {
+      "[data-mobile-keyboard-toggle]"].filter(selector => {
       const element = node(selector);
       const box = rect(element);
       return !element.contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2));
@@ -343,7 +343,14 @@ try {
       jumpHidden: node(".ccg-c64-touch-jump:not(.ccg-c64-touch-start)").hidden,
       startVisible: !node(".ccg-c64-touch-start").hidden,
       startKey: node(".ccg-c64-touch-start").getAttribute("data-c64-fkey"),
-      boardVisible: getComputedStyle(board).display !== "none",
+      boardVisible: getComputedStyle(panel).display !== "none" && getComputedStyle(board).display !== "none",
+      boardOnly: getComputedStyle(panel).display === "none" ||
+        (getComputedStyle(panel.querySelector(".ccg-arena-preview__intro")).display === "none" &&
+         getComputedStyle(panel.querySelector(".ccg-arena-preview__start")).display === "none" &&
+         getComputedStyle(panel.querySelector(".ccg-arena-preview__run")).display === "none" &&
+         getComputedStyle(panel.querySelector(".ccg-arena-preview__modes")).display !== "none"),
+      artworkRemoved: getComputedStyle(node(".ccg-c64-screen-stage")).backgroundImage === "none",
+      scoreStripVisible: panel.querySelector(".ccg-arena-preview__run").getClientRects().length > 0,
       panelFits: fits(bounds),
       gameSize: {width: bezel.width, height: bezel.height, stageHeight: screen.height},
       screenFits: bezel.top >= screen.top - 1 && bezel.bottom <= screen.bottom + 1 && fits(bezel) && bezel.width >= 48 && Math.abs(bezel.width / bezel.height - 4 / 3) < 0.03,
@@ -365,14 +372,16 @@ try {
       }
       const layout = await evaluate(session, mobileArenaLayout);
       const state = `${width}x${height} Arena=${open} Zoom=${zoom}: ${JSON.stringify(layout)}`;
-      if (!zoom) await screenshot(session, `sierra-${width}x${height}-${open ? "leaderboard" : "score-strip"}`);
+      if (!zoom) await screenshot(session, `sierra-${width}x${height}-${open ? "leaderboard" : "gameplay-only"}`);
       assert.equal(layout.expanded, String(open), state);
       assert.equal(layout.zoomed, String(zoom), state);
       assert.equal(layout.boardVisible, open, state);
       assert.equal(layout.toggleText, open ? "CLOSE SCORE" : "SCORE", state);
       assert(layout.jumpHidden && layout.startVisible && layout.startKey === "F1",
         "Verified Sierra mobile must show F1 START instead of joystick JUMP: " + state);
-      assert(layout.panelFits && layout.screenFits && layout.controlsFit, state);
+      assert(layout.screenFits && layout.controlsFit, state);
+      assert(!layout.scoreStripVisible && layout.boardOnly && layout.artworkRemoved, state);
+      if (open) assert(layout.panelFits, state);
       assert.deepEqual(layout.panelOverlaps, [], state);
       assert.deepEqual(layout.blocked, [], state);
       assert(Math.abs(layout.touchTop - compact.touchTop) < 1, state);

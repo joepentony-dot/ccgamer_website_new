@@ -41,6 +41,32 @@ test('without explicit opt-in no member GET, score POST or public board request 
  bridge.stop();
  assert.equal(n,0);
 });
+test('approved-only Sierra public rankings load even when member sign-in fails',async()=>{
+ const models=[],statuses=[],requests=[];
+ const bridge=new SierraHelioHostScoreBridge({
+  enabled:true,origin:CCG_SITE_ORIGIN,
+  onStatus:s=>statuses.push(s),
+  onBoard:(board,model)=>models.push([board,model]),
+  acquire:async()=>{requests.push('member');return null;},
+  readBoard:async({board})=>{
+   requests.push('public:'+board);
+   return {status:'ranked',rows:[{rank:1,name:'Approved Player',score:170}]};
+  }
+ });
+ assert.equal(await bridge.connect(),false);
+ await nextTurn();
+ assert.deepEqual(requests,['public:alltime','member']);
+ assert.deepEqual(models,[['alltime',{status:'ranked',
+  rows:[{rank:1,name:'Approved Player',score:170}]}]]);
+ assert(statuses.includes('HELIOHOST UNAVAILABLE OR SIGN-IN REQUIRED'));
+ assert.equal(bridge.connected,false);
+ assert.equal(bridge.armed(),false);
+ bridge.observe({phase:'completed',lastScore:170},final(170));
+ assert.equal((await bridge.loadBoard('challenge')).status,'ranked');
+ assert.deepEqual(requests,['public:alltime','member','public:challenge']);
+ bridge.stop();
+});
+
 test('one authenticated 170-point run submits ONCE and only pending-review receipt is displayed',async()=>{
  const calls=[],statuses=[],models=[];
  const transport={enabled:true,
