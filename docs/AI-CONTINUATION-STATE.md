@@ -1,3 +1,14 @@
+## 19 November 2026 — Dungeon R167 main reconciliation, CI and owner hold
+
+- Existing PR #3104, `codex/dungeon-r167-gamepad-reconnect-20261118`, received the R167 cache/version and visible release-note fixes after canonical public-route CI identified stale R166 headings. Existing controller fix and earlier history preserved. Its R167 token is `20261119r167`; no commercial/public release.
+- Newer `main` `53defe4cd1b9aefc966e426fe94a830dd24f91b3` only changed eight unrelated Crossfire/mobile paths. Verified exact non-overlapping main-vs-Dungeon paths and matching cross-system blob hashes, then safely advanced the existing R167 PR branch to the two-parent integration commit `832c15f10ce6469fc5cdf7afe75f215bd8b687db`. No separate implementation PR, main mutation, Supabase change or protected intro change. Requalify the final branch head after these checkpoint notes.
+- **Remaining:** final exact-head CI including all six Chromium shards, independent submitted formal APPROVED review, expected-head guarded merge, public Pages/build/cache and closed beta gate verification, owner Windows and full-game acceptance, original media/licensing, commercial itch release. Do not equate packaging CI with authorised publication. More in [Dungeon runtime](ai-work/dungeon-carnage-runtime.md).
+
+## 19 November 2026 — Dungeon R167 live-cache release candidate (existing PR #3104)
+
+- **Branch only / not merged:** continued Dungeon R167 gamepad reconnect corrections on the existing PR #3104, without starting a parallel implementation. Identified unchanged R166 loader/query cache tokens despite modified `game-play.js`; reconciled both official/fallback game HTML routes, ordered bootstrap and version manifest to R167/`20261119r167`. The canonical R167 Node regression now asserts all four release surfaces and the game-play asset URL. Earlier five GitHub qualification workflow families passed on the preceding head only; requalify the new head.
+- Keep independent submitted review, fresh-main reconciliation, exact-head CI, deployed code/cache verification, closed Round 2 gate, owner Windows acceptance and commercial itch release as separate gates. No public access or payments were enabled. Full details: [Dungeon runtime](ai-work/dungeon-carnage-runtime.md).
+
 ## 18 November 2026 — Crossfire Arena mobile qualification on PR #3108
 
 - The current PR candidate separates the Arena leaderboard from gameplay and touch controls, adds six viewport checks to the existing Chromium test, and makes the isolated score login fail closed if its module is unavailable. See [Crossfire workstream](ai-work/high-score-arena-crossfire.md). Merge and release require fresh CI and independent review. Hosted authentication, private moderation and physical Android acceptance are still open.
