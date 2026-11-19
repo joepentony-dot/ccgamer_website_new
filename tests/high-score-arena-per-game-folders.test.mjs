@@ -33,7 +33,7 @@ test('real Dropzone art and owner-supplied evidence match pinned SHA-256',()=>{
  assert.equal(dropzone.overlay.sha256,digest('resources/images/high-score-arena/dropzone/overlay.webp'));
  assert.equal(dropzone.overlay.status,'asset-staged-in-draft-pr');
  for(const item of dropzone.evidence.screenshots){
-   const path=item.path.replace(/^\\//,'');
+   const path=item.path.slice(1);
    const png=readBinary(new URL(path,root));
    assert.equal(png.readUInt32BE(16),320);
    assert.equal(png.readUInt32BE(20),200);
