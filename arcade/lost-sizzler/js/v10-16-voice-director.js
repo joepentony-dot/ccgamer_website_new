@@ -62,14 +62,14 @@
     }
   };
   const MAX_RECORDED_CLIP_MS=10000;
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0,pendingGesture:null,enemyRoomVoiceKeys:new Set(),guardianVoiceSeen:new WeakSet(),banishmentPromptSeen:new WeakSet()};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),ownerVoiceIndexes:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0,pendingGesture:null,enemyRoomVoiceKeys:new Set(),guardianVoiceSeen:new WeakSet(),banishmentPromptSeen:new WeakSet()};
   let voiceContext=null,voiceImpulse=null;
   const primedVoiceSources=new Set(),primingVoiceSources=new Set();
 
   const lines={
     welcome:{text:"Welcome to C64 Dungeon Carnage. Good luck down there.",priority:40,cooldown:10000},
-    welcomeAlt:{text:"Stay alert.",priority:41,cooldown:10000},
-    welcomeRare:{text:"Watchers of Illusion.",priority:42,cooldown:10000},
+    welcomeAlt:{text:"Stay alert down there.",priority:41,cooldown:10000},
+    welcomeRare:{text:"Welcome back to the dungeon. Try to last a bit longer this time.",priority:42,cooldown:10000},
     weeklyWelcome:{text:"Weekly High Score Vault. One attempt. Make it count.",priority:55,cooldown:10000},
     hurt:{text:"Ow!",priority:8,cooldown:30000},
     lowHealth:{text:"I need to heal.",priority:35,cooldown:0},
@@ -152,7 +152,7 @@
     descending:{text:"Descending.",priority:52,cooldown:2500},
     deathStalkerImmune:{text:"Weapons cannot kill the Death Stalker.",priority:82,cooldown:10000,interrupt:true},
     hazardPain:{text:"Well, that looked painful.",priority:16,cooldown:45000},
-    shopNoScore:{text:"No score, no sale.",priority:34,cooldown:2800},
+    shopNoScore:{text:"Not enough Gold. No sale.",priority:34,cooldown:2800},
     merchantPurchase:{text:"Pleasure doing business.",priority:28,cooldown:2400},
     adventurerHelp:{text:"Get me out of here.",priority:46,cooldown:9000},
     adventurerSafe:{text:"We made it.",priority:42,cooldown:9000},
@@ -215,7 +215,7 @@
   }
   function primeRecordedVoices(){
     const recorded=window.CCG_RECORDED_VOICE_SPRITE;let started=false;
-    for(const src of [recorded?.src,BUNDLED_SPRITE?.src])if(primeVoiceSource(src))started=true;
+    for(const src of [window.CCG_OWNER_VOICE_SPRITE?.src,recorded?.src,BUNDLED_SPRITE?.src])if(primeVoiceSource(src))started=true;
     try{if(voiceContext?.state==="suspended")voiceContext.resume?.().catch?.(()=>{})}catch(_){}
     return started
   }
@@ -250,13 +250,18 @@
   }
   function approvedLegacyGreeting(key){return key==="welcomeRare"?BUNDLED_SPRITE.cues.welcomeRare:null}
   function hasApprovedRecording(key){
+    const owner=window.CCG_OWNER_VOICE_SPRITE,ownerId=owner?.aliases?.[key];
+    if(ownerId&&owner?.cues?.[ownerId])return true;
     const custom=VOICE_ASSETS?.[key],customList=(Array.isArray(custom)?custom:[custom]).map(item=>String(item||"").trim()).filter(Boolean);
     if(customList.length)return true;
     const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key);
     return Boolean(recorded?.cues?.[recordedKey]||approvedLegacyGreeting(key))
   }
   function playSprite(key,priority){
-    const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],legacyGreeting=approvedLegacyGreeting(key),recordedAvailable=Boolean(recordedCue),approvedLegacy=Boolean(legacyGreeting),pack=recordedAvailable?recorded:approvedLegacy?BUNDLED_SPRITE:null,cue=recordedCue||legacyGreeting;
+    const owner=window.CCG_OWNER_VOICE_SPRITE,ownerPool=Array.isArray(owner?.alternates?.[key])?owner.alternates[key]:(owner?.aliases?.[key]?[owner.aliases[key]]:[]);
+    const ownerIndex=Math.max(0,Number(state.ownerVoiceIndexes.get(key)||0)),ownerId=ownerPool.length?ownerPool[ownerIndex%ownerPool.length]:"",ownerCue=ownerId?owner?.cues?.[ownerId]:null;
+    const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],legacyGreeting=approvedLegacyGreeting(key),recordedAvailable=Boolean(recordedCue),approvedLegacy=Boolean(legacyGreeting),pack=ownerCue?owner:recordedAvailable?recorded:approvedLegacy?BUNDLED_SPRITE:null,cue=ownerCue||recordedCue||legacyGreeting;
+    if(ownerCue)state.ownerVoiceIndexes.set(key,ownerIndex+1);
     if(!cue||!pack?.src)return false;
     try{
       const audio=new Audio(pack.src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
@@ -264,7 +269,7 @@
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onerror=null;audio.pause()}catch(_){}releaseDungeonFx(active);
         state.active=null;state.activePriority=-1;
-        if((recordedAvailable||approvedLegacy)&&retryOnGesture){let runRef=null;try{runRef=typeof run==="object"?run:null}catch(_){}state.pendingGesture={key,priority,runRef};return}
+        if((ownerCue||recordedAvailable||approvedLegacy)&&retryOnGesture){let runRef=null;try{runRef=typeof run==="object"?run:null}catch(_){}state.pendingGesture={key,priority,runRef};return}
       };
       const begin=()=>{
         if(started||failed||state.active!==active)return;started=true;
@@ -300,8 +305,9 @@
       if(!hasApprovedRecording(key)){state.skipped++;state.lastSkipped={key,reason:"no-approved-recording",at:now};return false}
       stopActive("interrupted")
     }
-    const src=assetFor(key);let started=false;
-    if(src)started=playClip(src,priority,key);if(!started)started=playSprite(key,priority);
+    const ownerId=window.CCG_OWNER_VOICE_SPRITE?.aliases?.[key],ownerAvailable=Boolean(ownerId&&window.CCG_OWNER_VOICE_SPRITE?.cues?.[ownerId]);
+    const src=ownerAvailable?"":assetFor(key);let started=ownerAvailable?playSprite(key,priority):false;
+    if(!started&&!ownerAvailable&&src)started=playClip(src,priority,key);if(!started&&!ownerAvailable)started=playSprite(key,priority);
     if(!started){state.skipped++;state.lastSkipped={key,reason:"playback",at:now};return false}
     if(key==="rareLoot"&&currentFloor>0)state.rareLootFloor=currentFloor;
     state.lastByKey.set(key,now);state.played++;return true;
@@ -323,9 +329,10 @@
       if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key:voiceKey,reason:"busy",at:now};return false}
       stopActive("interrupted")
     }
-    const src=assetFor(voiceKey);let started=false;
-    if(src)started=playClip(src,priority,voiceKey);
-    if(!started)started=playSprite(voiceKey,priority);
+    const ownerId=window.CCG_OWNER_VOICE_SPRITE?.aliases?.[voiceKey],ownerAvailable=Boolean(ownerId&&window.CCG_OWNER_VOICE_SPRITE?.cues?.[ownerId]);
+    const src=ownerAvailable?"":assetFor(voiceKey);let started=ownerAvailable?playSprite(voiceKey,priority):false;
+    if(!started&&!ownerAvailable&&src)started=playClip(src,priority,voiceKey);
+    if(!started&&!ownerAvailable)started=playSprite(voiceKey,priority);
     if(!started){state.skipped++;state.lastSkipped={key:voiceKey,reason:"playback",at:now};return false}
     state.lastByKey.set(voiceKey,now);state.played++;return true
   }
@@ -420,7 +427,7 @@
     if(/SIGIL WARDEN DOWN/.test(s))return"sigilWardenDefeated";
     if(/SHOP PURCHASE/.test(s))return"merchantPurchase";
     if(/FLOOR EXIT SEALED/.test(s))return"exitSealed";
-    if(/NOT ENOUGH SCORE/.test(s))return"shopNoScore";
+    if(/NOT ENOUGH GOLD|NOT ENOUGH SCORE/.test(s))return"shopNoScore";
     if(/NOT ENOUGH BANISHMENT ESSENCE/.test(s))return"notEnoughEssence";
     if(/NOT ENOUGH ARTEFACTS/.test(s))return"notEnoughArtefacts";
     if(/INVENTORY FULL/.test(s))return"inventoryFull";
