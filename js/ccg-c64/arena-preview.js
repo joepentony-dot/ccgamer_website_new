@@ -15,7 +15,7 @@ import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-s
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_sierra_arena_layout_v5";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261119_crossfire_phone_leaderboard_only_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
