@@ -10,27 +10,69 @@
     "sha256": "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7"
   },
   "overlay": {
-    "status": "asset-created-not-in-repo",
+    "status": "asset-staged-in-draft-pr",
     "path": "/resources/images/high-score-arena/dropzone/overlay.webp",
     "width": 1672,
     "height": 941,
-    "notes": "Use the generated Dropzone WebP with the exact Crossfire transparent opening; file must be uploaded before wiring."
+    "notes": "Real generated WebP, 1672x941, preserved from supplied Dropzone artwork; transparent gameplay opening compared pixel-for-pixel with legacy Crossfire art. Draft only: no active runtime CSS selector yet.",
+    "sha256": "ed372b3192cfbcd7131c559c6f61d3eb4edc10d4ce19ac486cb923ad0183ce98",
+    "byteLength": 354446
   },
   "controls": {
     "joystickPort": 2
   },
   "score": {
-    "status": "not-measured",
+    "status": "screenshot-evidence-recorded-ram-unverified",
     "hudLocation": "bottom-left",
     "screenMemoryBase": null,
     "screenColumn": null,
     "scoreRows": null,
-    "screenPixelRectangle": null,
+    "screenPixelRectangle": {
+      "x": 26,
+      "y": 162,
+      "width": 30,
+      "height": 7,
+      "coordinateSpace": "320x200 user screenshot",
+      "meaning": "yellow four-digit current score; not a RAM address"
+    },
     "charsetEncoding": null,
     "gameOverSignature": null,
     "reader": null,
     "runObserver": null,
-    "notes": "The screenshot shows the HUD location, not a verified C64 memory address. Verify this exact CRT against real RAM/game-over captures."
+    "notes": "Two owner-supplied screenshots show current HUD scores 9220 during play and 9230 on a GAME OVER screen. HUD coordinates and visual banners are observed. Exact cartridge version behind the screenshots, RAM/charset encoding, end-of-run states, and final-score eligibility are not established. Do not submit ranked scores based on visual observations alone.",
+    "screenDigitLayout": {
+      "startX": 26,
+      "topY": 162,
+      "digitWidth": 6,
+      "digitHeight": 7,
+      "digitStride": 8,
+      "digitsObserved": 4,
+      "observedColourRgb": [
+        227,
+        231,
+        110
+      ],
+      "scope": "only these two screenshots"
+    },
+    "livesIndicator": {
+      "type": "purple spaceman sprites",
+      "screenPixelRectangle": {
+        "x": 36,
+        "y": 174,
+        "width": 12,
+        "height": 18,
+        "coordinateSpace": "320x200 user screenshot"
+      },
+      "inActiveSample": true,
+      "inGameOverSample": false,
+      "notes": "This is a visual clue. Confirm the genuine remaining-life semantics and ROM/RAM address from a verified running cartridge."
+    },
+    "gameOverVisibleText": [
+      "GAME OVER",
+      "YOUR RANK IS",
+      "NOT LISTED",
+      "PRACTICE RECOMMENDED"
+    ]
   },
   "rules": {
     "allowTrainers": false,
@@ -44,5 +86,28 @@
     "runtimeWired": false,
     "publicSubmissionEnabled": false,
     "notes": "No score collection or remote submissions until exact CRT/media, score decoder, game over, backend game key and integrity are verified."
+  },
+  "evidence": {
+    "type": "owner-supplied-screenshots",
+    "coordinateSpace": "320x200 RGB",
+    "screenshots": [
+      {
+        "path": "/tests/fixtures/high-score-arena/dropzone/active-9220.png",
+        "sha256": "6105f4b58f45964f12a3b8e28554d6256118d456c66e0718b3822b07e0fc9438",
+        "observedScore": 9220,
+        "observedState": "active-play",
+        "gameOverTextVisible": false,
+        "purpleLifeFigureVisible": true
+      },
+      {
+        "path": "/tests/fixtures/high-score-arena/dropzone/game-over-9230.png",
+        "sha256": "18e921656d34da6053358ac2821a946d3ee1ddf0296ed8fad78c741606cb6e4c",
+        "observedScore": 9230,
+        "observedState": "game-over",
+        "gameOverTextVisible": true,
+        "purpleLifeFigureVisible": false
+      }
+    ],
+    "limitations": "Images do not establish any C64 emulated RAM address, original cartridge SHA, trusted score provenance, or a server-authorised submission."
   }
 }

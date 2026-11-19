@@ -19,3 +19,30 @@ test('each game keeps a separate score profile without activating unverified gam
   assert.equal(taxi.rollout.runtimeWired,false);
   assert.equal(crossfire.overlay.path,'/resources/images/high-score-arena/crossfire-original-frame.webp');
 });
+
+import { createHash } from 'node:crypto';
+import { readFileSync as readBinary } from 'node:fs';
+test('real Dropzone art and owner-supplied evidence match pinned SHA-256',()=>{
+ const dropzone=load('dropzone');
+ const root = new URL('../',import.meta.url);
+ const digest=p=>createHash('sha256').update(readBinary(new URL(p,root))).digest('hex');
+ const art=readBinary(new URL('resources/images/high-score-arena/dropzone/overlay.webp',root));
+ assert.equal(art.toString('ascii',0,4),'RIFF');
+ assert.equal(art.toString('ascii',8,12),'WEBP');
+ assert.equal(art.length,354446);
+ assert.equal(dropzone.overlay.sha256,digest('resources/images/high-score-arena/dropzone/overlay.webp'));
+ assert.equal(dropzone.overlay.status,'asset-staged-in-draft-pr');
+ for(const item of dropzone.evidence.screenshots){
+   const path=item.path.replace(/^\\//,'');
+   const png=readBinary(new URL(path,root));
+   assert.equal(png.readUInt32BE(16),320);
+   assert.equal(png.readUInt32BE(20),200);
+   assert.equal(item.sha256,digest(path));
+ }
+ assert.deepEqual(dropzone.score.screenPixelRectangle,{x:26,y:162,width:30,height:7,coordinateSpace:'320x200 user screenshot',meaning:'yellow four-digit current score; not a RAM address'});
+ assert.equal(dropzone.score.gameOverSignature,null);
+ assert.equal(dropzone.score.reader,null);
+ assert.equal(dropzone.score.runObserver,null);
+ assert.equal(dropzone.rollout.runtimeWired,false);
+ assert.equal(dropzone.rollout.publicSubmissionEnabled,false);
+});
