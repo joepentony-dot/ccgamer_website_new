@@ -23,3 +23,21 @@ pads=[pad(2,"replacement",true,true,true)];
 ctx.updateGamepad();assert.equal(shots,3,"replacement pad can fire immediately after disconnect");
 assert.equal(dashes,2,"replacement pad gets a fresh dash edge");
 console.log("PASS R167 gamepad disconnect, snapshot continuity and reconnect");
+
+
+// R167_CACHE_RELEASE_CONTRACT: public routes must fetch this patched gameplay source,
+ // rather than serving previously cached r166 code to returning players.
+const cacheToken="20261119r167",build="V10.42 r167";
+for(const htmlFile of ["../index.html","../../c64-dungeon-carnage/index.html"]){
+  const page=fs.readFileSync(new URL(htmlFile,import.meta.url),"utf8");
+  assert.ok(page.includes('content="'+build+'"'),htmlFile+" build marker");
+  assert.ok(page.includes('content="'+cacheToken+'"'),htmlFile+" cache marker");
+  assert.ok(page.includes('src="js/game-play.js?v='+cacheToken+'"'),htmlFile+" patched script URL");
+}
+const bootstrap=fs.readFileSync(new URL("../js/v10-42-bootstrap.js",import.meta.url),"utf8");
+assert.ok(bootstrap.includes('const BUILD="'+build+'"'),"ordered bootstrap build parity");
+assert.ok(bootstrap.includes('const CACHE="'+cacheToken+'"'),"ordered bootstrap cache parity");
+const version=JSON.parse(fs.readFileSync(new URL("../version.json",import.meta.url),"utf8"));
+assert.equal(version.build,build,"version manifest build parity");
+assert.equal(version.cacheToken,cacheToken,"version manifest cache parity");
+console.log("PASS R167 public route, ordered bootstrap and manifest cache parity");
