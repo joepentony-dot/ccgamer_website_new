@@ -46,43 +46,57 @@ try{
   const results=await page.evaluate(async()=>{
     const api=window.CCGLostSizzlerVoice;
     const recorded=window.CCG_RECORDED_VOICE_SPRITE;
+    const owner=window.CCG_OWNER_VOICE_SPRITE;
+    assert.ok(owner?.aliases&&owner?.cues,"R169 owner voice metadata must load in the browser");
     const rows=[];
-    for(const entry of Object.entries(recorded.aliases)){
-      const key=entry[0],target=entry[1];
+    // R169 replaces existing cues; only keys without a new take should use the R69 fallback.
+    const keys=new Set([...Object.keys(recorded.aliases),...Object.keys(owner.aliases)]);
+    for(const key of keys){
+      const ownerId=owner.aliases[key],legacyId=recorded.aliases[key];
+      const ownerCue=ownerId?owner.cues[ownerId]:null;
+      const legacyCue=legacyId?recorded.cues[legacyId]:null;
+      const pack=ownerCue?owner:recorded;
+      const cue=ownerCue||legacyCue;
+      assert.ok(cue,"recorded voice cue must exist for "+key);
       api.stop("test-reset");
       const before=window.__voiceInstances.length;
       const started=api.lines[key]
         ? api.say(key,{cooldown:0,priority:100,interrupt:true})
         : api.sayDialogue(key,"Recorded cue "+key,{cooldown:0,priority:100,interrupt:true});
       await new Promise(resolve=>setTimeout(resolve,0));
-      const created=window.__voiceInstances.slice(before).filter(audio=>audio.url===recorded.src&&!audio.muted);
+      const created=window.__voiceInstances.slice(before).filter(audio=>audio.url===pack.src&&!audio.muted);
       const audio=created.length?created[created.length-1]:null;
-      const cue=recorded.cues[target];
-      rows.push({key,target,started:Boolean(started),created:created.length,currentTime:audio?Number(audio.currentTime):null,expected:Number(cue.start)});
+      rows.push({key,selected:ownerCue?"R169":"R69",started:Boolean(started),created:created.length,currentTime:audio?Number(audio.currentTime):null,expected:Number(cue.start)});
       api.stop("test-reset");
     }
 
     const beforeLevel=window.__voiceInstances.length;
     window.dispatchEvent(new CustomEvent("ccg:level-up",{detail:{level:2}}));
     await new Promise(resolve=>setTimeout(resolve,0));
-    const createdLevel=window.__voiceInstances.slice(beforeLevel).filter(audio=>audio.url===recorded.src&&!audio.muted);
+    const levelPack=owner.aliases.levelUp?owner:recorded;
+    const createdLevel=window.__voiceInstances.slice(beforeLevel).filter(audio=>audio.url===levelPack.src&&!audio.muted);
     const levelAudio=createdLevel.length?createdLevel[createdLevel.length-1]:null;
     const levelCurrentTime=levelAudio?Number(levelAudio.currentTime):null;
+    const levelIds=owner.alternates?.levelUp||[owner.aliases.levelUp];
+    const expectedLevelStarts=levelIds.map(id=>Number(owner.cues[id].start));
     api.stop("test-reset");
     return{
       rows,
-      levelUp:{created:Boolean(levelAudio),currentTime:levelCurrentTime,expected:Number(recorded.cues[recorded.aliases.levelUp].start)}
+      levelUp:{created:Boolean(levelAudio),currentTime:levelCurrentTime,expectedStarts:expectedLevelStarts}
     };
   });
 
   for(const row of results.rows){
     assert.equal(row.started,true,row.key+" must start through the real voice director");
-    assert.ok(row.created>=1,row.key+" must create the owner-recorded sprite audio");
+    assert.ok(row.created>=1,row.key+" must create the selected "+row.selected+" sprite audio");
     assert.ok(Math.abs(row.currentTime-row.expected)<0.001,row.key+" must seek to its recorded cue start");
   }
-  assert.equal(results.levelUp.created,true,"authoritative ccg:level-up must start the recorded Level Up clip");
-  assert.ok(Math.abs(results.levelUp.currentTime-results.levelUp.expected)<0.001,"Level Up must seek to the recorded level-up cue");
-  console.log("R106 recorded voice catalogue passed: "+results.rows.length+" aliases + authoritative Level Up event.");
+  assert.equal(results.rows.filter(row=>row.selected==="R169").length,124,"all 124 newly recorded keys must select R169");
+  assert.equal(results.rows.filter(row=>row.selected==="R69").length,3,"three uncovered merchant dialogue keys must retain R69 fallback");
+  assert.equal(results.levelUp.created,true,"authoritative ccg:level-up must start the R169 Level Up clip");
+  assert.ok(results.levelUp.expectedStarts.some(start=>Math.abs(results.levelUp.currentTime-start)<0.001),
+    "Level Up must seek to one of its R169 recorded alternate takes");
+  console.log("R169 recorded voice browser catalogue passed: 124 owner keys + 3 R69 fallback keys + authoritative Level Up event.");
 }finally{
   await browser.close();
 }
