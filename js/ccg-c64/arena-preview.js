@@ -188,7 +188,7 @@ export async function mountCrossfirePreview({
   if(websiteOrigin==="https://www.cheekycommodoregamer.co.uk") {
     void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261119_sierra_public_rankings_independent_auth_v1").then(mod=>{
       if(disposed || (typeof isCurrent==="function" && !isCurrent()) ||
-         scoreGate!=="checking") {
+         (scoreRequested && scoreGate!=="checking")) {
         finishScoreHandshake("unavailable");
         return;
       }
