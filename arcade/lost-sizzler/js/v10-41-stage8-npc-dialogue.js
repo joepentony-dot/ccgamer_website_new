@@ -164,9 +164,12 @@
     // continue showing the accurate subtitle and automatically allow a new
     // approved recording when its alias is eventually supplied.
     if(line.voiceKey==="npc.alchemist.partial"||line.voiceKey==="npc.alchemist.ready"){
-      const clip=String(window.CCG_RECORDED_VOICE_SPRITE?.aliases?.[line.voiceKey]||"");
-      if(clip==="bring-me-three-and-i-can-help-you-deal-with-the-stalker"||
-        clip==="i-can-trade-those-artefacts-for-a-banishment-flask")return false;
+      const owner=window.CCG_OWNER_VOICE_SPRITE,ownerId=owner?.aliases?.[line.voiceKey];
+      if(!ownerId||!owner?.cues?.[ownerId]){
+        const clip=String(window.CCG_RECORDED_VOICE_SPRITE?.aliases?.[line.voiceKey]||"");
+        if(clip==="bring-me-three-and-i-can-help-you-deal-with-the-stalker"||
+          clip==="i-can-trade-those-artefacts-for-a-banishment-flask")return false;
+      }
     }
     const voice=window.CCGLostSizzlerVoice;
     if(typeof voice?.sayDialogue!=="function")return false;

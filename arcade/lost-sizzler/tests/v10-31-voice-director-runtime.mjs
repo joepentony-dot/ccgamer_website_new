@@ -41,20 +41,22 @@ assert.equal(voice.state.active,first,"a skipped cue must not replace current sp
 assert.equal(voice.state.queue.length,0,"skipped cues must never enter a backlog");
 assert.equal(voice.state.lastSkipped.reason,"busy");
 
-assert.equal(voice.say("gameOver"),false,"an unrecorded critical cue must not destroy an approved recording already in progress");
-assert.equal(voice.state.active,first,"the existing owner recording must continue when no approved critical replacement exists");
-assert.equal(first.audio.paused,false,"the existing recording must not be stopped for an unavailable replacement");
-assert.equal(voice.state.interrupted,0);
-assert.equal(voice.state.lastSkipped.reason,"no-approved-recording");
-
-assert.equal(voice.say("deathStalker"),true,"a critical cue with an approved owner recording may replace lower-priority speech");
-assert.notEqual(voice.state.active,first);
-assert.equal(first.audio.paused,true,"an approved critical replacement must stop the old audio source");
+assert.equal(voice.say("gameOver"),true,"new approved owner Game Over must interrupt ordinary voice with a real recording");
+const gameOver=voice.state.active;
+assert.notEqual(gameOver,first,"Game Over must be a new active recording");
+assert.equal(first.audio.paused,true,"new critical recording must pause lower-priority clip");
 assert.equal(voice.state.interrupted,1);
+assert.match(gameOver.audio.src,/ccg-owner-voices-r169\.ogg/,"Game Over comes from the owner-provided local voice pack");
+
+assert.equal(voice.say("deathStalker"),true,"Death Stalker can replace the lower-priority Game Over clip");
+assert.notEqual(voice.state.active,gameOver);
+assert.equal(gameOver.audio.paused,true,"replaced critical clip must release playback");
+assert.equal(voice.state.interrupted,2);
 voice.stop();
 
-assert.equal(voice.say("hurt"),false,"an unrecorded Ow cue must remain silent rather than synthesize or substitute speech");
-assert.equal(voice.state.lastSkipped.reason,"playback");
+assert.equal(voice.say("hurt"),true,"new owner-recorded Ow cue must play rather than synthesize speech");
+assert.match(voice.state.active.audio.src,/ccg-owner-voices-r169\.ogg/,"hurt uses newly provided local owner recording");
+voice.stop();
 
 assert.equal(voice.say("shop"),true,"an approved recorded routine cue should play when the channel is idle");
 voice.stop();now+=1000;
