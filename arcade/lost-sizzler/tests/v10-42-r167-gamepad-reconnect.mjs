@@ -27,7 +27,7 @@ console.log("PASS R167 gamepad disconnect, snapshot continuity and reconnect");
 
 // R167_CACHE_RELEASE_CONTRACT: public routes must fetch this patched gameplay source,
  // rather than serving previously cached r166 code to returning players.
-const cacheToken="20261119r168",build="V10.42 r168";
+const cacheToken="20261119r169",build="V10.42 r169";
 for(const htmlFile of ["../index.html","../../c64-dungeon-carnage/index.html"]){
   const page=fs.readFileSync(new URL(htmlFile,import.meta.url),"utf8");
   assert.ok(page.includes('content="'+build+'"'),htmlFile+" build marker");
