@@ -373,7 +373,33 @@
     outline-offset: 3px;
 }
 
-/* From 4 December 2026 the same homepage slot becomes the CCG Retro Shop. */
+/* Discoverable first-party details link; Amazon CTA and shop button remain unchanged. */
+.ccg-home-affiliate-spotlight__details-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 10px 8px;
+    color: #9de5ff;
+    font-size: 0.78rem;
+    font-weight: 750;
+    letter-spacing: 0.06em;
+    line-height: 1.25;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.ccg-home-affiliate-spotlight__details-link:hover,
+.ccg-home-affiliate-spotlight__details-link:focus-visible {
+    color: #fff;
+}
+
+.ccg-home-affiliate-spotlight__details-link:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+/* From the configured retailer-estimate switch date the same homepage slot becomes the CCG Retro Shop. */
 .ccg-home-affiliate-spotlight--retro-shop::after {
     content: "RETRO";
 }
@@ -477,6 +503,18 @@
         0 18px 34px rgba(0, 0, 0, 0.34),
         0 0 22px rgba(var(--ccg-a1200-cyan), 0.08);
     text-align: center;
+    color: inherit;
+    text-decoration: none;
+}
+
+.ccg-home-affiliate-spotlight__release:hover,
+.ccg-home-affiliate-spotlight__release:focus-visible {
+    border-color: rgba(var(--ccg-a1200-cyan), 0.82);
+}
+
+.ccg-home-affiliate-spotlight__release:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
 }
 
 .ccg-home-affiliate-spotlight__machine {
