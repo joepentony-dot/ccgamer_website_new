@@ -139,7 +139,7 @@ export async function mountCrossfirePreview({
     section.setAttribute("data-ccg-arena-mobile-status",open?"expanded":"compact");
     mobileConsole?.classList?.toggle?.("ccg-arena-mobile-open",open);
     mobileToggle?.setAttribute("aria-expanded",String(open));
-    if(mobileToggle) mobileToggle.textContent=open?"CLOSE ARENA":"ARENA";
+    if(mobileToggle) mobileToggle.textContent=open?"CLOSE SCORE":"SCORE";
   };
   const onMobileToggle=()=>setMobileOpen(!section.classList.contains("is-mobile-open"));
   if(mobileToggle){
@@ -324,7 +324,7 @@ export async function mountCrossfirePreview({
       if(mobileToggle){
         mobileToggle.hidden=true;
         mobileToggle.setAttribute("aria-expanded","false");
-        mobileToggle.textContent="ARENA";
+        mobileToggle.textContent="SCORE";
       }
       stage.removeAttribute("data-ccg-arena-frame");
       section.remove();
