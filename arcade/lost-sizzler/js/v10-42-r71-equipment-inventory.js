@@ -71,7 +71,7 @@
   function renderLoadout(player){
     const target=document.getElementById("inventory-loadout");if(!target)return;
     const runState=currentRun(),hostState=currentHost(),worldState=currentWorld();
-    const weapon=weaponInfo(player),armour=Math.max(0,Math.min(12,Number(player.armor||0))),tier=armourTier(armour);
+    const weapon=weaponInfo(player),armourLimit=Math.max(12,Number(PGR.armourCap?.(player)||12)),armour=Math.max(0,Number(player.armor||0)),tier=armourTier(armour);
     const powers=sigilPowers(player),rpgStats=Array.isArray(RPG?.rpgStats)?RPG.rpgStats:[],relicDefs=Array.isArray(RPG?.relics)?RPG.relics:[],ownedRelics=Array.isArray(player.relics)?player.relics:[];
     const relicRows=ownedRelics.map(id=>relicDefs.find(row=>row.id===id)||{id,name:String(id).replace(/-/g," ").toUpperCase(),desc:"Passive run relic."});
     const cap=runState?PGR.floorLevelCap(runState):player.level||1,atCap=(player.level||1)>=cap;
@@ -105,7 +105,7 @@
           <strong>CHEEKY COMMODORE GAMER</strong>
           <small>${escHtml(armourName(tier))} · ${escHtml(weapon.name)}</small>
         </div>
-        <div class="r71-equip-card r71-equip-armour"><span class="r71-slot-label">BODY ARMOUR</span><div class="r71-slot-icon">${icon("armour",armourName(tier))}</div><b>${armourName(tier)}</b><small>ARMOUR ${armour}/12</small></div>
+        <div class="r71-equip-card r71-equip-armour"><span class="r71-slot-label">BODY ARMOUR</span><div class="r71-slot-icon">${icon("armour",armourName(tier))}</div><b>${armourName(tier)}</b><small>ARMOUR ${armour}/${armourLimit}</small></div>
         <div class="r71-equip-card r71-equip-sigil"><span class="r71-slot-label">SIGIL</span><div class="r71-slot-rune">✦</div><b>${escHtml(powersText)}</b><small>ESSENCE ${Math.max(0,Number(player.banishmentEssence||0))}/${essenceCost}</small></div>
         <div class="r71-equip-card r71-equip-utility" title="${escHtml(sackHelp)}"><span class="r71-slot-label">ACTIVE UTILITY</span><div class="r71-slot-icon">${icon("torch",utility)}</div><b>${escHtml(utility)}</b><small data-r71-magic-sacks="${sackTier}" aria-label="${escHtml(sackHelp)}">MAGIC SACKS ${sackTier}/3 · MAP ${explore}%</small></div>
       </div>
