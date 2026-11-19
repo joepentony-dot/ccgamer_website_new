@@ -112,39 +112,69 @@ function capture(name){
  snapshots.push({name,frame:frames,ramSha256:status.sha256});
  console.log("DROPZONE_REAL_ROM_SNAPSHOT",JSON.stringify(status));
 }
+// The first real-ROM capture showed a splash/title image at 350 frames and
+// credits around 800 frames. Held FIRE does not provide a valid gameplay
+// observation. Advance the original CRT's attract sequence first, then
+// test SHORT joystick FIRE edges with release, as the manual specifies.
 advance(350);
-capture("01-boot");
-const bootState=machine.serializeState();
-const strategies=[
- {name:"idle",mask:255},
- {name:"port2-fire",mask:239},
- {name:"port2-right-fire",mask:231},
- {name:"port2-left-fire",mask:235},
- {name:"port2-up-fire",mask:238},
- {name:"space",mask:255,key:"Space"}
+capture("01-intro-350");
+advance(500);
+capture("02-credits-850");
+advance(500);
+capture("03-attract-1350");
+advance(500);
+capture("04-title-1850");
+const titleState=machine.serializeState();
+const trials=[
+ {name:"idle",port:2,delay:0,pulse:0},
+ {name:"fire2-edge3",port:2,delay:0,pulse:3},
+ {name:"fire2-edge8",port:2,delay:0,pulse:8},
+ {name:"fire2-after250",port:2,delay:250,pulse:5},
+ {name:"fire2-right",port:2,delay:0,pulse:5,move:0xF7},
+ {name:"fire1-control",port:1,delay:0,pulse:5}
 ];
-for(const strategy of strategies){
- machine.restoreState(bootState);
- machine.joyPort1=255;machine.joyPort2=255;
- const pair=strategy.key?KEY_MAP[strategy.key]:null;
- if(strategy.key)assert(pair,"C64 SPACE mapping must exist");
- if(pair)machine.cia1.setKey(...pair,true);
- machine.joyPort2=strategy.mask;
- advance(180);capture(strategy.name+"-180");
- advance(270);capture(strategy.name+"-450");
- if(pair)machine.cia1.setKey(...pair,false);
- machine.joyPort2=255;
+const observed=[];
+function visualFingerprint() {
+ return digest(Buffer.from(machine.vic2.frameBuffer)).slice(0,16);
+}
+for(const trial of trials){
+ machine.restoreState(titleState);
+ machine.joyPort1=0xff;machine.joyPort2=0xff;
+ advance(trial.delay);
+ const before=visualFingerprint();
+ if(trial.pulse) {
+  const mask=0xef & (trial.move??0xff);
+  if(trial.port===1)machine.joyPort1=mask;
+  else machine.joyPort2=mask;
+  advance(trial.pulse);
+  // A short press/release is necessary. Held FIRE during the first CRT
+  // splash produced no game evidence in the preceding forensic run.
+  machine.joyPort1=0xff;machine.joyPort2=0xff;
+ }
+ advance(100);
+ capture(trial.name+"-100f");
+ const early=visualFingerprint();
+ advance(250);
+ capture(trial.name+"-350f");
+ const middle=visualFingerprint();
+ advance(450);
+ capture(trial.name+"-800f");
+ const late=visualFingerprint();
+ const report={trial:trial.name,port:trial.port,pulseFrames:trial.pulse,
+  delayFrames:trial.delay,distinctVideoStates:new Set([before,early,middle,late]).size,
+  hashSequence:[before,early,middle,late]};
+ observed.push(report);
+ console.log("DROPZONE_START_TRIAL",JSON.stringify(report));
 }
 writeFileSync(resolve(output,"manifest.json"),JSON.stringify({
-  kind:"dropzone-exact-crt-forensic-diagnostic",
-  exactMediaSha256:game.sha256,
-  originalGameBytes:game.bytes,
-  snapshots,verifiedScoreRamAddresses:[],
-  gameOverRamSignatureVerified:false,
-  publicSubmissionEnabled:false,
-  note:"Screenshot observations cannot identify memory addresses. Preserve all captured RAM/frames for review."
+ kind:"dropzone-exact-crt-start-edge-diagnostic",
+ exactMediaSha256:game.sha256,originalGameBytes:game.bytes,
+ snapshots,observedStartTrials:observed,
+ verifiedScoreRamAddresses:[],gameOverRamSignatureVerified:false,
+ publicSubmissionEnabled:false,
+ note:"Real-ROM title/start capture, not a verified active-game score decoder. Inspect images and RAM before deriving memory signatures."
 },null,2));
 console.log("DROPZONE_FORENSICS_COMPLETE",JSON.stringify({
-  mediaSha256:game.sha256,snapshots:snapshots.length,
-  verifiedScoreRamAddresses:0,publicSubmissions:0
+ mediaSha256:game.sha256,snapshots:snapshots.length,
+ trials:observed.length,verifiedScoreRamAddresses:0,publicSubmissions:0
 }));
