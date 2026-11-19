@@ -18,13 +18,14 @@ assert.match(html, /<link rel="canonical" href="https:\/\/www\.cheekycommodorega
 assert.match(html, /As an Amazon Associate I earn from qualifying purchases\./);
 assert.match(html, /href="\/affiliate-disclosure\.html"/);
 assert.match(home, /href="\/retro-shop\.html"/);
+assert.match(home, /src="\/js\/affiliate-products\.js\?v=20261119-thea1200-dec15" defer/);
 assert.match(support, /href="\/retro-shop\.html"/);
 assert.match(game, /data-ccg-retro-shop-link/);
 assert.match(game, /header && !header\.querySelector/);
 assert.match(sharedCss, /ccg-retro-shop-game-link/);
 assert.match(css, /prefers-reduced-motion/);
 
-// Before 4 December the THEA1200 retains its primary Amazon CTA, but the
+// Before 15 December the THEA1200 retains its primary Amazon CTA, but the
 // quieter MORE FROM AMAZON button opens our own shop in the same tab.
 assert.match(game, /actions\.appendChild\(cta\)/);
 assert.match(game, /shopLink\.href = resolveSiteUrl\("retro-shop\.html"\)/);
@@ -32,6 +33,9 @@ assert.match(game, /shopLink\.textContent = "MORE FROM AMAZON"/);
 assert.doesNotMatch(game, /shopLink\.target = "_blank"/);
 assert.doesNotMatch(game, /shopLink\.rel = "sponsored nofollow noopener noreferrer"/);
 assert.match(game, /actions\.appendChild\(shopLink\)/);
+assert.match(game, /actions\.appendChild\(detailsLink\)/);
+assert.match(sharedCss, /\.ccg-home-affiliate-spotlight__details-link:focus-visible/);
+assert.match(sharedCss, /\.ccg-home-affiliate-spotlight__release:focus-visible/);
 assert.match(sharedCss, /\.ccg-home-affiliate-spotlight__shop-link:focus-visible/);
 assert.ok(manifest.includes("retro-shop.html"), "Shop must be in the static sitemap source");
 assert.match(sitemap, /https:\/\/www\.cheekycommodoregamer\.co\.uk\/retro-shop\.html/);
@@ -58,8 +62,12 @@ assert.equal(
   "All ten products and the four storefront / collection links must be marked sponsored"
 );
 
-assert.equal(config.homepageSpotlight.end, "2026-12-03T23:59:59.999Z");
-assert.equal(config.homepageRetroShop.start, "2026-12-04T00:00:00Z");
+assert.equal(config.homepageSpotlight.end, "2026-12-14T23:59:59.999Z");
+assert.equal(config.products.thea1200.releaseDate, "2026-12-15T00:00:00Z");
+assert.equal(config.products.thea1200.badge, "EXPECTED - 15 DEC 2026");
+assert.match(config.homepageSpotlight.headline, /15 DECEMBER 2026/);
+assert.match(config.homepageSpotlight.copy, /15 December 2026/);
+assert.equal(config.homepageRetroShop.start, "2026-12-15T00:00:00Z");
 assert.equal(Date.parse(config.homepageRetroShop.start), Date.parse(config.homepageSpotlight.end) + 1);
 assert.equal(config.homepageRetroShop.activeTag, "joepentony-20");
 assert.deepEqual(config.homepageRetroShop.collections.map((item) => item.url), listLinks);
@@ -89,7 +97,7 @@ assert.match(css, /\.ccg-retro-shop__picks-grid/);
 
 // Exercise the actual homepage renderer at the precise UK release boundary
 // with a minimal DOM instead of relying only on source-code string checks.
-let clock = Date.parse("2026-12-03T23:59:59.999Z");
+let clock = Date.parse("2026-12-14T23:59:59.999Z");
 class TestClock extends Date {
   static now() { return clock; }
 }
@@ -155,9 +163,15 @@ const findLinks = (node) => {
 const beforeLinks = findLinks(currentSpotlight);
 assert.ok(beforeLinks.some((link) => link.textContent === "MORE FROM AMAZON" && link.href === "/retro-shop.html" && !link.target));
 assert.ok(beforeLinks.some((link) => String(link.href).includes("B0G1L9Q7WK")), "A1200 primary Amazon link missing");
+assert.ok(beforeLinks.some((link) => link.textContent === "MORE INFO" && link.href === "/thea1200/" && !link.target), "Home more-info link must open the CCG guide");
+assert.ok(beforeLinks.some((link) => link.className === "ccg-home-affiliate-spotlight__release" && link.href === "/thea1200/"), "Home product image/date panel must link to the CCG guide");
+const datePanel = beforeLinks.find((link) => link.className === "ccg-home-affiliate-spotlight__release");
+const dateElement = datePanel?.children.find((child) => child.tagName === "time");
+assert.equal(dateElement?.dateTime, "2026-12-15", "Date element must derive from the single product release date");
+assert.equal(dateElement?.textContent, "15 · 12 · 2026", "Visible homepage date must show 15 December 2026");
 const switchTimer = timerQueue.find((item) => !item.cancelled && item.delay > 0);
-assert.ok(switchTimer, "A timer for 4 December must be armed");
-clock = Date.parse("2026-12-04T00:00:00Z");
+assert.ok(switchTimer, "A timer for 15 December must be armed");
+clock = Date.parse("2026-12-15T00:00:00Z");
 switchTimer.callback();
 assert.ok(currentSpotlight?.className.includes("--retro-shop"), "The A1200 must be replaced at midnight");
 const afterLinks = findLinks(currentSpotlight);
@@ -167,5 +181,5 @@ assert.ok(!afterLinks.some((link) => String(link.href).includes("B0G1L9Q7WK")), 
 listeners.visibilitychange();
 assert.ok(currentSpotlight?.className.includes("--retro-shop"), "Returning from sleep must retain the shop");
 
-console.log("[retro-shop] 10 original game-page URLs, Dec 4 midnight rollover, internal shop CTA, disclosures and existing collections validated.");
+console.log("[retro-shop] Ten original product URLs, 15 Dec handover, home image/More info links, Amazon CTA and disclosures validated.");
 
