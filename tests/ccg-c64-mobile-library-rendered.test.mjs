@@ -331,7 +331,7 @@ try {
     const toggle = node("[data-mobile-arena-toggle]");
     const blocked = ["[data-mobile-exit-game]", "[data-mobile-zoom-toggle]", "[data-mobile-arena-toggle]",
       "[data-mobile-keyboard-toggle]", "[data-mobile-pause]", "[data-mobile-save-state]", "[data-mobile-load-state]",
-      ".ccg-c64-touch-fire", ".ccg-c64-touch-jump", "[data-joy-mask='1']"].filter(selector => {
+      ".ccg-c64-touch-fire", ".ccg-c64-touch-start", "[data-joy-mask='1']"].filter(selector => {
       const element = node(selector);
       const box = rect(element);
       return !element.contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2));
@@ -339,11 +339,15 @@ try {
     return {
       blocked,
       expanded: toggle.getAttribute("aria-expanded"),
+      toggleText: toggle.textContent.trim(),
+      jumpHidden: node(".ccg-c64-touch-jump:not(.ccg-c64-touch-start)").hidden,
+      startVisible: !node(".ccg-c64-touch-start").hidden,
+      startKey: node(".ccg-c64-touch-start").getAttribute("data-c64-fkey"),
       boardVisible: getComputedStyle(board).display !== "none",
       panelFits: fits(bounds),
       gameSize: {width: bezel.width, height: bezel.height, stageHeight: screen.height},
       screenFits: bezel.top >= screen.top - 1 && bezel.bottom <= screen.bottom + 1 && fits(bezel) && bezel.width >= 48 && Math.abs(bezel.width / bezel.height - 4 / 3) < 0.03,
-      controlsFit: [toggle, node(".ccg-c64-touch-fire"), node(".ccg-c64-touch-jump")].every(el => fits(rect(el))),
+      controlsFit: [toggle, node(".ccg-c64-touch-fire"), node(".ccg-c64-touch-start")].every(el => fits(rect(el))),
       panelOverlaps: protectedSelectors.filter(selector => overlap(bounds, rect(node(selector)))),
       touchTop: touch.top,
       zoomed: node("[data-mobile-zoom-toggle]").getAttribute("aria-pressed")
@@ -365,6 +369,9 @@ try {
       assert.equal(layout.expanded, String(open), state);
       assert.equal(layout.zoomed, String(zoom), state);
       assert.equal(layout.boardVisible, open, state);
+      assert.equal(layout.toggleText, open ? "CLOSE SCORE" : "SCORE", state);
+      assert(layout.jumpHidden && layout.startVisible && layout.startKey === "F1",
+        "Verified Sierra mobile must show F1 START instead of joystick JUMP: " + state);
       assert(layout.panelFits && layout.screenFits && layout.controlsFit, state);
       assert.deepEqual(layout.panelOverlaps, [], state);
       assert.deepEqual(layout.blocked, [], state);
