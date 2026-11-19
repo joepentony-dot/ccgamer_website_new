@@ -122,7 +122,7 @@ try{
   await page.waitForFunction(()=>mode==="playing"&&document.getElementById("named-dossier-panel")?.classList.contains("hidden")&&document.activeElement?.id==="game");
 
   const shop=await page.evaluate(()=>{
-    score=10000;run.gold=10;
+    score=10000;run.gold=10;p1.maxMana=100;p1.mana=0;
     const fixture={id:"r20-shop",active:true,shopType:"entrance",goldPurchases:0,sold:{},title:"R20 TEST SHOP"};
     openShop(fixture,p1);buyShopItem("ammo");buyShopItem("ammo");
     return{score:Number(score),gold:Number(run.gold),purchases:Number(fixture.goldPurchases||0),next:Number(shopScorePrice(fixture))};
