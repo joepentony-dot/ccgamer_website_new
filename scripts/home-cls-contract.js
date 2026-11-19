@@ -10,6 +10,10 @@ const REVIEWED_RETRO_SHOP_PROMO = "<section class=\"ccg-amazon-home-promo\" aria
 // Exact owner-approved THEA1200 home promotion. The retailer date, product image and every link are pinned.
 const REVIEWED_THEA1200_HOME = "<section class=\"ccg-thea1200-home\" aria-labelledby=\"ccg-thea1200-home-title\">\n                <a class=\"ccg-thea1200-home__image-link\" href=\"/thea1200/\" aria-label=\"More information about THEA1200\">\n                    <img src=\"https://m.media-amazon.com/images/I/71y3hzmFtcL._AC_SL1500_.jpg\" width=\"480\" height=\"480\" loading=\"lazy\" decoding=\"async\" alt=\"THEA1200 retro computer package with keyboard, mouse and gamepad\" />\n                </a>\n                <div class=\"ccg-thea1200-home__content\">\n                    <p class=\"ccg-thea1200-home__eyebrow\">COMING SOON · EXPECTED 15 · 12 · 2026</p>\n                    <h2 id=\"ccg-thea1200-home-title\">THEA1200</h2>\n                    <p>THEA1200 is now expected in the UK around <strong>15 December 2026</strong> according to retailer listings. The revised date has not yet been confirmed by Retro Games Ltd.</p>\n                    <p class=\"ccg-thea1200-home__disclosure\">If you're planning to pick one up, using the CCG Amazon link helps support the channel at no extra cost to you.</p>\n                    <div class=\"ccg-thea1200-home__actions\">\n                        <a class=\"ccg-thea1200-home__button ccg-thea1200-home__button--primary\" href=\"https://www.amazon.co.uk/Retro-Games-THE-A1200/dp/B0G1L9Q7WK?linkCode=ll2&amp;tag=cheekycomm00d-21&amp;linkId=215a465179e39bed0c29211064133c3c&amp;ref_=as_li_ss_tl\" target=\"_blank\" rel=\"sponsored nofollow noopener noreferrer\" data-ccg-revenue-link=\"amazon-associates-2026\">Pre-order on Amazon</a>\n                        <a class=\"ccg-thea1200-home__button\" href=\"/retro-shop.html\">MORE FROM AMAZON</a>\n                        <a class=\"ccg-thea1200-home__more\" href=\"/thea1200/\">More info <span aria-hidden=\"true\">→</span></a>\n                    </div>\n                </div>\n            </section>";
 const REVIEWED_THEA1200_COMMENT = '<!-- THEA1200 HOMEPAGE FEATURE: EXPECTED UK DATE AND EXISTING AFFILIATE LINKS -->';
+const REVIEWED_THEA1200_CSS_TAGS = [
+  "<link rel=\"preload\" href=\"/resources/css/home-thea1200.css\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\">",
+  "<noscript><link rel=\"stylesheet\" href=\"/resources/css/home-thea1200.css\" /></noscript>"
+];
 const REVIEWED_RETRO_SHOP_COMMENT = '<!-- CCG RETRO SHOP: NON-INTRUSIVE LINK TO CURATED COLLECTIONS -->';
 const REVIEWED_RETRO_SHOP_CSS_TAGS = [
   "<link rel=\"preload\" href=\"/resources/css/retro-shop.css\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\">",
@@ -51,9 +55,14 @@ function stripApprovedHomeCls(html) {
     if (!output.includes('id="homeCommunityLatest"') || !output.includes(REVIEWED_RETRO_SHOP_COMMENT)) {
       throw Error('THEA1200 panel is outside its approved homepage area');
     }
+    for (const tag of REVIEWED_THEA1200_CSS_TAGS) {
+      if (output.split(tag).length !== 2) throw Error('Missing or duplicate THEA1200 stylesheet');
+      output = output.replace(tag, '');
+    }
     output = output.replace(REVIEWED_THEA1200_COMMENT, '').replace(thea1200Panel, '');
-  } else if (output.includes(REVIEWED_THEA1200_COMMENT)) {
-    throw Error('Orphaned THEA1200 homepage marker');
+  } else if (output.includes(REVIEWED_THEA1200_COMMENT) ||
+             REVIEWED_THEA1200_CSS_TAGS.some(tag => output.includes(tag))) {
+    throw Error('Orphaned THEA1200 homepage marker or stylesheet');
   }
   const approvedShop = output.match(/<section class="ccg-amazon-home-promo"[\s\S]*?<\/section>/)?.[0];
   if (approvedShop) {
