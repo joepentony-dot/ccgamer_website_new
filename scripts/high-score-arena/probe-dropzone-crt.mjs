@@ -184,15 +184,16 @@ machine.restoreState(titleState);
 machine.joyPort1=0xff;machine.joyPort2=0xef;
 advance(3);
 machine.joyPort1=0xff;machine.joyPort2=0xff;
-for(const [name,increment] of [
- ["no-input-1200",1200],
- ["no-input-2600",1400],
- ["no-input-4400",1800],
- ["no-input-6600",2200]
-]){
- advance(increment);
- capture(name);
+advance(1200);capture("no-input-1200");
+advance(1400);capture("no-input-2600");
+// The exact CRT independently showed 280 points at 2600 frames and had
+// returned to the title/high-score page by 4400 frames. Capture every
+// 75 frames in the gap, keeping original RAM and video unmodified.
+for(let elapsed=2675;elapsed<=4400;elapsed+=75){
+ advance(75);
+ capture("no-input-"+String(elapsed).padStart(4,"0"));
 }
+advance(2200);capture("no-input-6600");
 writeFileSync(resolve(output,"manifest.json"),JSON.stringify({
  kind:"dropzone-exact-crt-start-edge-diagnostic",
  exactMediaSha256:game.sha256,originalGameBytes:game.bytes,
