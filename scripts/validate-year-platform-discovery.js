@@ -64,7 +64,9 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         // Owner-published Arcade 50 quiz: real indexable, self-canonical watch page.
         `${SITE_ORIGIN}/retro-specials/50-arcade-games-can-you-identify-them/`,
         // Owner-authorised C64 vs Amiga 100-game watch page; exact self-canonical route only.
-        `${SITE_ORIGIN}/retro-specials/c64-vs-amiga-100-games-compared/`
+        `${SITE_ORIGIN}/retro-specials/c64-vs-amiga-100-games-compared/`,
+        // Newly indexable owner-published SID documentary: exact, self-canonical route.
+        `${SITE_ORIGIN}/retro-specials/50-commodore-64-sid-tunes-zzap64/`
     ])]
 ]);
 const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
