@@ -368,7 +368,7 @@
     background: rgba(var(--ccg-a1200-cyan), 0.12);
 }
 
- .ccg-home-affiliate-spotlight__shop-link:focus-visible {
+.ccg-home-affiliate-spotlight__shop-link:focus-visible {
     outline: 2px solid #fff;
     outline-offset: 3px;
 }
