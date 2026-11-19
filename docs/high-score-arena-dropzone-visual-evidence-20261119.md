@@ -19,6 +19,21 @@ These are **owner-supplied screenshots**, kept in original PNG bytes under `test
 
 ## Production guard
 
-The exact hosted `dropzone.crt` entry is SHA-256 `0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7` (82,144 bytes), but the screenshots do not authenticate that edition. A valid automatic score reader must be derived from verified runtime memory and a trustworthy completed-run state for that exact media. Until then, `reader=null`, `runObserver=null`, `runtimeWired=false`, `publicSubmissionEnabled=false`.
+The exact hosted `dropzone.crt` entry is SHA-256 `0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7` (82,144 bytes), but the screenshots do not authenticate that edition. A valid automatic score reader must be derived from verified runtime memory and a trustworthy completed-run state for that exact media. The current draft now has `reader="./score-reader.mjs"` and `runtimeWired=true` for **visual-only, local readout**. `runObserver=null` and `publicSubmissionEnabled=false` remain mandatory; no completed run has been authenticated.
 
 The Crossfire and HelioHost production pathways remain untouched by this evidence PR.
+
+## Additional evidence from exact original CRT emulator (19 November 2026)
+
+GitHub Actions run [44551661979](https://github.com/joepentony-dot/ccgamer_website_new/actions/runs/44551661979) produced read-only RAM and screen captures from the hosted SHA-256-pinned CRT. Unlike the owner screenshots, these captures are directly tied to the exact hosted media. The pulse-and-release joystick-port-2 start reached active gameplay, with visible **0 → 10** score transitions repeated in two separate runs.
+
+- VIC screen-character base: `$B800` during gameplay; initial title pages used a different base
+- Seven score-character cells: `$BB20–$BB26`, row 20, columns 0–6; blank leading character code `10`
+- At zero score, the seven observed bytes: `10,10,10,10,10,10,0`
+- At ten points, the seven observed bytes: `10,10,10,10,10,1,0`
+- Stable adjacent HUD sentinel: `$BB27–$BB2F` = `21,22,23,24,25,26,27,28,29`
+- The compact evidence excerpt with SHA-256 identifiers for the original RAM captures is at `tests/fixtures/high-score-arena/dropzone/real-ram-score-observations.json`
+
+A guarded `games/dropzone/score-reader.mjs` uses these exact cells and the active VIC base; codes 2–9 are still inferred from the same contiguous digit character mapping rather than individually observed scoring transitions. This reader is **read-only and local**, with no member account, session, score submission or backend integration.
+
+**Outstanding:** verify actual GAME OVER in RAM/video with a continuous unmodified original-ROM playthrough, establish reliable fresh-run invalidation, add a separate completion observer and server-side score eligibility, then qualify the update under existing CCG review/deployment gates. Do not treat the game's built-in “YOUR RANK IS” notice as proof of an online leaderboard record.
