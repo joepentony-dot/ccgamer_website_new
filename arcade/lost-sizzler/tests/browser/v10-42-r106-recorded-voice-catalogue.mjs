@@ -47,7 +47,7 @@ try{
     const api=window.CCGLostSizzlerVoice;
     const recorded=window.CCG_RECORDED_VOICE_SPRITE;
     const owner=window.CCG_OWNER_VOICE_SPRITE;
-    assert.ok(owner?.aliases&&owner?.cues,"R169 owner voice metadata must load in the browser");
+    if(!owner?.aliases||!owner?.cues)throw new Error("R169 owner voice metadata must load in the browser");
     const rows=[];
     // R169 replaces existing cues; only keys without a new take should use the R69 fallback.
     const keys=new Set([...Object.keys(recorded.aliases),...Object.keys(owner.aliases)]);
@@ -57,7 +57,7 @@ try{
       const legacyCue=legacyId?recorded.cues[legacyId]:null;
       const pack=ownerCue?owner:recorded;
       const cue=ownerCue||legacyCue;
-      assert.ok(cue,"recorded voice cue must exist for "+key);
+      if(!cue)throw new Error("recorded voice cue must exist for "+key);
       api.stop("test-reset");
       const before=window.__voiceInstances.length;
       const started=api.lines[key]
