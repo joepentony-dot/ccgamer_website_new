@@ -242,6 +242,7 @@
     const player=currentP1(),runState=currentRun();ensureRunGold(runState);
     const evolution=window.CCGLostSizzlerV142R47FirearmEvolution||null,weaponTier=evolution?.deriveTier?.(player)||0,weaponCap=evolution?.capForFloor?.(runState?.floor||1)||0,weaponMaxed=Boolean(evolution&&weaponTier>0&&weaponTier>=weaponCap);
     const artefacts=PGR.inventoryKindCount(player,"artefact"),price=shopGoldPrice(activeShop),sold=activeShop.sold||{},inventoryFull=PGR.inventoryCapacity(player)>=C.player.inventorySlots;
+    const armourLimit=Math.max(12,Number(PGR.armourCap?.(player)||12)),armourFull=Number(player.armor||0)>=armourLimit,ammoFull=Number(player.mana||0)>=Number(player.maxMana||0);
     UI.shopTitle.textContent=activeShop.title||"DUNGEON SUPPLY SHOP";
     UI.shopCopy.textContent=activeShop.shopType==="hidden"?"Hidden trader. Gold buys repeatable supplies; rare artefacts can still be exchanged for a Banishment Flask.":"Quartermaster. Gold buys repeatable supplies; each standard purchase raises this shop's next price by 1 Gold.";
     UI.shopScore.textContent=String(goldBalance(runState));
@@ -259,8 +260,8 @@
       {id:"bronze",name:"BRONZE KEY",kind:"bronze",price:`${price} GOLD`,desc:"Adds one optional Bronze Key for locked side doors or chests.",sold:false},
       {id:"teleport",name:"TELEPORT SPELL",kind:"teleport",price:`${price} GOLD`,desc:"Adds one safe-room Teleport Spell.",sold:false},
       {id:"inventorySlot",name:"INVENTORY SLOT",kind:"inventorySlot",price:`${price} GOLD`,desc:`Expands this run's inventory by one slot, up to ${C.player.inventorySlots}.`,sold:inventoryFull,maxed:inventoryFull},
-      {id:"ammo",name:"AMMO CRATE",kind:"ammo",price:`${price} GOLD`,desc:"Restores 50 ammunition immediately.",sold:false},
-      {id:"armour",name:"ARMOUR REPAIR",kind:"armour",price:`${price} GOLD`,desc:"Adds 3 armour immediately, up to the normal armour limit.",sold:false},
+      {id:"ammo",name:"AMMO CRATE",kind:"ammo",price:`${price} GOLD`,desc:"Restores up to 50 ammunition, without exceeding your capacity.",sold:ammoFull,maxed:ammoFull},
+      {id:"armour",name:"ARMOUR REPAIR",kind:"armour",price:`${price} GOLD`,desc:`Adds up to 3 armour, respecting your equipped armour limit of ${armourLimit}.`,sold:armourFull,maxed:armourFull},
       {id:"weapon",name:"WEAPON CACHE · FIREARM UPGRADE",kind:"weapon",price:`${price} GOLD`,desc:weaponMaxed?`Current firearm is already at this floor\'s Tier ${weaponCap} cap. Deeper floors unlock the next upgrade.`:weaponTier>0?`Upgrade your current evolving firearm from Tier ${weaponTier} to Tier ${Math.min(6,weaponTier+1)}. No extra gun is added.`:"Acquire Tier 1 Field Pulse as your single evolving firearm.",sold:weaponMaxed,maxed:weaponMaxed}
     ];
     UI.shopItems.innerHTML=defs.map(d=>`<article class="shop-item ${d.sold?"sold":""}"><div class="shop-item-icon">${itemIconSVG(d.kind,d.name)}</div><div><h3>${esc(d.name)}</h3><span class="price">${esc(d.price)}</span><p>${esc(d.desc)}</p><button data-shop-buy="${d.id}" ${d.sold?"disabled":""}>${d.maxed?"MAXIMUM REACHED":d.sold?"SOLD / TRADED":"BUY / TRADE"}</button></div></article>`).join("");
@@ -284,6 +285,9 @@
     }else{
       const allowed=new Set(["potion","torch","bronze","teleport","inventorySlot","ammo","armour","weapon","magicSack","mapReveal"]);if(!allowed.has(id))return false;
       const rarePrice=id==="magicSack"?magicSackGoldPrice(player):id==="mapReveal"?5:0,price=rarePrice||shopGoldPrice(activeShop);
+       const armourLimit=Math.max(12,Number(PGR.armourCap?.(player)||12));
+       if(id==="ammo"&&!(Number(player.maxMana||0)>Number(player.mana||0))){showToast("AMMUNITION ALREADY FULL","No ammunition is needed. No Gold has been spent.","cyan",5200);return false}
+       if(id==="armour"&&!(armourLimit>Number(player.armor||0))){showToast("ARMOUR ALREADY FULL",`Your armour is already at its equipped limit of ${armourLimit}. No Gold has been spent.`,"cyan",5200);return false}
       if(id==="magicSack"&&Math.max(0,Math.floor(Number(player.magicSacks)||0))>=3){showToast("MAGIC SACK LIMIT REACHED","You already carry the maximum +3 stack bonus.","cyan",5200);return false}
       if(id==="mapReveal"&&activeShop.sold.mapReveal)return false;
       if(id==="inventorySlot"&&PGR.inventoryCapacity(player)>=C.player.inventorySlots){showToast("INVENTORY FULLY EXPANDED",`All ${C.player.inventorySlots} inventory slots are already open.`,"cyan",5200);return false}
@@ -302,8 +306,8 @@
       else if(id==="mapReveal"){PGR.inventoryAdd(player,{kind:"mapReveal",name:"Cartographer's Eye",short:"MAP"});activeShop.sold.mapReveal=true;boughtName="Cartographer's Eye"}
       else if(id==="magicSack"){player.magicSacks=Math.min(3,Math.max(0,Math.floor(Number(player.magicSacks)||0))+1);PGR.compactInventory?.(player);boughtName=`Magic Sack (+${player.magicSacks} stack capacity)`}
       else if(id==="inventorySlot"){player.inventorySlots=Math.min(C.player.inventorySlots,PGR.inventoryCapacity(player)+1);boughtName=`Inventory Expansion (${player.inventorySlots} slots)`}
-      else if(id==="ammo"){const before=player.mana;player.mana=Math.min(player.maxMana,player.mana+50);player.ammoFlashMs=C.player.ammoFlashMs;boughtName=`Ammo Crate (+${player.mana-before})`}
-      else if(id==="armour"){const before=player.armor||0;player.armor=Math.min(12,before+3);boughtName=`Armour Repair (+${player.armor-before})`}
+      else if(id==="ammo"){const before=Number(player.mana||0);player.mana=Math.min(Number(player.maxMana||0),before+50);player.ammoFlashMs=C.player.ammoFlashMs;boughtName=`Ammo Crate (+${player.mana-before})`}
+      else if(id==="armour"){const before=Number(player.armor||0);player.armor=Math.min(armourLimit,before+3);boughtName=`Armour Repair (+${player.armor-before})`}
       else if(id==="weapon"){
         const evolution=window.CCGLostSizzlerV142R47FirearmEvolution||null;
         if(evolution?.applyPickup){

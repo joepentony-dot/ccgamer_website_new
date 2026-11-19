@@ -1,3 +1,9 @@
+## 19 November 2026 — Dungeon R168 shop no-waste correction (sole active game candidate)
+
+- Following merged/live R167 (`84bd925a0b3f51e58dc86b64974d3f6069b97116`, seven successful postmerge workflows including six Chromium shards), new scoped R168 branch `fix/dungeon-r168-shop-no-waste-20261119` starts from current website main `96eab049058caa1051e0cf6fef76afac825e9bef`. No competing open Dungeon gameplay PR.
+- Source-confirmed shop defects: full ammunition purchases charge Gold for no benefit; Armour Repair charges Gold while truncating equipped protection above 12 back to 12 despite `PGR.armourCap` supporting 12–21; equipment panel falsely displays `/12`. Code and source-executed Node regression target pre-spend refusal, cap-safe armour repair and actual gear-aware display. Both public HTML routes, bootstrap, release manifest and test parity use R168 `20261119r168`.
+- **Candidate only, not yet qualified, merged or live.** Require exact-head workflows/all six Chromium shards, main alignment, guarded squash merge and actual Pages/build/cache/closed-gate production verification. Sole owner authorises no second reviewer; all actual GitHub rules/CI still apply. Commercial Windows/itch publication, original voice/MP3 and owner Floor 5 incidents remain held. Runtime details: [dungeon-carnage-runtime.md](ai-work/dungeon-carnage-runtime.md).
+
 ## 19 November 2026 — Dungeon R167 main reconciliation, CI and owner hold
 
 - Existing PR #3104, `codex/dungeon-r167-gamepad-reconnect-20261118`, received the R167 cache/version and visible release-note fixes after canonical public-route CI identified stale R166 headings. Existing controller fix and earlier history preserved. Its R167 token is `20261119r167`; no commercial/public release.
