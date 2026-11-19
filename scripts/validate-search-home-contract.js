@@ -341,7 +341,7 @@ const APPROVED_THEA1200_HOME = "<section class=\"ccg-thea1200-home\" aria-labell
 const THEA1200_HOME_COMMENT = "<!-- THEA1200 HOMEPAGE FEATURE: EXPECTED UK DATE AND EXISTING AFFILIATE LINKS -->";
 function stripApprovedThea1200Home(html) {
   const source = String(html);
-  const matches = [...source.matchAll(/<section class="ccg-thea1200-home"[\s\\S]*?<\\/section>/g)];
+  const matches = [...source.matchAll(/<section class="ccg-thea1200-home"[\s\S]*?<\/section>/g)];
   if (matches.length === 0) return source;
   if (matches.length !== 1) fail("THEA1200 homepage feature must appear exactly once.");
   if (matches[0][0].replace(/\s+/g, " ").trim() !== APPROVED_THEA1200_HOME) {
