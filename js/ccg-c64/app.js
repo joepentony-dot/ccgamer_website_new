@@ -184,7 +184,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
     }
     return;
   }
-  if (!isVerifiedSierraCrossfireCrt(entry)) return;
+  if (!screenStage || !isVerifiedSierraCrossfireCrt(entry)) return;
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
   try {
