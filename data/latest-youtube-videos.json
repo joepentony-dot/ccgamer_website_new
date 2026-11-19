@@ -2,8 +2,14 @@
   "version": 1,
   "channelId": "UCHROCLVcatA449Gg-PoqlKw",
   "source": "youtube-atom-feed",
-  "syncedAt": "2026-11-17T22:54:21.042Z",
+  "syncedAt": "2026-11-19T21:39:06.755Z",
   "videos": [
+    {
+      "id": "z17fK6ywHpU",
+      "title": "Road Rash (Amiga) – The Diablo 1000 Is an Absolute Death Trap! 🏍️ #Shorts",
+      "publishedAt": "2026-11-19T18:30:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/z17fK6ywHpU/mqdefault.jpg"
+    },
     {
       "id": "icwCrzfKxhk",
       "title": "50 Commodore 64 SID Tunes from Zzap!64 (1985–1991)",
@@ -33,12 +39,6 @@
       "title": "Gloom (1995) – Was This the Amiga's Answer to DOOM?",
       "publishedAt": "2026-11-11T18:30:33.000Z",
       "thumbnail": "https://i.ytimg.com/vi/eciifDta8Kk/mqdefault.jpg"
-    },
-    {
-      "id": "Ch_hYEdSDeE",
-      "title": "WORMS (1995) FAILED an Amiga Competition?! | The Total Wormage Story",
-      "publishedAt": "2026-11-09T17:21:48.000Z",
-      "thumbnail": "https://i.ytimg.com/vi/Ch_hYEdSDeE/mqdefault.jpg"
     }
   ]
 }
