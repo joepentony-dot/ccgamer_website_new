@@ -147,6 +147,32 @@ test('authenticated session failure does not forge submitted receipt or alter lo
  controller.dispose();
 });
 
+test('score-enabled Sierra displays approved public ranking without member sign-in or score POST',async()=>{
+ const requests=[];const doc=fakeDocument(),stage=doc.createElement('div');
+ const controller=await mountCrossfirePreview({
+  entry,bytes,stage,doc,subtle,scoreQuery:link,websiteOrigin:ORIGIN,
+  scoreFetchImpl:async(url,options)=>{
+   requests.push({url,method:options.method,credentials:options.credentials});
+   if(url.includes('/leaderboard'))return reply({
+    ok:true,gameKey:'c64-crossfire-sierra-online',board:'alltime',
+    challengeSlug:null,status:'available',
+    records:[{playerName:'Approved Player',score:170}]
+   });
+   return {ok:false,headers:{get:()=> 'application/json'},text:async()=>''};
+  }
+ });
+ assert.equal(await controller.whenHelioHostReady(),false);
+ await turn();
+ const panel=stage.after;
+ assert(panel.find(x=>x.tag==='span'&&x.textContent==='#1 Approved Player'));
+ assert(panel.find(x=>x.tag==='span'&&x.textContent==='Approved Player, 170 points'));
+ assert(requests.some(x=>x.url.includes('/leaderboard') &&
+   x.method==='GET' && x.credentials==='omit'));
+ assert(requests.some(x=>x.url.endsWith('/v1/member/me')&&x.method==='GET'));
+ assert(!requests.some(x=>x.method==='POST'));
+ controller.dispose();
+});
+
 test('one-click F1 waits for real asynchronous member readiness',async()=>{
  let releaseMember;
  const keys=[],posts=[];
