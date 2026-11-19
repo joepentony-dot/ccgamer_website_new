@@ -2873,7 +2873,7 @@ async function loadSelectedLibraryEntry() {
       name: filename, type, bytes, sourceKey: firstKey,
       gameKey: "library:" + entry.id, gameTitle: entry.title,
     }, { freshBoot: true });
-    if (queued && isDropzoneArenaEntry(entry)) {
+    if (queued && entry.id === "owner-crt-more-dropzone") {
       // Dropzone uses port 2 by default, independent of the previous game.
       // Users retain the existing joystick-swap control during gameplay.
       joystickPort = 2;
