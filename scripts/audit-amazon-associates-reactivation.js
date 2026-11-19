@@ -94,10 +94,10 @@ const spotlight = config?.homepageSpotlight || {};
 expect(spotlight.enabled === true, "THEA1200 home spotlight must be enabled");
 expect(spotlight.product === "thea1200", "Home spotlight must point at THEA1200");
 expect(spotlight.start === "2026-09-01T00:00:00Z", "THEA1200 campaign start date changed unexpectedly");
-expect(spotlight.end === "2026-12-03T23:59:59.999Z", "THEA1200 campaign must end before the 4 December shop switch");
+expect(spotlight.end === "2026-12-14T23:59:59.999Z", "THEA1200 campaign must end before the 15 December shop switch");
 const shop = config?.homepageRetroShop || {};
 expect(shop.enabled === true, "CCG Retro Shop replacement must be enabled");
-expect(shop.start === "2026-12-04T00:00:00Z", "CCG shop switch must begin at midnight GMT on 4 December 2026");
+expect(shop.start === "2026-12-15T00:00:00Z", "CCG shop switch must begin at midnight GMT on 15 December 2026");
 expect(Date.parse(spotlight.end) + 1 === Date.parse(shop.start), "A1200 and shop campaign windows must be consecutive");
 expect(shop.activeTag === "joepentony-20", "Owner-confirmed Influencer tracking ID must be preserved");
 expect(Array.isArray(shop.collections) && shop.collections.length === 3, "Homepage must retain three approved CCG Amazon collections");
@@ -110,7 +110,7 @@ const expectedLists = ["1VTVYVC8X7SDE", "12HA8QPINLWST", "1OSXO76IN2A73"];
     expect(url.pathname === "/shop/cheekycommodoregamer/list/" + expectedLists[index], "Home collection " + index + " has the wrong Idea List");
     expect(url.searchParams.get("tag") === shop.activeTag, "Home collection " + index + " lost its Influencer tracking ID");
 });
-expect(products?.thea1200?.releaseDate === "2026-12-04T00:00:00Z", "THEA1200 release date must remain 4 December 2026");
+expect(products?.thea1200?.releaseDate === "2026-12-15T00:00:00Z", "THEA1200 expected date must remain 15 December 2026");
 expectText(String(spotlight.copy || ""), "helps support the channel", "THEA1200 home copy must explain that the affiliate link supports the channel");
 
 const renderer = read(rendererPath);
@@ -121,7 +121,9 @@ expectText(renderer, 'window.addEventListener("load"', "Renderer must have a pos
 expectText(renderer, "ccg-affiliate-showcase.css", "Renderer must load the dedicated showcase stylesheet");
 expectText(renderer, "Pre-order on Amazon", "THEA1200 pre-release CTA handling is missing");
 expectText(renderer, 'shopLink.href = resolveSiteUrl("retro-shop.html")', "A1200 secondary button must open the first-party Retro Shop");
-expectText(renderer, 'function armHomeShopSwitch(config)', "The home shop must activate automatically on 4 December");
+expectText(renderer, 'detailsLink.href = resolveSiteUrl("thea1200/")', "A1200 More info action must open the first-party product guide");
+expectText(renderer, 'release.href = resolveSiteUrl("thea1200/")', "A1200 image/date panel must open the first-party product guide");
+expectText(renderer, 'function armHomeShopSwitch(config)', "The home shop must activate automatically on 15 December");
 expectText(renderer, 'data-ccg-home-spotlight-kind", "retro-shop"', "Home shop replacement marker is missing");
 
 const loader = read(loaderPath);

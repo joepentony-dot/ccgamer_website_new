@@ -56,7 +56,7 @@ try{
     const fake={id:"v142-r1-shop-contract",active:true,title:"TEST SHOP",shopType:"normal",sold:{},goldPurchases:0};
     openShop(fake,p1);
     const prices=[shopScorePrice(fake)];
-    for(let i=0;i<5;i++){buyShopItem("ammo");prices.push(shopScorePrice(fake))}
+    for(let i=0;i<5;i++){p1.mana=0;buyShopItem("ammo");prices.push(shopScorePrice(fake))}
     closeShop();
     return{prices,count:fake.goldPurchases,legacy:fake.scorePurchases,goldSpent:startingGold-run.gold,scoreDelta:startingScore-score};
   });
