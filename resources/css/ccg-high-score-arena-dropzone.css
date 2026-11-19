@@ -51,7 +51,7 @@
 
 /* Phone-only Dropzone: remove decorative frame; SCORE displays the leaderboard. */
 @media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
-  .ccg-c64-console .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"] {
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"] {
     background-image: none !important;
     background-color: #02050b !important;
   }
