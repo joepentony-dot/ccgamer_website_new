@@ -10,9 +10,9 @@ test('each game keeps a separate score profile without activating unverified gam
   assert.equal(dropzone.media.sha256,'0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7');
   assert.equal(dropzone.controls.joystickPort,2);
   assert.equal(dropzone.score.hudLocation,'bottom-left');
-  assert.equal(dropzone.score.screenMemoryBase,null);
-  assert.equal(dropzone.score.reader,null);
-  assert.equal(dropzone.score.runObserver,null);
+  assert.equal(dropzone.score.screenMemoryBase,"0xB800");
+  assert.equal(dropzone.score.reader,"./score-reader.mjs");
+  assert.equal(dropzone.score.runObserver,"./run-observer.mjs");
   assert.equal(dropzone.rollout.publicSubmissionEnabled,false);
   assert.equal(taxi.media.sha256,null);
   assert.equal(taxi.score.reader,null);
@@ -40,9 +40,9 @@ test('real Dropzone art and owner-supplied evidence match pinned SHA-256',()=>{
    assert.equal(item.sha256,digest(path));
  }
  assert.deepEqual(dropzone.score.screenPixelRectangle,{x:26,y:162,width:30,height:7,coordinateSpace:'320x200 user screenshot',meaning:'yellow four-digit current score; not a RAM address'});
- assert.equal(dropzone.score.gameOverSignature,null);
- assert.equal(dropzone.score.reader,null);
- assert.equal(dropzone.score.runObserver,null);
+ assert.equal(dropzone.score.gameOverSignature.requireConsecutiveFrames,25);
+ assert.equal(dropzone.score.reader,"./score-reader.mjs");
+ assert.equal(dropzone.score.runObserver,"./run-observer.mjs");
  assert.equal(dropzone.rollout.runtimeWired,true);
  assert.equal(dropzone.rollout.publicSubmissionEnabled,false);
 });
@@ -86,5 +86,50 @@ test("Dropzone local HUD decoder reproduces real-ROM 0 and 10 transitions and re
   ram[0xBB21]=11;
   assert.equal(readDropzoneHudScore(ram,{screenBase:0xB800}),null);
   assert.equal(load("dropzone").rollout.publicSubmissionEnabled,false);
-  assert.equal(load("dropzone").score.runObserver,null);
+  assert.equal(load("dropzone").score.runObserver,"./run-observer.mjs");
+});
+
+test("Dropzone original-ROM terminal screen requires stable video and a real zero-to-positive score",async()=>{
+  const {dropzoneGameOverVisible,DropzoneLocalRunObserver}=await import("../js/ccg-c64/arena/games/dropzone/run-observer.mjs");
+  const evidence=JSON.parse(readFileSync(new URL("../tests/fixtures/high-score-arena/dropzone/terminal-video-evidence.json",import.meta.url),"utf8"));
+  function frame(sample){
+    const ram=new Uint8Array(65536);
+    ram.set(sample.hud,0xBB20);
+    const frameBuffer=new Uint8ClampedArray(384*272*4);
+    evidence.bands.forEach((b,g)=>{
+      const packed=Uint8Array.from(sample.bands[g].match(/../g),x=>Number.parseInt(x,16));
+      let n=0;
+      for(let y=b.y0;y<b.y1;y++)for(let x=b.x0;x<b.x1;x+=2){
+        if(packed[n>>3]&(128>>(n&7))){
+          const p=(y*384+x)*4;
+          frameBuffer[p]=frameBuffer[p+1]=frameBuffer[p+2]=255;
+        }
+        n++;
+      }
+      assert.equal(n,b.bits);
+    });
+    return {ram,frameBuffer,screenBase:sample.screenBase};
+  }
+  const byName=name=>frame(evidence.samples.find(x=>x.name===name));
+  for(const sample of evidence.samples){
+    assert.equal(dropzoneGameOverVisible(frame(sample).frameBuffer),sample.over,sample.name);
+  }
+  const observer=new DropzoneLocalRunObserver();
+  assert.equal(observer.observe(byName("fire2-edge3-350f")).score,0);
+  assert.equal(observer.observe(byName("fire2-edge3-800f")).score,10);
+  assert.equal(observer.observe(byName("no-input-2600")).score,280);
+  for(let i=0;i<24;i++)assert.equal(observer.observe(byName("no-input-2750")).phase,"terminal");
+  const completed=observer.observe(byName("no-input-2825"));
+  assert.deepEqual(completed,{phase:"completed",score:280,justCompleted:true,localOnly:true});
+  assert.equal(observer.observe(byName("no-input-3350")).justCompleted,false);
+  assert.equal(observer.observe(byName("no-input-3425")).score,280);
+  assert.equal(observer.observe(byName("fire2-edge3-350f")).score,0);
+  const unarmed=new DropzoneLocalRunObserver();
+  for(let n=0;n<40;n++)assert.notEqual(unarmed.observe(byName("no-input-2750")).phase,"completed");
+  const resetBeforeOver=new DropzoneLocalRunObserver();
+  resetBeforeOver.observe(byName("fire2-edge3-350f"));
+  resetBeforeOver.observe(byName("fire2-edge3-800f"));
+  resetBeforeOver.observe(byName("no-input-3425"));
+  for(let n=0;n<30;n++)assert.notEqual(resetBeforeOver.observe(byName("no-input-2750")).phase,"completed");
+  assert.equal(load("dropzone").rollout.publicSubmissionEnabled,false);
 });

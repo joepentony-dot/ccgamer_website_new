@@ -22,7 +22,7 @@
     "joystickPort": 2
   },
   "score": {
-    "status": "local-hud-reader-0-and-10-observed-in-real-emulator-no-gameover",
+    "status": "local-0-10-280-reader-and-gameover-video-observer-no-submission",
     "hudLocation": "bottom-left",
     "screenMemoryBase": "0xB800",
     "screenColumn": 0,
@@ -38,10 +38,35 @@
       "meaning": "yellow four-digit current score; not a RAM address"
     },
     "charsetEncoding": null,
-    "gameOverSignature": null,
+    "gameOverSignature": {
+      "format": "C64 PAL VIC-II presentationBuffer, 384x272 RGBA",
+      "evidenceWorkflowRun": 44555004560,
+      "originalCartridgeSha256": "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7",
+      "bands": [
+        {
+          "label": "GAME OVER",
+          "xStart": 135,
+          "xEndExclusive": 262,
+          "yStart": 77,
+          "yEndExclusive": 84,
+          "stepX": 2
+        },
+        {
+          "label": "YOUR RANK IS",
+          "xStart": 151,
+          "xEndExclusive": 246,
+          "yStart": 93,
+          "yEndExclusive": 100,
+          "stepX": 2
+        }
+      ],
+      "requireConsecutiveFrames": 25,
+      "requireActiveZeroAndPositiveScoreTransition": true,
+      "trust": "local-unverified-display-only"
+    },
     "reader": "./score-reader.mjs",
-    "runObserver": null,
-    "notes": "Real exact-CRT emulator capture (Actions run 44551661979) shows 0 and 10 during active play, with VIC screen base $B800 and score at $BB20..$BB26. Mapping numeric char codes beyond 0 and 1 remains inferred, not individually observed. Game-over detection, eligible score transport and server verification remain disabled.",
+    "runObserver": "./run-observer.mjs",
+    "notes": "Exact CRT real PAL capture recorded active score 0, 10, 280; GAME OVER white text visible at diagnostic relative frames 2750..3350, absent at 2600 and 3425. Local video observer requires 25 consecutive matching frames plus zero-to-positive score transition. Native in-game ranking varies; only first two text lines are matched. Server score eligibility remains disabled.",
     "screenDigitLayout": {
       "startX": 26,
       "topY": 162,
@@ -108,7 +133,7 @@
   "rollout": {
     "runtimeWired": true,
     "publicSubmissionEnabled": false,
-    "notes": "Verified SHA-256 CRT mounts own themed artwork and local read-only HUD score 0/10. Later digits inferred by contiguous custom character code mapping; no end-of-run signal and no network score submission. Crossfire unaffected."
+    "notes": "Exact SHA-pinned CRT mounts Dropzone overlay, reads score 0/10/280 locally and freezes end-of-run score after 25 stable GAME OVER PAL frames. NO HelioHost or authenticated scoring. Requires independent CI, browser acceptance and backend admission before release."
   },
   "evidence": {
     "type": "owner-supplied-screenshots",

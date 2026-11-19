@@ -1,11 +1,12 @@
 /**
  * Dropzone CRT-only high-score Arena VISUAL stage.
- * No score address, life counter or game-over RAM signature has been
- * verified for this cartridge. Never read unrelated Crossfire addresses,
- * read/write remote leaderboards, or submit fabricated score candidates.
+ * The exact CRT HUD reader and visual GAME OVER sequence are verified from
+ * original emulator captures. No server authentication or ranked submissions.
+ * Never use unrelated Crossfire memory or alter member leaderboard records.
  */
 import { renderArenaBoard, normaliseArenaBoard } from "../../view/arena-board.mjs";
 import { readDropzoneHudScore } from "./score-reader.mjs";
+import { DropzoneLocalRunObserver } from "./run-observer.mjs";
 const GAME_KEY = "c64-dropzone";
 export const DROPZONE_CRT = Object.freeze({
   id: "owner-crt-more-dropzone",
@@ -82,7 +83,7 @@ export async function mountDropzoneArenaPreview({
   run.className="ccg-arena-preview__run";
   const score=doc.createElement("strong");
   score.textContent="—";
-  score.setAttribute("aria-label","Local score unavailable until Dropzone's game-specific reader is verified");
+  score.setAttribute("aria-label","Local Dropzone HUD score pending");
   const hint=doc.createElement("p");
   hint.textContent="LOCAL HUD SCORE · UNVERIFIED · NO RANKED SUBMISSIONS";
   run.append(score,hint);
@@ -105,7 +106,8 @@ export async function mountDropzoneArenaPreview({
     mobileToggle.hidden=false;
     mobileToggle.addEventListener("click",onToggle);
   }
-  let mode="alltime",disposed=false,lastScore=null;
+  let mode="alltime",disposed=false,lastScore=null,lastPhase="inactive";
+  const localRun=new DropzoneLocalRunObserver();
   function show(){
     if(disposed)return;
     alltime.setAttribute("aria-pressed",String(mode==="alltime"));
@@ -130,15 +132,33 @@ export async function mountDropzoneArenaPreview({
          !Number.isInteger(machine.cia2?.vicBank))return;
       const screenBase=(machine.cia2.vicBank+
         (((machine.vic2.regs[0x18]>>>4)&15)*1024))&65535;
-      const local=readDropzoneHudScore(ram,{screenBase});
-      if(local===null||local===lastScore)return;
-      lastScore=local;
-      score.textContent=local.toLocaleString("en-GB");
-      score.setAttribute("aria-label","Local displayed Dropzone score "+local);
-      hint.textContent="LOCAL HUD SCORE · NOT VERIFIED FOR SUBMISSION";
+      const update=localRun.observe({
+        ram,screenBase,frameBuffer:machine.vic2.frameBuffer
+      });
+      if(update.phase==="completed"){
+        if(lastPhase!=="completed"||lastScore!==update.score){
+          lastScore=update.score;
+          score.textContent=update.score.toLocaleString("en-GB");
+          score.setAttribute("aria-label","Local Dropzone GAME OVER score "+update.score);
+          hint.textContent="GAME OVER · LOCAL FINAL SCORE · NOT SUBMITTED";
+        }
+        lastPhase="completed";
+        return;
+      }
+      if(update.score===null)return;
+      if(update.score===lastScore&&update.phase===lastPhase)return;
+      lastScore=update.score;
+      lastPhase=update.phase;
+      score.textContent=update.score.toLocaleString("en-GB");
+      score.setAttribute("aria-label","Local displayed Dropzone score "+update.score);
+      hint.textContent=update.phase==="terminal"
+        ?"GAME OVER DETECTED · CONFIRMING LOCAL SCORE"
+        :"LOCAL HUD SCORE · NOT VERIFIED FOR SUBMISSION";
     },
     invalidate(){if(!disposed){
+      localRun.reset();
       lastScore=null;
+      lastPhase="inactive";
       score.textContent="—";
       hint.textContent="SESSION ENDED · NO SCORE RECORDED";
     }},

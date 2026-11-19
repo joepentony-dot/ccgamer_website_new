@@ -2,7 +2,7 @@
 
 This is a per-game metadata and artwork layout. Dropzone's visual preview and **read-only local HUD score decoder** are wired in a draft PR; ranked scores and network submissions remain disabled. The existing Crossfire code still runs from `js/ccg-c64/arena/` and `resources/css/ccg-high-score-arena-preview.css`. This folder must not be interpreted as activating Dropzone or Space Taxi leaderboards.
 
-Each game has a dedicated folder with `profile.json` (exact media identity, controls, overlay, score position, rules, activation state). Dropzone now has a `score-reader.mjs` grounded in real unmodified CRT RAM captures (displayed score 0 then 10). A `run-observer.mjs` must only be added when a real terminal-game signature has been verified. Space Taxi remains metadata-only.
+Each game has a dedicated folder with `profile.json` (exact media identity, controls, overlay, score position, rules, activation state). Dropzone now has a `score-reader.mjs` grounded in real unmodified CRT RAM captures (displayed score 0 then 10). A read-only `run-observer.mjs` now uses exact-ROM PAL video evidence (GAME OVER and YOUR RANK IS) plus a 25-frame stability guard and a positive score transition. Space Taxi remains metadata-only.
 
 **Before wiring a new game into the live emulator**:
 1. Confirm the exact hosted file SHA-256, byte length, and catalogue identity.

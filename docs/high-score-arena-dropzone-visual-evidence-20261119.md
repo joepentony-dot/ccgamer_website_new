@@ -37,3 +37,13 @@ GitHub Actions run [44551661979](https://github.com/joepentony-dot/ccgamer_websi
 A guarded `games/dropzone/score-reader.mjs` uses these exact cells and the active VIC base; codes 2–9 are still inferred from the same contiguous digit character mapping rather than individually observed scoring transitions. This reader is **read-only and local**, with no member account, session, score submission or backend integration.
 
 **Outstanding:** verify actual GAME OVER in RAM/video with a continuous unmodified original-ROM playthrough, establish reliable fresh-run invalidation, add a separate completion observer and server-side score eligibility, then qualify the update under existing CCG review/deployment gates. Do not treat the game's built-in “YOUR RANK IS” notice as proof of an online leaderboard record.
+
+## Reproduced terminal video evidence (19 November 2026)
+
+GitHub Actions [run 44555004560](https://github.com/joepentony-dot/ccgamer_website_new/actions/runs/44555004560) completed against the same exact CRC/SHA-pinned original CRT. The no-input, short-fire-start run showed 280 points at diagnostic frame 2600; the GAME OVER text was visible throughout frames 2750–3350, and had disappeared by 3425 as the original title sequence returned. The native rank message included “NOT LISTED / PRACTICE RECOMMENDED”.
+
+The first two text lines are stable across repeated captures: GAME OVER (pixels X135–261, Y77–83) and YOUR RANK IS (X151–245, Y93–99) in the 384×272 PAL VIC presentation buffer. Each is sampled at every second X pixel and matched against the original white-pixel mask. The third message line is deliberately excluded because it may vary for a qualifying score.
+
+The new `games/dropzone/run-observer.mjs` requires both text bands to remain present for 25 consecutive emulator frames **and** requires a legitimate 0-to-positive local HUD score transition in the same emulated session before it freezes a local-only completion result. Data snapshots and the lightweight original-ROM pixel-mask fixture are in `tests/fixtures/high-score-arena/dropzone/terminal-video-evidence.json`.
+
+**Limits:** this is a client-side visual completion indicator, not secure proof of a clean session. Attract-play, save-state tampering and server trust are not fully validated. `publicSubmissionEnabled=false` remains fixed; there is no network score posting and no populated public Dropzone leaderboard.
