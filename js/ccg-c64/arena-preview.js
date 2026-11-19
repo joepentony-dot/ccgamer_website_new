@@ -183,7 +183,7 @@ export async function mountCrossfirePreview({
   // Sierra CRT. The server independently checks member auth, CSRF, game state,
   // nonce and release switches; a browser can never approve its own score.
   if(scoreRequested) {
-    void import("./arena/client/sierra-browser-score-bridge.mjs").then(mod=>{
+    void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261119_sierra_public_rankings_independent_auth_v1").then(mod=>{
       if(disposed || (typeof isCurrent==="function" && !isCurrent()) ||
          scoreGate!=="checking") {
         finishScoreHandshake("unavailable");
