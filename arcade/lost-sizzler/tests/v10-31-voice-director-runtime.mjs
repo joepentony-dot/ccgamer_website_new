@@ -46,7 +46,7 @@ const gameOver=voice.state.active;
 assert.notEqual(gameOver,first,"Game Over must be a new active recording");
 assert.equal(first.audio.paused,true,"new critical recording must pause lower-priority clip");
 assert.equal(voice.state.interrupted,1);
-assert.match(gameOver.audio.src,/ccg-owner-voices-r169\\.ogg/,"Game Over comes from the owner-provided local voice pack");
+assert.match(gameOver.audio.src,/ccg-owner-voices-r169\.ogg/,"Game Over comes from the owner-provided local voice pack");
 
 assert.equal(voice.say("deathStalker"),true,"Death Stalker can replace the lower-priority Game Over clip");
 assert.notEqual(voice.state.active,gameOver);
@@ -55,7 +55,7 @@ assert.equal(voice.state.interrupted,2);
 voice.stop();
 
 assert.equal(voice.say("hurt"),true,"new owner-recorded Ow cue must play rather than synthesize speech");
-assert.match(voice.state.active.audio.src,/ccg-owner-voices-r169\\.ogg/,"hurt uses newly provided local owner recording");
+assert.match(voice.state.active.audio.src,/ccg-owner-voices-r169\.ogg/,"hurt uses newly provided local owner recording");
 voice.stop();
 
 assert.equal(voice.say("shop"),true,"an approved recorded routine cue should play when the channel is idle");
