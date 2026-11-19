@@ -189,3 +189,99 @@
   cursor:pointer;
   min-height:32px;
 }
+
+/* Phone-only Arena: unframed PAL gameplay until SCORE is tapped.
+   Keep desktop and larger tablet compositions unchanged. */
+@media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
+  .ccg-c64-console .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
+    background-image: none !important;
+    background-color: #02050b !important;
+  }
+
+  /* No compact score strip or side panel during gameplay. */
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"] {
+    display: none;
+  }
+
+  /* SCORE opens an accessible, independently scrolling leaderboard panel. */
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    inset: calc(50px + env(safe-area-inset-top))
+      max(0.4rem, env(safe-area-inset-right))
+      max(0.4rem, env(safe-area-inset-bottom))
+      max(0.4rem, env(safe-area-inset-left));
+    z-index: 55;
+    width: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 8px;
+    gap: 6px;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
+    :is(.ccg-arena-preview__intro, .ccg-arena-preview__start,
+        .ccg-arena-preview__run,
+        [data-ccg-sierra-member-signin]) {
+    display: none;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
+    .ccg-arena-preview__modes {
+    display: flex;
+    flex: 0 0 auto;
+    padding: 0;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
+    .ccg-arena-preview__display {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
+    .ccg-arena-preview__board {
+    display: block;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 235px;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
+    .ccg-arena-board-name {
+    font-size: clamp(11px, 3vw, 14px);
+  }
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
+    .ccg-arena-digits {
+    height: clamp(20px, 5dvh, 34px);
+  }
+}
+
+/* A phone in landscape is not a two-column game/scoreboard layout. */
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
+  .ccg-c64-console.is-mobile-playing:has(>
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"]) {
+    display: flex;
+    flex-direction: column;
+    grid-template: none;
+  }
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
+    grid-area: auto;
+    height: auto;
+  }
+}
