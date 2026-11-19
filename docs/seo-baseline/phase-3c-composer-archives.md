@@ -12,7 +12,7 @@
 | Indexable generated routes | **257** |
 | No-credit generated noindex routes | **0** |
 | Total static composer routes | **277** |
-| Linked game-credit relationships | **586** |
+| Linked game-credit relationships | **585** |
 | Generated pages written in this run | **257** |
 | Stale generated pages removed | **0** |
 
@@ -36,8 +36,8 @@
 - Jonathan Dunn: **11** games
 - Jeroen Tel: **9** games
 - Mark Cooksey: **9** games
-- Barry Leitch: **8** games
 - Russell Lieblich: **8** games
+- Barry Leitch: **7** games
 - Neil Brennan: **7** games
 - Chris Hülsbeck: **6** games
 - Dave Thomas: **6** games
