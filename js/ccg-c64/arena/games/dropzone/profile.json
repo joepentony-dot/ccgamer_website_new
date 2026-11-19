@@ -3,7 +3,7 @@
   "gameKey": "c64-dropzone",
   "displayTitle": "Dropzone",
   "media": {
-    "catalogId": null,
+    "catalogId": "owner-crt-more-dropzone",
     "file": "dropzone.crt",
     "format": "crt",
     "byteLength": 82144,
