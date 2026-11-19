@@ -193,7 +193,7 @@
 /* Phone-only Arena: unframed PAL gameplay until SCORE is tapped.
    Keep desktop and larger tablet compositions unchanged. */
 @media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
-  .ccg-c64-console .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"] {
     background-image: none !important;
     background-color: #02050b !important;
   }
