@@ -1,0 +1,50 @@
+/* Dropzone-specific frame. Crossfire's original rules/assets are untouched. */
+@import url("/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_sierra_arena_layout_v5");
+@media (min-width: 761px) {
+  .ccg-c64-console:not(.is-mobile-playing, :fullscreen)
+    .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"]:not(:fullscreen) {
+    aspect-ratio: 1672 / 941;
+    min-height: 0;
+    height: auto;
+    padding: 0;
+    grid-template: 19% 66% 15% / 1fr;
+    background: #02050b url("/resources/images/high-score-arena/dropzone/overlay.webp") center / 100% 100% no-repeat;
+  }
+  .ccg-c64-console:not(.is-mobile-playing, :fullscreen)
+    .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"]:not(:fullscreen) > .ccg-c64-screen-bezel {
+    grid-row: 2;
+    width: 49%;
+    max-width: 49%;
+    min-width: 0;
+    border: 0;
+    border-radius: 0;
+    aspect-ratio: 4 / 3;
+    box-shadow: none;
+    transition: none;
+  }
+}
+@media (pointer: coarse) {
+  .ccg-c64-console.is-mobile-playing
+    .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"] {
+    container-type: size;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    background: #02050b url("/resources/images/high-score-arena/dropzone/overlay.webp") center / 100% 100% no-repeat;
+    border-color: #3673a8;
+    box-shadow: 0 0 12px rgba(17,114,232,.28);
+  }
+  .ccg-c64-console.is-mobile-playing
+    .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"] > .ccg-c64-screen-bezel {
+    width: min(100cqw, calc(100cqh * 4 / 3)) !important;
+    height: min(100cqh, calc(100cqw * 3 / 4));
+    aspect-ratio: 4 / 3;
+    border: 0;
+    transition: none;
+  }
+}
+@media (pointer: coarse) and (orientation: landscape) {
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"] {
+    grid-area: game;
+    height: 100%;
+  }
+}

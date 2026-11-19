@@ -10,7 +10,7 @@
     "sha256": "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7"
   },
   "overlay": {
-    "status": "asset-staged-in-draft-pr",
+    "status": "visual-frame-wired-draft-only",
     "path": "/resources/images/high-score-arena/dropzone/overlay.webp",
     "width": 1672,
     "height": 941,
@@ -22,7 +22,7 @@
     "joystickPort": 2
   },
   "score": {
-    "status": "screenshot-evidence-recorded-ram-unverified",
+    "status": "screenshot-evidence-only-no-runtime-reader",
     "hudLocation": "bottom-left",
     "screenMemoryBase": null,
     "screenColumn": null,
@@ -83,9 +83,9 @@
     "requiresVerifiedGameOver": true
   },
   "rollout": {
-    "runtimeWired": false,
+    "runtimeWired": true,
     "publicSubmissionEnabled": false,
-    "notes": "No score collection or remote submissions until exact CRT/media, score decoder, game over, backend game key and integrity are verified."
+    "notes": "Visual artwork and scoreboard shell mount only for SHA-verified hosted Dropzone CRT. Score remains unavailable; no RAM decoder/game-over observer and no network leaderboard. Do not describe scoring as live."
   },
   "evidence": {
     "type": "owner-supplied-screenshots",

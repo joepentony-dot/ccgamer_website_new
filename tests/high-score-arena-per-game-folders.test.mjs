@@ -31,7 +31,7 @@ test('real Dropzone art and owner-supplied evidence match pinned SHA-256',()=>{
  assert.equal(art.toString('ascii',8,12),'WEBP');
  assert.equal(art.length,354446);
  assert.equal(dropzone.overlay.sha256,digest('resources/images/high-score-arena/dropzone/overlay.webp'));
- assert.equal(dropzone.overlay.status,'asset-staged-in-draft-pr');
+ assert.equal(dropzone.overlay.status,'visual-frame-wired-draft-only');
  for(const item of dropzone.evidence.screenshots){
    const path=item.path.slice(1);
    const png=readBinary(new URL(path,root));
@@ -43,6 +43,24 @@ test('real Dropzone art and owner-supplied evidence match pinned SHA-256',()=>{
  assert.equal(dropzone.score.gameOverSignature,null);
  assert.equal(dropzone.score.reader,null);
  assert.equal(dropzone.score.runObserver,null);
- assert.equal(dropzone.rollout.runtimeWired,false);
+ assert.equal(dropzone.rollout.runtimeWired,true);
  assert.equal(dropzone.rollout.publicSubmissionEnabled,false);
+});
+
+test('Dropzone visual wiring is exact-media-only and cannot post unverified scores', async()=>{
+  const {verifyDropzoneMedia,DROPZONE_CRT}=await import('../js/ccg-c64/arena/games/dropzone/preview.mjs');
+  const {webcrypto}=await import('node:crypto');
+  const match={...DROPZONE_CRT,approved:true};
+  assert.equal(await verifyDropzoneMedia(match,new Uint8Array(82144),webcrypto.subtle),false);
+  assert.equal(await verifyDropzoneMedia({...match,sha256:'0'.repeat(64)},new Uint8Array(82144),webcrypto.subtle),false);
+  assert.equal(await verifyDropzoneMedia({...match,bytes:1},new Uint8Array(82144),webcrypto.subtle),false);
+  const fs=await import('node:fs');
+  const app=fs.readFileSync(new URL('../js/ccg-c64/app.js',import.meta.url),'utf8');
+  const css=fs.readFileSync(new URL('../resources/css/ccg-high-score-arena-dropzone.css',import.meta.url),'utf8');
+  const mod=fs.readFileSync(new URL('../js/ccg-c64/arena/games/dropzone/preview.mjs',import.meta.url),'utf8');
+  assert.match(app,/isDropzoneArenaEntry\(entry\)/);
+  assert.match(css,/data-ccg-arena-frame="dropzone"/);
+  assert.match(css,/\/high-score-arena\/dropzone\/overlay.webp/);
+  assert.doesNotMatch(mod,/\b(fetch|XMLHttpRequest|sendBeacon)\s*\(/);
+  assert.equal(load('dropzone').rollout.publicSubmissionEnabled,false);
 });
