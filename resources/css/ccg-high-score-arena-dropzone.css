@@ -48,3 +48,96 @@
     height: 100%;
   }
 }
+
+/* Phone-only Dropzone: remove decorative frame; SCORE displays the leaderboard. */
+@media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
+  .ccg-c64-console .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"] {
+    background-image: none !important;
+    background-color: #02050b !important;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"] {
+    display: none;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"].is-mobile-open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    inset: calc(50px + env(safe-area-inset-top))
+      max(0.4rem, env(safe-area-inset-right))
+      max(0.4rem, env(safe-area-inset-bottom))
+      max(0.4rem, env(safe-area-inset-left));
+    z-index: 55;
+    width: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 8px;
+    gap: 6px;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"].is-mobile-open
+    :is(.ccg-arena-preview__intro, .ccg-arena-preview__start,
+        .ccg-arena-preview__run) {
+    display: none;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"].is-mobile-open
+    .ccg-arena-preview__modes {
+    display: flex;
+    flex: 0 0 auto;
+    padding: 0;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"].is-mobile-open
+    .ccg-arena-preview__display {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"].is-mobile-open
+    .ccg-arena-preview__board {
+    display: block;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 235px;
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"].is-mobile-open
+    .ccg-arena-board-name {
+    font-size: clamp(11px, 3vw, 14px);
+  }
+
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"].is-mobile-open
+    .ccg-arena-digits {
+    height: clamp(20px, 5dvh, 34px);
+  }
+}
+
+/* Free all available phone width for the actual C64 picture in landscape. */
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
+  .ccg-c64-console.is-mobile-playing:has(>
+    .ccg-arena-preview[data-ccg-arena-preview="dropzone"]) {
+    display: flex;
+    flex-direction: column;
+    grid-template: none;
+  }
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-c64-screen-stage[data-ccg-arena-frame="dropzone"] {
+    grid-area: auto;
+    height: auto;
+  }
+}
