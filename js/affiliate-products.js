@@ -1,8 +1,8 @@
 (function () {
     "use strict";
 
-    const CONFIG_PATH = "resources/data/affiliate-products.json";
-    const STYLE_PATH = "resources/css/ccg-affiliate-showcase.css";
+    const CONFIG_PATH = "resources/data/affiliate-products.json?v=20261119-thea1200-dec15";
+    const STYLE_PATH = "resources/css/ccg-affiliate-showcase.css?v=20261119-thea1200-dec15";
     const GAME_SECTION_ID = "affiliate-products-section";
     const HOME_SPOTLIGHT_SELECTOR = "[data-ccg-home-affiliate-spotlight]";
 
@@ -409,12 +409,25 @@
         shopLink.textContent = "MORE FROM AMAZON";
         actions.appendChild(shopLink);
 
+        // Small first-party guide link alongside the existing Amazon actions.
+        const detailsLink = document.createElement("a");
+        detailsLink.className = "ccg-home-affiliate-spotlight__details-link";
+        detailsLink.href = resolveSiteUrl("thea1200/");
+        detailsLink.textContent = "MORE INFO";
+        detailsLink.setAttribute("aria-label", "Read the CCG THEA1200 guide, features and included games");
+        actions.appendChild(detailsLink);
+
         const legal = createDisclosure(config, "ccg-home-affiliate-spotlight__legal");
         copy.append(eyebrow, heading, body, actions, legal);
 
-        const release = document.createElement("div");
+        // The product image/date panel is also a keyboard-accessible link.
+        const releaseDateValue = Date.parse(toSafeString(product.releaseDate));
+        if (!Number.isFinite(releaseDateValue)) return null;
+        const releaseISO = new Date(releaseDateValue).toISOString().slice(0, 10);
+        const release = document.createElement("a");
         release.className = "ccg-home-affiliate-spotlight__release";
-        release.setAttribute("aria-label", toSafeString(spotlight.releaseLabel) || "THEA1200 release information");
+        release.href = resolveSiteUrl("thea1200/");
+        release.setAttribute("aria-label", "More information about THEA1200, its expected release and included games");
 
         const releaseMark = document.createElement("span");
         releaseMark.className = "ccg-home-affiliate-spotlight__machine";
@@ -423,12 +436,12 @@
 
         const releaseKicker = document.createElement("span");
         releaseKicker.className = "ccg-home-affiliate-spotlight__release-kicker";
-        releaseKicker.textContent = Date.now() < Date.parse(toSafeString(product.releaseDate)) ? "COMING" : "RELEASED";
+        releaseKicker.textContent = Date.now() < releaseDateValue ? "COMING" : "RELEASED";
 
         const releaseDate = document.createElement("time");
         releaseDate.className = "ccg-home-affiliate-spotlight__release-date";
-        releaseDate.dateTime = "2026-12-04";
-        releaseDate.textContent = "04 · 12 · 2026";
+        releaseDate.dateTime = releaseISO;
+        releaseDate.textContent = releaseISO.split("-").reverse().join(" · ");
 
         const releaseName = document.createElement("span");
         releaseName.className = "ccg-home-affiliate-spotlight__release-name";
@@ -526,7 +539,7 @@
         const promo = config?.homepageRetroShop;
         const switchAt = Date.parse(toSafeString(promo?.start));
 
-        // Explicit UTC boundary: 00:00 GMT on 4 December 2026.
+        // Explicit UTC boundary: read from the retailer-estimate switch date in the catalogue.
         // Never reinstate the A1200 promotion after the shop switch.
         if (Number.isFinite(switchAt) && Date.now() >= switchAt) {
             if (existing?.getAttribute("data-ccg-home-spotlight-kind") === "retro-shop") return;

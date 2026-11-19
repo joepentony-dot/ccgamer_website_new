@@ -89,10 +89,10 @@
       "title": "THEA1200",
       "asin": "B0G1L9Q7WK",
       "category": "Amiga hardware",
-      "badge": "NEW - 4 DEC 2026",
+      "badge": "EXPECTED - 15 DEC 2026",
       "url": "https://www.amazon.co.uk/Retro-Games-THE-A1200/dp/B0G1L9Q7WK?linkCode=ll2&tag=cheekycomm00d-21&linkId=215a465179e39bed0c29211064133c3c&ref_=as_li_ss_tl",
-      "description": "Retro Games' new A1200-inspired system, due for release on 4 December 2026.",
-      "releaseDate": "2026-12-04T00:00:00Z",
+      "description": "Retro Games' new A1200-inspired system, currently expected in the UK around 15 December 2026 (retailer estimate).",
+      "releaseDate": "2026-12-15T00:00:00Z",
       "preReleaseButtonText": "Pre-order on Amazon",
       "buttonText": "View on Amazon"
     },
@@ -175,15 +175,15 @@
     "enabled": true,
     "product": "thea1200",
     "start": "2026-09-01T00:00:00Z",
-    "end": "2026-12-03T23:59:59.999Z",
+    "end": "2026-12-14T23:59:59.999Z",
     "eyebrow": "NEW AMIGA HARDWARE",
-    "headline": "THEA1200 ARRIVES 4 DECEMBER 2026",
-    "copy": "THEA1200 is due on 4 December 2026. If you're planning to pick one up, using the CCG Amazon link helps support the channel at no extra cost to you.",
-    "releaseLabel": "RELEASES 4 DEC 2026"
+    "headline": "THEA1200 EXPECTED 15 DECEMBER 2026",
+    "copy": "THEA1200 is now expected around 15 December 2026 in the UK, according to retailer listings. If you're planning to pick one up, using the CCG Amazon link helps support the channel at no extra cost to you.",
+    "releaseLabel": "Expected UK availability: 15 December 2026 (retailer estimate)"
   },
   "homepageRetroShop": {
     "enabled": true,
-    "start": "2026-12-04T00:00:00Z",
+    "start": "2026-12-15T00:00:00Z",
     "activeTag": "joepentony-20",
     "collections": [
       {
