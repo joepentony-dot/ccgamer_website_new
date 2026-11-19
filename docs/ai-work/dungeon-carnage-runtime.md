@@ -1,3 +1,9 @@
+## 19 November 2026 — R167 release-cache reconciliation (existing PR #3104)
+
+- Continued the existing reconnect-safe gamepad implementation without Codex. The R167 source branch had successful exact-head PR, Full Qualification (all six Chromium shards), public-code-cache, Windows-preview and itch package workflow results before this change. These historical passes do not qualify the new head.
+- Found that the R167 gameplay change still used the R166 `game-play.js` URL/cache build identifier. Updated both Dungeon HTML entrypoints, ordered bootstrap and `version.json` to a consistent **candidate** `V10.42 r167` / `20261119r167`, and extended the existing R167 Node test to assert that actual routes and manifest point at the corrected asset token. Existing game logic, owner media, production accounts, closed Round 2 access gate and other workstreams remain unchanged.
+- **Unmerged / not released.** The updated PR requires all new exact-head CI (including six Chromium shards and Windows/itch checks), a distinct independent submitted APPROVED review per owner gate, current-main reconciliation and verified Pages/live build/cache/membership checks before guarded merge. Commercial release and installed Windows owner acceptance remain held. No approval, deployment or completed real-world playthrough is claimed.
+
 ## 12 November 2026 — R166 Count Loadula accessibility qualification
 
 - Sole candidate [PR #3080](https://github.com/joepentony-dot/ccgamer_website_new/pull/3080), branch `fix/dungeon-r166-count-loadula-accessibility`, implementation commit `ebd2afde62ae944de69511cb07d265253712854d`, based on fetched main `7c0aec8d8e3e11e2b5c6ea4ff5d3c1360b05f298`. No compatible open Dungeon PR or shipped R166 was found. Applied the owner-supplied ZIP patch without drift. Runtime scope is Count Loadula's decorative motion and severe-quality drawing; both entrypoints, bootstrap and version.json use `V10.42 r166 / 20261112r166`.
