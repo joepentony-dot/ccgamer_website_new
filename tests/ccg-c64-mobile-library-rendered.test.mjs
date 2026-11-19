@@ -391,6 +391,77 @@ try {
   }
   await emulate(session, 1440, 900, false);
 
+
+  // Dropzone is a separate exact-ROM local-only Arena. On phones the original
+  // game occupies the play area with NO decorative artwork or score strip.
+  // SCORE must expose only a leaderboard, with no server submissions.
+  const dropzoneUrl = "http://" + host + ":" + port +
+    "/emulator/c64/?game=owner-crt-more-dropzone&autoplay=1";
+  await emulate(session,390,844,true);
+  await wd("POST", "/session/" + session + "/url", {url:dropzoneUrl});
+  let dropzoneMounted=false;
+  for(let attempt=0;attempt<100;attempt++){
+    dropzoneMounted=await evaluate(session,`
+      const game=document.querySelector('.ccg-c64-console.is-mobile-playing');
+      const stage=game?.querySelector('[data-ccg-arena-frame="dropzone"]');
+      const panel=game?.querySelector('[data-ccg-arena-preview="dropzone"]');
+      const toggle=game?.querySelector('[data-mobile-arena-toggle]');
+      return Boolean(stage&&panel&&toggle&&!toggle.hidden&&
+        getComputedStyle(stage).backgroundImage==="none"&&
+        getComputedStyle(panel).display==="none"&&
+        game.querySelector('[data-mobile-joystick-swap]')?.textContent.includes("PORT 2"));
+    `);
+    if(dropzoneMounted)break;
+    await sleep(250);
+  }
+  assert(dropzoneMounted,
+    "Dropzone phone gameplay must have no decorative frame/score strip and retain port 2");
+  const inspectDropzone=()=>evaluate(session,`
+    const game=document.querySelector(".ccg-c64-console.is-mobile-playing");
+    const panel=game.querySelector('[data-ccg-arena-preview="dropzone"]');
+    const stage=game.querySelector('[data-ccg-arena-frame="dropzone"]');
+    const show=e=>getComputedStyle(e).display!=="none"&&e.getClientRects().length>0;
+    const view=show(panel);
+    return {view,artwork:getComputedStyle(stage).backgroundImage,
+      board:show(panel.querySelector(".ccg-arena-preview__board")),
+      modes:show(panel.querySelector(".ccg-arena-preview__modes")),
+      intro:show(panel.querySelector(".ccg-arena-preview__intro")),
+      start:show(panel.querySelector(".ccg-arena-preview__start")),
+      run:show(panel.querySelector(".ccg-arena-preview__run")),
+      expanded:game.querySelector('[data-mobile-arena-toggle]').getAttribute("aria-expanded"),
+      text:game.querySelector('[data-mobile-arena-toggle]').textContent.trim()};
+  `);
+  for(const [width,height] of [[390,844],[844,390]]){
+    await emulate(session,width,height,true);
+    const before=await inspectDropzone();
+    assert.equal(before.view,false,"Dropzone must hide the score strip in phone gameplay");
+    assert.equal(before.artwork,"none","Dropzone phone artwork must be absent");
+    await evaluate(session,'document.querySelector("[data-mobile-arena-toggle]").click();');
+    const open=await inspectDropzone();
+    assert(open.view&&open.board&&open.modes&&!open.intro&&!open.start&&!open.run,
+      "Dropzone SCORE must show ONLY the leaderboard: "+JSON.stringify(open));
+    assert.equal(open.expanded,"true");
+    assert.equal(open.text,"CLOSE SCORE");
+    await screenshot(session,"dropzone-"+width+"x"+height+"-leaderboard");
+    await evaluate(session,'document.querySelector("[data-mobile-arena-toggle]").click();');
+    const closed=await inspectDropzone();
+    assert.equal(closed.view,false,"Closing Dropzone SCORE must restore gameplay");
+    assert.equal(closed.text,"SCORE");
+  }
+  await emulate(session,1440,900,false);
+  await wd("POST","/session/"+session+"/url",{url:dropzoneUrl});
+  let dropzoneDesktop=false;
+  for(let attempt=0;attempt<100;attempt++){
+    dropzoneDesktop=await evaluate(session,`
+      const stage=document.querySelector('[data-ccg-arena-frame="dropzone"]');
+      return Boolean(stage&&getComputedStyle(stage).backgroundImage.includes("dropzone/overlay.webp"));
+    `);
+    if(dropzoneDesktop)break;
+    await sleep(250);
+  }
+  assert(dropzoneDesktop,"Dropzone desktop must retain the original framed artwork");
+  console.log("PASS Dropzone phone leaderboard-only view and desktop artwork isolation");
+
   // Crossfire - Tron is a different PRG; keep its normal launch completely
   // separate, without a Sierra Arena panel, frame or any HelioHost score call.
   await wd("POST", "/session/"+session+"/url", {url:crossfireUrl.replace("archive-02121", "archive-02122")});
