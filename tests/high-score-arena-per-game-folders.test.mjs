@@ -1,12 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { readDropzoneScore } from '../js/ccg-c64/arena/games/dropzone/score-reader.mjs';
-import { DropzoneRunObserver } from '../js/ccg-c64/arena/games/dropzone/run-observer.mjs';
-import { readSpaceTaxiScore } from '../js/ccg-c64/arena/games/space-taxi/score-reader.mjs';
-import { SpaceTaxiRunObserver } from '../js/ccg-c64/arena/games/space-taxi/run-observer.mjs';
 const load = slug => JSON.parse(readFileSync(new URL(`../js/ccg-c64/arena/games/${slug}/profile.json`,import.meta.url),'utf8'));
-test('each game keeps a separate, non-crosswired score profile',()=>{
+test('each game keeps a separate score profile without activating unverified games',()=>{
   const [crossfire,dropzone,taxi]=['crossfire','dropzone','space-taxi'].map(load);
   assert.equal(new Set([crossfire.gameKey,dropzone.gameKey,taxi.gameKey]).size,3);
   assert.equal(dropzone.media.file,'dropzone.crt');
@@ -15,16 +11,11 @@ test('each game keeps a separate, non-crosswired score profile',()=>{
   assert.equal(dropzone.controls.joystickPort,2);
   assert.equal(dropzone.score.hudLocation,'bottom-left');
   assert.equal(dropzone.score.screenMemoryBase,null);
+  assert.equal(dropzone.score.reader,null);
+  assert.equal(dropzone.score.runObserver,null);
   assert.equal(dropzone.rollout.publicSubmissionEnabled,false);
   assert.equal(taxi.media.sha256,null);
+  assert.equal(taxi.score.reader,null);
   assert.equal(taxi.rollout.runtimeWired,false);
   assert.equal(crossfire.overlay.path,'/resources/images/high-score-arena/crossfire-original-frame.webp');
-});
-test('unverified per-game readers and observers cannot invent ranked scores',()=>{
-  const ram=new Uint8Array(65536);
-  ram.fill(0x30);
-  assert.equal(readDropzoneScore(ram),null);
-  assert.equal(new DropzoneRunObserver().observe(ram),null);
-  assert.equal(readSpaceTaxiScore(ram),null);
-  assert.equal(new SpaceTaxiRunObserver().observe(ram),null);
 });

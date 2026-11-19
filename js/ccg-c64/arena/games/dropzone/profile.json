@@ -28,8 +28,8 @@
     "screenPixelRectangle": null,
     "charsetEncoding": null,
     "gameOverSignature": null,
-    "reader": "./score-reader.mjs",
-    "runObserver": "./run-observer.mjs",
+    "reader": null,
+    "runObserver": null,
     "notes": "The screenshot shows the HUD location, not a verified C64 memory address. Verify this exact CRT against real RAM/game-over captures."
   },
   "rules": {

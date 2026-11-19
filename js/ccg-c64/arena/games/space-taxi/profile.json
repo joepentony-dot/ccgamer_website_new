@@ -27,8 +27,8 @@
     "screenPixelRectangle": null,
     "charsetEncoding": null,
     "gameOverSignature": null,
-    "reader": "./score-reader.mjs",
-    "runObserver": "./run-observer.mjs",
+    "reader": null,
+    "runObserver": null,
     "notes": "No edition/score position verified. Do not reuse Dropzone or Crossfire memory addresses."
   },
   "rules": {
