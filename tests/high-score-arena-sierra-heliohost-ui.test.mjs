@@ -100,17 +100,51 @@ test('actual Sierra HUD F1/gameover drives two authenticated HelioHost POSTs onl
  assert(panel.find(x=>x.tag==='p'&&x.textContent==='GAME OVER · SCORE SUBMITTED FOR REVIEW'));
  controller.dispose();
 });
-test('without score opt-in, visitor and wrong-origin browser make no HelioHost request',async()=>{
+test('regular Sierra game launch renders moderated public scores without member login',async()=>{
+ const requests=[],doc=fakeDocument(),stage=doc.createElement('div');
+ const regularLink='?game='+entry.id+'&autoplay=1&start=1';
+ const controller=await mountCrossfirePreview({
+  entry,bytes,stage,doc,subtle,scoreQuery:regularLink,websiteOrigin:ORIGIN,
+  scoreFetchImpl:async(url,options)=>{
+   requests.push({url,method:options.method,credentials:options.credentials});
+   if(url.includes('/leaderboard'))return reply({
+    ok:true,gameKey:'c64-crossfire-sierra-online',board:'alltime',
+    challengeSlug:null,status:'available',
+    records:[{playerName:'Approved Player',score:170}]
+   });
+   throw Error('Member handshake forbidden without scores=1');
+  }
+ });
+ assert.equal(await controller.whenHelioHostReady(),false);
+ await turn();await turn();
+ const panel=stage.after;
+ assert(panel.find(x=>x.tag==='p'&&x.textContent==='SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED'));
+ assert(panel.find(x=>x.tag==='span'&&x.textContent==='#1 Approved Player'));
+ assert(panel.find(x=>x.tag==='span'&&x.textContent==='Approved Player, 170 points'));
+ assert.equal(requests.length,1,'Normal game launch should only read public rankings');
+ assert(requests[0].url.includes('/sierra-crossfire/leaderboard'));
+ assert.equal(requests[0].method,'GET');
+ assert.equal(requests[0].credentials,'omit');
+ controller.dispose();
+});
+test('no score opt-in or wrong origin never authenticates or submits a score',async()=>{
  for(const [query,origin] of [
   ['',ORIGIN],['?game='+entry.id+'&autoplay=1&start=1',ORIGIN],
   [link,'https://example.invalid'],['?game='+entry.id+'&scores=0',ORIGIN],
   ['?game='+entry.id+'&scores=1&scores=1',ORIGIN]
  ]){
-  let count=0;
+  const calls=[];
   const doc=fakeDocument(),stage=doc.createElement('div');
   const controller=await mountCrossfirePreview({
    entry,bytes,stage,doc,subtle,scoreQuery:query,
-   websiteOrigin:origin,scoreFetchImpl:async()=>{count++;throw Error('Forbidden');}
+   websiteOrigin:origin,scoreFetchImpl:async(url,options)=>{
+    calls.push({url,method:options.method,credentials:options.credentials});
+    if(url.includes('/leaderboard'))return reply({
+     ok:true,gameKey:'c64-crossfire-sierra-online',board:'alltime',
+     challengeSlug:null,status:'available',records:[]
+    });
+    throw Error('Member handshake forbidden without score opt-in');
+   }
   });
   assert.equal(await controller.whenHelioHostReady(),false);
   controller.observe(ram(0,true));
@@ -119,7 +153,12 @@ test('without score opt-in, visitor and wrong-origin browser make no HelioHost r
   controller.observe(ram(170));
   for(let i=0;i<25;i++)controller.observe(ram(170,true));
   await turn();await turn();
-  assert.equal(count,0,'No HTTP without exact same-origin explicit opt-in: '+query);
+  assert(!calls.some(c=>c.method==='POST'||c.url.includes('/v1/member/')),
+   'No auth or score write without explicit opt-in: '+query);
+  const reads=calls.filter(c=>c.url.includes('/leaderboard'));
+  assert.equal(reads.length,origin===ORIGIN?1:0,
+   'Only the official verified Sierra preview may read public ranks: '+query);
+  assert(reads.every(c=>c.method==='GET'&&c.credentials==='omit'));
   controller.dispose();
  }
 });
@@ -144,6 +183,32 @@ test('authenticated session failure does not forge submitted receipt or alter lo
  assert.equal(calls.filter(c=>c.method==='POST').length,0);
  assert(p.find(x=>x.tag==='p'&&x.textContent.includes('SCORE LOCAL ONLY')));
  assert(!p.find(x=>x.tag==='p'&&x.textContent.includes('RECEIVED · PENDING REVIEW')));
+ controller.dispose();
+});
+
+test('score-enabled Sierra displays approved public ranking without member sign-in or score POST',async()=>{
+ const requests=[];const doc=fakeDocument(),stage=doc.createElement('div');
+ const controller=await mountCrossfirePreview({
+  entry,bytes,stage,doc,subtle,scoreQuery:link,websiteOrigin:ORIGIN,
+  scoreFetchImpl:async(url,options)=>{
+   requests.push({url,method:options.method,credentials:options.credentials});
+   if(url.includes('/leaderboard'))return reply({
+    ok:true,gameKey:'c64-crossfire-sierra-online',board:'alltime',
+    challengeSlug:null,status:'available',
+    records:[{playerName:'Approved Player',score:170}]
+   });
+   return {ok:false,headers:{get:()=> 'application/json'},text:async()=>''};
+  }
+ });
+ assert.equal(await controller.whenHelioHostReady(),false);
+ await turn();
+ const panel=stage.after;
+ assert(panel.find(x=>x.tag==='span'&&x.textContent==='#1 Approved Player'));
+ assert(panel.find(x=>x.tag==='span'&&x.textContent==='Approved Player, 170 points'));
+ assert(requests.some(x=>x.url.includes('/leaderboard') &&
+   x.method==='GET' && x.credentials==='omit'));
+ assert(requests.some(x=>x.url.endsWith('/v1/member/me')&&x.method==='GET'));
+ assert(!requests.some(x=>x.method==='POST'));
  controller.dispose();
 });
 

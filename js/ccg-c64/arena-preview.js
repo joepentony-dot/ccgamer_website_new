@@ -15,7 +15,7 @@ import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-s
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261118_sierra_arena_layout_v5";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261119_crossfire_phone_leaderboard_only_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
@@ -182,14 +182,17 @@ export async function mountCrossfirePreview({
   // A server score session is opt-in and only belongs to the exact verified
   // Sierra CRT. The server independently checks member auth, CSRF, game state,
   // nonce and release switches; a browser can never approve its own score.
-  if(scoreRequested) {
-    void import("./arena/client/sierra-browser-score-bridge.mjs").then(mod=>{
+  // Public rankings contain only published, moderated data and require no
+  // login or submission opt-in. The verified Sierra CRT and exact website
+  // origin still guard this read-only connection.
+  if(websiteOrigin==="https://www.cheekycommodoregamer.co.uk") {
+    void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261119_sierra_public_rankings_independent_auth_v1").then(mod=>{
       if(disposed || (typeof isCurrent==="function" && !isCurrent()) ||
-         scoreGate!=="checking") {
+         (scoreRequested && scoreGate!=="checking")) {
         finishScoreHandshake("unavailable");
         return;
       }
-      if(!mod.isSierraHelioHostScoreIntent(scoreQuery,websiteOrigin)) {
+      if(scoreRequested && !mod.isSierraHelioHostScoreIntent(scoreQuery,websiteOrigin)) {
         remoteHint.textContent="INVALID HELIOHOST SCORE LINK";
         finishScoreHandshake("unavailable");
         return;
@@ -207,6 +210,12 @@ export async function mountCrossfirePreview({
           if(!disposed && mode===view)renderArenaBoard(board,data,{mode});
         }
       });
+      // A normal game launch can display published records without member
+      // cookies. Only scores=1 may start a member handshake or submit a score.
+      if(!scoreRequested) {
+        void scoreBridge.loadBoard("alltime");
+        return;
+      }
       void scoreBridge.connect().then(connected=>{
         if(disposed)return finishScoreHandshake("unavailable");
         finishScoreHandshake(connected?"ready":"unavailable");
