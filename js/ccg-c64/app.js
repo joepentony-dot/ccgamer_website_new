@@ -14,6 +14,7 @@ import {
   ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
   parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
   preferSelectedCartridges, preferSierraCrossfireCrt, isVerifiedSierraCrossfireCrt,
+  SIERRA_CROSSFIRE_CRT,
   catalogGameIdentity, selectVerifiedExactCrtEdition,
   findVerifiedExactCrtEdition,
 } from "./game-catalog.js";
@@ -139,6 +140,8 @@ function clearArenaPreview() {
   arenaPreviewGeneration++;
   activeArenaPreview?.dispose();
   activeArenaPreview = null;
+  // Restore ordinary mobile JUMP on unmount; never leave START on another game.
+  if (typeof configureJump === "function") configureJump(currentJumpGameId);
 }
 function observeArenaPreviewFrame() {
   if (!activeArenaPreview || !machine?.mem?.ram) return;
@@ -153,7 +156,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261118_sierra_arena_layout_v5");
+    const module = await import("./arena-preview.js?ccg_rev=20261119_crossfire_mobile_start_score_v1");
     if (generation !== arenaPreviewGeneration) return;
     const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({
@@ -178,6 +181,8 @@ async function mountSelectedArenaPreview(entry, bytes) {
       return;
     }
     activeArenaPreview = controller;
+    // Only the SHA-verified Sierra CRT can replace mobile JUMP with F1 START.
+    if (typeof configureJump === "function") configureJump(currentJumpGameId);
     if (controller?.oneClickEnabled) sierraOneClickConsumed = true;
   } catch (error) {
     console.warn("[ccg-arena] Sierra CRT-only preview unavailable:", error);
@@ -539,6 +544,7 @@ let touchHeldMask = 0;
 const touchHeldButtons = new Map();
 const jumpToggle = document.querySelector("[data-jump-toggle]");
 const jumpButton = document.querySelector(".ccg-c64-touch-jump");
+const crossfireStartButton = document.querySelector(".ccg-c64-touch-start");
 const actionDeck = document.querySelector(".ccg-c64-touch-actions");
 const JUMP_PREF_KEY = "ccg.emulator.c64.jumpProfiles.v1";
 // Add entries only when UP-to-jump has been verified for that exact game.
@@ -565,12 +571,18 @@ function configureJump(gameId) {
   jumpEnabled = Boolean(mobilePlayActive && mobilePlayMedia?.matches) ||
     (currentJumpGameId && typeof saved[currentJumpGameId] === "boolean"
       ? saved[currentJumpGameId] : VERIFIED_JUMP_UP_GAMES[currentJumpGameId] === true);
-  if (!jumpEnabled && jumpButton) {
+  // The dedicated START key shares the existing C64 F1 function-key handler.
+  // It is never a joystick-UP event, and is exposed only for the verified
+  // Sierra CRT while its authenticated media preview is mounted on mobile.
+  const sierraMobileStart = Boolean(mobilePlayActive && mobilePlayMedia?.matches &&
+    activeArenaPreview && currentJumpGameId === SIERRA_CROSSFIRE_CRT.id);
+  if ((!jumpEnabled || sierraMobileStart) && jumpButton && touchHeldButtons.has(jumpButton)) {
     touchHeldButtons.delete(jumpButton);
     syncTouchJoystick();
   }
-  if (jumpButton) jumpButton.hidden = !jumpEnabled;
-  actionDeck?.classList.toggle("has-jump", jumpEnabled);
+  if (jumpButton) jumpButton.hidden = !jumpEnabled || sierraMobileStart;
+  if (crossfireStartButton) crossfireStartButton.hidden = !sierraMobileStart;
+  actionDeck?.classList.toggle("has-jump", jumpEnabled || sierraMobileStart);
   if (jumpToggle) {
     jumpToggle.textContent = `JUMP: ${jumpEnabled ? "ON" : "OFF"}`;
     jumpToggle.setAttribute("aria-pressed", String(jumpEnabled));
