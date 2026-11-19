@@ -79,6 +79,7 @@ test('Sierra CRT gets neon frame and empty rankings, never an invented score',as
   assert.equal(stage.attributes['data-ccg-arena-frame'],'crossfire');
   assert.equal(doc.head.children.length,1);
   assert.equal(panel.find(x=>x.tag==='p'&&x.textContent==='SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED')!==null,true);
+  assert.equal(panel.find(x=>x.tag==='p'&&x.textContent==='PRESS F1 TO START')!==null,true);
   assert.equal(panel.find(x=>x.tag==='p'&&x.textContent==='CRT SCORE DETECTION NOT YET VERIFIED')!==null,true);
   const slots=panel.find(x=>x.tag==='ol');
   assert.equal(slots.children.length,5);
@@ -155,4 +156,149 @@ test('browser selection and source forbid legacy PRG or score submission',async(
   assert.match(app,/async function queueMedia\([^]*?clearArenaPreview\(\)/);
   assert.match(app,/function resetMachine\([^]*?clearArenaPreview\(\)/);
   assert.match(app,/async function loadGameVaultSlot\([^]*?clearArenaPreview\(\)/);
+});
+
+
+test('authentic Sierra CRT score 000010 is displayed locally without inventing ranked scores',async()=>{
+  // Values reproduce screen-memory and custom glyph strips from real 65,728
+  // byte Sierra cartridge captures 44340060196 (two independent 10-point runs).
+  // No simulated backend score row or manual score submission is ever created.
+  const hud=(score)=>{
+    const ram=new Uint8Array(65536);
+    for(const [row,value] of [[0,20],[1,21],[3,22],[4,23],
+      [13,20],[14,21],[16,22],[17,23]])ram[0x400+row*40+39]=value;
+    ram.set([126,255,231,231,231,255,126,0],0x2800);
+    ram.set([126,231,231,126,231,231,126,0],0x2840);
+    for(const [rows,value] of [
+      [[19,20,21,22,23,24],score],[[6,7,8,9,10,11],score]
+    ])String(value).padStart(6,'0').split('').forEach((digit,i)=>{
+      ram[0x400+rows[i]*40+39]=Number(digit);
+    });
+    return ram;
+  };
+  const doc=fakeDocument(),stage=doc.createElement('div');
+  const candidate=await mountCrossfirePreview({entry,bytes,stage,doc,subtle:fakeCrypto});
+  assert(candidate);
+  const panel=stage.after;
+  const value=panel.find(x=>x.tag==='strong' && x.attributes['aria-label']?.includes('local score'));
+  assert(value);
+  assert.equal(value.textContent,'—');
+  candidate.observe(hud(0));
+  assert.equal(value.textContent,'000000');
+  candidate.observe(hud(10));
+  assert.equal(value.textContent,'000010');
+  assert(panel.find(x=>x.tag==='p' && x.textContent.includes('NOT VERIFIED OR SUBMITTED')));
+  const slots=panel.find(x=>x.tag==='ol');
+  assert.equal(slots.children.length,5);
+  assert(slots.children.every(x=>!String(x.textContent||'').includes('000010')));
+  candidate.observe(new Uint8Array(65536)); // unrelated RAM fails closed
+  assert.equal(value.textContent,'000010');
+  candidate.invalidate();
+  assert.equal(value.textContent,'—');
+  candidate.dispose();
+});
+
+
+test('one-click Sierra link waits for genuine GAME OVER and taps F1 once, without publishing scores',async()=>{
+  const ram=(score=0,over=false)=>{
+    const bytes=new Uint8Array(65536);
+    for(const [row,glyph] of [[0,20],[1,21],[3,22],[4,23],
+                             [13,20],[14,21],[16,22],[17,23]]) {
+      bytes[0x400+row*40+39]=glyph;
+    }
+    bytes.set([126,255,231,231,231,255,126,0],0x2800);
+    bytes.set([126,231,231,126,231,231,126,0],0x2840);
+    for(const firstRow of [6,19]) {
+      [...String(score).padStart(6,'0')].forEach((digit,i)=>{
+        bytes[0x400+(firstRow+i)*40+39]=Number(digit);
+      });
+    }
+    if(over)for(const [col,glyph] of [[10,19],[11,10],[12,252],
+      [13,10],[14,253],[15,10],[16,23],[20,0],[21,10],
+      [22,254],[23,10],[24,23],[25,10],[26,22]]) {
+      bytes[0x400+13*40+col]=glyph;
+    }
+    return bytes;
+  };
+  const doc=fakeDocument(),stage=doc.createElement('div'),calls=[];
+  const controller=await mountCrossfirePreview({
+    entry,bytes,stage,doc,subtle:fakeCrypto,
+    launchQuery:'?game='+entry.id+'&autoplay=1&start=1',
+    startF1:()=>{calls.push('pressF1');return true;},
+    releaseF1:()=>{calls.push('releaseF1');}
+  });
+  assert(controller);
+  assert.equal(controller.oneClickEnabled,true);
+  for(let i=0;i<120;i++)controller.observe(ram(0));
+  assert.deepEqual(calls,[],'SierraVision/active screen must not start automatically');
+  for(let i=0;i<24;i++)controller.observe(ram(0,true));
+  assert.deepEqual(calls,[],'must wait for stable genuine GAME OVER');
+  controller.observe(ram(0,true));
+  assert.deepEqual(calls,['pressF1']);
+  for(let i=0;i<8;i++)controller.observe(ram(0,true));
+  assert.deepEqual(calls,['pressF1','releaseF1']);
+  controller.observe(ram(0));
+  controller.observe(ram(10));
+  for(let i=0;i<25;i++)controller.observe(ram(10,true));
+  const panel=stage.after;
+  assert(panel.find(x=>x.tag==='p'&&x.textContent==='PRESS F1 TO START'));
+  assert(panel.find(x=>x.tag==='p'&&x.textContent.includes('GAME OVER · LOCAL FINAL')));
+  assert(panel.find(x=>x.tag==='strong'&&x.textContent==='000010'));
+  assert.deepEqual(calls,['pressF1','releaseF1']);
+  const ranks=panel.find(x=>x.tag==='ol');
+  assert.equal(ranks.children.length,5);
+  assert(ranks.children.every(x=>!String(x.textContent||'').includes('000010')));
+  controller.dispose();
+});
+test('normal deep links and Crossfire-Tron can never invoke Sierra automatic F1',async()=>{
+  const doc=fakeDocument(),stage=doc.createElement('div'),calls=[];
+  const callbacks={
+    startF1:()=>{calls.push('press');return true;},
+    releaseF1:()=>{calls.push('release');}
+  };
+  const controller=await mountCrossfirePreview({
+    entry,bytes,stage,doc,subtle:fakeCrypto,
+    launchQuery:'?game='+entry.id+'&autoplay=1',
+    ...callbacks
+  });
+  assert(controller);
+  assert.equal(controller.oneClickEnabled,false);
+  controller.observe(new Uint8Array(65536));
+  controller.dispose();
+  assert.deepEqual(calls,[]);
+  const wrong=await mountCrossfirePreview({
+    entry:{...entry,id:'archive-02122'},bytes,stage,doc,subtle:fakeCrypto,
+    launchQuery:'?game=archive-02122&autoplay=1&start=1',
+    ...callbacks
+  });
+  assert.equal(wrong,null);
+  assert.deepEqual(calls,[]);
+});
+test('manual F1 and media disposal cancel one-click key holds safely',async()=>{
+  const base=(n)=>{
+    const b=new Uint8Array(65536);
+    for(const [row,glyph] of [[0,20],[1,21],[3,22],[4,23],
+      [13,20],[14,21],[16,22],[17,23]])b[0x400+row*40+39]=glyph;
+    b.set([126,255,231,231,231,255,126,0],0x2800);
+    b.set([126,231,231,126,231,231,126,0],0x2840);
+    for(const first of [6,19])for(let i=0;i<6;i++)
+      b[0x400+(first+i)*40+39]=Number(String(n).padStart(6,'0')[i]);
+    for(const [col,value] of [[10,19],[11,10],[12,252],[13,10],
+      [14,253],[15,10],[16,23],[20,0],[21,10],[22,254],
+      [23,10],[24,23],[25,10],[26,22]])b[0x400+13*40+col]=value;
+    return b;
+  };
+  const doc=fakeDocument(),stage=doc.createElement('div'),calls=[];
+  const x=await mountCrossfirePreview({entry,bytes,stage,doc,subtle:fakeCrypto,
+    launchQuery:'?game='+entry.id+'&autoplay=1&start=1',
+    startF1:()=>{calls.push('press');return true;},
+    releaseF1:()=>{calls.push('release');}
+  });
+  for(let i=0;i<25;i++)x.observe(base(0));
+  assert.deepEqual(calls,['press']);
+  x.dispose();
+  assert.deepEqual(calls,['press','release']);
+  x.dispose();
+  assert.deepEqual(calls,['press','release']);
+  assert.equal(stage.after.removed,true);
 });

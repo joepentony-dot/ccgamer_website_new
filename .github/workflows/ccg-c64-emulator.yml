@@ -107,7 +107,18 @@ jobs:
 
       - name: Render C64 mobile and desktop game library in Chromium
         timeout-minutes: 5
+        env:
+          CCG_C64_RENDERED_SCREENSHOTS: ${{ runner.temp }}/ccg-c64-rendered
         run: node tests/ccg-c64-mobile-library-rendered.test.mjs
+
+      - name: Keep Sierra Chromium screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-sierra-crossfire-rendered
+          path: ${{ runner.temp }}/ccg-c64-rendered/
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Verify original C64 firmware SHA-256 and CPU BASIC boot
         timeout-minutes: 5
@@ -116,6 +127,13 @@ jobs:
       - name: Verify real Bruce Lee Trilogy F3 F5 F7 menu via CPU and CIA
         timeout-minutes: 5
         run: node --test tests/ccg-c64-bruce-lee-real-crt.test.mjs
+
+      - name: Verify original Sierra Crossfire CRT one-click F1 and scored game over
+        timeout-minutes: 5
+        run: node --test tests/ccg-c64-sierra-real-oneclick.test.mjs
+      - name: Verify Sierra phone virtual KEYBOARD F1 cancellation and arming
+        run: node --test tests/ccg-c64-sierra-mobile-virtual-f1.test.mjs
+
 
       - name: Verify CIA1 reverse keyboard scan and releases
         run: node --test tests/ccg-c64-keyboard-reverse-scan.test.mjs

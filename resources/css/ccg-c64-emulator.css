@@ -3066,6 +3066,32 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   }
 }
 
+/* The Arena toggle shares the fixed 44px playbar at narrow phone widths.
+   Keep both ARENA and CLOSE ARENA states inside the existing row. */
+@media (pointer: coarse) and (max-width: 380px) {
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar {
+    gap: 0.15rem;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-centre {
+    gap: 0.15rem;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar > button,
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-centre > button {
+    min-width: 0;
+    padding-inline: 0.28rem;
+    font-size: 0.58rem;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-centre > .ccg-c64-mobile-zoom-toggle {
+    padding-inline: 0.25rem;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-arena-toggle {
+    padding-inline: 0.25rem;
+    font-size: 0.56rem;
+  }
+}
+
 /* Emulator help / troubleshooting: confined to the page section below
    gameplay and discovery, with no changes to C64 input or engine styles. */
 .ccg-c64-faq {

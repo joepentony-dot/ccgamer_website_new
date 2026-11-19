@@ -8,6 +8,23 @@ on:
       - "js/ccg-c64/arena/client/heliohost-board.mjs"
       - "js/ccg-c64/arena/client/auto-run-controller.mjs"
       - "js/ccg-c64/arena-preview.js"
+      - "js/ccg-c64/arena/client/sierra-heliohost-attempt.mjs"
+      - "js/ccg-c64/arena/client/sierra-heliohost-board.mjs"
+      - "js/ccg-c64/arena/client/sierra-auto-run-controller.mjs"
+      - "js/ccg-c64/arena/client/sierra-browser-score-bridge.mjs"
+      - "auth/heliohost-score-login.html"
+      - "resources/js/auth/heliohost-score-login.js"
+      - "tests/high-score-arena-sierra-member-login.test.mjs"
+      - "tests/high-score-arena-sierra-browser-score-bridge.test.mjs"
+      - "tests/high-score-arena-sierra-heliohost-ui.test.mjs"
+      - "tests/high-score-arena-sierra-auto-run.test.mjs"
+      - "tests/high-score-arena-sierra-heliohost-client.test.mjs"
+      - "js/ccg-c64/arena/read-sierra-crossfire-screen-score.mjs"
+      - "js/ccg-c64/arena/observe-sierra-crossfire-run.mjs"
+      - "js/ccg-c64/arena/sierra-one-click-launch.mjs"
+      - "tests/high-score-arena-sierra-one-click.test.mjs"
+      - "tests/high-score-arena-sierra-local-run.test.mjs"
+      - "tests/fixtures/sierra-crossfire-local-run-histories.json"
       - "js/ccg-c64/app.js"
       - "service-worker.js"
       - "tests/high-score-arena-heliohost-transport.test.mjs"
@@ -39,12 +56,27 @@ jobs:
           node --check js/ccg-c64/arena/client/heliohost-board.mjs
           node --check js/ccg-c64/arena/client/auto-run-controller.mjs
           node --check js/ccg-c64/arena-preview.js
+          node --check js/ccg-c64/arena/read-sierra-crossfire-screen-score.mjs
+          node --check js/ccg-c64/arena/observe-sierra-crossfire-run.mjs
+          node --check js/ccg-c64/arena/sierra-one-click-launch.mjs
+          node --test tests/high-score-arena-sierra-local-run.test.mjs
+          node --test tests/high-score-arena-sierra-one-click.test.mjs
           node --test tests/high-score-arena-heliohost-transport.test.mjs
           node --test tests/high-score-arena-heliohost-board.test.mjs
           node --test tests/high-score-arena-heliohost-member-session.test.mjs
           node --test tests/high-score-arena-auto-run-controller.test.mjs
           node --test tests/high-score-arena-board-model.test.mjs
           node --test tests/high-score-arena-preview-integration.test.mjs
+          node --check js/ccg-c64/arena/client/sierra-heliohost-attempt.mjs
+          node --check js/ccg-c64/arena/client/sierra-heliohost-board.mjs
+          node --test tests/high-score-arena-sierra-heliohost-client.test.mjs
+          node --check js/ccg-c64/arena/client/sierra-auto-run-controller.mjs
+          node --test tests/high-score-arena-sierra-auto-run.test.mjs
+          node --check js/ccg-c64/arena/client/sierra-browser-score-bridge.mjs
+          node --test tests/high-score-arena-sierra-browser-score-bridge.test.mjs
+          node --check resources/js/auth/heliohost-score-login.js
+          node --test tests/high-score-arena-sierra-member-login.test.mjs
+          node --test tests/high-score-arena-sierra-heliohost-ui.test.mjs
           node tests/high-score-arena-auto-mount.test.mjs
       - name: Ensure no Supabase score route is reintroduced
         shell: bash
