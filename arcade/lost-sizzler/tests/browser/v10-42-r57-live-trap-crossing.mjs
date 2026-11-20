@@ -90,12 +90,19 @@ try{
     if(canvas){canvas.tabIndex=-1;try{canvas.focus({preventScroll:true})}catch(_){}}
     try{window.focus()}catch(_){}
   });
-  // Use one discrete direction tap. Holding the key until the polling loop
-  // observes the target can legitimately advance another tile on a healthy
-  // movement cadence and, from R106 onward, movement also supports deliberate
-  // same-direction double-tap dashing.
-  await page.keyboard.press(fixture.key,{delay:24});
-  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
+  // A fixed 24ms key tap is shorter than an occasional loaded Chromium
+  // simulation frame, so the key can be released before the game samples it.
+  // Keep a genuine Playwright keyboard input held only until the first tile
+  // movement is observed, then release it immediately (including on failure).
+  async function moveOneTile(key,target){
+    await page.keyboard.down(key);
+    try{
+      await page.waitForFunction(tile=>Number(p1.x)===tile.x&&Number(p1.y)===tile.y,target,{timeout:3000,polling:16});
+    }finally{
+      await page.keyboard.up(key);
+    }
+  }
+  await moveOneTile(fixture.key,fixture.target);
   await page.waitForFunction(before=>Number(p1.health)===before-1,fixture.before.health,{timeout:2500,polling:16});
   const first=await page.evaluate(({id,target})=>{
     const hazard=(host.hazardRooms||[]).find(h=>String(h.id)===id);
@@ -108,8 +115,7 @@ try{
   assert.equal(first.ordinary,0,"ordinary traps must remain absent after first crossing");
   assert.equal(first.events.filter(e=>String(e.hazardId||"")===fixture.id).length,1,"first crossing must emit one canonical hazard-damage event");
 
-  await page.keyboard.press(fixture.backKey,{delay:24});
-  await page.waitForFunction(entry=>Number(p1.x)===entry.x&&Number(p1.y)===entry.y,fixture.entry,{timeout:3000,polling:16});
+  await moveOneTile(fixture.backKey,fixture.entry);
   // The hazard cooldown is owned by simulation time, not wall time. After a
   // stressed/low-FPS predecessor contract, 1.15 seconds of wall time can elapse
   // before the canonical 1050 ms simulation cooldown has actually drained.
@@ -117,8 +123,7 @@ try{
   // leave-and-re-enter-after-cooldown regression rather than a scheduler race.
   await page.waitForFunction(()=>Number(p1?.hazardHitCooldown||0)<=0,null,{timeout:5000,polling:16});
   await page.evaluate(()=>{p1.hitStunMs=0;move1=0;});
-  await page.keyboard.press(fixture.key,{delay:24});
-  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
+  await moveOneTile(fixture.key,fixture.target);
   await page.waitForFunction(health=>Number(p1.health)===health-1,first.health,{timeout:3000,polling:16});
   const second=await page.evaluate(()=>({health:Number(p1.health),armor:Number(p1.armor),events:[...(window.__r67HazardEvents||[])],ordinary:(host.traps||[]).length,mode:String(mode||"")}));
   assert.equal(second.health,first.health-1,"leaving and re-entering the still ACTIVE dedicated hazard after cooldown must remove another HP");
