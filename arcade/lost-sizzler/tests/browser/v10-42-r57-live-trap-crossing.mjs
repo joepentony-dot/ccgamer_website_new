@@ -90,17 +90,15 @@ try{
     if(canvas){canvas.tabIndex=-1;try{canvas.focus({preventScroll:true})}catch(_){}}
     try{window.focus()}catch(_){}
   });
-  // A fixed 24ms key tap is shorter than an occasional loaded Chromium
-  // simulation frame, so the key can be released before the game samples it.
-  // Keep a genuine Playwright keyboard input held only until the first tile
-  // movement is observed, then release it immediately (including on failure).
+  // The engine polls held keys every simulation frame and applies a 138ms
+  // unboosted tile-movement cooldown. A 24ms tap may be missed by a loaded
+  // Chromium frame; an unbounded hold can move two tiles before Playwright
+  // releases it. A single 110ms real keyboard tap spans several normal frames
+  // but ends before the next unboosted move. Keep exact-cell and HP assertions.
   async function moveOneTile(key,target){
-    await page.keyboard.down(key);
-    try{
-      await page.waitForFunction(tile=>Number(p1.x)===tile.x&&Number(p1.y)===tile.y,target,{timeout:3000,polling:16});
-    }finally{
-      await page.keyboard.up(key);
-    }
+    await page.waitForFunction(()=>Number(move1)<=0,null,{timeout:4000,polling:16});
+    await page.keyboard.press(key,{delay:110});
+    await page.waitForFunction(tile=>Number(p1.x)===tile.x&&Number(p1.y)===tile.y,target,{timeout:3000,polling:16});
   }
   await moveOneTile(fixture.key,fixture.target);
   await page.waitForFunction(before=>Number(p1.health)===before-1,fixture.before.health,{timeout:2500,polling:16});
@@ -116,6 +114,8 @@ try{
   assert.equal(first.events.filter(e=>String(e.hazardId||"")===fixture.id).length,1,"first crossing must emit one canonical hazard-damage event");
 
   await moveOneTile(fixture.backKey,fixture.entry);
+  assert.deepEqual(await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y)})),fixture.entry,
+    "real back-key movement must land on the previous entry cell without overshooting");
   // The hazard cooldown is owned by simulation time, not wall time. After a
   // stressed/low-FPS predecessor contract, 1.15 seconds of wall time can elapse
   // before the canonical 1050 ms simulation cooldown has actually drained.
