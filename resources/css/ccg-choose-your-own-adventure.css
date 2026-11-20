@@ -22,3 +22,168 @@
 .evidence-photo .photo-img,.cover-photo .photo-img{position:absolute;visibility:hidden;opacity:0;pointer-events:none}
 .evidence-photo.photo-loaded .photo-img,.cover-photo.photo-loaded .photo-img{position:static;visibility:visible;opacity:1;pointer-events:auto}
 .evidence-photo.photo-loaded .offline-shape,.cover-photo.photo-loaded .offline-shape{display:none}
+
+
+/* Book-specific colour direction: the chapter setting drives the page palette.
+   Shared Omega navigation and the game's illustration assets are untouched. */
+.book{
+  --scene-accent:#83543e;
+  --scene-accent-soft:#dab389;
+  --scene-ink:#473126;
+  --scene-paper-light:#fff8e9;
+  --scene-paper-dark:#e8d2b1;
+  --scene-choice:#fff9ef;
+  --scene-art-top:#2d4054;
+  --scene-art-bottom:#172638;
+  --scene-light:#f4d5a7;
+}
+.book[data-scene-theme="living"],
+.book[data-scene-theme="bedroom"],
+.book[data-scene-theme="kitchen"]{
+  --scene-accent:#98534b;--scene-accent-soft:#e5ad8f;
+  --scene-ink:#693e39;--scene-paper-light:#fff4e9;
+  --scene-paper-dark:#f0d2b9;--scene-choice:#fff8ef;
+  --scene-art-top:#684455;--scene-art-bottom:#292b40;
+  --scene-light:#ffc6ac;
+}
+.book[data-scene-theme="shop"],
+.book[data-scene-theme="c64"],
+.book[data-scene-theme="code"],
+.book[data-scene-theme="crt"]{
+  --scene-accent:#266c87;--scene-accent-soft:#88c7d4;
+  --scene-ink:#254c62;--scene-paper-light:#f6faf0;
+  --scene-paper-dark:#d5e6dc;--scene-choice:#f5fcf8;
+  --scene-art-top:#285a79;--scene-art-bottom:#142b46;
+  --scene-light:#96e3e2;
+}
+.book[data-scene-theme="spectrum"]{
+  --scene-accent:#764a8a;--scene-accent-soft:#c6a2dc;
+  --scene-ink:#543c65;--scene-paper-light:#faf4fd;
+  --scene-paper-dark:#e6d5ec;--scene-choice:#fff8fe;
+  --scene-art-top:#604370;--scene-art-bottom:#29233d;
+  --scene-light:#e4b8ed;
+}
+.book[data-scene-theme="arcade"]{
+  --scene-accent:#8e397b;--scene-accent-soft:#e5a5d0;
+  --scene-ink:#652c5c;--scene-paper-light:#fff3fa;
+  --scene-paper-dark:#edd6e8;--scene-choice:#fff7fd;
+  --scene-art-top:#682c76;--scene-art-bottom:#271f4c;
+  --scene-light:#ffc0ef;
+}
+.book[data-scene-theme="romance"]{
+  --scene-accent:#a44769;--scene-accent-soft:#eca4b7;
+  --scene-ink:#7a3d5a;--scene-paper-light:#fff6f5;
+  --scene-paper-dark:#f2d6d6;--scene-choice:#fff9f7;
+  --scene-art-top:#77465d;--scene-art-bottom:#32253d;
+  --scene-light:#ffc5d5;
+}
+.book[data-scene-theme="tape"],
+.book[data-scene-theme="blood"],
+.book[data-scene-theme="horror"]{
+  --scene-accent:#923d46;--scene-accent-soft:#d88b8a;
+  --scene-ink:#713639;--scene-paper-light:#fff5ec;
+  --scene-paper-dark:#edcfc9;--scene-choice:#fff8f4;
+  --scene-art-top:#643642;--scene-art-bottom:#241d2f;
+  --scene-light:#ffb6ab;
+}
+.book[data-scene-theme="news"],
+.book[data-scene-theme="school"]{
+  --scene-accent:#866027;--scene-accent-soft:#d9ba6e;
+  --scene-ink:#614a27;--scene-paper-light:#fffbea;
+  --scene-paper-dark:#eddeb1;--scene-choice:#fffcef;
+  --scene-art-top:#5b5664;--scene-art-bottom:#313448;
+  --scene-light:#f1d48d;
+}
+.book[data-scene-theme="market"],
+.book[data-scene-theme="money"]{
+  --scene-accent:#97602b;--scene-accent-soft:#e3b87c;
+  --scene-ink:#724823;--scene-paper-light:#fff8e7;
+  --scene-paper-dark:#efd7b1;--scene-choice:#fff9eb;
+  --scene-art-top:#77505a;--scene-art-bottom:#3c3241;
+  --scene-light:#ffe0a3;
+}
+.book[data-scene-theme="commando"]{
+  --scene-accent:#39734e;--scene-accent-soft:#a6cda1;
+  --scene-ink:#2f573c;--scene-paper-light:#f5faee;
+  --scene-paper-dark:#d8e8d0;--scene-choice:#f7fcf1;
+  --scene-art-top:#355f50;--scene-art-bottom:#1c3440;
+  --scene-light:#b7e4b7;
+}
+.book[data-scene-theme="celebrate"],
+.book[data-scene-theme="final"],
+.book[data-ending="gold"]{
+  --scene-accent:#936323;--scene-accent-soft:#ead28a;
+  --scene-ink:#6b5127;--scene-paper-light:#fffce9;
+  --scene-paper-dark:#f0dfaa;--scene-choice:#fffdf0;
+  --scene-art-top:#6c5661;--scene-art-bottom:#30344b;
+  --scene-light:#ffe398;
+}
+.book[data-ending="bad"]{
+  --scene-accent:#963b44;--scene-accent-soft:#e7a098;
+  --scene-ink:#71373c;--scene-paper-light:#fff4f0;
+  --scene-paper-dark:#efd1cb;--scene-choice:#fff8f5;
+  --scene-art-top:#66414b;--scene-art-bottom:#282638;
+  --scene-light:#ffc0b4;
+}
+.book[data-ending="bittersweet"]{
+  --scene-accent:#526580;--scene-accent-soft:#a8bacd;
+  --scene-ink:#445169;--scene-paper-light:#f8f6f0;
+  --scene-paper-dark:#dce0df;--scene-choice:#f7faf8;
+  --scene-art-top:#4e5b71;--scene-art-bottom:#293143;
+  --scene-light:#c7d4e6;
+}
+.book .story-page{
+  background:radial-gradient(ellipse at 30% 15%,var(--scene-paper-light) 0%,var(--scene-paper-dark) 100%);
+}
+.book .story-page::after{
+  content:"";position:absolute;top:17px;left:17px;right:17px;height:4px;
+  background:linear-gradient(90deg,var(--scene-accent),var(--scene-accent-soft),transparent);
+  opacity:.9;pointer-events:none;
+}
+.book .story-page h2{color:var(--scene-ink)}
+.book .chapter-tag,.book .book-page-no{color:var(--scene-accent)}
+.book .turn-rule{color:var(--scene-accent)}
+.book .turn-rule::before,.book .turn-rule::after{background:var(--scene-accent-soft)}
+.book .choice{
+  background:linear-gradient(105deg,var(--scene-choice),#fffdf8);
+  border-color:var(--scene-accent-soft);box-shadow:2px 3px 0 #2c25251c;
+}
+.book .choice:hover:not(:disabled){border-color:var(--scene-accent);background:var(--scene-choice)}
+.book .choice-n{background:var(--scene-accent)}
+.book .choice-end{color:var(--scene-accent)}
+.book .story-footer button{color:var(--scene-accent)}
+.book .story-footer{border-color:var(--scene-accent-soft)}
+.book .art-page{background:linear-gradient(145deg,var(--scene-art-top),var(--scene-art-bottom))}
+.book .art-foot{
+  background:linear-gradient(110deg,var(--scene-art-top),var(--scene-art-bottom));
+  border-top:2px solid var(--scene-accent-soft);
+}
+.book .art-foot .caption-kicker,.book .year-stamp,.book .art-banner{color:var(--scene-light)}
+.book .year-stamp,.book .art-banner{border-color:var(--scene-accent-soft)}
+
+/* On narrow screens the book opens directly at the story; put compact
+   photographic detail alongside the text so readers do not have to scroll
+   upwards to see the new scene's hardware imagery. */
+.story-photo-strip{display:none}
+@media(max-width:720px){
+  .story-photo-strip{
+    display:flex;gap:10px;align-items:center;justify-content:center;
+    margin:2px 0 17px;min-height:104px;
+  }
+  .story-photo-strip .evidence-photo,
+  .story-photo-strip .evidence-photo:last-child:not(:first-child){
+    position:relative;transform:none;translate:none;
+    width:calc(50% - 5px);max-width:175px;
+    padding:5px 5px 4px;box-shadow:0 3px 10px #3f2c2c2b;
+  }
+  .story-photo-strip .photo-img,
+  .story-photo-strip .evidence-photo:last-child:not(:first-child) .photo-img,
+  .story-photo-strip .offline-shape,
+  .story-photo-strip .evidence-photo:last-child:not(:first-child) .offline-shape{
+    height:77px;object-fit:contain;
+  }
+  .story-photo-strip .photo-name{
+    font-size:9px;letter-spacing:.01em;margin-top:3px;
+  }
+  .art-page .art-photos{display:none}
+}

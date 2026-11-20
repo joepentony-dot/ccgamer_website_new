@@ -3,10 +3,17 @@ const STORY=JSON.parse(document.getElementById('story-data').textContent);
 const KEYS=Object.keys(STORY),PAGE_NO=Object.fromEntries(KEYS.map((k,i)=>[k,String(i+1).padStart(3,'0')])),END_KEYS=KEYS.filter(k=>STORY[k].grade),TOTAL=KEYS.length;
 const SAVE='ccg-gamebook-c64-1983-v2',ENDS='ccg-gamebook-c64-endings-v2';
 const PHOTOS={
- c64:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Commodore-64-Computer-FL.jpg/960px-Commodore-64-Computer-FL.jpg',name:'Real Commodore 64',source:'https://commons.wikimedia.org/wiki/File:Commodore-64-Computer-FL.jpg',credit:'Evan-Amos · public domain'},
- spectrum:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/ZXSpectrum48k.jpg/330px-ZXSpectrum48k.jpg',name:'Real ZX Spectrum 48K',source:'https://commons.wikimedia.org/wiki/File:ZXSpectrum48k.jpg',credit:'Bill Bertram · CC BY-SA 2.5'},
- datasette:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Commodore_64_computer_and_casette_tape_recorder.jpg/960px-Commodore_64_computer_and_casette_tape_recorder.jpg',name:'Real C64 and Datasette',source:'https://commons.wikimedia.org/wiki/File:Commodore_64_computer_and_casette_tape_recorder.jpg',credit:'Ismael Olea / Ana Mora · CC BY-SA 2.0'},
- joystick:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Competition_pro_first_version_45deg.png/500px-Competition_pro_first_version_45deg.png',name:'Real Competition Pro',source:'https://commons.wikimedia.org/wiki/File:Competition_pro_first_version_45deg.png',credit:'Kshade · CC BY-SA 3.0'}
+ c64:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Commodore-64-Computer-FL.jpg/960px-Commodore-64-Computer-FL.jpg',name:'Commodore 64',source:'https://commons.wikimedia.org/wiki/File:Commodore-64-Computer-FL.jpg',credit:'Evan-Amos · public domain'},
+ spectrum:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/ZXSpectrum48k.jpg/330px-ZXSpectrum48k.jpg',name:'ZX Spectrum 48K',source:'https://commons.wikimedia.org/wiki/File:ZXSpectrum48k.jpg',credit:'Bill Bertram · CC BY-SA 2.5'},
+ datasette:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Commodore_64_computer_and_casette_tape_recorder.jpg/960px-Commodore_64_computer_and_casette_tape_recorder.jpg',name:'Commodore 64 and Datasette',source:'https://commons.wikimedia.org/wiki/File:Commodore_64_computer_and_casette_tape_recorder.jpg',credit:'Ismael Olea / Ana Mora · CC BY-SA 2.0'},
+ joystick:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Competition_pro_first_version_45deg.png/500px-Competition_pro_first_version_45deg.png',name:'Competition Pro joystick',source:'https://commons.wikimedia.org/wiki/File:Competition_pro_first_version_45deg.png',credit:'Kshade · CC BY-SA 3.0'},
+ tape:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/HomeComputerCassettes.jpg/250px-HomeComputerCassettes.jpg',name:'Home computer cassettes',source:'https://commons.wikimedia.org/wiki/File:HomeComputerCassettes.jpg',credit:'ProhibitOnions / Ubcule · CC BY-SA 3.0'},
+ blankTape:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Unlabelled_audio_cassette.jpg/330px-Unlabelled_audio_cassette.jpg',name:'Unlabelled cassette',source:'https://commons.wikimedia.org/wiki/File:Unlabelled_audio_cassette.jpg',credit:'Ubcule · CC0'},
+ tapeDeck:{src:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Commodore_1530_Datasette_C64.jpg/500px-Commodore_1530_Datasette_C64.jpg',name:'Commodore 1530 Datasette',source:'https://commons.wikimedia.org/wiki/File:Commodore_1530_Datasette_C64.jpg',credit:'Bilby · CC BY-SA 3.0'},
+ arcade:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Arcade_machines.jpg/330px-Arcade_machines.jpg',name:'Arcade cabinets',source:'https://commons.wikimedia.org/wiki/File:Arcade_machines.jpg',credit:'Staffan Vilcans · CC BY-SA 2.0'},
+ joystickAlt:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Joystick_Competition_PRO.JPG/330px-Joystick_Competition_PRO.JPG',name:'Competition Pro',source:'https://commons.wikimedia.org/wiki/File:Joystick_Competition_PRO.JPG',credit:'MOS6502 · public domain'},
+ c64Front:{src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Commodore-64-Computer-FR.jpg/330px-Commodore-64-Computer-FR.jpg',name:'Commodore 64 keyboard',source:'https://commons.wikimedia.org/wiki/File:Commodore-64-Computer-FR.jpg',credit:'Evan-Amos · public domain'},
+ c64Collection:{src:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Commodore_64%2C_Commodore_1541_floppy_disk_drive%2C_and_Joystick.jpg/500px-Commodore_64%2C_Commodore_1541_floppy_disk_drive%2C_and_Joystick.jpg',name:'C64 with drive and joystick',source:'https://commons.wikimedia.org/wiki/File:Commodore_64,_Commodore_1541_floppy_disk_drive,_and_Joystick.jpg',credit:'Francis Storr · CC BY-SA 2.0 (crop: Ubcule)'}
 };
 const initial=()=>({current:'s001',history:[],m:2,b:2,r:1,n:2,steps:0,visited:['s001']});
 let st=initial(),discovered=[],audioOn=false,audioContext=null,dialog=null;
@@ -58,23 +65,76 @@ else if(code==='datasette')shape=`<path d="M34 113Q34 91 61 90H441Q460 91 465 11
 else shape=`<path d="M40 67Q46 42 68 42H416Q436 45 443 66L474 174Q478 189 451 192H46Q23 190 29 174Z" fill="${body}" stroke="${stroke}" stroke-width="7"/><path d="M53 65H429L455 159H37Z" fill="#a99e8c"/>${keys}<rect x="80" y="166" width="288" height="6" rx="3" fill="#ede0c6"/><text x="247" y="29" text-anchor="middle" fill="#544d47" font-family="Arial" font-weight="900" font-size="16">COMMODORE 64</text>`;
 return `<svg class="hardware-fallback" viewBox="0 0 500 225" role="img" aria-label="Stylised illustration of ${esc(code)} hardware" preserveAspectRatio="xMidYMid meet"><rect width="500" height="225" fill="#e3d6c0"/>${shape}</svg>`;
 }
-function photoCard(code){const p=PHOTOS[code];return `<div class="evidence-photo"><img class="photo-img" loading="eager" decoding="async" src="${p.src}" alt="Authentic photograph: ${esc(p.name)}" onload="this.parentElement.classList.add('photo-loaded')" onerror="this.parentElement.classList.add('photo-failed')"><div class="offline-shape">${hardwareGlyph(code)}</div><div class="photo-name">${esc(p.name)}</div></div>`;}
-function artSection(scene){const keys=scene.photo==='c64'&&scene.theme==='shop'?['c64','spectrum']:(scene.photo?[scene.photo]:scene.theme==='spectrum'?['spectrum']:[]);return `<section class="art-page"><div class="art-frame">${iconShapes(scene.theme)}<span class="year-stamp">${esc(scene.year)}</span><span class="art-banner">${esc(scene.item||'AN 8-BIT ADVENTURE')}</span>${keys.length?'<div class="art-photos">'+keys.map(photoCard).join('')+'</div>':''}</div><div class="art-foot"><span class="caption-kicker">Illustrated scene · ${esc(scene.chapter)}</span><p>${esc(scene.caption)}</p></div></section>`;}
+function photoCard(code){
+ const p=PHOTOS[code];
+ if(!p)return '';
+ return `<div class="evidence-photo"><img class="photo-img" loading="eager" decoding="async" src="${p.src}" alt="${esc(p.name)}" onload="this.parentElement.classList.add('photo-loaded')" onerror="this.parentElement.classList.add('photo-failed')"><div class="offline-shape">${hardwareGlyph(code==='blankTape'||code==='tape'?'datasette':code==='joystickAlt'?'joystick':code==='arcade'?'c64':'c64')}</div></div>`;
+}
+// Photographs show actual hardware and media. They illustrate the setting
+// but do not purport to document a fictional moment in the story.
+const SCENE_PHOTOS={
+ living:['c64Front','joystick'],bedroom:['c64Front','tapeDeck'],
+ kitchen:['c64Collection','tape'],news:['tape','c64Front'],
+ school:['c64','spectrum'],shop:['c64','spectrum'],
+ c64:['c64Front','tapeDeck'],spectrum:['spectrum','blankTape'],
+ money:['tape','c64'],market:['tape','c64Collection'],
+ tape:['tape','tapeDeck'],code:['c64Front','tapeDeck'],
+ crt:['c64','tapeDeck'],romance:['c64','joystickAlt'],
+ joystick:['joystick','joystickAlt'],arcade:['arcade','joystickAlt'],
+ commando:['joystick','c64Collection'],horror:['blankTape','c64'],
+ blood:['blankTape','tapeDeck'],final:['c64','joystick'],
+ celebrate:['c64Collection','joystick']
+};
+function scenePhotoCodes(scene){
+ const suggested=SCENE_PHOTOS[scene.theme]||['c64'];
+ return [scene.photo,...suggested].filter((key,i,all)=>key&&PHOTOS[key]&&all.indexOf(key)===i).slice(0,2);
+}
+function artSection(scene){
+ const keys=scenePhotoCodes(scene);
+ return `<section class="art-page"><div class="art-frame">${iconShapes(scene.theme)}<span class="year-stamp">${esc(scene.year)}</span><span class="art-banner">${esc(scene.item||'AN 8-BIT ADVENTURE')}</span>${keys.length?'<div class="art-photos">'+keys.map(photoCard).join('')+'</div>':''}</div><div class="art-foot"><span class="caption-kicker">${esc(scene.chapter)}</span><p>${esc(scene.caption)}</p></div></section>`;
+}
 function renderCover(){const art=iconShapes('living');document.title='The Great 8-Bit Decision | An Interactive C64 Gamebook';return `${header()}<main class="cover"><section class="cover-visual"><div class="cover-banner"></div>${art}<div class="cover-label">A RETRO BOOK OF CHOICES</div><div class="book-cover-title">1983<span>ONE BROTHER. ONE DREAM.</span></div><div class="cover-photos">${photoCard('c64').replace('evidence-photo','cover-photo')}${photoCard('spectrum').replace('evidence-photo','cover-photo')}</div></section><section class="cover-content"><div class="cover-strap">You choose what happens next</div><h1>The Great<br><em>8-Bit</em><br>Decision</h1><p class="cover-lede">Your childhood. Your Commodore 64. Your brother's terrible ideas.</p><p class="cover-copy">Begin in Britain, 1983. Survive the schoolyard, earn your pocket money, hunt for games, fight over Commando and face the infamous Friday the 13th blood capsules. But be careful: one wrong choice can end everything.</p><button class="main-btn" data-action="open">${st.steps?'Continue your adventure':'OPEN THE BOOK'} &nbsp; →</button>${st.steps?'<button class="outline-btn" data-action="restart">Start again from 1983</button>':''}<div class="cover-mini"><span>104 story pages</span><span>26 endings</span><span>Good &amp; bad</span><span>Saved progress</span></div><p class="cover-credit"><a href="#" data-action="credits">Image credits</a></p></section></main>${lower()}`;}
 function effectCost(effect){const match=(effect||'').match(/(?:^|,)\s*m-(\d+)/);return match?+match[1]:0;}
 function currentPage(){const s=STORY[st.current],isEnd=!!s.grade,visitedPercent=Math.round(Math.min(100,st.steps/25*100)),destination=st.current;
 let choiceHTML='';if(isEnd){const insight=[st.b>=7?'You and your brother have a strong bond.':'Your relationship with your brother has had its fair share of rows.',st.r>=7?'Your school reputation survived the computer obsession.':'Your schooldays were not entirely free of embarrassment.',st.m<0?'You finished owing a few favours.':'Your wallet survived most of the damage.'];choiceHTML=`<div class="outcome-summary"><b>Your personal version of this story:</b> ${esc(insight.join(' '))}</div><div class="ending-cta"><button class="main-btn" data-action="back">TURN BACK &amp; CHOOSE AGAIN →</button><button class="outline-btn" data-action="restart">Start a brand-new adventure</button><button class="outline-btn" data-action="journal">See all ${END_KEYS.length} endings</button></div>`;
 }else{choiceHTML=`<div class="turn-rule">What will you do?</div><div class="choices">${s.choices.map((c,i)=>{const cost=effectCost(c.effect),locked=cost>st.m,txt=locked?`Needs ${cost} pocket-money token${cost===1?'':'s'}.`:c.sub;return `<button class="choice" ${locked?'disabled title="Not enough pocket money"':''} data-choice="${i}" aria-label="Choice ${i+1}: ${esc(c.label)}${locked?' — not enough pocket money':''}"><span class="choice-n">${i+1}</span><span class="choice-main"><span class="choice-title">${esc(c.label)}</span>${txt?'<span class="choice-sub">'+esc(txt)+'</span>':''}</span><span class="choice-end"><strong>→</strong>PAGE ${PAGE_NO[c.to]}</span></button>`;}).join('')}</div>`;}
 const badge=isEnd?`<div class="ending-badge ${esc(s.grade)}">${s.grade==='bad'?'BAD ENDING':s.grade==='gold'?'GOLD ENDING':'BITTERSWEET ENDING'}</div>`:'';
-return `${header()}<div class="top-info container"><div>${count(st.current)} &nbsp; <b>${esc(s.year)}</b></div><div>YOUR JOURNEY <span class="track"><i style="width:${visitedPercent}%"></i></span> &nbsp; ${discovered.length}/${END_KEYS.length} endings found</div></div><main class="book book-transition" id="gamebook">${artSection(s)}<article class="story-page"><div class="chapter-meta"><span class="chapter-tag">${esc(s.year)} · ${esc(s.chapter)}</span><span class="book-page-no">Page ${PAGE_NO[destination]}</span></div>${badge}<h2>${esc(s.title)}</h2><div class="story-text">${s.body.map(p=>'<p>'+prose(p)+'</p>').join('')}</div>${choiceHTML}<div class="story-footer"><button data-action="back" ${!st.history.length?'disabled':''}>← TURN BACK</button><span>${isEnd?'THE END · OR IS IT?':'Choose carefully. There is no automatic right answer.'}</span><button data-action="journal">ENDINGS ›</button></div></article></main>${lower()}`;}
+return `${header()}<div class="top-info container"><div>${count(st.current)} &nbsp; <b>${esc(s.year)}</b></div><div>YOUR JOURNEY <span class="track"><i style="width:${visitedPercent}%"></i></span> &nbsp; ${discovered.length}/${END_KEYS.length} endings found</div></div><main class="book book-transition" id="gamebook" data-scene-theme="${esc(s.theme)}" data-ending="${esc(s.grade||'')}">${artSection(s)}<article class="story-page"><div class="chapter-meta"><span class="chapter-tag">${esc(s.year)} · ${esc(s.chapter)}</span><span class="book-page-no">Page ${PAGE_NO[destination]}</span></div>${badge}<h2>${esc(s.title)}</h2><div class="story-photo-strip" aria-label="Photographs of retro hardware and equipment">${scenePhotoCodes(s).map(photoCard).join('')}</div><div class="story-text">${s.body.map(p=>'<p>'+prose(p)+'</p>').join('')}</div>${choiceHTML}<div class="story-footer"><button data-action="back" ${!st.history.length?'disabled':''}>← TURN BACK</button><span>${isEnd?'THE END · OR IS IT?':'Choose carefully. There is no automatic right answer.'}</span><button data-action="journal">ENDINGS ›</button></div></article></main>${lower()}`;}
 function go(i){const scene=STORY[st.current];if(!scene||scene.grade)return;const ch=scene.choices[i];if(!ch||effectCost(ch.effect)>st.m)return;st.history.push({current:st.current,m:st.m,b:st.b,r:st.r,n:st.n,steps:st.steps,visited:[...(st.visited||[])]});if(st.history.length>320)st.history.shift();for(const match of (ch.effect||'').matchAll(/([mbrn])([+-])(\d+)/g)){const key=match[1],n=Number(match[3])*(match[2]==='+'?1:-1);st[key]=cap(st[key]+n,0,99);}st.current=ch.to;st.steps++;if(!st.visited.includes(ch.to))st.visited.push(ch.to);const end=STORY[ch.to].grade;if(end&&!discovered.includes(ch.to))discovered.push(ch.to);save();microNoise(end?(end==='bad'?'end':'good'):'page');render('story');}
 function back(){if(!st.history.length)return;const prev=st.history.pop();st={...st,...prev,history:st.history};save();microNoise();render('story');}
-function render(mode='story'){const x=document.getElementById('app');x.innerHTML=mode==='cover'?renderCover():currentPage();document.body.classList.toggle('on-cover',mode==='cover');window.scrollTo({top:0,behavior:'instant'});}
+// On a phone the illustration is stacked above the text. Move the *new*
+// page's text to reading height, not the old choice position or site top.
+// Desktop keeps the spread's artwork and story together.
+function positionPageForReading(mode){
+  const mobile=window.matchMedia('(max-width:720px)').matches;
+  const target=document.querySelector(mode==='cover'?'.cover':mobile?'.story-page':'#gamebook');
+  if(!target)return;
+  const root=document.documentElement,previous=root.style.scrollBehavior;
+  root.style.scrollBehavior='auto';
+  const align=()=>{
+    if(!target.isConnected)return;
+    const header=document.querySelector('[data-ccg-header]');
+    const style=header?getComputedStyle(header):null;
+    const rect=header?header.getBoundingClientRect():null;
+    const pinned=style&&(style.position==='fixed'||(style.position==='sticky'&&rect.top<=2));
+    const offset=pinned?Math.max(0,rect.height)+12:12;
+    const top=Math.max(0,window.scrollY+target.getBoundingClientRect().top-offset);
+    window.scrollTo(0,top);
+  };
+  align();
+  requestAnimationFrame(()=>{align();root.style.scrollBehavior=previous;});
+}
+function render(mode='story'){
+  const x=document.getElementById('app');
+  x.innerHTML=mode==='cover'?renderCover():currentPage();
+  document.body.classList.toggle('on-cover',mode==='cover');
+  positionPageForReading(mode);
+}
 function reset(){st=initial();save();microNoise();render('cover');}
 function modal(type){dialog=type;let content='';if(type==='restart')content=`<h2>Start again from 1983?</h2><p>Your current route will be reset, but endings you've already discovered remain in your collection.</p><div class="dialog-actions"><button class="secondary" data-dialog="close">Keep reading</button><button data-dialog="reset">Start over</button></div>`;
 if(type==='journal')content=`<h2>Your Book of Endings</h2><p>You've discovered <b>${discovered.length}</b> of the <b>${END_KEYS.length}</b> possible endings. Some are happy. Some are appalling. The Spectrum-related ones are especially unforgiving.</p><div class="ending-grid">${END_KEYS.map((k,i)=>{const s=STORY[k],known=discovered.includes(k);return `<div class="ending-tile ${known?'':'hidden'}"><b>${String(i+1).padStart(2,'0')} · ${known?esc(s.grade.toUpperCase()):'LOCKED'}</b>${known?esc(s.title):'??? — Try another path'}</div>`;}).join('')}</div><div class="dialog-actions"><button class="secondary" data-dialog="close">Return to the book</button><button data-dialog="erase">Erase discovered endings</button></div>`;
 if(type==='erase')content=`<h2>Erase your collection?</h2><p>This will remove all endings you've discovered. It does not reset your current story page.</p><div class="dialog-actions"><button class="secondary" data-dialog="close">Cancel</button><button data-dialog="erase-now">Erase collection</button></div>`;
-if(type==='credits')content=`<h2>Image credits &amp; historical note</h2><p>The computer and joystick photographs are genuine images of the actual hardware, not AI recreations. They are loaded from Wikimedia Commons when you have internet access. Original in-page illustrations remain available offline.</p><ul class="credits-list">${Object.values(PHOTOS).map(p=>`<li><a href="${p.source}" target="_blank" rel="noopener noreferrer">${esc(p.name)}</a> — ${esc(p.credit)}</li>`).join('')}</ul><div class="dialog-actions"><button data-dialog="close">Back to the book</button></div>`;
+if(type==='credits')content=`<h2>Photograph credits</h2><p>Hardware and cassette photographs: Wikimedia Commons. Original scene illustrations accompany the story.</p><ul class="credits-list">${Object.values(PHOTOS).map(p=>`<li><a href="${p.source}" target="_blank" rel="noopener noreferrer">${esc(p.name)}</a> — ${esc(p.credit)}</li>`).join('')}</ul><div class="dialog-actions"><button data-dialog="close">Back to the book</button></div>`;
 const container=document.createElement('div');container.className='overlay';container.id='overlay';container.innerHTML=`<div class="dialog" role="dialog" aria-modal="true" aria-label="${type==='journal'?'Collected endings':type==='credits'?'Image credits':'Confirmation'}">${content}</div>`;document.body.appendChild(container);container.addEventListener('click',e=>{if(e.target===container)closeModal();});const first=container.querySelector('button');if(first)first.focus();}
 function closeModal(){document.getElementById('overlay')?.remove();dialog=null;}
 document.addEventListener('click',e=>{const action=e.target.closest('[data-action]');if(action){e.preventDefault();const a=action.dataset.action;if(a==='open')render('story');if(a==='home')render('cover');if(a==='journal')modal('journal');if(a==='credits')modal('credits');if(a==='restart')modal('restart');if(a==='back')back();if(a==='sound'){audioOn=!audioOn;if(audioOn)microNoise();render(document.body.classList.contains('on-cover')?'cover':'story');}return;}const choice=e.target.closest('[data-choice]');if(choice&&!choice.disabled){go(Number(choice.dataset.choice));return;}const d=e.target.closest('[data-dialog]');if(!d)return;const act=d.dataset.dialog;closeModal();if(act==='reset')reset();if(act==='erase')modal('erase');if(act==='erase-now'){discovered=[];save();render(document.body.classList.contains('on-cover')?'cover':'story');}});
