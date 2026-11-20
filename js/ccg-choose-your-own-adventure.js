@@ -68,7 +68,7 @@ return `<svg class="hardware-fallback" viewBox="0 0 500 225" role="img" aria-lab
 function photoCard(code){
  const p=PHOTOS[code];
  if(!p)return '';
- return `<div class="evidence-photo"><img class="photo-img" loading="eager" decoding="async" src="${p.src}" alt="${esc(p.name)}" onload="this.parentElement.classList.add('photo-loaded')" onerror="this.parentElement.classList.add('photo-failed')"><div class="offline-shape">${hardwareGlyph(code==='blankTape'||code==='tape'?'datasette':code==='joystickAlt'?'joystick':code==='arcade'?'c64':'c64')}</div><div class="photo-name">${esc(p.name)}</div></div>`;
+ return `<div class="evidence-photo"><img class="photo-img" loading="eager" decoding="async" src="${p.src}" alt="${esc(p.name)}" onload="this.parentElement.classList.add('photo-loaded')" onerror="this.parentElement.classList.add('photo-failed')"><div class="offline-shape">${hardwareGlyph(code==='blankTape'||code==='tape'?'datasette':code==='joystickAlt'?'joystick':code==='arcade'?'c64':'c64')}</div></div>`;
 }
 // Photographs show actual hardware and media. They illustrate the setting
 // but do not purport to document a fictional moment in the story.
