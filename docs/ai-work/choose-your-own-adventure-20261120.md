@@ -18,3 +18,9 @@
 
 ## Preservation
 Do not alter the protected Omega intro, shared header/nav, `games/games.json`, other game assets, sitewide style components, Dungeon Carnage, leaderboard, or the current hourly workstream.
+
+## 20 November 2026 — exact-head CI remediation and additional guards
+- First PR-head Social Metadata failed because new OG title/description differed from document metadata; updated only the adventure page to match exact values. The later 9b47889f head's social check PASSED.
+- Approved homepage card triggered the existing exact-home CLS change contract. Updated `scripts/home-cls-contract.js` to recognise **only the exact added static adventure link at its current launchpad position**. Existing unrelated changes remain rejected. Added a negative regression for changed gamebook marketing text or an altered href. Corrected an initial invalid regex in the test to a literal `includes` assertion; subsequent head's Navigation Discovery passed.
+- Phase 4D SEO workflow re-generated the already published, unique, canonical SID documentary `/retro-specials/50-commodore-64-sid-tunes-zzap64/` in `sitemap-pages.xml`, but its separate strict baseline validator omitted this published page from the reviewed exceptions. Added the *exact* URL to `scripts/validate-year-platform-discovery.js` while requiring a single matching source watch page, one canonical, index/follow robots, and one sitemap entry. No broad allowance, retro page, generated sitemap, catalogue, or unrelated source was modified.
+- No third-party CI failures are waived. Every source edit requires fresh full exact-head Actions qualification; previous-head successes are not merged proof. Fresh main was still `47fcde0bdc866ddf7e38e4c130e1aeb332102255` at correction. PR #3129 remains DRAFT / NOT MERGED / NOT LIVE.
