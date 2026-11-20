@@ -1,3 +1,8 @@
+## 20 November 2026 — Choose Your Own Adventure website candidate (queued, branch only)
+
+- The owner requested replacing the expanded gamebook disclaimer with `Copyright Cheeky Commodore Gamer` and adding it as a discoverable website feature. Bounded `feature/choose-your-own-adventure-20261120` stages new public `/choose-your-own-adventure/` route, isolated page-only CSS/JS, homepage launchpad link and public code cache v264. The complete gamebook has 130 scenes and 26 endings; no protected intro, shared nav, catalogue, Dungeon, backend or authentication changes.
+- Local standalone Chromium desktop/mobile interaction smoke, story JSON and Node syntax checks passed. Browser policy blocked HTTP route testing. **Not merged, not deployed, not live tested**; this candidate must remain subordinate to the active CCG Master Control workstream and pass exact-head CI, fresh-main reconciliation, authorised release and production smoke. See [Adventure checkpoint](ai-work/choose-your-own-adventure-20261120.md).
+
 ## 19 November 2026 — Dungeon R169 owner voice replacement (source candidate; not live)
 
 - Owner supplied `GAME VOICEOVERS.zip` with 176 individually named recordings. Cross-checked with the supplied R168 cue-sheet CSV: **170 recordings** for **124 existing routed voice keys** (42 keys offer alternates); exactly six NPC catalogue recordings `VC176–VC181` explicitly marked **NEEDS NEW VOICE ROUTING** remain deferred and must not be enabled in this change. Four Weekly Vault / backend-held lines were not uploaded and retain historical fallback only.
