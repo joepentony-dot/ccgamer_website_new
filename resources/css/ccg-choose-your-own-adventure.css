@@ -187,3 +187,29 @@
   }
   .art-page .art-photos{display:none}
 }
+
+
+/* MOBILE READING CONTRACT: the story is first in the DOM and on screen.
+   On desktop the original book spread keeps its illustration on the left. */
+/* Desktop's left-hand art is explicitly positioned despite the story-first DOM. */
+@media(min-width:721px){
+  #gamebook .art-page{grid-column:1;grid-row:1}
+  #gamebook .story-page{grid-column:2;grid-row:1}
+}
+@media(max-width:720px){
+  #gamebook.book{
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+  }
+  #gamebook .story-page{
+    order:0;
+    flex:0 0 auto;
+    min-height:0;
+  }
+  #gamebook .art-page{
+    order:1;
+    flex:0 0 auto;
+    min-height:0;
+  }
+}
