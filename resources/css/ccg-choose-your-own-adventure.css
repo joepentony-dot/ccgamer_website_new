@@ -160,3 +160,30 @@
 }
 .book .art-foot .caption-kicker,.book .year-stamp,.book .art-banner{color:var(--scene-light)}
 .book .year-stamp,.book .art-banner{border-color:var(--scene-accent-soft)}
+
+/* On narrow screens the book opens directly at the story; put compact
+   photographic detail alongside the text so readers do not have to scroll
+   upwards to see the new scene's hardware imagery. */
+.story-photo-strip{display:none}
+@media(max-width:720px){
+  .story-photo-strip{
+    display:flex;gap:10px;align-items:center;justify-content:center;
+    margin:2px 0 17px;min-height:104px;
+  }
+  .story-photo-strip .evidence-photo,
+  .story-photo-strip .evidence-photo:last-child:not(:first-child){
+    position:relative;transform:none;translate:none;
+    width:calc(50% - 5px);max-width:175px;
+    padding:5px 5px 4px;box-shadow:0 3px 10px #3f2c2c2b;
+  }
+  .story-photo-strip .photo-img,
+  .story-photo-strip .evidence-photo:last-child:not(:first-child) .photo-img,
+  .story-photo-strip .offline-shape,
+  .story-photo-strip .evidence-photo:last-child:not(:first-child) .offline-shape{
+    height:77px;object-fit:contain;
+  }
+  .story-photo-strip .photo-name{
+    font-size:9px;letter-spacing:.01em;margin-top:3px;
+  }
+  .art-page .art-photos{display:none}
+}
