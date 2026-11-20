@@ -187,3 +187,26 @@
   }
   .art-page .art-photos{display:none}
 }
+
+
+// MOBILE READING CONTRACT: the story is FIRST, not below a tall illustrated page.
+// Keep the original artwork below each passage and its choices. Photos are placed
+// after story prose, so a new answer begins with the actual story at eye level.
+// Desktop retains the original side-by-side illustrated book.
+@media(max-width:720px){
+  #gamebook.book{
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+  }
+  #gamebook .story-page{
+    order:0;
+    flex:0 0 auto;
+    min-height:0;
+  }
+  #gamebook .art-page{
+    order:1;
+    flex:0 0 auto;
+    min-height:0;
+  }
+}
