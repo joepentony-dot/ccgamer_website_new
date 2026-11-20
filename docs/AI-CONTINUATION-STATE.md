@@ -1,6 +1,7 @@
 ## 20 November 2026 — Choose Your Own Adventure website candidate (queued, branch only)
 
 - The owner requested replacing the expanded gamebook disclaimer with `Copyright Cheeky Commodore Gamer` and adding it as a discoverable website feature. Bounded `feature/choose-your-own-adventure-20261120` stages new public `/choose-your-own-adventure/` route, isolated page-only CSS/JS, homepage launchpad link and public code cache v264. The complete gamebook has 130 scenes and 26 endings; no protected intro, shared nav, catalogue, Dungeon, backend or authentication changes.
+- The sole added Dungeon file is an existing **test-only** Chromium trap keyboard regression fixture; gameplay runtime is unchanged. The prior 24ms simulated input was missed by loaded frames, while a later unlimited hold overshot a tile. The fixture now sends a bounded 110ms single keypress below the normal 138ms movement cadence, retains exact-cell and HP/event assertions, and needs complete fresh CI before merge.
 - Local standalone Chromium desktop/mobile interaction smoke, story JSON and Node syntax checks passed. Browser policy blocked HTTP route testing. **Not merged, not deployed, not live tested**; this candidate must remain subordinate to the active CCG Master Control workstream and pass exact-head CI, fresh-main reconciliation, authorised release and production smoke. See [Adventure checkpoint](ai-work/choose-your-own-adventure-20261120.md).
 
 ## 19 November 2026 — Dungeon R169 owner voice replacement (source candidate; not live)
