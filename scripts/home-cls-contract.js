@@ -8,6 +8,8 @@ const PULSE_SHA256 = 'f125e2a144edc1eaf5bc603401b548afc2468ddec22a16a6a019511d2d
 // Exact owner-approved retro-shop home feature. Any content or style-tag change must be reviewed.
 const REVIEWED_RETRO_SHOP_PROMO = "<section class=\"ccg-amazon-home-promo\" aria-labelledby=\"ccg-amazon-home-promo-title\">\n                <div class=\"ccg-amazon-home-promo__copy\">\n                    <p class=\"ccg-amazon-home-promo__kicker\">Retro Gaming Shop · Amazon UK</p>\n                    <h2 id=\"ccg-amazon-home-promo-title\">Retro books, Evercade games &amp; classic hardware</h2>\n                    <p>Have a browse through my selected Bitmap Books, Evercade collections and C64/Amiga accessories. Some links earn a commission which helps support the channel.</p>\n                </div>\n                <a class=\"ccg-amazon-home-promo__link\" href=\"/retro-shop.html\">Explore the Retro Shop</a>\n            </section>";
 const REVIEWED_RETRO_SHOP_COMMENT = '<!-- CCG RETRO SHOP: NON-INTRUSIVE LINK TO CURATED COLLECTIONS -->';
+// Reviewed, page-scoped adventure link: exact static text and SVG, no executable markup.
+const REVIEWED_ADVENTURE_CARD = "<a href=\"/choose-your-own-adventure/\" class=\"home-archive-route\">\n                        <span class=\"home-archive-route__icon\" aria-hidden=\"true\">\n                            <svg viewBox=\"0 0 32 32\" focusable=\"false\"><path d=\"M4 6.5c4-1.5 8-1.5 12 1 4-2.5 8-2.5 12-1V26c-4-1.5-8-1.5-12 1-4-2.5-8-2.5-12-1V6.5Z\"></path><path d=\"M16 7.5V27M8 12h4M20 12h4M8 17h4M20 17h4\"></path></svg>\n                        </span>\n                        <span class=\"home-archive-route__body\">\n                            <span class=\"home-archive-route__eyebrow\">Interactive 1980s gamebook</span>\n                            <strong class=\"home-archive-route__title\">Choose Your Own Adventure</strong>\n                            <span class=\"home-archive-route__text\">Your brother, your Commodore 64 and 26 endings. One mistake could ruin your childhood.</span>\n                            <span class=\"home-archive-route__cta\">Begin the adventure →</span>\n                        </span>\n                    </a>";
 const REVIEWED_RETRO_SHOP_CSS_TAGS = [
   "<link rel=\"preload\" href=\"/resources/css/retro-shop.css\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\">",
   "<noscript><link rel=\"stylesheet\" href=\"/resources/css/retro-shop.css\" /></noscript>"
@@ -52,6 +54,22 @@ function stripApprovedHomeCls(html) {
     output = output.replace(REVIEWED_RETRO_SHOP_COMMENT, '').replace(approvedShop, '');
   } else if (REVIEWED_RETRO_SHOP_CSS_TAGS.some(tag => output.includes(tag))) {
     throw Error('Unpaired CCG shop CSS tag');
+  }
+  // Allow only the exact approved home-launchpad adventure card, before the
+  // existing Explore more disclosure. Keep all other Home changes fail-closed.
+  const adventureAnchor = '<a href="/choose-your-own-adventure/" class="home-archive-route">';
+  const adventureStart = output.indexOf(adventureAnchor);
+  if (adventureStart !== -1) {
+    const adventureEnd = output.indexOf('</a>', adventureStart);
+    if (adventureEnd === -1) throw Error('Incomplete CCG adventure homepage card');
+    const actualAdventureCard = output.slice(adventureStart, adventureEnd + 4);
+    if (compact(actualAdventureCard) !== compact(REVIEWED_ADVENTURE_CARD)) {
+      throw Error('Unapproved CCG adventure homepage card');
+    }
+    if (!output.slice(adventureEnd + 4).trimStart().startsWith('<details class="home-archive-more">')) {
+      throw Error('CCG adventure card moved outside approved launchpad position');
+    }
+    output = output.slice(0, adventureStart) + output.slice(adventureEnd + 4);
   }
   for (const tag of [
     '<link rel="stylesheet" href="/resources/css/ccg-archive-pulse-thumbnails.css">',
