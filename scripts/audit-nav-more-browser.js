@@ -863,6 +863,11 @@ async function assertAdventureReadingAndPhotos(sessionId, width) {
       images:gallery?.querySelectorAll('img').length,
       galleryDisplay:gallery?getComputedStyle(gallery).display:null,
       photoLabels:gallery?.textContent||'',
+      headingTop:book?.querySelector('.story-page h2')?.getBoundingClientRect().top,
+      proseTop:book?.querySelector('.story-text p')?.getBoundingClientRect().top,
+      artTop:book?.querySelector('.art-page')?.getBoundingClientRect().top,
+      storyBottom:book?.querySelector('.story-page')?.getBoundingClientRect().bottom,
+      viewportHeight:innerHeight,
       choices:book?.querySelectorAll('.choice').length
     };
   })()`);
@@ -879,9 +884,16 @@ async function assertAdventureReadingAndPhotos(sessionId, width) {
   })()`;
 
   await waitUntil(sessionId, readingAligned, "first page reading position at " + width + "px", 9000);
+  const mobileReadingFirst = (snap) =>
+    snap.artTop>=snap.storyBottom-4 &&
+    snap.headingTop>=0 &&
+    snap.headingTop<snap.viewportHeight*0.48 &&
+    snap.proseTop>=0 &&
+    snap.proseTop<snap.viewportHeight-120 &&
+    Math.abs(snap.top-snap.expected)<48;
   const first=await snapshot();
   if(first.images<1||first.photoLabels.includes('Real ')||first.choices<2||
-     (width<=720&&first.galleryDisplay==='none')) {
+     (width<=720&&(first.galleryDisplay==='none'||!mobileReadingFirst(first)))) {
     throw new Error("Initial adventure photo layout failed: "+JSON.stringify(first));
   }
 
@@ -891,7 +903,7 @@ async function assertAdventureReadingAndPhotos(sessionId, width) {
   await waitUntil(sessionId, readingAligned, "next page reading position at " + width + "px", 9000);
   const next=await snapshot();
   if(next.accent===first.accent||next.images<1||
-     (width<=720&&next.galleryDisplay==='none')) {
+     (width<=720&&(next.galleryDisplay==='none'||!mobileReadingFirst(next)))) {
     throw new Error("Adventure page transition/colour failed: "+JSON.stringify(next));
   }
 
@@ -900,7 +912,8 @@ async function assertAdventureReadingAndPhotos(sessionId, width) {
     "back navigation after answer at " + width + "px", 9000);
   await waitUntil(sessionId, readingAligned, "back page reading position at " + width + "px", 9000);
   const back=await snapshot();
-  if(back.accent!==first.accent||back.images<1) {
+  if(back.accent!==first.accent||back.images<1||
+     (width<=720&&!mobileReadingFirst(back))) {
     throw new Error("Adventure back transition failed: "+JSON.stringify(back));
   }
   console.log("Adventure story scroll, colour, and hardware photos passed at "+width+"px.");
@@ -945,7 +958,7 @@ async function main() {
     // must be interactive on real rendered small-screen pages.
     for (const width of [390, 430]) await assertAdventureMobileMenu(sessionId, width);
     for (const width of [390, 1440]) await assertAdventureGamesHubLink(sessionId, width);
-    for (const width of [390, 430, 1440]) await assertAdventureReadingAndPhotos(sessionId, width);
+    for (const width of [320, 360, 390, 430, 720, 1440]) await assertAdventureReadingAndPhotos(sessionId, width);
 
     // A fresh and a repeat visit in one browser profile must both stay free
     // of the retired Ask CCG launcher on desktop and mobile-sized viewports.
