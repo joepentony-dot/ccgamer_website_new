@@ -828,6 +828,84 @@ async function assertAdventureMobileMenu(sessionId, width) {
   console.log(`Adventure real mobile menu open/close and gamebook preservation passed at ${width}px.`);
 }
 
+
+async function assertAdventureReadingAndPhotos(sessionId, width) {
+  await webdriver("POST", "/session/" + sessionId + "/window/rect",
+    { width, height: width <= 720 ? 700 : 800 });
+  await webdriver("POST", "/session/" + sessionId + "/url", {
+    url: auditBaseUrl() + "/choose-your-own-adventure/?ccg-reading-test=" + Date.now()
+  });
+  await waitUntil(sessionId, "!!document.querySelector('#app [data-action=open]')",
+    "adventure cover at " + width + "px", 12000);
+  await execute(sessionId, "localStorage.removeItem('ccg-gamebook-c64-1983-v2');return true;");
+  await webdriver("POST", "/session/" + sessionId + "/refresh", {});
+  await waitUntil(sessionId, "!!document.querySelector('#app [data-action=open]')",
+    "fresh adventure cover at " + width + "px", 12000);
+  await clickElement(sessionId, "#app [data-action=open]");
+  await waitUntil(sessionId, "document.querySelector('#gamebook')?.dataset.sceneTheme==='living'",
+    "first gamebook page at " + width + "px", 9000);
+
+  const snapshot = async () => execute(sessionId, `return (function() {
+    const book=document.getElementById('gamebook');
+    const mobile=matchMedia('(max-width:720px)').matches;
+    const reading=mobile?book?.querySelector('.story-page'):book;
+    const header=document.querySelector('[data-ccg-header]');
+    const style=header?getComputedStyle(header):null;
+    const rect=header?.getBoundingClientRect();
+    const pinned=style&&(style.position==='fixed'||(style.position==='sticky'&&rect.top<=2));
+    const expected=pinned?rect.height+12:12;
+    const gallery=book?.querySelector('.story-photo-strip');
+    return {
+      theme:book?.dataset.sceneTheme,
+      accent:getComputedStyle(book).getPropertyValue('--scene-accent').trim(),
+      top:reading?.getBoundingClientRect().top,
+      expected:expected,
+      images:gallery?.querySelectorAll('img').length,
+      galleryDisplay:gallery?getComputedStyle(gallery).display:null,
+      photoLabels:gallery?.textContent||'',
+      choices:book?.querySelectorAll('.choice').length
+    };
+  })()`);
+  const readingAligned = `(function() {
+    const book=document.getElementById('gamebook');
+    const page=innerWidth<=720?book?.querySelector('.story-page'):book;
+    if(!page)return false;
+    const header=document.querySelector('[data-ccg-header]');
+    const style=header?getComputedStyle(header):null;
+    const rect=header?.getBoundingClientRect();
+    const pinned=style&&(style.position==='fixed'||(style.position==='sticky'&&rect.top<=2));
+    const expected=pinned?rect.height+12:12;
+    return Math.abs(page.getBoundingClientRect().top-expected)<48;
+  })()`;
+
+  await waitUntil(sessionId, readingAligned, "first page reading position at " + width + "px", 9000);
+  const first=await snapshot();
+  if(first.images<1||first.photoLabels.includes('Real ')||first.choices<2||
+     (width<=720&&first.galleryDisplay==='none')) {
+    throw new Error("Initial adventure photo layout failed: "+JSON.stringify(first));
+  }
+
+  await clickElement(sessionId, "#gamebook [data-choice='1']");
+  await waitUntil(sessionId, "document.querySelector('#gamebook')?.dataset.sceneTheme==='news'",
+    "news story after answer at " + width + "px", 9000);
+  await waitUntil(sessionId, readingAligned, "next page reading position at " + width + "px", 9000);
+  const next=await snapshot();
+  if(next.accent===first.accent||next.images<1||
+     (width<=720&&next.galleryDisplay==='none')) {
+    throw new Error("Adventure page transition/colour failed: "+JSON.stringify(next));
+  }
+
+  await clickElement(sessionId, "#gamebook [data-action='back']");
+  await waitUntil(sessionId, "document.querySelector('#gamebook')?.dataset.sceneTheme==='living'",
+    "back navigation after answer at " + width + "px", 9000);
+  await waitUntil(sessionId, readingAligned, "back page reading position at " + width + "px", 9000);
+  const back=await snapshot();
+  if(back.accent!==first.accent||back.images<1) {
+    throw new Error("Adventure back transition failed: "+JSON.stringify(back));
+  }
+  console.log("Adventure story scroll, colour, and hardware photos passed at "+width+"px.");
+}
+
 async function main() {
   const driverPath = findChromeDriver();
   const siteServer = LIVE_BASE_URL ? null : createServer();
@@ -867,6 +945,7 @@ async function main() {
     // must be interactive on real rendered small-screen pages.
     for (const width of [390, 430]) await assertAdventureMobileMenu(sessionId, width);
     for (const width of [390, 1440]) await assertAdventureGamesHubLink(sessionId, width);
+    for (const width of [390, 430, 1440]) await assertAdventureReadingAndPhotos(sessionId, width);
 
     // A fresh and a repeat visit in one browser profile must both stay free
     // of the retired Ask CCG launcher on desktop and mobile-sized viewports.
