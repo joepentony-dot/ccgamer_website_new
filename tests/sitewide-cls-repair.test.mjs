@@ -168,7 +168,7 @@ test('approved CLS additions cannot exempt unrelated homepage content or executa
   const baseline = execFileSync('git', ['show', 'origin/main:home.html'], { encoding: 'utf8' });
   const home = fs.readFileSync('home.html', 'utf8');
   assert(isApprovedHomeClsChange(baseline, home));
-  assert.match(home, /href="\\/choose-your-own-adventure\\/" class="home-archive-route"/);
+  assert(home.includes('href="/choose-your-own-adventure/" class="home-archive-route"'));
   assert(!isApprovedHomeClsChange(baseline, home.replace('Your brother, your Commodore 64 and 26 endings.', 'Your brother, your Commodore 64 and 99 endings.')));
   assert(!isApprovedHomeClsChange(baseline, home.replace('href="/choose-your-own-adventure/"', 'href="/external-adventure/"')));
 
