@@ -720,6 +720,44 @@ async function assertInstallDestinationNavigation(sessionId, width) {
   }
 }
 
+async function assertAdventureGamesHubLink(sessionId, width) {
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 844 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/games/ccg-games/?ccg-adventure-hub-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, `(function () {
+    return !!document.querySelector('a.ccg-original-card__link[href="/choose-your-own-adventure/"]')
+      && !!document.querySelector('a.ccg-games-hub__button[href="/choose-your-own-adventure/"]')
+      && !!document.getElementById('ccg-originals-title');
+  })()`, `CCG Games adventure launch card at ${width}px`, 9000);
+
+  const present = await execute(sessionId, `return (function () {
+    const card = document.querySelector('a.ccg-original-card__link[href="/choose-your-own-adventure/"]');
+    const section = card?.closest('section');
+    const originalMaintenance = document.getElementById('ccg-originals-title');
+    return {
+      links: document.querySelectorAll('a[href="/choose-your-own-adventure/"]').length,
+      sectionTitle: section?.querySelector('h2')?.textContent.trim() || '',
+      visible: card && getComputedStyle(card).display !== 'none',
+      existingGamesPreserved: !!originalMaintenance &&
+        !!Array.from(document.querySelectorAll('.ccg-original-card h3')).find(h => h.textContent.includes('C64 Dungeon Carnage')),
+      title: card?.closest('.ccg-original-card')?.querySelector('h3')?.textContent.trim() || ''
+    };
+  })()`);
+  if (present.links !== 2 || !present.visible || !present.existingGamesPreserved ||
+      present.title !== 'The Great 8-Bit Decision') {
+    throw new Error(`CCG Games hub adventure link failed at ${width}px: ${JSON.stringify(present)}`);
+  }
+
+  await clickElement(sessionId, 'a.ccg-original-card__link[href="/choose-your-own-adventure/"]');
+  await waitUntil(sessionId, `(function () {
+    return location.pathname === '/choose-your-own-adventure/'
+      && !!document.querySelector('#app [data-action="home"]')
+      && !!document.querySelector('[data-ccg-nav-toggle]');
+  })()`, `CCG Games adventure link navigation at ${width}px`, 12000);
+  console.log(`CCG Games original-card link to live adventure route passed at ${width}px.`);
+}
+
 async function assertAdventureMobileMenu(sessionId, width) {
   await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 844 });
   await webdriver("POST", `/session/${sessionId}/url`, {
@@ -828,6 +866,7 @@ async function main() {
     // The adventure's public header is injected by Pages; its mobile menu
     // must be interactive on real rendered small-screen pages.
     for (const width of [390, 430]) await assertAdventureMobileMenu(sessionId, width);
+    for (const width of [390, 1440]) await assertAdventureGamesHubLink(sessionId, width);
 
     // A fresh and a repeat visit in one browser profile must both stay free
     // of the retired Ask CCG launcher on desktop and mobile-sized viewports.
