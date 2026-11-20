@@ -1762,12 +1762,26 @@ function frameLoop(now) {
       frameAccumulator = 0;
     } else {
       frameAccumulator += delta;
+      // Crossfire's live Arena runs on this same main thread as physical key
+      // events. After a renderer stall, a large emulation catch-up batch can
+      // block keydown/keyup for hundreds of milliseconds. Give the browser
+      // another input turn after at most two PAL frames while Arena is mounted.
+      // Other games retain their existing PAL catch-up behaviour.
+      const crossfireInputPriority = typeof activeArenaPreview !== "undefined" &&
+        Boolean(activeArenaPreview);
       while (frameAccumulator >= PAL_FRAME_MS) {
         machine.runFrame();
         if (typeof observeArenaPreviewFrame === "function") observeArenaPreviewFrame();
         if (autoStartSteps) autoWarpFrameCount++;
         frameAccumulator -= PAL_FRAME_MS;
         frames++;
+        if (crossfireInputPriority && frames >= 2) {
+          // Do not carry a multi-frame backlog into the next animation tick:
+          // catch-up debt would continually starve real keyboard events on
+          // slower devices. Retain up to one PAL interval of fractional time.
+          frameAccumulator = Math.min(frameAccumulator, PAL_FRAME_MS - 0.001);
+          break;
+        }
       }
       if (frames) serviceAutoStart();
     }
