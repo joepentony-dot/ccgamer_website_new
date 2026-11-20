@@ -1,5 +1,5 @@
-// Crossfire input latency regression: cap main-thread PAL catch-up work only
-// while the verified Arena preview is mounted. Other C64 games are unaffected.
+// All-game C64 keyboard responsiveness: PAL stalls, four/eight-way handoffs,
+// isolated joystick-only keys, native CIA controls and independent gamepads.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -47,17 +47,18 @@ test("Crossfire Arena yields to browser input after at most two PAL frames", () 
     "Discard excess catch-up debt without losing fractional PAL timing");
 });
 
-test("Other C64 titles retain their existing PAL catch-up policy", () => {
+test("Other C64 titles also yield to the browser after two PAL frames", () => {
   const result = runStallWithArena(false);
-  assert(result.runFrames >= 12, "Ordinary PAL catch-up is unchanged");
-  assert.equal(result.runFrames, result.observerFrames);
+  assert.equal(result.runFrames, 2, "No other game's catch-up may starve keyboard events");
+  assert.equal(result.observerFrames, 2);
+  assert.equal(result.blits, 1);
   assert.equal(result.animationCallbacks, 1);
+  assert(result.debt >= 0 && result.debt < 1000 / 50.125);
 });
 
 
-// The first release only prevented long PAL catch-up bursts. Browser key
-// events were still double-routed through both the C64 CIA matrix and the
-// virtual joystick. Exercise actual production functions on the same key edge.
+// Exercise the production key-edge paths as well as the frame loop. KEYBOARD
+// JOY ON must never double-route native C64 matrix keys on any title.
 const joystickStart = app.indexOf("function isCrossfireKeyboardJoystickActive()");
 const joystickEnd = app.indexOf("function swapJoystickPort()", joystickStart);
 const handlerStart = app.indexOf("const heldMatrixKeys = new Map();");
@@ -171,23 +172,77 @@ test("Crossfire preserves independent gamepad input and native F1 controls", () 
   assert.equal(h.matrix.size,0,"F1 must release cleanly");
 });
 
-test("Crossfire native-key mode and all other games retain the original CIA keyboard", () => {
-  const h = keyboardHarness();
+test("Native keyboard mode remains available and avoids per-key DOM status churn", () => {
+  const h = keyboardHarness(false);
   h.context.keyboardJoystickEnabled=false;
   h.down("KeyJ","j");
-  assert.equal(h.matrix.size,1,"Native Crossfire J movement must work with KEYBOARD JOY off");
+  assert.equal(h.matrix.size,1,"Native game J movement must work with KEYBOARD JOY OFF");
   h.up("KeyJ","j");
   assert.equal(h.matrix.size,0);
   h.down("KeyS","s");
-  assert.equal(h.matrix.size,1,"Native Crossfire S fire-left must work with KEYBOARD JOY off");
+  assert.equal(h.matrix.size,1,"Native game S key must work with KEYBOARD JOY OFF");
   h.up("KeyS","s");
   assert.equal(h.matrix.size,0);
-  h.context.keyboardJoystickEnabled=true;
-  h.context.activeArenaPreview=null; // Another C64 title.
+  assert.equal(h.stageStatus.textContent,"KEYBOARD JOYSTICK // ACTIVE",
+    "Rapid native key presses must not rewrite the input status DOM");
+});
+
+test("All other C64 titles route joystick-mapped keys without native CIA key leakage", () => {
+  const h = keyboardHarness(false);
   h.down("KeyS","s");
-  assert.equal(h.machine.joyPort2,0xfd,"Other games retain keyboard joystick DOWN");
-  assert.equal(h.matrix.size,1,"Other games retain existing simultaneous CIA matrix routing");
+  assert.equal(h.machine.joyPort2,0xfd,"KEYBOARD JOY ON sends DOWN immediately");
+  assert.equal(h.matrix.size,0,"S must never trigger an unrelated native C64 command");
+  h.down("Space"," ");
+  assert.equal(h.machine.joyPort2,0xed,"SPACE adds FIRE but no native SPACE key");
+  assert.equal(h.matrix.size,0);
   h.up("KeyS","s");
+  assert.equal(h.machine.joyPort2,0xef,"Releasing DOWN must retain FIRE");
+  h.up("Space"," ");
+  assert.equal(h.machine.joyPort2,0xff);
+  h.down("KeyJ","j");
+  assert.equal(h.matrix.size,1,"Keys outside the joystick map retain normal C64 behaviour");
+  h.up("KeyJ","j");
+  assert.equal(h.matrix.size,0);
+  h.down("F1","F1");
+  assert.equal(h.matrix.size,1,"F1 remains a native C64 control in joystick mode");
+  h.up("F1","F1");
+  assert.equal(h.matrix.size,0);
+  assert.equal(h.stageStatus.textContent,"KEYBOARD JOYSTICK // ACTIVE");
+});
+
+test("Eight-way games preserve diagonals and resolve opposing physical key overlap", () => {
+  const h = keyboardHarness(false);
+  h.down("ArrowUp");
+  assert.equal(h.machine.joyPort2,0xfe);
+  h.down("ArrowLeft");
+  assert.equal(h.machine.joyPort2,0xfa,"UP+LEFT diagonal must stay available");
+  h.down("KeyD","d");
+  assert.equal(h.machine.joyPort2,0xf6,"Newest RIGHT replaces LEFT on horizontal axis");
+  h.down("ArrowLeft","ArrowLeft",true);
+  assert.equal(h.machine.joyPort2,0xf6,"Autorepeat cannot steal direction priority");
+  h.up("KeyD","d");
+  assert.equal(h.machine.joyPort2,0xfa,"Earlier LEFT resumes after RIGHT release");
+  h.down("ArrowDown");
+  assert.equal(h.machine.joyPort2,0xf9,"Newest DOWN replaces UP without losing LEFT");
+  h.up("ArrowDown");
+  assert.equal(h.machine.joyPort2,0xfa,"Earlier UP resumes after DOWN release");
+  h.down("Space"," ");
+  assert.equal(h.machine.joyPort2,0xea,"FIRE adds to diagonal without resetting movement");
+  assert.equal(h.matrix.size,0,"Joystick diagonals must not inject native matrix keys");
+  h.up("Space"," ");
+  h.up("ArrowLeft");
+  h.up("ArrowUp");
+  assert.equal(h.machine.joyPort2,0xff);
+});
+
+test("Joystick keyup preserves native button activation when no game input was held", () => {
+  const h=keyboardHarness(false);
+  const button={closest(selector){return selector.includes("button")?this:null;}};
+  h.context.document.activeElement=button;
+  assert.equal(h.down("Space"," ").defaultPrevented,false,
+    "Space on a focused button must remain a native button press");
+  assert.equal(h.up("Space"," ").defaultPrevented,false,
+    "Space keyup must remain available to activate the focused button");
   assert.equal(h.machine.joyPort2,0xff);
   assert.equal(h.matrix.size,0);
 });

@@ -815,8 +815,8 @@ function updateJoystickUi() {
 }
 
 function isCrossfireKeyboardJoystickActive() {
-  // The SHA-verified Sierra Arena is the only title whose keyboard joystick
-  // must not simultaneously send native C64 key presses.
+  // Only the SHA-verified Sierra CRT currently has a confirmed four-way
+  // control profile. Unknown titles must preserve diagonal joystick movement.
   return keyboardJoystickEnabled &&
     typeof activeArenaPreview !== "undefined" && Boolean(activeArenaPreview);
 }
@@ -825,30 +825,37 @@ function keyboardJoystickByte() {
   if (!keyboardJoystickEnabled) return 0xFF;
   let result = 0xFF;
   if (isCrossfireKeyboardJoystickActive()) {
-    // Crossfire uses four-way corridor movement. When two physical direction
-    // keys overlap during a turn, the most recently pressed one must win;
-    // sending both at once is an unintended diagonal joystick signal that can
-    // delay the turn. Set insertion order preserves the actual keydown order,
-    // and releasing the latest key restores any earlier direction still held.
+    // Four-way Crossfire: most recently pressed physical direction wins.
+    // An earlier still-held direction resumes when the newer one is released.
     let latestDirection = 0;
     for (const code of keyboardJoystickKeys) {
       const mask = KEYBOARD_JOYSTICK_MASKS[code];
-      if (mask === 16) result &= ~16; // FIRE stays independent of movement.
+      if (mask === 16) result &= ~16;
       else if (mask) latestDirection = mask;
     }
     return result & ~latestDirection;
   }
-  // All other titles retain the existing simultaneous-direction behaviour.
-  for (const code of keyboardJoystickKeys) result &= ~KEYBOARD_JOYSTICK_MASKS[code];
-  return result;
+
+  // Eight-way default for all other games. Preserve UP+RIGHT diagonals, but
+  // never send contradictory UP+DOWN or LEFT+RIGHT bits while two physical
+  // buttons overlap. On each axis the most recent actual keydown wins.
+  // Holding FIRE never changes direction. Key auto-repeat never changes order.
+  let vertical = 0;
+  let horizontal = 0;
+  for (const code of keyboardJoystickKeys) {
+    const mask = KEYBOARD_JOYSTICK_MASKS[code];
+    if (mask === 1 || mask === 2) vertical = mask;
+    else if (mask === 4 || mask === 8) horizontal = mask;
+    else if (mask === 16) result &= ~16;
+  }
+  return result & ~vertical & ~horizontal;
 }
 
 function applyJoystickInput() {
   if (!machine) return;
-  // Active-low bits are held joystick directions/fire. Combine the live
-  // gamepad, touchscreen and optional keyboard-joystick state every frame;
-  // physical C64 keyboard keys use the separate CIA matrix without muting
-  // a gamepad direction (e.g. run right while SPACE drops a bomb).
+  // Active-low bits are held joystick directions/fire. Combine gamepad,
+  // touchscreen and optional keyboard joystick on the selected C64 port.
+  // Original CIA keyboard input stays independent while KEYBOARD JOY is OFF.
   const byte = gamepadJoyByte & touchJoyByte & keyboardJoystickByte();
   machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
   machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
@@ -1133,7 +1140,8 @@ function pressMatrixBinding(heldKey, binding) {
   if (!machine || !binding) return;
   machine.cia1.setKey(binding.col, binding.row, true);
   heldMatrixKeys.set(heldKey, binding);
-  if (inputStatus) inputStatus.textContent = `KEY ${heldKey.replace(/^(?:Key|Digit)/, "")} // C64 ACTIVE`;
+  // Do not rewrite the DOM input indicator on each keydown. Native C64
+  // movement keys should have the same fast event path as joystick presses.
 }
 
 function pressShiftedMatrixBinding(heldKey, col, row) {
@@ -1208,7 +1216,8 @@ function releaseHeldMatrixBinding(event, heldKey) {
   if (!stillHeldPhysically && !stillHeldOnTouchscreen && !stillHeldOnMobileKeyboard) {
     machine.cia1.setKey(binding.col, binding.row, false);
   }
-  if (inputStatus && !heldMatrixKeys.size) inputStatus.textContent = "KEYBOARD READY";
+  // Keyup is a CIA state change only; avoid a DOM write every time a
+  // movement key is released in keyboard-driven games.
 
   if (binding.symbolMapped) {
     if (binding.pressedLeftShift && !event.shiftKey) {
@@ -1295,18 +1304,21 @@ function handleC64Key(event, pressed) {
     event.preventDefault();
   }
 
-  // Physical C64 keys normally reach the CIA matrix, with optional joystick
-  // bits added. Crossfire is different: the original CRT assigns its own
-  // movement/firing actions to keys including S, D and Space. Duplicating
-  // joystick-typed directions into that matrix creates conflicting commands.
-  // Route these keys exclusively to the joystick when the verified Arena is
-  // active. Do not rewrite the per-key DOM status on high-frequency turns.
+  // KEYBOARD JOY ON means joystick-only for arrow/WASD/SPACE/CTRL in every
+  // C64 game. Do not also inject the same keystrokes through the CIA matrix:
+  // many games assign those keys to unrelated actions. With KEYBOARD JOY OFF,
+  // the complete original C64 keyboard remains available (including menus).
   const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
-  if (joystickMask && keyboardJoystickEnabled &&
-      typeof activeArenaPreview !== "undefined" && activeArenaPreview) {
+  if (joystickMask && keyboardJoystickEnabled) {
+    // An unfocused text field or a focused button/link still needs native
+    // keyup activation if its key was never pressed in the emulator.
+    const heldByJoystick = keyboardJoystickKeys.has(event.code);
+    if (!pressed && !heldByJoystick && (
+      usesTextInput(event.target) || usesTextInput(document.activeElement) ||
+      nativeActivation
+    )) return;
     if (pressed) {
-      // Browser auto-repeat must not promote an older held direction over
-      // a newly pressed one. The first keydown determines its priority.
+      // Repeated keydown must not reorder a held direction during a turn.
       if (!event.repeat) keyboardJoystickKeys.add(event.code);
     } else {
       keyboardJoystickKeys.delete(event.code);
@@ -1314,11 +1326,6 @@ function handleC64Key(event, pressed) {
     applyJoystickInput();
     event.preventDefault();
     return;
-  }
-  if (joystickMask && keyboardJoystickEnabled) {
-    if (pressed) keyboardJoystickKeys.add(event.code);
-    else keyboardJoystickKeys.delete(event.code);
-    applyJoystickInput();
   }
 
   if (event.code === "F12") {
@@ -1800,23 +1807,20 @@ function frameLoop(now) {
       frameAccumulator = 0;
     } else {
       frameAccumulator += delta;
-      // Crossfire's live Arena runs on this same main thread as physical key
-      // events. After a renderer stall, a large emulation catch-up batch can
-      // block keydown/keyup for hundreds of milliseconds. Give the browser
-      // another input turn after at most two PAL frames while Arena is mounted.
-      // Other games retain their existing PAL catch-up behaviour.
-      const crossfireInputPriority = typeof activeArenaPreview !== "undefined" &&
-        Boolean(activeArenaPreview);
+      // Every C64 game shares the browser main thread with real keyboard
+      // events. A long PAL catch-up burst after a renderer stall can delay
+      // the next direction even if the joystick byte was updated immediately.
+      // Give the browser another key event turn after at most two PAL frames.
+      // Deliberate MAX Warp retains its independent bounded fast-load path.
       while (frameAccumulator >= PAL_FRAME_MS) {
         machine.runFrame();
         if (typeof observeArenaPreviewFrame === "function") observeArenaPreviewFrame();
         if (autoStartSteps) autoWarpFrameCount++;
         frameAccumulator -= PAL_FRAME_MS;
         frames++;
-        if (crossfireInputPriority && frames >= 2) {
-          // Do not carry a multi-frame backlog into the next animation tick:
-          // catch-up debt would continually starve real keyboard events on
-          // slower devices. Retain up to one PAL interval of fractional time.
+        if (frames >= 2) {
+          // Drop excess stalled-time debt to keep real input responsive.
+          // Retain fractional PAL time; normal 50Hz cadence is unchanged.
           frameAccumulator = Math.min(frameAccumulator, PAL_FRAME_MS - 0.001);
           break;
         }
