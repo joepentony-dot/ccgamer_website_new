@@ -814,9 +814,31 @@ function updateJoystickUi() {
   }
 }
 
+function isCrossfireKeyboardJoystickActive() {
+  // The SHA-verified Sierra Arena is the only title whose keyboard joystick
+  // must not simultaneously send native C64 key presses.
+  return keyboardJoystickEnabled &&
+    typeof activeArenaPreview !== "undefined" && Boolean(activeArenaPreview);
+}
+
 function keyboardJoystickByte() {
   if (!keyboardJoystickEnabled) return 0xFF;
   let result = 0xFF;
+  if (isCrossfireKeyboardJoystickActive()) {
+    // Crossfire uses four-way corridor movement. When two physical direction
+    // keys overlap during a turn, the most recently pressed one must win;
+    // sending both at once is an unintended diagonal joystick signal that can
+    // delay the turn. Set insertion order preserves the actual keydown order,
+    // and releasing the latest key restores any earlier direction still held.
+    let latestDirection = 0;
+    for (const code of keyboardJoystickKeys) {
+      const mask = KEYBOARD_JOYSTICK_MASKS[code];
+      if (mask === 16) result &= ~16; // FIRE stays independent of movement.
+      else if (mask) latestDirection = mask;
+    }
+    return result & ~latestDirection;
+  }
+  // All other titles retain the existing simultaneous-direction behaviour.
   for (const code of keyboardJoystickKeys) result &= ~KEYBOARD_JOYSTICK_MASKS[code];
   return result;
 }
@@ -1273,10 +1295,26 @@ function handleC64Key(event, pressed) {
     event.preventDefault();
   }
 
-  // Physical C64 keys always reach the CIA matrix. If keyboard joystick
-  // mode is enabled, selected keys also add joystick bits; they must never
-  // suppress an independently held gamepad/touch direction.
+  // Physical C64 keys normally reach the CIA matrix, with optional joystick
+  // bits added. Crossfire is different: the original CRT assigns its own
+  // movement/firing actions to keys including S, D and Space. Duplicating
+  // joystick-typed directions into that matrix creates conflicting commands.
+  // Route these keys exclusively to the joystick when the verified Arena is
+  // active. Do not rewrite the per-key DOM status on high-frequency turns.
   const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
+  if (joystickMask && keyboardJoystickEnabled &&
+      typeof activeArenaPreview !== "undefined" && activeArenaPreview) {
+    if (pressed) {
+      // Browser auto-repeat must not promote an older held direction over
+      // a newly pressed one. The first keydown determines its priority.
+      if (!event.repeat) keyboardJoystickKeys.add(event.code);
+    } else {
+      keyboardJoystickKeys.delete(event.code);
+    }
+    applyJoystickInput();
+    event.preventDefault();
+    return;
+  }
   if (joystickMask && keyboardJoystickEnabled) {
     if (pressed) keyboardJoystickKeys.add(event.code);
     else keyboardJoystickKeys.delete(event.code);
