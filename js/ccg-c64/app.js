@@ -1302,7 +1302,8 @@ function handleC64Key(event, pressed) {
   // Route these keys exclusively to the joystick when the verified Arena is
   // active. Do not rewrite the per-key DOM status on high-frequency turns.
   const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
-  if (joystickMask && isCrossfireKeyboardJoystickActive()) {
+  if (joystickMask && keyboardJoystickEnabled &&
+      typeof activeArenaPreview !== "undefined" && activeArenaPreview) {
     if (pressed) {
       // Browser auto-repeat must not promote an older held direction over
       // a newly pressed one. The first keydown determines its priority.
