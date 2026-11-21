@@ -2,8 +2,14 @@
   "version": 1,
   "channelId": "UCHROCLVcatA449Gg-PoqlKw",
   "source": "youtube-atom-feed",
-  "syncedAt": "2026-11-19T21:39:06.755Z",
+  "syncedAt": "2026-11-21T17:59:36.182Z",
   "videos": [
+    {
+      "id": "wjSKlelMg5M",
+      "title": "Why Gloom stood out on Amiga in 1995",
+      "publishedAt": "2026-11-21T14:30:10.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/wjSKlelMg5M/mqdefault.jpg"
+    },
     {
       "id": "z17fK6ywHpU",
       "title": "Road Rash (Amiga) – The Diablo 1000 Is an Absolute Death Trap! 🏍️ #Shorts",
@@ -33,12 +39,6 @@
       "title": "Imagine Playing THIS C64 Game at 7 Years Old 😳",
       "publishedAt": "2026-11-13T17:30:15.000Z",
       "thumbnail": "https://i.ytimg.com/vi/0K4hWBrSXsE/mqdefault.jpg"
-    },
-    {
-      "id": "eciifDta8Kk",
-      "title": "Gloom (1995) – Was This the Amiga's Answer to DOOM?",
-      "publishedAt": "2026-11-11T18:30:33.000Z",
-      "thumbnail": "https://i.ytimg.com/vi/eciifDta8Kk/mqdefault.jpg"
     }
   ]
 }
