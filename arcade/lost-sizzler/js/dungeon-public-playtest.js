@@ -1,4 +1,4 @@
-/* C64 Dungeon Carnage — public 24-hour / five-minute playtest experience. */
+/* C64 Dungeon Carnage — public 24-hour / 30-minute playtest experience. */
 (function(){
   "use strict";
 
@@ -7,7 +7,7 @@
   const CONTACT_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxiLgl-SR8ngptHDnyOqUCRUl2Ia4yjuu2LO4IWMPt7763nmMgrD0qs3hpJOgw7dtsLiA/exec";
   const TESTER_KEY="ccg_dungeon_public_playtest_browser_id_v1";
   const ACCESS_EVENT="ccg:public-playtest-access-granted";
-  const PLAY_SECONDS=300;
+  const PLAY_SECONDS=1800;
   const state={
     active:false,
     publicExpiresAt:0,
@@ -82,7 +82,7 @@
     badge=document.createElement("aside");
     badge.id="ccg-public-playtest-badge";
     badge.setAttribute("aria-live","polite");
-    badge.innerHTML='<span>PUBLIC PLAYTEST WINDOW</span><strong data-public-countdown>--:--:--</strong><small data-session-countdown>5-minute test begins when gameplay starts</small>';
+    badge.innerHTML='<span>PUBLIC PLAYTEST WINDOW</span><strong data-public-countdown>--:--:--</strong><small data-session-countdown>30-minute test begins when gameplay starts</small>';
     document.body.appendChild(badge);
     return badge;
   }
@@ -98,14 +98,14 @@
     if(sessionNode){
       sessionNode.textContent=state.sessionStarted&&!state.sessionEnded
         ?"YOUR PLAY TIME · "+formatSession(state.sessionExpiresAt-now)
-        :"5-minute test begins when gameplay starts";
+        :"30-minute test begins when gameplay starts";
     }
     if(state.publicExpiresAt&&now>=state.publicExpiresAt){
       finishSession("public-expired");
       return;
     }
     if(state.sessionStarted&&!state.sessionEnded&&state.sessionExpiresAt&&now>=state.sessionExpiresAt){
-      finishSession("five-minutes");
+      finishSession("thirty-minutes");
     }
   }
   function startTicker(){
@@ -127,12 +127,12 @@
         <p>You are playing a limited test build of <strong>C64 Dungeon Carnage</strong>. The public link closes automatically when the shared 24-hour window ends.</p>
         <div class="ccg-public-playtest-window"><span>PUBLIC ACCESS REMAINING</span><strong data-intro-countdown>--:--:--</strong></div>
         <div class="ccg-public-playtest-rules">
-          <div><b>Five minutes</b><span>Your personal test timer begins only when actual gameplay starts.</span></div>
+          <div><b>Thirty minutes</b><span>Your personal test timer begins only when actual gameplay starts.</span></div>
           <div><b>Try things</b><span>Explore, fight, collect items and note anything confusing, broken or enjoyable.</span></div>
           <div><b>Tell me</b><span>At the end you will get a feedback box that sends your comments directly to CCG.</span></div>
         </div>
         <button type="button" class="ccg-public-playtest-primary" data-public-enter>ENTER THE PLAYTEST</button>
-        <p id="ccg-public-playtest-status">The five-minute gameplay clock has not started yet.</p>
+        <p id="ccg-public-playtest-status">The 30-minute gameplay clock has not started yet.</p>
       </section>`;
     document.body.appendChild(wrap);
     document.documentElement.classList.add("ccg-public-playtest-locked");
@@ -199,15 +199,15 @@
       coming:"C64 DUNGEON CARNAGE · COMING SOON"
     };
     return{
-      kicker:"FIVE-MINUTE TEST COMPLETE",
+      kicker:"30-MINUTE TEST COMPLETE",
       title:"Thanks For Testing",
       copy:"Your timed playtest is finished. Please send anything you noticed below — bugs, balancing problems, confusing bits, or things you particularly liked.",
       coming:"C64 DUNGEON CARNAGE · COMING SOON"
     };
   }
-  async function finishSession(reason="five-minutes"){
+  async function finishSession(reason="thirty-minutes"){
     if(state.sessionEnded)return;
-    if(reason==="five-minutes"&&state.sessionStarted){
+    if(reason==="thirty-minutes"&&state.sessionStarted){
       try{
         const data=await rpc("ccg_complete_dungeon_carnage_public_playtest",{p_token:token(),p_tester_id:testerId()});
         if(data?.recorded===false&&data?.reason==="too_early"&&data?.session_expires_at){
