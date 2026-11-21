@@ -39,6 +39,8 @@ const REVIEWED_FOREIGN_REGISTRY_ADDITIONS = new Set([
     "games/discover/index.html",
     "games/ccg-games/index.html",
     "games/commodore-quest/index.html",
+    // Exact owner-published, canonical C64 interactive gamebook route.
+    "choose-your-own-adventure/index.html",
     "videos/index.html"
 ]);
 const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
@@ -54,6 +56,8 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         `${SITE_ORIGIN}/games/discover/`,
         `${SITE_ORIGIN}/games/ccg-games/`,
         `${SITE_ORIGIN}/games/commodore-quest/`,
+        // C64 gamebook: real indexable, self-canonical page in the reviewed registry.
+        `${SITE_ORIGIN}/choose-your-own-adventure/`,
         `${SITE_ORIGIN}/videos/`,
         // Independently verified documentary watch route, retained from current main.
         `${SITE_ORIGIN}/retro-specials/retro-games-real-prizes-porsche-swords-25000/`,
