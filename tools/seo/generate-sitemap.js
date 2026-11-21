@@ -21,6 +21,7 @@ const RETRO_SPECIAL_LEGACY_SLUGS = new Set([
 const DEFAULT_STATIC_PATHS = [
   '',
   'about.html',
+  'choose-your-own-adventure/index.html',
   'complete-index.html',
   'contact.html',
   'emulation.html',
