@@ -1,13 +1,40 @@
 {
   "version": 1,
   "counts": {
-    "total": 710,
+    "total": 711,
     "gameVideos": 667,
-    "retroVideos": 43,
+    "retroVideos": 44,
     "c64GameVideos": 563,
     "amigaGameVideos": 104
   },
   "items": [
+    {
+      "id": "GMH3zjOMvWI",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "Friday the 13th (1986) Commodore 64 – Can You Solve the Forgotten Horror Sound Quiz?",
+      "description": "Friday the 13th on the Commodore 64 had a forgotten 1986 cassette sound-effects competition. Can you identify all ten horror noises?",
+      "url": "/retro-specials/friday-the-13th-commodore-64-horror-quiz/",
+      "thumbnail": "https://i.ytimg.com/vi/GMH3zjOMvWI/mqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
+    {
+      "id": "eciifDta8Kk",
+      "kind": "game",
+      "filter": "amiga",
+      "badge": "Amiga Game",
+      "title": "Gloom (1995) – Was This the Amiga's Answer to DOOM?",
+      "description": "Released in 1995 by Black Magic Software and published by Guildhall Leisure, Gloom is a fast-paced first-person shooter developed for the Commodore Amiga. Programmed by Mark Sibly, the game…",
+      "url": "/games/gloom/",
+      "thumbnail": "https://i.ytimg.com/vi/eciifDta8Kk/mqdefault.jpg",
+      "platform": "Amiga",
+      "year": 1995,
+      "publisher": "Guildhall"
+    },
     {
       "id": "ygPOtslHRfk",
       "kind": "retro",
@@ -9267,19 +9294,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "eciifDta8Kk",
-      "kind": "game",
-      "filter": "amiga",
-      "badge": "Amiga Game",
-      "title": "Gloom",
-      "description": "Released in 1995 by Black Magic Software and published by Guildhall Leisure, Gloom is a fast-paced first-person shooter developed for the Commodore Amiga. Programmed by Mark Sibly, the game…",
-      "url": "/games/gloom/",
-      "thumbnail": "https://i.ytimg.com/vi/eciifDta8Kk/mqdefault.jpg",
-      "platform": "Amiga",
-      "year": 1995,
-      "publisher": "Guildhall"
     }
   ]
 }
