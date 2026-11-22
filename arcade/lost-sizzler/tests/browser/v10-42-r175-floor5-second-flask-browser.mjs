@@ -115,7 +115,10 @@ try {
             installed:window.CCGLostSizzlerV142R95MobileControls?.state?.installed,
             touch:window.CCGLostSizzlerV142R95MobileControls?.touchCapable?.(),
             buttonLabel:button?.getAttribute('aria-label'),
-            buttonRect:button?{w:button.getBoundingClientRect().width,h:button.getBoundingClientRect().height}:null,
+            buttonRect:button?(()=>{const r=button.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}})():null,
+            rootRect:root?(()=>{const r=root.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}})():null,
+            areaRect:(()=>{const node=document.querySelector('.game-area');if(!node)return null;const r=node.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom,overflow:getComputedStyle(node).overflow}})(),
+            viewport:{w:innerWidth,h:innerHeight,scrollY:scrollY,visualHeight:visualViewport?.height||0},
             buttonVisibility:button?getComputedStyle(button).visibility:null,
             buttonDisplay:button?getComputedStyle(button).display:null,
             buttonCheckVisibility:button?.checkVisibility?.({checkVisibilityCSS:true})??false,
@@ -136,6 +139,8 @@ try {
         assert.match(dock.buttonLabel||'',/1 held/i,'The live Banishment control must display the paid charge');
         assert.equal(dock.buttonVisibility,'visible','The real Banishment button must be CSS-visible for the live mobile player');
         assert.equal(dock.buttonCheckVisibility,true,'The touch control must pass the browser effective visibility check');
+        const physicallyVisible=await page.locator('#v104-touch-controls [data-action="banish"]').isVisible();
+        assert.equal(physicallyVisible,true,'The real touch control must pass Playwright physical visibility; inspect logged clipping geometry');
         await page.locator('#v104-touch-controls [data-action="banish"]').tap({timeout:7000});
       }else if(step===1){
         await page.keyboard.press('KeyB');
