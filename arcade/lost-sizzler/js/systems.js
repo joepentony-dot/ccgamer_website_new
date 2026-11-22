@@ -741,6 +741,17 @@ window.CCGSystems=(()=>{
     const previousId=String(host.deathStalkerId||"");
     let stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
     const defeatedIds=new Set((host.defeatedDeathStalkers||[]).map(id=>String(id)));
+    // Independent floor-local defeat records prevent old host state from
+    // reviving a dead Warden if its primary defeated-ID ledger was lost.
+    const witnessedDefeat=Boolean(previousId&&(
+      (host.timedRooms||[]).some(room=>String(room?.hunterId||"")===previousId&&room?.stalkerDefeated===true)||
+      (host.v142WardenDomain?.cleansed===true&&String(host.v142WardenDomain?.sourceId||"")===previousId)
+    ));
+    if(witnessedDefeat){
+      host.defeatedDeathStalkers=Array.isArray(host.defeatedDeathStalkers)?host.defeatedDeathStalkers:[];
+      if(!host.defeatedDeathStalkers.includes(previousId))host.defeatedDeathStalkers.push(previousId);
+      defeatedIds.add(previousId);
+    }
     if(!stalkers.length&&previousId&&!defeatedIds.has(previousId)&&host.deathStalkerSpawn){
       const q=host.deathStalkerSpawn,level=Math.max(1,Number(host.v142CampaignFloor||1)),hp=6+level*2;
       const restored={id:previousId,x:Number(q.x),y:Number(q.y),x0:Number(q.x),y0:Number(q.y),kind:"ghost",hp,maxHp:hp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};

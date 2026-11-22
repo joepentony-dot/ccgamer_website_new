@@ -213,3 +213,121 @@
     min-height:0;
   }
 }
+
+
+/* Adventure choice and navigation readability — 21 November 2026.
+   Keep all existing scene palettes and art. Specificity is deliberately scoped
+   to #gamebook so unrelated website and cover buttons are not affected. */
+#gamebook .story-page .choice{
+  color:#282126!important;
+  background:#fffdf8!important;
+  border:2px solid var(--scene-accent-soft)!important;
+  box-shadow:0 2px 0 #60504d33;
+  min-height:74px;
+}
+#gamebook .story-page .choice-title{
+  display:block;
+  color:#241d26!important;
+  font-family:"Trebuchet MS",Arial,sans-serif!important;
+  font-size:clamp(17px,1.65vw,20px)!important;
+  font-weight:900;
+  line-height:1.35;
+  letter-spacing:0;
+  text-transform:none;
+  text-shadow:none!important;
+}
+#gamebook .story-page .choice-sub{
+  color:#51474a!important;
+  font-family:"Trebuchet MS",Arial,sans-serif!important;
+  font-size:clamp(14px,1.3vw,16px)!important;
+  line-height:1.5;
+  text-shadow:none!important;
+}
+#gamebook .story-page .choice-n{
+  background:#41314e!important;
+  color:#fff!important;
+  min-width:36px;
+  height:38px;
+  font-size:18px;
+  text-shadow:none!important;
+}
+#gamebook .story-page .choice-end{
+  color:#403047!important;
+  font-size:clamp(12px,1.1vw,14px)!important;
+  font-weight:900;
+  text-shadow:none!important;
+}
+#gamebook .story-page .choice-end strong{font-size:21px}
+#gamebook .story-page .choice:disabled{
+  opacity:1!important;
+  filter:none!important;
+  background:#f2f0ed!important;
+  border-color:#afa6ad!important;
+  box-shadow:none;
+}
+#gamebook .story-page .choice:disabled .choice-title{color:#48414a!important}
+#gamebook .story-page .choice:disabled .choice-sub{color:#625b63!important}
+#gamebook .story-page .story-footer>button{
+  background:#173e60!important;
+  color:#fff!important;
+  border:2px solid #356889!important;
+  border-radius:5px;
+  box-shadow:none!important;
+  text-decoration:none!important;
+  text-shadow:none!important;
+  font-family:"Trebuchet MS",Arial,sans-serif!important;
+  font-size:16px!important;
+  font-weight:900;
+  line-height:1.3;
+  letter-spacing:0;
+  padding:12px 15px;
+  min-height:52px;
+}
+#gamebook .story-page .story-footer>button:hover:not(:disabled){
+  background:#245577!important;
+  color:#fff!important;
+}
+#gamebook .story-page .story-footer>button:focus-visible{
+  outline:3px solid #126f8d;
+  outline-offset:3px;
+}
+#gamebook .story-page .story-footer>button:disabled{
+  opacity:.52!important;
+}
+#gamebook .story-page .story-footer>span{
+  color:#4f4247!important;
+  font-size:14px;
+  line-height:1.45;
+  text-align:center;
+}
+@media(max-width:720px){
+  #gamebook .story-page .choice{
+    gap:10px;
+    padding:14px 12px;
+  }
+  #gamebook .story-page .choice-main{min-width:0}
+  #gamebook .story-page .choice-end{
+    min-width:64px;
+    white-space:normal;
+    text-align:right;
+  }
+  #gamebook .story-page .story-footer{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    align-items:stretch;
+  }
+  #gamebook .story-page .story-footer>button{
+    width:100%;
+    min-width:0;
+    padding:11px 8px;
+    font-size:clamp(14px,3.6vw,16px)!important;
+    overflow-wrap:break-word;
+  }
+  #gamebook .story-page .story-footer>span{
+    grid-column:1/-1;
+    grid-row:2;
+    margin:2px 0 0;
+    font-size:14px;
+  }
+}
