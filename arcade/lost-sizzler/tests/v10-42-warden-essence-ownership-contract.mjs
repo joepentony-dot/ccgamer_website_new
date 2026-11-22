@@ -596,6 +596,38 @@ assert.equal(r171Guard(staleDuplicate).alive,false,
   "An old live duplicate cannot override an independently confirmed domain defeat");
 console.log("PASS R171 independent Warden defeat tombstones and retained single-spawn recovery");
 
+// R173: a real campaign run keeps its resolved Warden's exact source ID,
+// even if a partial host restore loses the defeated-ID, timed-room and
+// transient domain records. That last independent tombstone must be honoured.
+const r173Saved={floor:4,v142WardenFloors:{"4":{resolved:true,resolvedSourceId:r171Id}}};
+const r173Missing=r171Missing();
+assert.equal(r171Guard(r173Missing,r173Saved),null,
+  "Persisted, exact-floor Death Stalker clearance must prevent reconstruction");
+assert.deepEqual(Array.from(r173Missing.defeatedDeathStalkers),[r171Id],
+  "Reconciliation should repair the missing defeat list from serialized run evidence");
+r171Guard(r173Missing,r173Saved);
+assert.equal(r173Missing.enemies.length,0,
+  "Later ticks cannot create a duplicate after run-state defeat reconciliation");
+const r173Stale=r171Missing({enemies:[{
+  id:r171Id,x:5,y:5,alive:true,deathStalker:true,voidStalker:true
+}]});
+assert.equal(r171Guard(r173Stale,r173Saved).alive,false,
+  "A live stale Death Stalker must be marked defeated by its matching run tombstone");
+const r173FreshHost=r171Missing({deathStalkerId:"",
+  enemies:[{id:r171Id,x:5,y:5,alive:true,deathStalker:true,voidStalker:true}]
+});
+assert.equal(r171Guard(r173FreshHost,r173Saved).alive,false,
+  "A newly generated host without a saved ID must respect run-level defeat");
+const r173WrongSource={floor:4,v142WardenFloors:{"4":{resolved:true,resolvedSourceId:"count-loadula"}}};
+const r173WrongFloor={floor:5,v142WardenFloors:{"4":{resolved:true,resolvedSourceId:r171Id}}};
+assert.equal(r171Guard(r171Missing(),r173WrongSource).id,r171Id,
+  "Count Loadula's clearance must not remove the unbeaten Death Stalker");
+assert.equal(r171Guard(r171Missing(),r173WrongFloor).id,r171Id,
+  "A prior floor's clearance must not suppress a new floor Warden");
+console.log("PASS R173 serialised exact-source defeat survives lost host tombstones");
+
+
+
 // R171_REAL_ALCHEMIST_FLASK_ROUNDTRIP: use the real Essence
 // award/budget owner, Alchemist purchase boundary and both supernatural
 // Ward-Break combat actors in one encounter. The Vessel can hold only
