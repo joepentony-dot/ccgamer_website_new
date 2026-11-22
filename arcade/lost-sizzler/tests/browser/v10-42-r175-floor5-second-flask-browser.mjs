@@ -101,8 +101,35 @@ try {
       assert.equal(paid.essence,0,'One legitimate purchase consumes one Vessel cost');
       assert.equal(paid.score,setup.score,'Essence charge never spends score');
       if(config.mobile){
-        const button=page.locator('#v104-touch-controls [data-action="banish"]');
-        await button.waitFor({state:'visible'});await button.tap();
+        // Capture the real touch-dock readiness before the gesture. A hidden
+        // button is not equivalent to a failed second Ward-Break transaction.
+        const dock=await page.evaluate(()=>{
+          const root=document.getElementById('v104-touch-controls');
+          const button=root?.querySelector('[data-action="banish"]');
+          const notice=document.getElementById('ccg-mobile-pc-notice');
+          return {
+            mode:String(mode),runActive:document.body.dataset.runActive,
+            bodyClass:document.body.className,menuHidden:document.getElementById('menu')?.classList.contains('hidden'),
+            rootClass:root?.className,rootDisplay:root?getComputedStyle(root).display:null,
+            enabled:window.CCGLostSizzlerV142R95MobileControls?.state?.active,
+            installed:window.CCGLostSizzlerV142R95MobileControls?.state?.installed,
+            touch:window.CCGLostSizzlerV142R95MobileControls?.touchCapable?.(),
+            buttonLabel:button?.getAttribute('aria-label'),
+            buttonRect:button?{w:button.getBoundingClientRect().width,h:button.getBoundingClientRect().height}:null,
+            charges:PGR.inventoryKindCount(p1,'banishment'),
+            noticeVisible:notice?getComputedStyle(notice).display!=='none'&&!notice.classList.contains('hidden'):false
+          };
+        });
+        console.log('R175 mobile Ward-Break touch dock:',JSON.stringify(dock));
+        assert.equal(dock.runActive,'true','Real game must stay active after Alchemist shop closes');
+        assert.equal(dock.menuHidden,true,'Real game menu must remain hidden before mobile Ward-Break');
+        assert.equal(dock.touch,true,'Mobile fixture must have an active touch-capable device');
+        assert.equal(dock.charges,1,'The second purchase must be owned before tapping');
+        assert.equal(dock.enabled,true,'The real mobile input owner must activate its touch dock');
+        assert.equal(dock.rootDisplay,'grid','The real touch dock must be physically visible');
+        assert.ok(dock.buttonRect?.w>0&&dock.buttonRect?.h>0,'The mobile Banishment hit target must be visible');
+        assert.match(dock.buttonLabel||'',/1 held/i,'The live Banishment control must display the paid charge');
+        await page.locator('#v104-touch-controls [data-action="banish"]').tap({timeout:7000});
       }else if(step===1){
         await page.keyboard.press('KeyB');
       }else{
