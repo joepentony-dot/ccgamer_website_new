@@ -596,33 +596,67 @@ assert.equal(r171Guard(staleDuplicate).alive,false,
   "An old live duplicate cannot override an independently confirmed domain defeat");
 console.log("PASS R171 independent Warden defeat tombstones and retained single-spawn recovery");
 
-// R171_REAL_ALCHEMIST_FLASK_ROUNDTRIP: exercise the actual live
-// shop ownership boundary, progression inventory, and both supernatural
-// Warden targets in one encounter. Prior tests covered each separately.
-// One purchased Flask must be consumed before a second can be distilled.
+// R171_REAL_ALCHEMIST_FLASK_ROUNDTRIP: use the real Essence
+// award/budget owner, Alchemist purchase boundary and both supernatural
+// Ward-Break combat actors in one encounter. The Vessel can hold only
+// enough Essence for ONE charge, so earn the next three after spending it.
 const alchemistRoundTrip=soloEncounter(),ar=alchemistRoundTrip.ctx,arNotices=[];
 ar.p1.x=6;ar.p1.y=5;
-ar.p1.banishmentEssence=6;
+ar.p1.banishmentEssence=0;
 ar.activeShop={id:"alchemist-test",title:"BANISHMENT ALCHEMIST",v142Alchemist:true};
 ar.window.CCGDungeonProgressionFoundation={ready:true};
 ar.window.CCGLostSizzlerV142ProceduralOverhaul={essenceCost:()=>3};
 ar.buyShopItem=()=>false;
 ar.renderShop=()=>{};
 ar.showToast=(title,message)=>arNotices.push({title:String(title),message:String(message)});
+
+// Source-execute the actual procedural economy functions, not a made-up
+// six-Essence starting balance that the live Vessel disallows.
+const r171EconomySource=readOwner("v10-42-procedural-overhaul");
+const r171EconomyStart=r171EconomySource.indexOf("  function floorEssenceState(");
+const r171EconomyEnd=r171EconomySource.indexOf("  function scanEssenceSources(",r171EconomyStart);
+assert.ok(r171EconomyStart>=0&&r171EconomyEnd>r171EconomyStart,
+  "Real floor Essence award and budget functions must be present");
+ar.PD={essenceRequired:3};
+ar.PROG=ar.PGR;
+ar.currentHost=()=>ar.host;
+ar.currentRun=()=>ar.run;
+ar.essenceCost=()=>3;
+ar.initRpg=()=>{};
+ar.announce=()=>{};
+vm.runInContext(r171EconomySource.slice(r171EconomyStart,r171EconomyEnd)+
+  "\nthis.r171AwardEssence=awardEssence;",ar,
+  {filename:"v10-42-procedural-overhaul.js::floorEssenceState/awardEssence"});
+for(let i=0;i<3;i++){
+  assert.equal(ar.r171AwardEssence(ar.p1,1,"First charge source",{silent:true}),true,
+    "Real Essence awards must fund the first Flask");
+}
+assert.equal(ar.p1.banishmentEssence,3,"The Vessel fills to one Flask cost, not six");
+assert.equal(ar.r171AwardEssence(ar.p1,1,"Overfill source",{silent:true}),false,
+  "Vessel cannot accept more Essence until a charge is spent");
+
 vm.runInContext(readOwner("v10-42-artefact-shop-stability"),ar,
   {filename:"v10-42-artefact-shop-stability.js"});
 assert.equal(ar.window.CCGLostSizzlerV142ArtefactShopStability.isInstalled(),true,
   "Real shop boundary must be installed before live Alchemist purchases");
 assert.equal(ar.buyShopItem("banishment"),true,"First actual Alchemist purchase succeeds");
-assert.equal(ar.p1.banishmentEssence,3,"First purchase deducts only the required Essence");
+assert.equal(ar.p1.banishmentEssence,0,"First purchase deducts only the required Essence");
 assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),1);
 assert.equal(ar.buyShopItem("banishment"),false,
   "Real Alchemist must refuse a second charge while the first is carried");
-assert.equal(ar.p1.banishmentEssence,3,"Refused extra Flask cannot consume Essence");
+assert.equal(ar.p1.banishmentEssence,0,"Refused extra Flask cannot consume Essence");
 assert.equal(ar.activateBanishment(ar.p1),true,
   "First shop-purchased charge breaks the nearer sealed Death Stalker");
 assert.equal(alchemistRoundTrip.death.v142WardBroken,true);
 assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),0);
+
+for(let i=0;i<3;i++){
+  assert.equal(ar.r171AwardEssence(ar.p1,1,"Second charge source",{silent:true}),true,
+    "Further earned Essence must refill the Vessel after first Ward Break");
+}
+assert.equal(ar.p1.banishmentEssence,3);
+assert.equal(ar.r171AwardEssence(ar.p1,1,"Beyond floor budget",{silent:true}),false,
+  "The two-Warden floor cannot grant unlimited extra Essence");
 assert.equal(ar.buyShopItem("banishment"),true,
   "Alchemist must allow a second purchase after first charge is consumed");
 assert.equal(ar.p1.banishmentEssence,0);
@@ -636,6 +670,6 @@ assert.equal(ar.activateBanishment(ar.p1),false,
   "A third attempt without a new charge must not affect either Warden");
 assert.equal(ar.run.stats.wardsBroken,2);
 assert.equal(ar.score,0,"Ward-breaking alone cannot award combat kill score");
-console.log("PASS R171 real Alchemist purchase-use-repurchase-use roundtrip across both Wardens");
+console.log("PASS R171 real Essence earn-buy-break-re-earn-buy-break against both Wardens");
 
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");
