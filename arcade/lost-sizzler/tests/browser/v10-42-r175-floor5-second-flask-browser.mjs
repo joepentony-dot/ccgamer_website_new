@@ -147,10 +147,12 @@ try {
       }
       const after=await page.evaluate(({targetName})=>{
         const actor=targetName==='death'?host.enemies.find(e=>e.deathStalker&&e.voidStalker):host.stalker;
-        return {broken:actor?.v142WardBroken===true,charges:PGR.inventoryKindCount(p1,'banishment'),score,wardsBroken:run.stats.wardsBroken||0};
+        return {broken:actor?.v142WardBroken===true,charges:PGR.inventoryKindCount(p1,'banishment'),score,wardsBroken:run.stats.wardsBroken||0,
+          mobileButtonLabel:document.querySelector('#v104-touch-controls [data-action="banish"]')?.getAttribute('aria-label')||''};
       },{targetName});
       assert.equal(after.broken,true,config.device+' '+targetName+' B input should break second independent ward');
       assert.equal(after.charges,0,'Each B input consumes exactly one legitimate charge');
+      if(config.mobile)assert.match(after.mobileButtonLabel,/none held/i,'The real mobile Banishment button must clear its charge count after use');
       assert.equal(after.score,setup.score,'Ward break alone must not grant score');
       assert.equal(after.wardsBroken,step+1,'Each distinct Warden breaks only once');
       console.log(JSON.stringify({device:config.device,step:step+1,target:targetName,shop:setup,paid,after}));
