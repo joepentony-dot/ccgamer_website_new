@@ -675,7 +675,7 @@ window.CCGSystems=(()=>{
       const room=deathStalkerRoom,vq=freeInRoom(world,room,used),vhp=6+(run.floor||1)*2,id=`death-stalker-floor-${run.floor||1}`;
       const v={id,...vq,x0:vq.x,y0:vq.y,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.deathStalkerSpawn={x:v.x,y:v.y,roomId:room?.id??-1};host.enemies.push(v);host.voidStalkers.push(v.id)
     }
-    enforceDeathStalkerSingleton(host);
+    enforceDeathStalkerSingleton(host,run);
 
     // Floor identity and difficulty tuning.
     const floorInfo=PGR.floorInfo(run),diff=PGR.difficulty(run),hpFloor=1+(Math.max(1,run.floor)-1)*.12,armoured=run.modifier?.id==="ARMOURED_ENEMIES"?1.3:1,playerLevel=Math.max(1,run.playerLevelHint||1),levelSteps=playerLevel-1;
@@ -736,14 +736,22 @@ window.CCGSystems=(()=>{
     return host;
   }
 
-  function enforceDeathStalkerSingleton(host){
+  function enforceDeathStalkerSingleton(host,runState=null){
     if(!host)return null;
-    const previousId=String(host.deathStalkerId||"");
     let stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
+    const previousId=String(host.deathStalkerId||stalkers[0]?.id||"");
     const defeatedIds=new Set((host.defeatedDeathStalkers||[]).map(id=>String(id)));
+    // The independently serialized run can retain an exact floor Warden
+    // clearance even when a legacy restore loses every host-level tombstone.
+    // Never apply a different floor or Count Loadula's clearance to this ID.
+    const runFloor=Math.floor(Number(runState?.floor)||0);
+    const hostFloor=Math.floor(Number(host.v142CampaignFloor??runFloor)||0);
+    const record=runFloor>0&&runFloor===hostFloor?runState?.v142WardenFloors?.[String(runFloor)]:null;
+    const savedRunDefeat=Boolean(record?.resolved===true&&String(record.resolvedSourceId||"")===previousId);
     // Independent floor-local defeat records prevent old host state from
     // reviving a dead Warden if its primary defeated-ID ledger was lost.
     const witnessedDefeat=Boolean(previousId&&(
+      savedRunDefeat||
       (host.timedRooms||[]).some(room=>String(room?.hunterId||"")===previousId&&room?.stalkerDefeated===true)||
       (host.v142WardenDomain?.cleansed===true&&String(host.v142WardenDomain?.sourceId||"")===previousId)
     ));
