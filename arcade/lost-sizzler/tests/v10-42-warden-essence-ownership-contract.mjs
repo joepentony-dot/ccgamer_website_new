@@ -596,4 +596,46 @@ assert.equal(r171Guard(staleDuplicate).alive,false,
   "An old live duplicate cannot override an independently confirmed domain defeat");
 console.log("PASS R171 independent Warden defeat tombstones and retained single-spawn recovery");
 
+// R171_REAL_ALCHEMIST_FLASK_ROUNDTRIP: exercise the actual live
+// shop ownership boundary, progression inventory, and both supernatural
+// Warden targets in one encounter. Prior tests covered each separately.
+// One purchased Flask must be consumed before a second can be distilled.
+const alchemistRoundTrip=soloEncounter(),ar=alchemistRoundTrip.ctx,arNotices=[];
+ar.p1.x=6;ar.p1.y=5;
+ar.p1.banishmentEssence=6;
+ar.activeShop={id:"alchemist-test",title:"BANISHMENT ALCHEMIST",v142Alchemist:true};
+ar.window.CCGDungeonProgressionFoundation={ready:true};
+ar.window.CCGLostSizzlerV142ProceduralOverhaul={essenceCost:()=>3};
+ar.buyShopItem=()=>false;
+ar.renderShop=()=>{};
+ar.showToast=(title,message)=>arNotices.push({title:String(title),message:String(message)});
+vm.runInContext(readOwner("v10-42-artefact-shop-stability"),ar,
+  {filename:"v10-42-artefact-shop-stability.js"});
+assert.equal(ar.window.CCGLostSizzlerV142ArtefactShopStability.isInstalled(),true,
+  "Real shop boundary must be installed before live Alchemist purchases");
+assert.equal(ar.buyShopItem("banishment"),true,"First actual Alchemist purchase succeeds");
+assert.equal(ar.p1.banishmentEssence,3,"First purchase deducts only the required Essence");
+assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),1);
+assert.equal(ar.buyShopItem("banishment"),false,
+  "Real Alchemist must refuse a second charge while the first is carried");
+assert.equal(ar.p1.banishmentEssence,3,"Refused extra Flask cannot consume Essence");
+assert.equal(ar.activateBanishment(ar.p1),true,
+  "First shop-purchased charge breaks the nearer sealed Death Stalker");
+assert.equal(alchemistRoundTrip.death.v142WardBroken,true);
+assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),0);
+assert.equal(ar.buyShopItem("banishment"),true,
+  "Alchemist must allow a second purchase after first charge is consumed");
+assert.equal(ar.p1.banishmentEssence,0);
+assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),1);
+assert.equal(ar.activateBanishment(ar.p1),true,
+  "Second genuinely purchased charge breaks the different sealed Count");
+assert.equal(alchemistRoundTrip.count.v142WardBroken,true);
+assert.equal(ar.run.stats.wardsBroken,2);
+assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),0);
+assert.equal(ar.activateBanishment(ar.p1),false,
+  "A third attempt without a new charge must not affect either Warden");
+assert.equal(ar.run.stats.wardsBroken,2);
+assert.equal(ar.score,0,"Ward-breaking alone cannot award combat kill score");
+console.log("PASS R171 real Alchemist purchase-use-repurchase-use roundtrip across both Wardens");
+
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");
