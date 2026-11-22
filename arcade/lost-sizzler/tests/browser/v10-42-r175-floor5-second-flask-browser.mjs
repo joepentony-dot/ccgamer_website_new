@@ -49,6 +49,29 @@ try {
       p1.health=p1.maxHealth=9999;p1.invuln=999999;p1.inventory=[];
       p1.inventorySlots=Math.max(4,Number(p1.inventorySlots)||0);
       p1.banishmentEssence=0;
+      if(device==='mobile'){
+        const history=[];
+        window.__r175StateHistory=history;
+        const record=event=>{
+          const root=document.getElementById('v104-touch-controls');
+          const overlays=[...document.querySelectorAll('.game-area>.overlay:not(.hidden)')].map(x=>x.id);
+          const state={t:Math.round(performance.now()),event,mode:String(mode),
+            runActive:document.body.dataset.runActive,
+            menuHidden:document.getElementById('menu')?.classList.contains('hidden'),
+            rootActive:root?.classList.contains('active'),
+            rootDisplay:root?getComputedStyle(root).display:null,
+            dossierHidden:document.getElementById('named-dossier-panel')?.classList.contains('hidden'),
+            overlayIds:overlays,fullscreen:Boolean(document.fullscreenElement),url:location.pathname};
+          history.push(state);if(history.length>80)history.shift();
+        };
+        record('initial-floor-five');
+        for(const selector of ['body','#menu','#v104-touch-controls','#named-dossier-panel','#pause-panel','#shop-panel']){
+          const node=document.querySelector(selector);if(!node)continue;
+          const observer=new MutationObserver(()=>record('attribute:'+selector));
+          observer.observe(node,{attributes:true,attributeFilter:['class','style','data-run-active']});
+        }
+        document.addEventListener('fullscreenchange',()=>record('fullscreenchange'));
+      }
       const generators=host.generators||[];
       if(generators.length<3)throw new Error('Floor 5 three-generator encounter missing');
       for(let i=0;i<3;i++){generators[i].alive=i===2;generators[i].v142EssenceAwarded=i<2}
@@ -149,10 +172,19 @@ try {
           if(!button)throw new Error('Mobile Banishment touch target missing');
           const rect=button.getBoundingClientRect(),x=rect.left+rect.width/2,y=rect.top+rect.height/2;
           const hit=document.elementFromPoint(x,y);
+          const root=document.getElementById('v104-touch-controls');
           return {x,y,hitTag:hit?.tagName||'',hitAction:hit?.closest?.('[data-action]')?.dataset.action||'',
             hitText:hit?.textContent?.trim().slice(0,70)||'',isButtonOrChild:hit===button||button.contains(hit),
             inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight,
-            buttonRect:{left:rect.left,top:rect.top,width:rect.width,height:rect.height}};
+            buttonRect:{left:rect.left,top:rect.top,width:rect.width,height:rect.height},
+            current:{mode:String(mode),runActive:document.body.dataset.runActive,
+              menuHidden:document.getElementById('menu')?.classList.contains('hidden'),
+              rootActive:root?.classList.contains('active'),rootDisplay:root?getComputedStyle(root).display:null,
+              dossierHidden:document.getElementById('named-dossier-panel')?.classList.contains('hidden'),
+              overlays:[...document.querySelectorAll('.game-area>.overlay:not(.hidden)')].map(x=>x.id),
+              fullscreen:Boolean(document.fullscreenElement),url:location.href,ready:document.readyState,
+              timeOrigin:performance.timeOrigin},
+            stateHistory:(window.__r175StateHistory||[]).slice(-30)};
         });
         console.log('R175 real mobile physical touch hit-test:',JSON.stringify(touchPoint));
         assert.equal(touchPoint.inViewport,true,'Mobile Banishment must lie inside the actual phone viewport');
