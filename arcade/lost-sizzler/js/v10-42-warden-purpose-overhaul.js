@@ -285,6 +285,9 @@
       announce("WARD-BREAK NOT APPLIED","The target's ward changed before the charge could take effect. Your charge has been returned.","cyan",6000);
       return false;
     }
+    // A spent charge must immediately clear the mobile dock's held label.
+    // Payment failures and refunds must not emit a false consumption event.
+    try{window.dispatchEvent(new CustomEvent("ccg:dungeon-inventory-changed",{detail:{kind:"banishment",source:"ward-break",count:PROG.inventoryKindCount(player,"banishment")}}))}catch(_){}
     return true;
   };
   useBanishment=function(player){return activateBanishment(player)};
