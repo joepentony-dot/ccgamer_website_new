@@ -116,6 +116,11 @@ try {
             touch:window.CCGLostSizzlerV142R95MobileControls?.touchCapable?.(),
             buttonLabel:button?.getAttribute('aria-label'),
             buttonRect:button?{w:button.getBoundingClientRect().width,h:button.getBoundingClientRect().height}:null,
+            buttonVisibility:button?getComputedStyle(button).visibility:null,
+            buttonDisplay:button?getComputedStyle(button).display:null,
+            buttonCheckVisibility:button?.checkVisibility?.({checkVisibilityCSS:true})??false,
+            ancestorChain:(()=>{const out=[];for(let node=button;node&&out.length<9;node=node.parentElement)out.push({tag:node.tagName,id:node.id,cls:String(node.className||'').slice(0,150),display:getComputedStyle(node).display,visibility:getComputedStyle(node).visibility,contentVisibility:getComputedStyle(node).contentVisibility});return out})(),
+            activeOverlays:[...document.querySelectorAll('.game-area>.overlay:not(.hidden)')].map(node=>({id:node.id,cls:node.className,visibility:getComputedStyle(node).visibility})),
             charges:PGR.inventoryKindCount(p1,'banishment'),
             noticeVisible:notice?getComputedStyle(notice).display!=='none'&&!notice.classList.contains('hidden'):false
           };
@@ -129,6 +134,8 @@ try {
         assert.equal(dock.rootDisplay,'grid','The real touch dock must be physically visible');
         assert.ok(dock.buttonRect?.w>0&&dock.buttonRect?.h>0,'The mobile Banishment hit target must be visible');
         assert.match(dock.buttonLabel||'',/1 held/i,'The live Banishment control must display the paid charge');
+        assert.equal(dock.buttonVisibility,'visible','The real Banishment button must be CSS-visible for the live mobile player');
+        assert.equal(dock.buttonCheckVisibility,true,'The touch control must pass the browser effective visibility check');
         await page.locator('#v104-touch-controls [data-action="banish"]').tap({timeout:7000});
       }else if(step===1){
         await page.keyboard.press('KeyB');
