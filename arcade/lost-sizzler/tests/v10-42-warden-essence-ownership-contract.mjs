@@ -166,6 +166,8 @@ c.damageEnemy(pair.death,999,"energy",c.p1);
 assert.equal(pair.death.alive,false);
 assert.deepEqual(earnedBadges,["LS_STALKER_BANISHED"],"The actual Death Stalker defeat must grant the existing achievement");
 assert.equal(pair.death.v142WardenDefeated,true);
+assert.deepEqual(Array.from(c.run.v142DefeatedWardenIds?.["4"]||[]),[pair.death.id],
+  "The real Death Stalker kill must persist an exact-floor run tombstone");
 assert.equal(c.run.stats.kills,2);
 assert.deepEqual(Array.from(c.host.defeatedDeathStalkers),[pair.death.id]);
 assert.equal(c.score,900+7500,"Paired ordinary guardian and Warden retain their separate rewards");
@@ -182,6 +184,8 @@ countOnly.ctx.window.CCGLostSizzlerAchievementsV129={award:key=>countBadges.push
 assert.equal(countOnly.ctx.permanentlyBanish(countOnly.count,countOnly.ctx.p1),true);
 assert.equal(countOnly.ctx.hitStalker({x:countOnly.count.x,y:countOnly.count.y,power:999,owner:"p1"}),true);
 assert.equal(countOnly.count.v142WardenDefeated,true);
+assert.deepEqual(Array.from(countOnly.ctx.run.v142DefeatedWardenIds?.["4"]||[]),["count-loadula"],
+  "The real Count Loadula kill must persist an independent exact-floor tombstone");
 assert.deepEqual(countBadges,[],"Count Loadula must not grant the Death Stalker achievement");
 
 function killAtOccupiedCell(kind){
@@ -625,6 +629,54 @@ assert.equal(r171Guard(r171Missing(),r173WrongSource).id,r171Id,
 assert.equal(r171Guard(r171Missing(),r173WrongFloor).id,r171Id,
   "A prior floor's clearance must not suppress a new floor Warden");
 console.log("PASS R173 serialised exact-source defeat survives lost host tombstones");
+
+// R174: independent per-floor tombstones survive a transient rebuilt host for
+// BOTH named supernatural actors, even when no Warden-domain record exists.
+const r174Ledger={floor:4,v142DefeatedWardenIds:{"4":[r171Id,"count-loadula"]}};
+const r174Host=r171Missing({
+  stalker:{id:"count-loadula",awake:false,permanentlyBanished:false,near:true,
+    hp:42,maxHp:42,spawnTimer:100,stunMs:20}
+});
+assert.equal(r171Guard(r174Host,r174Ledger),null,
+  "A run-level Death Stalker tombstone alone must suppress host reconstruction");
+assert.deepEqual(Array.from(r174Host.defeatedDeathStalkers),[r171Id],
+  "A missing Death Stalker host ledger must be repaired from the run record");
+assert.equal(r174Host.stalker.permanentlyBanished,true,
+  "Previously defeated Count Loadula must remain banished after host recreation");
+assert.equal(r174Host.stalker.awake,false);
+assert.equal(r174Host.stalker.hp,0);
+assert.equal(r174Host.stalker.v142WardenDefeated,true);
+assert.equal(r174Host.stalker.v142WardenRewarded,true);
+assert.equal(r174Host.stalker.spawnTimer,Number.POSITIVE_INFINITY);
+r171Guard(r174Host,r174Ledger);
+assert.equal(r174Host.enemies.length,0,
+  "Repeated singleton ticks cannot resurrect a recorded Death Stalker");
+assert.equal(r174Host.stalker.permanentlyBanished,true);
+const r174Unbeaten=r171Missing({stalker:{id:"count-loadula",awake:false,permanentlyBanished:false,spawnTimer:100}});
+const r174NewRun={floor:4,v142DefeatedWardenIds:{}};
+assert.equal(r171Guard(r174Unbeaten,r174NewRun)?.id,r171Id,
+  "A fresh run may still reconstruct an actually unbeaten Death Stalker");
+assert.equal(r174Unbeaten.stalker.permanentlyBanished,false,
+  "A fresh run must not inherit an old Count Loadula defeat");
+const r174NextFloor=r171Missing({
+  v142CampaignFloor:5,deathStalkerId:"death-stalker-floor-5",
+  stalker:{id:"count-loadula",awake:false,permanentlyBanished:false,spawnTimer:100}
+});
+assert.equal(r171Guard(r174NextFloor,r174Ledger)?.id,"death-stalker-floor-5",
+  "Floor 4's saved victories must not erase a Floor 5 Death Stalker");
+assert.equal(r174NextFloor.stalker.permanentlyBanished,false,
+  "Floor 4 Count tombstones must not affect Count on Floor 5");
+const r174CountDomain=r171Missing({stalker:{
+  id:"count-loadula",awake:true,permanentlyBanished:false,spawnTimer:0
+}});
+r171Guard(r174CountDomain,{
+  floor:4,v142WardenFloors:{"4":{resolved:true,resolvedSourceId:"count-loadula"}}
+});
+assert.equal(r174CountDomain.stalker.permanentlyBanished,true,
+  "Legacy Count-owned cleansed domain should also survive without the new tombstone");
+console.log("PASS R174 independent Count and Death Stalker floor tombstones / fresh-floor safety");
+
+
 
 
 
