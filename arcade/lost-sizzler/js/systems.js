@@ -748,10 +748,24 @@ window.CCGSystems=(()=>{
     const hostFloor=Math.floor(Number(host.v142CampaignFloor??runFloor)||0);
     const record=runFloor>0&&runFloor===hostFloor?runState?.v142WardenFloors?.[String(runFloor)]:null;
     const savedRunDefeat=Boolean(record?.resolved===true&&String(record.resolvedSourceId||"")===previousId);
+    const savedDefeats=runFloor>0&&runFloor===hostFloor&&Array.isArray(runState?.v142DefeatedWardenIds?.[String(runFloor)])
+      ?runState.v142DefeatedWardenIds[String(runFloor)].map(id=>String(id)):[];
+    // Count is not an ordinary enemy and does not use the Death Stalker
+    // singleton ledger. Recover his exact-floor defeat before he can spawn.
+    const count=host.stalker,countId=String(count?.id||"");
+    if(count&&countId==="count-loadula"&&(
+      savedDefeats.includes(countId)||
+      (record?.resolved===true&&String(record.resolvedSourceId||"")===countId)
+    )){
+      count.awake=false;count.near=false;count.permanentlyBanished=true;
+      count.v142WardenDefeated=true;count.v142WardenRewarded=true;
+      count.v142WardBroken=false;count.v142WardState="defeated";
+      count.hp=0;count.spawnTimer=Number.POSITIVE_INFINITY;count.stunMs=0;
+    }
     // Independent floor-local defeat records prevent old host state from
     // reviving a dead Warden if its primary defeated-ID ledger was lost.
     const witnessedDefeat=Boolean(previousId&&(
-      savedRunDefeat||
+      savedRunDefeat||savedDefeats.includes(previousId)||
       (host.timedRooms||[]).some(room=>String(room?.hunterId||"")===previousId&&room?.stalkerDefeated===true)||
       (host.v142WardenDomain?.cleansed===true&&String(host.v142WardenDomain?.sourceId||"")===previousId)
     ));
