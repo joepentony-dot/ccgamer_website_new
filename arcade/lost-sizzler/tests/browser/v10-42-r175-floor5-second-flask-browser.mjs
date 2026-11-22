@@ -139,9 +139,28 @@ try {
         assert.match(dock.buttonLabel||'',/1 held/i,'The live Banishment control must display the paid charge');
         assert.equal(dock.buttonVisibility,'visible','The real Banishment button must be CSS-visible for the live mobile player');
         assert.equal(dock.buttonCheckVisibility,true,'The touch control must pass the browser effective visibility check');
-        const physicallyVisible=await page.locator('#v104-touch-controls [data-action="banish"]').isVisible();
-        assert.equal(physicallyVisible,true,'The real touch control must pass Playwright physical visibility; inspect logged clipping geometry');
-        await page.locator('#v104-touch-controls [data-action="banish"]').tap({timeout:7000});
+        // Playwright's locator visibility may disagree with Chromium's live
+        // DOM visibility during this fullscreen-style mobile layout. Do not
+        // bypass the player-facing control or invoke gameplay functions.
+        // Verify its centre is within the screen and hit-tests to the REAL
+        // button, then send a real touchscreen gesture to those coordinates.
+        const touchPoint=await page.evaluate(()=>{
+          const button=document.querySelector('#v104-touch-controls [data-action="banish"]');
+          if(!button)throw new Error('Mobile Banishment touch target missing');
+          const rect=button.getBoundingClientRect(),x=rect.left+rect.width/2,y=rect.top+rect.height/2;
+          const hit=document.elementFromPoint(x,y);
+          return {x,y,hitTag:hit?.tagName||'',hitAction:hit?.closest?.('[data-action]')?.dataset.action||'',
+            hitText:hit?.textContent?.trim().slice(0,70)||'',isButtonOrChild:hit===button||button.contains(hit),
+            inViewport:x>=0&&x<innerWidth&&y>=0&&y<innerHeight,
+            buttonRect:{left:rect.left,top:rect.top,width:rect.width,height:rect.height}};
+        });
+        console.log('R175 real mobile physical touch hit-test:',JSON.stringify(touchPoint));
+        assert.equal(touchPoint.inViewport,true,'Mobile Banishment must lie inside the actual phone viewport');
+        assert.equal(touchPoint.isButtonOrChild,true,
+          'A real finger must hit the Banishment button, not an obscuring overlay or clipped element');
+        assert.equal(touchPoint.hitAction,'banish',
+          'The actual hit-tested action must be Ward-Break');
+        await page.touchscreen.tap(touchPoint.x,touchPoint.y);
       }else if(step===1){
         await page.keyboard.press('KeyB');
       }else{
