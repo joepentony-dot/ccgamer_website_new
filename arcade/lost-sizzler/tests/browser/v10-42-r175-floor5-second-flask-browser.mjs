@@ -49,6 +49,9 @@ try {
       p1.health=p1.maxHealth=9999;p1.invuln=999999;p1.inventory=[];
       p1.inventorySlots=Math.max(4,Number(p1.inventorySlots)||0);
       p1.banishmentEssence=0;
+      const generators=host.generators||[];
+      if(generators.length<3)throw new Error('Floor 5 three-generator encounter missing');
+      for(let i=0;i<3;i++){generators[i].alive=i===2;generators[i].v142EssenceAwarded=i<2}
       death.stunMs=999999;death.hitStunMs=999999;death.moveCooldown=999999;
       host.stalker.stunMs=999999;host.stalker.moveCooldown=999999;
       return {floor:run.floor,count:host.stalker.id,death:death.id,cost:window.CCGLostSizzlerV142ProceduralOverhaul.essenceCost(p1)};
@@ -100,7 +103,7 @@ try {
       if(config.mobile){
         const button=page.locator('#v104-touch-controls [data-action="banish"]');
         await button.waitFor({state:'visible'});await button.tap();
-      }else if(step===0){
+      }else if(step===1){
         await page.keyboard.press('KeyB');
       }else{
         const ok=await page.evaluate(()=>{
@@ -128,7 +131,7 @@ try {
     assert.deepEqual(errors,[],config.device+' browser errors: '+errors.join(' | '));
     await context.close();
   }
-  console.log('PASS R175 real Floor 5 desktop keyboard/gamepad and mobile touch two-Flask end-to-end transactions');
+  console.log('PASS R175 real Floor 5 desktop gamepad/second keyboard and mobile touch two-Flask end-to-end transactions');
 } finally {
   await browser.close().catch(()=>{});
   for(const sock of sockets)sock.destroy();
