@@ -109,4 +109,50 @@ assert.match(progressionSource,/if\(item\?\.kind==="banishment"&&inv\.some\(x=>x
 assert.match(progressionSource,/if\(item\?\.kind==="banishment"\)\{if\(player\.inventory\.some\(x=>x\?\.kind==="banishment"\)/,"inventory insertion must reject duplicate Ward-Break Charges regardless of Magic Sack tier");
 
 assert.ok(toasts.some(row=>/INVENTORY FULL/.test(row.title)),"Inventory-full reservation should give explicit player feedback");
+// R172: a carried charge plus a full Essence Vessel must not overfill the
+// Vessel, mark a one-time route reward consumed, or lose it on save/Continue.
+context.window.CCGLostSizzlerV142ProceduralOverhaul={essenceCost:()=>3};
+context.run={floor:4,stats:{},v142SealFragments:0,v142WardenFloors:{}};
+context.host={generators:[],arenas:[],shrines:[{id:"shrine4-full-vessel",active:false}]};
+player.forceFull=false;
+player.inventory=[{kind:"banishment",name:"Ward-Break Charge",qty:1}];
+player.banishmentEssence=3;
+const beforeFullVesselWarnings=toasts.length;
+tick();
+assert.equal(player.banishmentEssence,3,"Full Vessel must never be credited beyond its 3-Essence capacity");
+assert.equal(context.run.v142WardChargeRoutes["4"].pending,true,"Earned charge route remains reserved when both stores are full");
+assert.equal(context.run.v142WardChargeRoutes["4"].delivered,false,"Undelivered reward cannot be permanently claimed");
+assert.equal(context.run.v142WardChargeRoutes["4"].rewardType,null,"Reserved reward retains no misleading delivered kind");
+assert.ok(toasts.slice(beforeFullVesselWarnings).some(x=>/REWARD RESERVED/.test(x.title)),"Player must receive one reservation notice");
+const afterFullVesselWarning=toasts.length;
+tick();
+assert.equal(toasts.length,afterFullVesselWarning,"Quarter-second scans must not flood repeated full-Vessel notices");
+assert.equal(player.banishmentEssence,3);
+context.run=JSON.parse(JSON.stringify(context.run));
+tick();
+assert.equal(context.run.v142WardChargeRoutes["4"].pending,true,"Reserved reward survives JSON restoration");
+assert.equal(context.run.v142WardChargeRoutes["4"].delivered,false);
+player.inventory=[];
+tick();
+assert.equal(player.inventory.length,1,"Spending the prior charge must deliver one reserved charge automatically");
+assert.equal(player.inventory[0].kind,"banishment");
+assert.equal(player.banishmentEssence,3,"Delayed delivery cannot consume, overfill or rewrite stored Essence");
+assert.equal(context.run.v142WardChargeRoutes["4"].delivered,true);
+assert.equal(context.run.v142WardChargeRoutes["4"].pending,false);
+tick();
+assert.equal(player.inventory.length,1,"Repeated scans must not duplicate delivered reserved rewards");
+
+// If one Vessel space exists while a charge remains carried, the actual
+// +1 Essence conversion is still immediate and strictly capacity-bounded.
+context.run={floor:3,stats:{},v142SealFragments:0,v142WardenFloors:{}};
+context.host={generators:[],arenas:[{id:"arena3-vessel-space",cleared:true}],shrines:[]};
+player.inventory=[{kind:"banishment",qty:1}];
+player.banishmentEssence=2;
+tick();
+assert.equal(player.banishmentEssence,3,"A carried charge may convert a route into the last available Essence");
+assert.equal(context.run.v142WardChargeRoutes["3"].delivered,true);
+assert.equal(context.run.v142WardChargeRoutes["3"].rewardType,"essence");
+tick();
+assert.equal(player.banishmentEssence,3,"No conversion may be repeated after delivery");
+
 console.log("PASS v10-42 Warden charge routes contract");
