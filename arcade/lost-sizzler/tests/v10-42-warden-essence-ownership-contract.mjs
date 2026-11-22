@@ -561,4 +561,39 @@ wardRender.host.stalker.v142WardBroken=false;wardRender.host.stalker.vulnerableM
 checkWardenRender(()=>wardRender.renderCount(),"VULNERABLE",1);
 console.log("PASS real canvas Warden labels/health follow sealed, Ward-Broken and legacy temporary-vulnerable state");
 
+// R171: a lost primary defeat ledger must not resurrect a Warden whose
+// timed chamber or matching cleansed domain independently records its defeat.
+// The ordinary singleton recovery for undefeated actors remains intact.
+const r171Guard=soloEncounter().ctx.SYS.enforceDeathStalkerSingleton;
+const r171Id="death-stalker-floor-4";
+const r171Missing=extra=>({
+  enemies:[],deathStalkerId:r171Id,deathStalkerSpawn:{x:5,y:5,roomId:0},
+  v142CampaignFloor:4,defeatedDeathStalkers:[],timedRooms:[],voidStalkers:[],
+  ...extra
+});
+const timedWitness=r171Missing({timedRooms:[{id:"timed0",hunterId:r171Id,stalkerDefeated:true}]});
+assert.equal(r171Guard(timedWitness),null,"A defeated timed-chamber Warden must never be reconstructed");
+assert.deepEqual(Array.from(timedWitness.defeatedDeathStalkers),[r171Id],
+  "Lost defeat ledger should be repaired from exact matching timed-chamber evidence");
+assert.equal(timedWitness.enemies.length,0);
+r171Guard(timedWitness);
+assert.equal(timedWitness.enemies.length,0,"Later gameplay ticks cannot resurrect a timed-chamber defeat");
+const domainWitness=r171Missing({v142WardenDomain:{floor:4,sourceId:r171Id,cleansed:true}});
+assert.equal(r171Guard(domainWitness),null,"Cleansed Death Stalker domain must suppress reconstruction");
+assert.deepEqual(Array.from(domainWitness.defeatedDeathStalkers),[r171Id]);
+const unrelatedCount=r171Missing({v142WardenDomain:{floor:4,sourceId:"count-loadula",cleansed:true}});
+assert.equal(r171Guard(unrelatedCount).id,r171Id,"A Count-only clearance cannot erase the living Death Stalker");
+assert.equal(unrelatedCount.enemies.length,1);
+const genuinelyMissing=r171Missing();
+assert.equal(r171Guard(genuinelyMissing).id,r171Id,"Undefeated missing Death Stalker must still be repaired");
+assert.equal(r171Guard(genuinelyMissing).id,r171Id);
+assert.equal(genuinelyMissing.enemies.length,1,"Repeated singleton checks cannot create duplicates");
+const staleDuplicate=r171Missing({
+  enemies:[{id:r171Id,x:5,y:5,alive:true,deathStalker:true,voidStalker:true}],
+  v142WardenDomain:{floor:4,sourceId:r171Id,cleansed:true}
+});
+assert.equal(r171Guard(staleDuplicate).alive,false,
+  "An old live duplicate cannot override an independently confirmed domain defeat");
+console.log("PASS R171 independent Warden defeat tombstones and retained single-spawn recovery");
+
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");
