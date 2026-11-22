@@ -3038,9 +3038,9 @@
   {
     "name": "Barry Leitch",
     "slug": "barry-leitch",
-    "count": 8,
+    "count": 7,
     "c64Count": 5,
-    "amigaCount": 3,
+    "amigaCount": 2,
     "firstYear": 1988,
     "lastYear": 1991,
     "existing": true,
@@ -3056,7 +3056,6 @@
       "fiendish-freddys-big-top-o-fun",
       "heroquest",
       "lotus-turbo-challenge-2",
-      "nightbreed-the-interactive-movie",
       "silkworm",
       "super-cars-2"
     ]
