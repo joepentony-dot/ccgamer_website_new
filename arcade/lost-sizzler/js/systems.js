@@ -761,6 +761,11 @@ window.CCGSystems=(()=>{
     const savedRunDefeat=Boolean(record?.resolved===true&&String(record.resolvedSourceId||"")===previousId);
     const savedDefeats=runFloor>0&&runFloor===hostFloor&&Array.isArray(runState?.v142DefeatedWardenIds?.[String(runFloor)])
       ?runState.v142DefeatedWardenIds[String(runFloor)].map(id=>String(id)):[];
+    // A regenerated floor can assign a new actor ID even though the saved
+    // domain confirms its sole Death Stalker was already cleansed. Preserve
+    // that same-floor outcome without treating Count or another floor as dead.
+    const cleansedFloorDeathStalker=Boolean(record?.resolved===true&&
+      record?.sourceKind==="death-stalker"&&String(record.resolvedSourceId||""));
     // Count is not an ordinary enemy and does not use the Death Stalker
     // singleton ledger. Recover his exact-floor defeat before he can spawn.
     const count=host.stalker,countId=String(count?.id||"");
@@ -776,7 +781,7 @@ window.CCGSystems=(()=>{
     // Independent floor-local defeat records prevent old host state from
     // reviving a dead Warden if its primary defeated-ID ledger was lost.
     const witnessedDefeat=Boolean(previousId&&(
-      savedRunDefeat||savedDefeats.includes(previousId)||
+      savedRunDefeat||savedDefeats.includes(previousId)||cleansedFloorDeathStalker||
       (host.timedRooms||[]).some(room=>String(room?.hunterId||"")===previousId&&room?.stalkerDefeated===true)||
       (host.v142WardenDomain?.cleansed===true&&String(host.v142WardenDomain?.sourceId||"")===previousId)
     ));
@@ -794,7 +799,7 @@ window.CCGSystems=(()=>{
     const floorIds=new Set(stalkers.map(e=>String(e.id||"")));
     // A previously banished floor Stalker stays banished even if an older
     // duplicate entry was still marked alive during state reconciliation.
-    const permanentlyDefeated=stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||
+    const permanentlyDefeated=cleansedFloorDeathStalker||stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||
       Boolean(previousId&&floorIds.has(previousId)&&defeatedIds.has(previousId));
     if(stalkers.length>1)host.enemies=(host.enemies||[]).filter(e=>!(e?.deathStalker&&e?.voidStalker)||e===keep);
     if(keep){
