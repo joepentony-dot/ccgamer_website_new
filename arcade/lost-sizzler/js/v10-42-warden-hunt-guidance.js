@@ -79,7 +79,13 @@
 
   function questHtml(n=floor(),r=R(),p=P()){
     const profile=PROFILES[n]||PROFILES[5],state=huntState(n,r,p),done=state.done?" quest-done":"",tick=state.done?"✓ ":"";
-    return`<div class="v142-warden-contract${done}" data-v142-warden-contract="true">${tick}<b>OPTIONAL WARDEN — ${esc(profile.name)}</b><br>${esc(state.title)} · ${esc(state.detail)}<br><small>${esc(rewardText(n,r))}</small></div>`;
+    // Warden completion and earned field-route delivery are independent.
+    // Do not hide an outstanding reward beneath a completed/cached domain
+    // or confuse a completed Warden objective with a delivered charge.
+    const pending=pendingRouteRows(r),waiting=pending.length>0&&!/RESERVED/.test(state.title);
+    const floors=pending.map(row=>Number(row.floor)).join("/");
+    const reservation=waiting?`<br><span class="v142-warden-reservation" data-v142-pending-reward="true">WARD-BREAK REWARD RESERVED (F${esc(floors)}) · ${esc(reservationHelp(p))}</span>`:"";
+    return`<div class="v142-warden-contract${done}" data-v142-warden-contract="true">${tick}<b>OPTIONAL WARDEN — ${esc(profile.name)}</b><br>${esc(state.title)} · ${esc(state.detail)}${reservation}<br><small>${esc(rewardText(n,r))}</small></div>`;
   }
   function renderWardenQuest(){
     const r=R(),p=P();if(!r||!p||!UI?.quests)return false;
