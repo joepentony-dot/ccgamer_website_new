@@ -71,6 +71,35 @@ context.updateQuests();
 assert.match(UI.quests.innerHTML,/FIELD CHARGE RESERVED/,"A full-inventory field reward should be visible as reserved");
 assert.match(UI.quests.innerHTML,/later floor/i,"Reserved reward copy should explain cross-floor delivery");
 
+// R177 red-before-green: R172 can reserve a full-Vessel reward while the
+// player already holds a charge. The previous quest hid the reservation,
+// even though freeing an inventory slot would not solve this state.
+player.inventory=[{kind:"banishment"}];
+player.banishmentEssence=3;
+context.window.CCGLostSizzlerV142ProceduralOverhaul={essenceCost:()=>3};
+context.updateQuests();
+assert.match(UI.quests.innerHTML,/WARD BREAK READY — REWARD RESERVED/,"Held charge cannot hide a reserved Floor 5-style reward");
+assert.match(UI.quests.innerHTML,/Essence Vessel is full \(3\/3\)/,"Explain why second route reward is not yet delivered");
+assert.match(UI.quests.innerHTML,/Spend the carried charge on a sealed Warden with B/,"Give the real remedy for a full Vessel and held charge");
+assert.doesNotMatch(api.routeInstruction(2,run,player),/Free an inventory slot/,"Full Vessel is not an inventory-slot problem");
+const fullVesselExit=api.exitIssues().find(issue=>issue.kind==="reserved-charge");
+assert.match(fullVesselExit.text,/Spend the carried charge/,"Optional exit information must preserve full-Vessel guidance");
+UI.floorSummary.innerHTML="BASE FLOOR SUMMARY";
+assert.equal(api.appendReservationSummary(),true);
+assert.match(UI.floorSummary.innerHTML,/Essence Vessel is full \(3\/3\)/,"Floor summary must not falsely promise a free bag slot");
+assert.equal(api.appendReservationSummary(),false,"Reserve summary must remain idempotent");
+
+player.banishmentEssence=2;
+context.updateQuests();
+assert.match(UI.quests.innerHTML,/automatically become \+1 Essence/,"With Vessel capacity, reserved reward converts into Essence without spending a charge");
+assert.doesNotMatch(api.routeInstruction(2,run,player),/Spend the carried charge/,"Do not tell player to waste a charge when automatic Essence conversion is available");
+
+player.inventory=[];
+player.banishmentEssence=0;
+context.updateQuests();
+assert.match(UI.quests.innerHTML,/Free an inventory slot/,"Without a carried charge a pending field reward still needs bag space");
+
+
 run.v142WardenFloors["2"].resolved=true;
 run.v142WardenFloors["2"].killFragmentAwarded=true;
 run.v142WardChargeRoutes["2"].pending=false;
@@ -103,7 +132,7 @@ const reservedOnlyExit=context.floorComplete("TESTER");
 assert.equal(reservedOnlyExit,"BASE FLOOR COMPLETE:TESTER","A reserved field charge is safe and should not block floor completion");
 assert.equal(floorCalls,4,"Reserved-only exit should call the underlying floor completion directly");
 assert.match(UI.floorSummary.innerHTML,/WARD-BREAK REWARD RESERVED/,"Floor summary should make the safe carried reservation visible");
-assert.match(UI.floorSummary.innerHTML,/auto-deliver on a later floor/,"Floor summary should explain cross-floor reservation delivery");
+assert.match(UI.floorSummary.innerHTML,/delivered automatically, even on a later floor/,"Floor summary should explain cross-floor reservation delivery");
 run.v142WardChargeRoutes["2"].pending=false;
 
 run.floor=5;
