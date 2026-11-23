@@ -299,7 +299,18 @@ window.CCGSystems=(()=>{
     }else{
       for(let y=cy-1;y<=cy+1;y++)for(let x=room.x;x<=room.x+room.w;x++){const q={x,y};if(x===cx)bridge.push(q);else pit.push(q)}
     }
-    if([...pit,...bridge].some(q=>world.map[q.y]?.[q.x]!==0))return null;
+    // Reject an optional puzzle room when its required crossing lane is
+    // already occupied by a monster, chest, loot or another placed feature.
+    // Floor terrain alone is insufficient: movePlayer checks live collision
+    // and can stop before triggerWeightBridge sees the far-side crossing.
+    // The entrance and landing tiles matter as much as the three bridge spans.
+    const dx=side==="west"?1:side==="east"?-1:0,dy=side==="north"?1:side==="south"?-1:0;
+    const sorted=[...bridge].sort((a,b)=>dx?(a.x-b.x)*dx:(a.y-b.y)*dy);
+    const approach={x:sorted[0].x-dx,y:sorted[0].y-dy};
+    const landing={x:sorted[sorted.length-1].x+dx,y:sorted[sorted.length-1].y+dy};
+    const crossing=[approach,...bridge,landing];
+    if([...pit,...crossing].some(q=>world.map[q.y]?.[q.x]!==0))return null;
+    if(crossing.some(q=>used.has(cell(q.x,q.y))))return null;
     const far=q=>side==="west"?q.x>cx+2:side==="east"?q.x<cx-2:side==="north"?q.y>cy+2:q.y<cy-2;
     let reward=firstFreeCell(world,room,used,far);if(!reward){reward=firstFreeCell(world,room,used,q=>side==="west"?q.x>cx:side==="east"?q.x<cx:side==="north"?q.y>cy:q.y<cy)}if(!reward)return null;
     const wallCandidate=q=>{
