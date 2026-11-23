@@ -58,7 +58,7 @@ try {
         showNamedDossier=function(...args){
           history.push({t:Math.round(performance.now()),event:'call:showNamedDossier',
             name:String(args[0]||''),namedDossierAutoShown:Boolean(run?.namedDossierAutoShown),
-            source:String(new Error('dossier caller').stack||'').split('\\n').slice(1,8).join(' | '),
+            source:String(new Error('dossier caller').stack||'').split('\n').slice(1,8).join(' | '),
             freedNamed:(host?.enemies||[]).filter(e=>e.follower&&!e.alive).map(e=>e.follower.name)});
           return originalShowNamedDossier.apply(this,args);
         };
