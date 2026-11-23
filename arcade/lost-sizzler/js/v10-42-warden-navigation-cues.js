@@ -49,8 +49,16 @@
   }
 
   function radarGeometry(canvas,p){
-    if(!canvas||!p)return null;const rect=canvas.getBoundingClientRect?.()||{width:canvas.width||300,height:canvas.height||160},rw=Math.max(260,Math.round(Number(rect.width)||Number(canvas.width)||300)),rh=Math.max(140,Math.round(Number(rect.height)||Number(canvas.height)||160));
-    const pad=9,cols=Math.min(Number(C.worldWidth)||96,Math.max(46,Math.floor(rw/6))),rows=Math.min(Number(C.worldHeight)||64,Math.max(24,Math.floor(rh/5.5))),minX=Math.max(0,Math.min((Number(C.worldWidth)||96)-cols,Math.round(Number(p.x)-cols/2))),minY=Math.max(0,Math.min((Number(C.worldHeight)||64)-rows,Math.round(Number(p.y)-rows/2))),maxX=minX+cols,maxY=minY+rows,scale=Math.min((rw-pad*2)/cols,(rh-pad*2)/rows),mapW=cols*scale,mapH=rows*scale,ox=(rw-mapW)/2,oy=(rh-mapH)/2;
+    if(!canvas||!p)return null;
+    // Use the exact room-aware viewport produced by the canonical radar.
+    // A separate 46-column viewport drew earned Warden clues on the wrong
+    // tiles, sometimes making a second apparent player/target marker.
+    const g=window.__CCG_RADAR_DIAGNOSTICS__;
+    if(!g||!Number.isFinite(Number(g.scale))||Number(g.scale)<=0||
+       Number(g.playerMarker?.worldX)!==Number(p.x)||Number(g.playerMarker?.worldY)!==Number(p.y)||
+       Number(g.canvasWidth)!==Number(canvas.width)||Number(g.canvasHeight)!==Number(canvas.height))return null;
+    const rw=Number(g.canvasWidth),rh=Number(g.canvasHeight),minX=Number(g.minX),minY=Number(g.minY),maxX=Number(g.maxX),maxY=Number(g.maxY),scale=Number(g.scale),ox=(rw-Number(g.mapWidth))/2,oy=(rh-Number(g.mapHeight))/2;
+    if(![minX,minY,maxX,maxY,ox,oy].every(Number.isFinite))return null;
     return{rw,rh,minX,minY,maxX,maxY,scale,ox,oy,inside:q=>q&&q.x>=minX&&q.x<maxX&&q.y>=minY&&q.y<maxY,px:q=>ox+(q.x-minX)*scale,py:q=>oy+(q.y-minY)*scale};
   }
 
