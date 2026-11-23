@@ -1,4 +1,4 @@
-/* C64 Dungeon Carnage V10.42 r177 — Warden hunt guidance, optional quest visibility, floor briefings and safe exit confirmation. */
+/* C64 Dungeon Carnage V10.42 r178 — Warden hunt guidance, optional quest visibility, floor briefings and safe exit confirmation. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_WARDEN_HUNT_GUIDANCE__)return;
@@ -79,7 +79,13 @@
 
   function questHtml(n=floor(),r=R(),p=P()){
     const profile=PROFILES[n]||PROFILES[5],state=huntState(n,r,p),done=state.done?" quest-done":"",tick=state.done?"✓ ":"";
-    return`<div class="v142-warden-contract${done}" data-v142-warden-contract="true">${tick}<b>OPTIONAL WARDEN — ${esc(profile.name)}</b><br>${esc(state.title)} · ${esc(state.detail)}<br><small>${esc(rewardText(n,r))}</small></div>`;
+    // Warden completion and earned field-route delivery are independent.
+    // Do not hide an outstanding reward beneath a completed/cached domain
+    // or confuse a completed Warden objective with a delivered charge.
+    const pending=pendingRouteRows(r),waiting=pending.length>0&&!/RESERVED/.test(state.title);
+    const floors=pending.map(row=>Number(row.floor)).join("/");
+    const reservation=waiting?`<br><span class="v142-warden-reservation" data-v142-pending-reward="true">WARD-BREAK REWARD RESERVED (F${esc(floors)}) · ${esc(reservationHelp(p))}</span>`:"";
+    return`<div class="v142-warden-contract${done}" data-v142-warden-contract="true">${tick}<b>OPTIONAL WARDEN — ${esc(profile.name)}</b><br>${esc(state.title)} · ${esc(state.detail)}${reservation}<br><small>${esc(rewardText(n,r))}</small></div>`;
   }
   function renderWardenQuest(){
     const r=R(),p=P();if(!r||!p||!UI?.quests)return false;
@@ -133,5 +139,5 @@
   if(baseFloorComplete)floorComplete=function(by){try{return guardedFloorComplete(by)}catch(error){console.warn("[Lost Sizzler V10.42] Warden exit guard failed safely",error);return baseFloorComplete(by)}};
 
   try{renderWardenQuest();briefFloor(false)}catch(_){}
-  window.CCGLostSizzlerV142WardenHuntGuidance={version:"V10.42 r177",profiles:PROFILES,huntState,routeInstruction,reservationHelp,rewardText,questHtml,renderWardenQuest,floorBriefText,briefFloor,exitIssues,playerExitContact,guardedFloorComplete,appendReservationSummary};
+  window.CCGLostSizzlerV142WardenHuntGuidance={version:"V10.42 r178",profiles:PROFILES,huntState,routeInstruction,reservationHelp,rewardText,questHtml,renderWardenQuest,floorBriefText,briefFloor,exitIssues,playerExitContact,guardedFloorComplete,appendReservationSummary};
 })();
