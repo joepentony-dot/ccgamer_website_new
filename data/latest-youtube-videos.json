@@ -2,8 +2,14 @@
   "version": 1,
   "channelId": "UCHROCLVcatA449Gg-PoqlKw",
   "source": "youtube-atom-feed",
-  "syncedAt": "2026-11-21T17:59:36.182Z",
+  "syncedAt": "2026-11-23T19:00:20.130Z",
   "videos": [
+    {
+      "id": "T-WeyFyllec",
+      "title": "Who Dares Wins II (C64) – How Commando Forced a Sequel",
+      "publishedAt": "2026-11-23T18:44:24.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/T-WeyFyllec/mqdefault.jpg"
+    },
     {
       "id": "wjSKlelMg5M",
       "title": "Why Gloom stood out on Amiga in 1995",
@@ -33,12 +39,6 @@
       "title": "10 Gruesome Sounds – Can YOU Identify Them? | Friday the 13th C64",
       "publishedAt": "2026-11-13T18:30:37.000Z",
       "thumbnail": "https://i.ytimg.com/vi/GMH3zjOMvWI/mqdefault.jpg"
-    },
-    {
-      "id": "0K4hWBrSXsE",
-      "title": "Imagine Playing THIS C64 Game at 7 Years Old 😳",
-      "publishedAt": "2026-11-13T17:30:15.000Z",
-      "thumbnail": "https://i.ytimg.com/vi/0K4hWBrSXsE/mqdefault.jpg"
     }
   ]
 }
