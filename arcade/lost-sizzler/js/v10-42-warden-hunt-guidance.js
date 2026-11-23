@@ -106,7 +106,7 @@
   function exitIssues(n=floor(),r=R(),h=H()){
     if(!r)return[];const row=record(n,r),domain=h?.v142WardenDomain,issues=[],resolved=Boolean(row?.resolved||row?.cleansed||domain?.cleansed),available=!row?.noWarden&&row?.available!==false&&Boolean(row?.available===true||domain?.active||domain?.cleansed||resolved);
     if(available&&!resolved){
-      issues.push({kind:"warden-debt",blocking:false,text:"WARDEN UNRESOLVED — leaving now adds Warden Debt, giving later major guardians +10% maximum HP and +1 armour for this skipped floor."});
+      issues.push({kind:"warden-debt",blocking:false,text:"OPTIONAL WARDEN NOT CLEARED — the main floor objective is complete. Descending without defeating the Warden adds 1 Warden Debt stack: later major guardians gain +10% maximum HP and +1 armour."});
     }else if(resolved&&!row?.cacheFragmentAwarded&&Boolean(row?.killFragmentAwarded||row?.fragmentAwarded)){
       issues.push({kind:"cache-fragment",blocking:false,text:"WARDEN CACHE UNCLAIMED — the second Seal Fragment for this floor will be left behind if you finish the floor now."});
     }
