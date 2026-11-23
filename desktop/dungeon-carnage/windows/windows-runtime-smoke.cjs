@@ -121,9 +121,15 @@ async function verifyWindowsFloorFivePressure(page,{resumeCheckpoint=false}={}){
   await page.waitForTimeout(550);
   const staged=await page.evaluate(resumeCheckpoint=>{
     if(!resumeCheckpoint){
-      beginRun({seed:"WIN-FLOOR-5-THREE-THREATS"});
+      // #solo-btn has already created the real running player. Calling
+      // beginRun a second time while a run is active can be refused by the
+      // production run-owner guard, leaving its original random seed intact.
+      // Construct the synthetic deterministic run from the game progression
+      // API instead; save/restore below still uses the real menu and storage.
+      run=PGR.makeRun({difficulty:run?.difficulty||"ARCADE",
+        seed:"WIN-FLOOR-5-THREE-THREATS"});
       if(String(run?.seed||"")!=="WIN-FLOOR-5-THREE-THREATS")
-        return {error:"The controlled Floor 5 seed was replaced during startup",seed:run?.seed};
+        return {error:"Progression API did not create requested Floor 5 fixture seed",seed:run?.seed};
       run.floor=5;run.deepest=5;run.modifier=null;
       startWorld(PGR.floorSeed(run),false,true,false);
       // Capture the authoritative Floor 5 *entrance* before touching bosses,
