@@ -149,6 +149,26 @@ try {
       assert.equal(paid.essence,0,'One legitimate purchase consumes one Vessel cost');
       assert.equal(paid.score,setup.score,'Essence charge never spends score');
       if(config.mobile){
+        // A legitimate first-ever named-enemy encounter may queue its dossier
+        // while the Alchemist modal is open. It opens when the shop closes.
+        // Close that *real* overlay using a real finger, as a player must;
+        // never hide it from JS or call Ward-Break directly as a shortcut.
+        await page.waitForTimeout(220);
+        for(let dismissal=0;dismissal<8;dismissal++){
+          const discovery=await page.evaluate(()=>({
+            open:mode==='dossier'&&!document.getElementById('named-dossier-panel')?.classList.contains('hidden'),
+            source:(window.__r175StateHistory||[]).filter(x=>x.event==='call:showNamedDossier').at(-1)||null
+          }));
+          if(!discovery.open)break;
+          assert.match(discovery.source?.source||'',/openNextDiscovery/,
+            'The blocking dossier must be a legitimate first-contact discovery, not a hidden input bug');
+          await page.locator('#named-dossier-close-top').tap();
+          await page.waitForFunction(()=>mode==='playing'&&document.getElementById('named-dossier-panel')?.classList.contains('hidden'));
+          console.log('R175 closed legitimate first-encounter dossier with physical touch:',JSON.stringify(discovery.source));
+          await page.waitForTimeout(75);
+        }
+        assert.equal(await page.evaluate(()=>document.getElementById('named-dossier-panel')?.classList.contains('hidden')),
+          true,'The player must have closed any real first-contact dossier before attempting Banishment');
         // Capture the real touch-dock readiness before the gesture. A hidden
         // button is not equivalent to a failed second Ward-Break transaction.
         const dock=await page.evaluate(()=>{
