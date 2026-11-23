@@ -64,6 +64,7 @@
   const MAX_RECORDED_CLIP_MS=10000;
   const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),ownerVoiceIndexes:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0,pendingGesture:null,enemyRoomVoiceKeys:new Set(),guardianVoiceSeen:new WeakSet(),banishmentPromptSeen:new WeakSet()};
   let voiceContext=null,voiceImpulse=null;
+  let announcedRun=null,pendingWelcomeRun=null;
   const primedVoiceSources=new Set(),primingVoiceSources=new Set();
 
   const lines={
@@ -478,6 +479,9 @@
     if(meta?.ccgDialogueVoiceHandled!==true){
       const key=classifyToast(meta.title,meta.text);
       if(!key)return;
+      // Run-opening world banners must not replace the delayed welcome with
+      // speculative trap speech before the player has begun exploring.
+      if(pendingWelcomeRun===run&&(key==="trap"||key==="trapsNearby"))return;
       const activeRun=typeof run==="object"?run:null;
       try{sayKey(key)}catch(_){}
       if(key==="arenaLockdown")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("surviveAmbush",{cooldown:0})}catch(_){}},2400);
@@ -514,20 +518,20 @@
       return result;
     };
   }
-  let announcedRun=null;
   function resetRunVoiceState(){
     stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");
   }
   function onAuthoritativeRunStarted(event){
     const detail=event?.detail||{},activeRun=detail.run||(typeof run==="object"?run:null);
     if(!activeRun||announcedRun===activeRun)return;
-    announcedRun=activeRun;resetRunVoiceState();
+    announcedRun=activeRun;pendingWelcomeRun=activeRun;resetRunVoiceState();
     setTimeout(()=>{
       try{
         if(run!==activeRun||mode!=="playing")return;
         sayKey("welcome",{cooldown:0,priority:62,interrupt:true});
         if(detail.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
       }catch(_){}
+      finally{if(pendingWelcomeRun===activeRun)pendingWelcomeRun=null}
     },180);
   }
   window.addEventListener("ccg:run-started",onAuthoritativeRunStarted);
