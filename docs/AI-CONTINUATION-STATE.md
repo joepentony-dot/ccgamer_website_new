@@ -1,3 +1,9 @@
+## 23 November 2026 — R178 completed-Warden reserved reward visibility (BRANCH ONLY)
+
+- Started from merged R177 main `e47cedda6a917888fec04dfd7016838f80ad1a3a` and reused the real-source `v10-42-warden-hunt-guidance.js` owner. The previous R177 instructions correctly explain full-Vessel reservations during active Warden combat, but **reproduced** a distinct state: Warden resolved and Seal Cache claimed (or unclaimed) while its earned field Ward-Break route remains pending. The quest showed only Warden completion or cache recovery, hiding the still-reserved charge, despite the exit issue already knowing it existed.
+- Candidate on branch `fix/dungeon-r178-keep-reserved-rewards-visible-20261123` retains completed or cache-unclaimed Warden status but adds a distinct escaped reservation line with originating floor and accurate R177 instructions. It avoids duplicate notices when `huntState` already names the reservation, and removes the notice when delivered. No charge transaction, combat, save ownership, boss reset, original audio or backend change.
+- Extended original Warden guidance source contract for full-Vessel completed/cache-unclaimed, no duplicate and no stale notice; isolated source execution passed four state transitions. Both HTML entry routes, bootstrap and manifest staged at `V10.42 r178` / `20261123r178`; exact-head CI, normal merge, Pages and live acceptance remain pending. This is a display correction only; the owner's original Floor 5 freeze remains **unreproduced / NOT OWNER ACCEPTED**.
+
 ## 23 November 2026 — Dungeon R177 reserved second-charge instructions (PR CANDIDATE, BRANCH ONLY)
 
 - Starting point: protected website `main` `5cbdc04e66a9cd113e1c47255ee9c97ca9a65790`, after qualified Adventure PR #3154. No conflicting open Dungeon game PR found. Scope branch `fix/dungeon-r177-reserved-reward-guidance-20261123`.

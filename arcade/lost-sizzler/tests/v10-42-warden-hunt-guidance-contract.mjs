@@ -127,6 +127,23 @@ assert.equal(floorCalls,3,"Completed Warden legacy should pass straight through 
 
 run.v142WardChargeRoutes["2"].pending=true;
 run.v142WardChargeRoutes["2"].delivered=false;
+// R178: the cache/warden domain can be marked complete while a distinct
+// earned route reward is still reserved. Previously the quest hid it.
+player.inventory=[{kind:"banishment"}];
+player.banishmentEssence=3;
+context.updateQuests();
+assert.match(UI.quests.innerHTML,/WARDEN LEGACY COMPLETE/,"The defeated Warden must remain marked complete");
+assert.match(UI.quests.innerHTML,/data-v142-pending-reward="true"/,"Completed Warden quest must still show reserved earned reward");
+assert.match(UI.quests.innerHTML,/WARD-BREAK REWARD RESERVED \(F2\)/,"Reservation must name the originating floor");
+assert.match(UI.quests.innerHTML,/Spend the carried charge on a sealed Warden with B/,"Completed domain must retain full-Vessel next step");
+assert.equal((UI.quests.innerHTML.match(/WARD-BREAK REWARD RESERVED \(F2\)/g)||[]).length,1,"Reserved reward must not be duplicated");
+run.v142WardenFloors["2"].cacheFragmentAwarded=false;
+context.updateQuests();
+assert.match(UI.quests.innerHTML,/CACHE FRAGMENT UNCLAIMED/,"Warden cache warning must survive reward visibility");
+assert.match(UI.quests.innerHTML,/WARD-BREAK REWARD RESERVED \(F2\)/,"Claimable cache does not hide a separate reserved field reward");
+run.v142WardenFloors["2"].cacheFragmentAwarded=true;
+player.inventory=[];
+player.banishmentEssence=0;
 UI.floorSummary.innerHTML="BASE FLOOR SUMMARY";
 const reservedOnlyExit=context.floorComplete("TESTER");
 assert.equal(reservedOnlyExit,"BASE FLOOR COMPLETE:TESTER","A reserved field charge is safe and should not block floor completion");
@@ -134,6 +151,8 @@ assert.equal(floorCalls,4,"Reserved-only exit should call the underlying floor c
 assert.match(UI.floorSummary.innerHTML,/WARD-BREAK REWARD RESERVED/,"Floor summary should make the safe carried reservation visible");
 assert.match(UI.floorSummary.innerHTML,/delivered automatically, even on a later floor/,"Floor summary should explain cross-floor reservation delivery");
 run.v142WardChargeRoutes["2"].pending=false;
+context.updateQuests();
+assert.doesNotMatch(UI.quests.innerHTML,/data-v142-pending-reward/,"Delivered or cancelled reservation must disappear from completed Warden quest");
 
 run.floor=5;
 run.v142WardenFloors["5"]={floor:5,available:true,resolved:false,killFragmentAwarded:false,cacheFragmentAwarded:false};
