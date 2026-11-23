@@ -74,6 +74,20 @@ host.stalker.v142WardBroken=true;
 markers=api.markerState(player,run,host,world);
 assert.equal(markers.some(m=>m.kind==="broken-warden"),true,"An actively Ward-Broken Count Loadula should be trackable");
 
+// R181: overlays must consume the canonical room-aware viewport rather than
+// inventing a separate 46-column map (which placed icons on unrelated tiles).
+assert.equal(api.radarGeometry(canvas,player),null,"Without authoritative radar geometry, do not misplace extra markers");
+const diag={canvasWidth:320,canvasHeight:160,mapWidth:160,mapHeight:120,scale:8,minX:10,minY:9,maxX:30,maxY:24,playerMarker:{worldX:player.x,worldY:player.y}};
+context.window.__CCG_RADAR_DIAGNOSTICS__=diag;
+const geometry=api.radarGeometry(canvas,player);
+assert.ok(geometry,"Earned markers should use current canonical geometry");
+assert.equal(geometry.px({x:12,y:12}),96,"Marker X must align with the base room-aware radar");
+assert.equal(geometry.py({x:12,y:12}),44,"Marker Y must align with the base room-aware radar");
+assert.equal(geometry.inside({x:9,y:12}),false,"Offscreen marker must be clipped by the canonical viewport");
+player.x+=1;
+assert.equal(api.radarGeometry(canvas,player),null,"Player movement must invalidate stale radar transforms");
+player.x-=1;
+
 const baseResult=context.renderRadarPanel(player);
 assert.equal(baseResult,"BASE RADAR","The navigation wrapper must preserve the underlying radar renderer's return value");
 assert.equal(baseRadarCalls,1,"The navigation wrapper must call the underlying radar renderer exactly once");
