@@ -115,9 +115,15 @@ async function verifyWindowsFloorFivePressure(page,{resumeCheckpoint=false}={}){
     await page.click("#continue-save-btn");
   }else await page.click("#solo-btn");
   await page.waitForFunction(()=>mode==="playing"&&Boolean(p1&&host&&world),null,{timeout:30000});
+  // The menu click may still be completing deferred fullscreen/audio startup.
+  // Settle the actual first run before deliberately constructing the fixture;
+  // otherwise its pending start can replace our Floor 5 run mid-setup.
+  await page.waitForTimeout(550);
   const staged=await page.evaluate(resumeCheckpoint=>{
     if(!resumeCheckpoint){
       beginRun({seed:"WIN-FLOOR-5-THREE-THREATS"});
+      if(String(run?.seed||"")!=="WIN-FLOOR-5-THREE-THREATS")
+        return {error:"The controlled Floor 5 seed was replaced during startup",seed:run?.seed};
       run.floor=5;run.deepest=5;run.modifier=null;
       startWorld(PGR.floorSeed(run),false,true,false);
       // Capture the authoritative Floor 5 *entrance* before touching bosses,
@@ -125,6 +131,10 @@ async function verifyWindowsFloorFivePressure(page,{resumeCheckpoint=false}={}){
       const checkpoint=captureFloorEntryCheckpoint();
       if(Number(checkpoint?.floor)!==5||!saveFloorCheckpoint(false))
         return {error:"Cannot save a genuine Floor 5 entry checkpoint"};
+      if(String(run?.seed||"")!=="WIN-FLOOR-5-THREE-THREATS")
+        return {error:"Saving the Floor 5 checkpoint changed the active run",
+          seed:run?.seed,checkpointSeed:checkpoint?.run?.seed,
+          currentFloor:run?.floor,checkpointFloor:checkpoint?.floor};
     }
     const saved=PGR.loadCheckpoint();
     if(Number(saved?.floor)!==5||Number(run?.floor)!==5||
@@ -137,7 +147,12 @@ async function verifyWindowsFloorFivePressure(page,{resumeCheckpoint=false}={}){
     const death=(host?.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker);
     const count=host?.stalker,gens=(host?.generators||[]).filter(g=>g.alive);
     if(!room||!guardian||!death||!count||gens.length!==3)
-      return {error:"Missing canonical Windows Floor 5 actors or generators",seed:run?.seed};
+      return {error:"Missing canonical Windows Floor 5 actors or generators",
+        seed:run?.seed,checkpointSeed:saved?.run?.seed,
+        floor:run?.floor,restore:Boolean(resumeCheckpoint),
+        bossFight:Boolean(fight),guardian:Boolean(guardian),
+        deathStalker:Boolean(death),countLoadula:Boolean(count),
+        remainingGenerators:gens.length};
     // Move the test actors into a verified, walkable Guardian room as in the
     // already-qualified browser pressure contract. This is a synthetic setup.
     const cells=[];
