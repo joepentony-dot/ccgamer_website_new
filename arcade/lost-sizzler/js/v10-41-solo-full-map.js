@@ -12,7 +12,8 @@
     if(document.querySelector('link[data-ccg-v141-solo-full-map="true"]'))return;
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href="css/v10-41-solo-full-map.css?v=20260824a";
+    const cache=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"latest");
+    link.href=`css/v10-41-solo-full-map.css?v=${encodeURIComponent(cache)}`;
     link.dataset.ccgV141SoloFullMap="true";
     document.head.appendChild(link);
   }
