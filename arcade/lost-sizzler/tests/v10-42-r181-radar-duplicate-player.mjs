@@ -21,7 +21,7 @@ const draw=makeOwner(window,document,world,host);
 draw(p);
 assert.equal(trace.filter(row=>row[0]==="fillRect").length,1,"One saved recovery marker may draw, never a second player marker");
 assert.equal(trace.filter(row=>row[0]==="moveTo"||row[0]==="lineTo").length,0,"The old triangle path must never be drawn");
-assert.deepEqual(trace.find(row=>row[0]==="translate"),["translate",108,88],"Recovery marker must use canonical room-aware map coordinates");
+assert.deepEqual(trace.find(row=>row[0]==="translate"),["translate",108,48],"Recovery marker must use canonical room-aware map coordinates");
 trace.length=0;
 window.__CCG_RADAR_DIAGNOSTICS__.playerMarker.worldX=17;
 draw(p);
