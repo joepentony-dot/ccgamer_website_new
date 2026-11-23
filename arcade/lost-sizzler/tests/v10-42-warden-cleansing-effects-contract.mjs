@@ -101,7 +101,7 @@ assert.equal(context.run.alert,58,"Generic cleansing should reduce ambient alert
 // An unresolved floor reports the debt consequence instead of pretending it was cleansed.
 context.run.v142WardenFloors["3"].resolved=false;context.run.v142SkippedWardenFloors=[3];context.UI.floorSummary.innerHTML="BASE FLOOR SUMMARY";context.floorComplete("skip-contract");
 assert.equal(baseFloorCompletions,2,"Unresolved Warden feedback must still preserve the base floor-complete handler");
-assert.match(context.UI.floorSummary.innerHTML,/WARDEN NOT CLEARED/,"Fallback must not imply the main floor objective is unfinished");
+assert.match(context.UI.floorSummary.innerHTML,/OPTIONAL WARDEN[\s\S]*WARDEN SKIPPED/,"A Warden already recorded as skipped must be identified as an optional skipped encounter, not an unfinished main objective");
 assert.match(context.UI.floorSummary.innerHTML,/WARDEN DEBT \+1/,"Floor clear should expose the future guardian penalty from a skipped Warden");
 
 // Floor 4: dedicated hazard cells are extinguished and armour is restored once.
