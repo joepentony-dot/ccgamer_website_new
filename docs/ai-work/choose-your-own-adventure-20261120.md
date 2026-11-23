@@ -1,3 +1,10 @@
+## 23 November 2026 — mobile reading alignment hardening (PR #3154)
+
+- Current main at branch creation: `4f9756b0f59363c20ae84e2698fe4551bdeec7b5`. New isolated PR [#3154](https://github.com/joepentony-dot/ccgamer_website_new/pull/3154) on `fix/adventure-mobile-reading-position-20261123`; preserves existing live gamebook content, graphics, text, styles, header, and SEO.
+- The existing `positionPageForReading` could restore a stale inline `scrollBehavior` after two render calls before the pending animation frame. Introduced a generation-owned snapshot, stale-callback cancellation and two-frame bounded realignment of the next page; no late timers or arbitrary scrolling after reading begins.
+- Added actual-source Node VM regression covering mobile fixed header, 20px layout adjustment, rapid successive choices and desktop cover/spread positioning. Wired it to the existing CCG Site Safety workflow; advanced service-worker public code version to v270 and page script URL to mobile-reading-v270, as required by the existing public cache guard.
+- **Status:** code committed to PR; exact-head workflow qualification, guarded merge, Pages deployment and authentic mobile browser acceptance remain required. Do not treat this PR as a fix for unrelated Adventure user interface issues until verified.
+
 # Choose Your Own Adventure — 20 November 2026
 
 ## Status

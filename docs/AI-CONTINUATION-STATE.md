@@ -1,3 +1,8 @@
+## 23 November 2026 — Adventure mobile reading alignment (PR #3154)
+
+- After verified Dungeon Windows PR #3153 merge `4f9756b0f59363c20ae84e2698fe4551bdeec7b5` and successful post-merge Windows/Page/site/SEO/nav checks, isolated Adventure PR #3154 was opened. It fixes overlapping render callbacks leaving an inline scroll-behaviour override active, aligns the next mobile story over two frames, includes a Node VM regression in required site safety, and advances the public-code cache to v270.
+- PR #3154 is **NOT MERGED/LIVE** pending latest exact-head full CI, fresh-main and actual mobile acceptance; preserve production adventure and Omega. No Dungeon gameplay/backend, accounts or public score release change.
+
 ## 22 November 2026, 18:00 GMT — Dungeon R172 full-Vessel field reward candidate (BRANCH ONLY)
 
 - Fresh protected website `main` `e2838e03446a08b0720970b3d1f0848e514c85d1` includes merged QA PR #3141 and R171 PR #3140; no open Dungeon implementation PR. Sole new branch `fix/dungeon-r172-reserve-full-vessel-field-charge-20261122`.
