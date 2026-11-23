@@ -152,6 +152,9 @@
     }
 
     diagnostics.trades++;
+    // The mobile dock owns inventory status separately from the game HUD.
+    // Notify it only after the real transaction has committed one charge.
+    try{window.dispatchEvent(new CustomEvent("ccg:dungeon-inventory-changed",{detail:{kind:"banishment",source:"alchemist",count:PGR.inventoryKindCount(player,"banishment")}}))}catch(_){}
     try{S.sfx("shrine")}catch(_){}
     try{showToast("BANISHMENT FLASK DISTILLED",`${need} Essence consumed. Exactly one Banishment Flask has been added; Score and Gold are unchanged.`,"gold",8000)}catch(_){}
     try{if(host)host.revision++;broadcastWorld();renderShop();sync()}catch(_){}
