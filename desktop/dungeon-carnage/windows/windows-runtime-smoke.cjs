@@ -100,6 +100,94 @@ async function verifyAudioAndIsolation(){
   const dotfile=await fetch(base+".env",{signal:AbortSignal.timeout(5000)});
   assert.equal(dotfile.status,404,"Hidden server files must be inaccessible");
 }
+// Prove that controls in a restored real Electron run still accept *physical*
+// keyboard events. Merely advancing requestAnimationFrame would miss a game
+// that draws continuously but refuses movement/fire input.
+async function verifyRestoredFloorFivePhysicalInput(page){
+  const fixture=await page.evaluate(()=>{
+    if(mode!=="playing"||Number(run?.floor)!==5||!p1||!host||!world)
+      return {error:"Restored Floor 5 must be actively playable"};
+    const fight=host.r114BossFight,room=world.rooms?.[fight?.roomId];
+    if(!room)return {error:"Restored Floor 5 guardian room missing"};
+    const enemies=(host.enemies||[]).filter(e=>e.alive);
+    const occupied=(x,y)=>world.map?.[y]?.[x]!==0||
+      W.roomAt(world,x,y)!==fight.roomId||
+      !W.playerWalkable(world.map,x,y,host)||
+      (host.blockingDecor||[]).some(d=>d.x===x&&d.y===y)||
+      (host.generators||[]).some(g=>g.alive&&g.x===x&&g.y===y)||
+      (host.chests||[]).some(ch=>ch.active&&ch.x===x&&ch.y===y)||
+      (host.items||[]).some(item=>item.active&&item.x===x&&item.y===y)||
+      (host.doors||[]).some(d=>!d.open&&d.x===x&&d.y===y)||
+      enemies.some(e=>e.x===x&&e.y===y)||
+      (host.stalker?.awake&&host.stalker.x===x&&host.stalker.y===y);
+    const away=(x,y)=>enemies.every(e=>Math.abs(e.x-x)+Math.abs(e.y-y)>=4)&&
+      (!host.stalker?.awake||Math.abs(host.stalker.x-x)+Math.abs(host.stalker.y-y)>=4);
+    const dirs=[
+      {key:"ArrowRight",dx:1,dy:0},{key:"ArrowDown",dx:0,dy:1},
+      {key:"ArrowLeft",dx:-1,dy:0},{key:"ArrowUp",dx:0,dy:-1}
+    ];
+    let chosen=null;
+    for(let y=room.y+1;y<room.y+room.h&&!chosen;y++)
+      for(let x=room.x+1;x<room.x+room.w&&!chosen;x++){
+        if(occupied(x,y)||!away(x,y))continue;
+        for(const dir of dirs){
+          if(!occupied(x+dir.dx,y+dir.dy)&&away(x+dir.dx,y+dir.dy)){
+            chosen={key:dir.key,start:{x,y},target:{x:x+dir.dx,y:y+dir.dy}};
+            break;
+          }
+        }
+      }
+    if(!chosen)return {error:"No safe adjacent walkable tiles for restored Floor 5 physical input",seed:run.seed};
+    p1.x=chosen.start.x;p1.y=chosen.start.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);p1.health=p1.maxHealth;
+    p1.hitStunMs=0;p1.invuln=0;p1.controlLocked=false;p1.controlsLocked=false;
+    p1.firearmUnlocked=true;p1.maxMana=Math.max(1000,Number(p1.maxMana)||0);p1.mana=p1.maxMana;
+    window.CCGLostSizzlerV142R47FirearmEvolution?.collapseOwnership?.(p1);
+    move1=0;fire1=0;fireBuffer1=0;projectileCD=0;input.clear();
+    chosen.ammo=Number(p1.mana);
+    chosen.firearm=Boolean(p1.firearmUnlocked&&p1.weapon);
+    chosen.cadence=Number(C.player.moveDelay)*(Number(p1.moveMultiplier)||1);
+    return chosen;
+  });
+  assert.ok(!fixture.error,"Restored Floor 5 movement fixture: "+JSON.stringify(fixture));
+  assert.equal(fixture.firearm,true,"Restored Floor 5 must have a usable weapon for physical fire probe");
+  assert.ok(fixture.cadence>95,"Movement cadence must exceed one short physical keypress: "+fixture.cadence);
+  await page.keyboard.press(fixture.key,{delay:65});
+  await page.waitForFunction(target=>
+    Number(p1?.x)===target.x&&Number(p1?.y)===target.y,
+    fixture.target,{timeout:3500,polling:16});
+  const moved=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y),mode:String(mode)}));
+  assert.deepEqual({x:moved.x,y:moved.y},fixture.target,
+    "Real keyboard direction must move the restored Floor 5 player by one tile");
+  assert.equal(moved.mode,"playing");
+  await page.keyboard.down("Space");
+  await page.waitForTimeout(260);
+  await page.keyboard.up("Space");
+  await page.waitForFunction(before=>
+    mode==="playing"&&Number(p1?.mana||0)<before,
+    fixture.ammo,{timeout:3500,polling:25});
+  const after=await page.evaluate(()=>({
+    mode:String(mode),floor:Number(run?.floor),
+    ammo:Number(p1?.mana||0),
+    frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+    remaining:(host.generators||[]).filter(g=>g.alive).length,
+    guardianAlive:Boolean((host.enemies||[]).find(e=>e.id===host.r114BossFight?.bossId)?.alive),
+    countAwake:Boolean(host.stalker?.awake),
+    deathAlive:Boolean((host.enemies||[]).find(e=>e.deathStalker&&e.voidStalker)?.alive)
+  }));
+  assert.equal(after.mode,"playing");
+  assert.equal(after.floor,5);
+  assert.equal(after.remaining,1);
+  assert.equal(after.guardianAlive,true);
+  assert.equal(after.countAwake,true);
+  assert.equal(after.deathAlive,true);
+  assert.ok(after.ammo<fixture.ammo,"Restored Floor 5 physical fire must consume ammunition");
+  console.log("WINDOWS FLOOR 5 RESTORED INPUT PASS: "+JSON.stringify({
+    move:fixture.key,start:fixture.start,target:fixture.target,
+    ammoBefore:fixture.ammo,ammoAfter:after.ammo,frames:after.frames
+  }));
+}
+
 // Controlled performance acceptance inside the genuine packaged Windows EXE.
 // A second pass must restore a real Floor 5 entry checkpoint through the
 // normal Resume Saved Run button, not reconstruct an in-memory saved run.
@@ -213,6 +301,7 @@ async function verifyWindowsFloorFivePressure(page,{resumeCheckpoint=false}={}){
   assert.equal(staged.countAwake,true);
   assert.equal(staged.deathAlive,true);
   assert.equal(staged.complete,false);
+  if(resumeCheckpoint)await verifyRestoredFloorFivePhysicalInput(page);
   const samples=[];
   for(let second=1;second<=9;second++){
     await page.waitForTimeout(1000);
