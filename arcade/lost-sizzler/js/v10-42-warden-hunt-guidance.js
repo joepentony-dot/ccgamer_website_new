@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.42 r3 — Warden hunt guidance, optional quest visibility, floor briefings and safe exit confirmation. */
+/* C64 Dungeon Carnage V10.42 r177 — Warden hunt guidance, optional quest visibility, floor briefings and safe exit confirmation. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_WARDEN_HUNT_GUIDANCE__)return;
@@ -133,5 +133,5 @@
   if(baseFloorComplete)floorComplete=function(by){try{return guardedFloorComplete(by)}catch(error){console.warn("[Lost Sizzler V10.42] Warden exit guard failed safely",error);return baseFloorComplete(by)}};
 
   try{renderWardenQuest();briefFloor(false)}catch(_){}
-  window.CCGLostSizzlerV142WardenHuntGuidance={version:"V10.42 r3",profiles:PROFILES,huntState,routeInstruction,reservationHelp,rewardText,questHtml,renderWardenQuest,floorBriefText,briefFloor,exitIssues,playerExitContact,guardedFloorComplete,appendReservationSummary};
+  window.CCGLostSizzlerV142WardenHuntGuidance={version:"V10.42 r177",profiles:PROFILES,huntState,routeInstruction,reservationHelp,rewardText,questHtml,renderWardenQuest,floorBriefText,briefFloor,exitIssues,playerExitContact,guardedFloorComplete,appendReservationSummary};
 })();
