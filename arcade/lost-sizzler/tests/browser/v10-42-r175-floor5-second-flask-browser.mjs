@@ -52,6 +52,16 @@ try {
       if(device==='mobile'){
         const history=[];
         window.__r175StateHistory=history;
+        // Diagnostic only: preserve the live dossier-opening function while
+        // recording the actual caller and whether the named-foe reward fired.
+        const originalShowNamedDossier=showNamedDossier;
+        showNamedDossier=function(...args){
+          history.push({t:Math.round(performance.now()),event:'call:showNamedDossier',
+            name:String(args[0]||''),namedDossierAutoShown:Boolean(run?.namedDossierAutoShown),
+            source:String(new Error('dossier caller').stack||'').split('\\n').slice(1,8).join(' | '),
+            freedNamed:(host?.enemies||[]).filter(e=>e.follower&&!e.alive).map(e=>e.follower.name)});
+          return originalShowNamedDossier.apply(this,args);
+        };
         const record=event=>{
           const root=document.getElementById('v104-touch-controls');
           const overlays=[...document.querySelectorAll('.game-area>.overlay:not(.hidden)')].map(x=>x.id);
