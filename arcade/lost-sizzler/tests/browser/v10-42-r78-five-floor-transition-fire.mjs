@@ -436,7 +436,35 @@ async function probeFloorFiveTripleThreatPressure(context,origin){
     assert.equal(staged.stalkerAlive,true);
     assert.equal(staged.countAwake,true);
     assert.equal(staged.mode,"playing");
-    await page.waitForTimeout(12000);
+    // Aggregate frame counts can hide a several-second stall followed by a
+    // successful catch-up. Sample the actual game clock throughout the live
+    // triple-threat encounter, while leaving its 12-second duration unchanged.
+    const liveSamples=[];
+    for(let second=1;second<=12;second++){
+      await page.waitForTimeout(1000);
+      liveSamples.push(await page.evaluate(()=>({
+        frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+        elapsed:Number(host?.floorElapsed||0),floor:Number(run?.floor||0),
+        mode:String(mode||""),active:String(document.body.dataset.runActive||""),
+        remaining:(host?.generators||[]).filter(g=>g.alive).length
+      })));
+    }
+    const windows=[];
+    for(const sampleIndex of [2,5,8,11]){
+      const current=liveSamples[sampleIndex];
+      const prior=sampleIndex===2?staged:liveSamples[sampleIndex-3];
+      const frameDelta=current.frames-prior.frames,elapsedDelta=current.elapsed-prior.elapsed;
+      windows.push({seconds:sampleIndex+1,frameDelta,elapsedDelta});
+      assert.equal(current.floor,5,"The pressured Guardian encounter must remain on Floor 5 throughout the soak");
+      assert.equal(current.mode,"playing","The pressured game must not silently enter a blocked mode");
+      assert.equal(current.active,"true","The live run must not deactivate during the triple-threat encounter");
+      assert.equal(current.remaining,1,"Exactly one generator must remain during each pressure window");
+      assert.ok(frameDelta>=5,
+        "Floor 5 live frames must progress during EVERY 3-second pressure window, not only in the aggregate: "+JSON.stringify(windows));
+      assert.ok(elapsedDelta>=800,
+        "Floor 5 game time must progress during EVERY 3-second pressure window: "+JSON.stringify(windows));
+    }
+    console.log("Dungeon Floor 5 three-second liveness windows:",JSON.stringify(windows));
     const after=await page.evaluate(()=>{
       const fight=host.r114BossFight;
       return{

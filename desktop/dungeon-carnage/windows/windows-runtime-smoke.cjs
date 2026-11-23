@@ -100,6 +100,105 @@ async function verifyAudioAndIsolation(){
   const dotfile=await fetch(base+".env",{signal:AbortSignal.timeout(5000)});
   assert.equal(dotfile.status,404,"Hidden server files must be inaccessible");
 }
+// Controlled performance acceptance inside the genuine packaged Windows EXE.
+// It does not import or recreate the owner's unavailable original save/seed.
+async function verifyWindowsFloorFivePressure(page){
+  await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true,null,{timeout:45000});
+  await page.click("#solo-btn");
+  await page.waitForFunction(()=>mode==="playing"&&Boolean(p1&&host&&world),null,{timeout:30000});
+  const staged=await page.evaluate(()=>{
+    beginRun({seed:"WIN-FLOOR-5-THREE-THREATS"});
+    run.floor=5;run.deepest=5;run.modifier=null;
+    startWorld(PGR.floorSeed(run),false,true,false);
+    const fight=host?.r114BossFight,room=world?.rooms?.[fight?.roomId];
+    const guardian=(host?.enemies||[]).find(e=>e.alive&&e.id===fight?.bossId);
+    const death=(host?.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker);
+    const count=host?.stalker,gens=(host?.generators||[]).filter(g=>g.alive);
+    if(!room||!guardian||!death||!count||gens.length!==3)
+      return {error:"Missing canonical Windows Floor 5 actors or generators",seed:run?.seed};
+    // Move the test actors into a verified, walkable Guardian room as in the
+    // already-qualified browser pressure contract. This is a synthetic setup.
+    const cells=[];
+    for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
+      if(world.map[y]?.[x]!==0||W.roomAt(world,x,y)!==fight.roomId||
+         !W.playerWalkable(world.map,x,y,host)||
+         (host.blockingDecor||[]).some(d=>d.x===x&&d.y===y)||
+         (host.generators||[]).some(g=>g.alive&&g.x===x&&g.y===y)||
+         (host.chests||[]).some(c=>c.active&&c.x===x&&c.y===y)||
+         (host.items||[]).some(i=>i.active&&i.x===x&&i.y===y))continue;
+      cells.push({x,y});
+    }
+    const player=cells.find(q=>Math.abs(q.x-guardian.x)+Math.abs(q.y-guardian.y)>=3&&
+      !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y));
+    const rivals=cells.filter(q=>player&&(q.x!==player.x||q.y!==player.y)&&
+      (q.x!==guardian.x||q.y!==guardian.y)&&
+      !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y)&&
+      Math.abs(q.x-player.x)+Math.abs(q.y-player.y)>=2);
+    if(!player||rivals.length<2)return {error:"No valid independent Guardian-room pressure cells",seed:run.seed};
+    p1.x=player.x;p1.y=player.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.maxHealth=5000;p1.health=5000;p1.armor=0;p1.hitStunMs=0;p1.invuln=0;
+    p1.controlLocked=false;p1.controlsLocked=false;
+    death.x=rivals[0].x;death.y=rivals[0].y;
+    death.dossierSeen=true;death.aiState="chase";
+    death.moveCooldown=180;death.attackCooldown=950;
+    count.x=rivals[1].x;count.y=rivals[1].y;
+    count.stunMs=0;count.spawnTimer=0;count.moveCooldown=180;
+    for(const e of host.enemies||[])e.dossierSeen=true;
+    // Avoid unrelated first-contact dossier onboarding during this stress
+    // probe; the real dossier behaviour has separate physical-input coverage.
+    for(const entry of C.followerElites||[])PGR.recordNamedEncounter(entry.name,false);
+    for(const g of gens.slice(0,2))damageGenerator(g,Math.max(1,g.hp),p1);
+    const triggered=triggerBossFight(p1);
+    updateStalker(16);updateFloorObjective();
+    return {
+      triggered,mode:String(mode),floor:Number(run.floor),
+      generatorCount:(host.generators||[]).filter(g=>g.alive).length,
+      guardianAlive:Boolean(guardian.alive),countAwake:Boolean(count.awake),
+      deathAlive:Boolean(death.alive),complete:Boolean(host.objective?.complete),
+      frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+      elapsed:Number(host.floorElapsed||0)
+    };
+  });
+  assert.ok(!staged.error,"Packaged Windows Floor 5 setup: "+JSON.stringify(staged));
+  assert.equal(staged.triggered,true);
+  assert.equal(staged.mode,"playing");
+  assert.equal(staged.floor,5);
+  assert.equal(staged.generatorCount,1);
+  assert.equal(staged.guardianAlive,true);
+  assert.equal(staged.countAwake,true);
+  assert.equal(staged.deathAlive,true);
+  assert.equal(staged.complete,false);
+  const samples=[];
+  for(let second=1;second<=9;second++){
+    await page.waitForTimeout(1000);
+    samples.push(await page.evaluate(()=>({
+      frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+      elapsed:Number(host?.floorElapsed||0),mode:String(mode||""),
+      floor:Number(run?.floor||0),remaining:(host?.generators||[]).filter(g=>g.alive).length,
+      guardianAlive:Boolean((host?.enemies||[]).find(e=>e.id===host.r114BossFight?.bossId)?.alive),
+      countAwake:Boolean(host?.stalker?.awake),
+      deathAlive:Boolean((host?.enemies||[]).find(e=>e.deathStalker&&e.voidStalker)?.alive),
+      health:Number(p1?.health||0)
+    })));
+  }
+  const windows=[];
+  for(const i of [2,5,8]){
+    const before=i===2?staged:samples[i-3],after=samples[i];
+    const windowSample={endSecond:i+1,frames:after.frames-before.frames,elapsed:after.elapsed-before.elapsed};
+    windows.push(windowSample);
+    assert.equal(after.mode,"playing","Packaged Windows encounter must stay responsive");
+    assert.equal(after.floor,5);
+    assert.equal(after.remaining,1);
+    assert.equal(after.guardianAlive,true);
+    assert.equal(after.countAwake,true);
+    assert.equal(after.deathAlive,true);
+    assert.ok(after.health>0);
+    assert.ok(windowSample.frames>=5,"Packaged Windows renderer stopped accepting frames: "+JSON.stringify(windows));
+    assert.ok(windowSample.elapsed>=800,"Packaged Windows game clock stopped progressing: "+JSON.stringify(windows));
+  }
+  console.log("WINDOWS FLOOR 5 TRIPLE-THREAT PASS: "+JSON.stringify({staged,windows}));
+}
+
 async function main(){
   let run=null;
   try{
@@ -125,6 +224,7 @@ async function main(){
         ["assets/audio/music/"+filename+".wav"],
         "Packaged browser soundtrack must choose local track for "+mood);
     }
+    await verifyWindowsFloorFivePressure(run.page);
     await run.page.evaluate(([key,value])=>localStorage.setItem(key,value),[probeKey,probeValue]);
     assert.equal(await run.page.evaluate(key=>localStorage.getItem(key),probeKey),probeValue);
     await stop(run);run=null;
