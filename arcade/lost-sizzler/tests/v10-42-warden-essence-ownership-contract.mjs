@@ -676,6 +676,46 @@ assert.equal(r174CountDomain.stalker.permanentlyBanished,true,
   "Legacy Count-owned cleansed domain should also survive without the new tombstone");
 console.log("PASS R174 independent Count and Death Stalker floor tombstones / fresh-floor safety");
 
+// R182: a legitimately defeated floor Warden must remain defeated if a
+// regenerated host assigns its singleton a DIFFERENT actor ID. Earlier exact-ID
+// tombstones could not recognise that stale-host identity. Match the saved
+// floor/domain type rather than removing the independent Count or future floors.
+const r182OriginalId="death-stalker-floor-4-old",r182RegeneratedId="death-stalker-floor-4-rebuilt";
+const r182ClearedRun={floor:4,
+  v142WardenFloors:{"4":{resolved:true,sourceKind:"death-stalker",
+    sourceId:r182OriginalId,resolvedSourceId:r182OriginalId}},
+  v142DefeatedWardenIds:{"4":[r182OriginalId]}};
+const r182RebuiltHost=staleId=>r171Missing({
+  deathStalkerId:staleId,enemies:[{id:r182RegeneratedId,x:5,y:5,
+    alive:true,deathStalker:true,voidStalker:true}]
+});
+const r182Restored=r182RebuiltHost(r182RegeneratedId);
+assert.equal(r171Guard(r182Restored,r182ClearedRun).alive,false,
+  "A regenerated ID must not revive an already-cleansed same-floor Death Stalker");
+assert.ok(r182Restored.defeatedDeathStalkers.includes(r182RegeneratedId),
+  "The regenerated ID must enter the host defeat ledger");
+r171Guard(r182Restored,r182ClearedRun);
+assert.equal(r182Restored.enemies.length,1,"Repeated reconciliation must preserve singleton count");
+assert.equal(r182Restored.enemies[0].alive,false,
+  "Subsequent ticks must not reawaken a regenerated defeated Warden");
+const r182StaleHostId=r182RebuiltHost(r182OriginalId);
+assert.equal(r171Guard(r182StaleHostId,r182ClearedRun).alive,false,
+  "A stale host ID must not bypass run-level floor clearance");
+const r182CountOnly={floor:4,v142WardenFloors:{"4":{
+  resolved:true,sourceKind:"count-loadula",resolvedSourceId:"count-loadula"}}};
+assert.equal(r171Guard(r182RebuiltHost(r182RegeneratedId),r182CountOnly).alive,true,
+  "Count-only clearance must not erase a separate undefeated Death Stalker");
+const r182NotCleared={floor:4,v142WardenFloors:{"4":{
+  resolved:false,sourceKind:"death-stalker",resolvedSourceId:r182OriginalId}}};
+assert.equal(r171Guard(r182RebuiltHost(r182RegeneratedId),r182NotCleared).alive,true,
+  "An unresolved Death Stalker domain must not be treated as defeated");
+const r182WrongFloor={floor:5,v142WardenFloors:{"5":{
+  resolved:true,sourceKind:"death-stalker",resolvedSourceId:r182OriginalId}}};
+assert.equal(r171Guard(r182RebuiltHost(r182RegeneratedId),r182WrongFloor).alive,true,
+  "Another floor's defeat must not suppress the active Floor 4 Warden");
+console.log("PASS R182 changed-ID restored Warden stays defeated; fresh, Count and cross-floor safeguards");
+
+
 
 
 
