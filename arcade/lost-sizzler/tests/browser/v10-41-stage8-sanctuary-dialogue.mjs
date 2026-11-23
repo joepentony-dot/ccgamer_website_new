@@ -48,6 +48,18 @@ try{
     for(let y=room.y;y<=room.y+room.h&&!tile;y++)for(let x=room.x;x<=room.x+room.w;x++)if(W.walkable(world.map,x,y,host)){tile={x,y};break}
     if(!tile)return{missingTile:true,roomId:room.id};
 
+    // An unrelated start-of-run IMPORTANT INFORMATION notice may still own
+    // the retained banner when Chromium reaches this fixture. The real toast
+    // owner queues the SANCTUARY announcement until that notice expires.
+    // Advance only the existing notification lifecycle before asserting the
+    // fresh room entry; never bypass or weaken the Sanctuary dialogue checks.
+    const retainedBefore=Boolean(retainedToast&&toastTimer>0);
+    const retainedTitleBefore=retainedBefore?String(UI.toastTitle.textContent||""):"";
+    if(retainedBefore){
+      updateToast(Number(toastTimer)+1);
+      if(retainedToast)throw Error("Retained notification did not release through updateToast");
+    }
+
     p1.x=tile.x;p1.y=tile.y;p1.rx=tile.x;p1.ry=tile.y;p1.lastRoom=-999;
     const before={score:Number(score||0),health:Number(p1.health||0),maxHealth:Number(p1.maxHealth||0),inventory:JSON.stringify(p1.inventory||[]),revision:Number(host.revision||0),presentations:Number(api.state.presentations||0),suppressed:Number(api.state.suppressed||0)};
     updateRoomMessage(p1,false);
@@ -66,7 +78,7 @@ try{
     const isolatedArgs=api.augmentSanctuaryToast(["SANCTUARY — ISOLATION TEST","Canonical sanctuary text.","green",1000]);
     if(priorSpecial)document.body.dataset.specialMode=priorSpecial;else delete document.body.dataset.specialMode;
 
-    return{roomId:room.id,before,first,second,after,injuredHint,missingGearHint,fullyEquippedHint,isolated:String(isolatedArgs[1]||""),toastDepth:depth(window.showToast,"__ccgStage8ScoutToastBridge"),sanctuaryDepth:depth(window.showToast,"__ccgStage8SanctuaryDialogue"),controller:window.CCGLostSizzlerModeRuntime?.detect?.()||""};
+    return{roomId:room.id,retainedBefore,retainedTitleBefore,before,first,second,after,injuredHint,missingGearHint,fullyEquippedHint,isolated:String(isolatedArgs[1]||""),toastDepth:depth(window.showToast,"__ccgStage8ScoutToastBridge"),sanctuaryDepth:depth(window.showToast,"__ccgStage8SanctuaryDialogue"),controller:window.CCGLostSizzlerModeRuntime?.detect?.()||""};
   });
 
   assert.notEqual(result.missingSanctuary,true,"generated Solo floor must expose the existing sanctuary-room contract");
