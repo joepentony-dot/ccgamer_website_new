@@ -143,6 +143,19 @@ assert.match(UI.quests.innerHTML,/OPTIONAL WARDEN — SIGIL PRESSURE/,"Floor 5 s
 assert.match(UI.quests.innerHTML,/live corruption stack to the final encounter/,"Floor 5 briefing should explain direct final-encounter consequences");
 assert.match(api.floorBriefText(5,run,player),/Warden Debt permanently gives later major guardians \+10% maximum HP and \+1 armour/,"Floor briefing text should state the exact skip consequence");
 
+run.v142WardChargeRoutes["5"].unlocked=true;
+run.v142WardChargeRoutes["5"].pending=true;
+player.inventory=[{kind:"banishment"}];
+player.banishmentEssence=3;
+context.updateQuests();
+assert.match(UI.quests.innerHTML,/OPTIONAL WARDEN — SIGIL PRESSURE/,"Floor 5 identity stays in the quest");
+assert.match(UI.quests.innerHTML,/WARD BREAK READY — REWARD RESERVED/,"Floor 5 shows reserved second charge while holding a first");
+assert.match(UI.quests.innerHTML,/Essence Vessel is full \(3\/3\)/,"Floor 5 explains full Vessel rather than suggesting extra bag space");
+assert.match(api.floorBriefText(5,run,player),/Spend the carried charge on a sealed Warden with B/,"Floor 5 briefing gives an actionable second-charge route");
+run.v142WardChargeRoutes["5"].pending=false;
+player.inventory=[];
+player.banishmentEssence=0;
+
 run.floor=3;
 run.v142WardenFloors["3"]={floor:3,available:false,noWarden:true};
 context.updateQuests();
