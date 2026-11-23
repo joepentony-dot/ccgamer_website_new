@@ -108,7 +108,7 @@ async function verifyWindowsFloorFivePressure(page,{resumeCheckpoint=false}={}){
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true,null,{timeout:45000});
   if(resumeCheckpoint){
     await page.waitForFunction(()=>{
-      const saved=window.PGR?.loadCheckpoint?.();
+      const saved=window.CCGProgression?.loadCheckpoint?.();
       const button=document.getElementById("continue-save-btn");
       return Number(saved?.floor)===5&&Boolean(button)&&!button.classList.contains("hidden");
     },null,{timeout:30000});
