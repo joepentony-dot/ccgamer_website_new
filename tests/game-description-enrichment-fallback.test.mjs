@@ -54,3 +54,15 @@ test('five curated C64 editorial fixes survive repeatable YouTube enrichment', (
     assert.deepEqual(override.sources, source.games[slug].sources, slug + ' citation links lost');
   }
 });
+
+test('Who Dares Wins II video stays on the approved upload with a valid SEO fallback', () => {
+  const games = require('../games/games.json');
+  const matches = games.filter(game => game.system === 'C64' && game.slug === 'who-dares-wins-2');
+  assert.equal(matches.length, 1, 'there must be exactly one C64 Who Dares Wins II record');
+  const game = matches[0];
+  assert.equal(game.videoid, 'T-WeyFyllec', 'do not restore the previous YouTube uploads');
+  assert.ok(wordCount(game.description) >= 40, 'retain the verified source fallback when video metadata is missing');
+  const selected = selectDescription(game, null, null);
+  assert.equal(selected.sourceKind, 'games-json', 'the archive must publish without YouTube metadata');
+  assert.equal(selected.description, game.description);
+});
