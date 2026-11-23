@@ -10,7 +10,7 @@
   const ROUTES={
     1:{id:"alchemist-baseline",name:"ALCHEMIST ROUTE",objective:"Distil Banishment Essence at the sanctuary Alchemist.",reward:"The baseline route stays available for the entire run."},
     2:{id:"capacitor-core",name:"CAPACITOR CORE",objective:"Destroy any monster generator on this depth.",reward:"A ruptured generator yields one field-ready Ward-Break Charge."},
-    3:{id:"arena-seal",name:"ARENA SEAL",objective:"Clear both waves of the sealed arena.",reward:"The arena seal condenses into one field-ready Ward-Break Charge."},
+    3:{id:"memory-vault",name:"MEMORY VAULT",objective:"Solve the five-pad Memory Vault sequence on Floor 3.",reward:"The solved vault releases one field-ready Ward-Break Charge."},
     4:{id:"ashen-catalyst",name:"ASHEN CATALYST",objective:"Invoke any shrine on this depth.",reward:"The spent shrine leaves enough residue for one field-ready Ward-Break Charge."},
     5:{id:"seal-forge",name:"SEAL FORGE",objective:"Enter Floor 5 carrying at least 6 Seal Fragments.",reward:"Ward Temper forges one field-ready Ward-Break Charge without consuming Essence."}
   };
@@ -39,14 +39,14 @@
     if(n===1)return true;
     if(!h||!r)return false;
     if(n===2)return (h.generators||[]).some(g=>g&&g.alive===false);
-    if(n===3)return (h.arenas||[]).some(a=>a?.cleared);
+    if(n===3)return Boolean(h.memoryPuzzle?.solved);
     if(n===4)return (h.shrines||[]).some(s=>s&&s.active===false);
     if(n===5)return sealCount(r)>=6;
     return false;
   }
   function sourceText(n,h=H()){
     if(n===2){const g=(h?.generators||[]).find(x=>x&&x.alive===false);return g?.id?`Generator ${g.id} destroyed`:"Monster generator destroyed"}
-    if(n===3)return"Sealed arena cleared";
+    if(n===3)return"Memory Vault sequence solved";
     if(n===4)return"Shrine invoked";
     if(n===5)return`${sealCount()} Seal Fragments carried into Floor 5`;
     return"Sanctuary Alchemist";
@@ -108,7 +108,7 @@
     if(row.delivered)return row.rewardType==="essence"?`WARD ROUTE: ${profile.name} → +1 ESSENCE`:`WARD ROUTE: ${profile.name} → CHARGE EARNED`;
     if(row.pending)return`WARD ROUTE: ${profile.name} READY`;
     if(n===2)return"WARD ROUTE: DESTROY GENERATOR";
-    if(n===3)return"WARD ROUTE: CLEAR ARENA";
+    if(n===3)return"WARD ROUTE: SOLVE MEMORY VAULT";
     if(n===4)return"WARD ROUTE: INVOKE SHRINE";
     return`WARD ROUTE: SEALS ${sealCount(r)}/6`;
   }
