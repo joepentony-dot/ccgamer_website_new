@@ -102,27 +102,45 @@ const badge=isEnd?`<div class="ending-badge ${esc(s.grade)}">${s.grade==='bad'?'
 return `${header()}<div class="top-info container"><div>${count(st.current)} &nbsp; <b>${esc(s.year)}</b></div><div>YOUR JOURNEY <span class="track"><i style="width:${visitedPercent}%"></i></span> &nbsp; ${discovered.length}/${END_KEYS.length} endings found</div></div><main class="book book-transition" id="gamebook" data-scene-theme="${esc(s.theme)}" data-ending="${esc(s.grade||'')}"><article class="story-page"><div class="chapter-meta"><span class="chapter-tag">${esc(s.year)} · ${esc(s.chapter)}</span><span class="book-page-no">Page ${PAGE_NO[destination]}</span></div>${badge}<h2>${esc(s.title)}</h2><div class="story-text">${s.body.map(p=>'<p>'+prose(p)+'</p>').join('')}</div><div class="story-photo-strip" aria-label="Photographs of retro hardware and equipment">${scenePhotoCodes(s).map(photoCard).join('')}</div>${choiceHTML}<div class="story-footer"><button data-action="back" ${!st.history.length?'disabled':''}>← TURN BACK</button><span>${isEnd?'THE END · OR IS IT?':'Choose carefully. There is no automatic right answer.'}</span><button data-action="journal">ENDINGS ›</button></div></article>${artSection(s)}</main>${lower()}`;}
 function go(i){const scene=STORY[st.current];if(!scene||scene.grade)return;const ch=scene.choices[i];if(!ch||effectCost(ch.effect)>st.m)return;st.history.push({current:st.current,m:st.m,b:st.b,r:st.r,n:st.n,steps:st.steps,visited:[...(st.visited||[])]});if(st.history.length>320)st.history.shift();for(const match of (ch.effect||'').matchAll(/([mbrn])([+-])(\d+)/g)){const key=match[1],n=Number(match[3])*(match[2]==='+'?1:-1);st[key]=cap(st[key]+n,0,99);}st.current=ch.to;st.steps++;if(!st.visited.includes(ch.to))st.visited.push(ch.to);const end=STORY[ch.to].grade;if(end&&!discovered.includes(ch.to))discovered.push(ch.to);save();microNoise(end?(end==='bad'?'end':'good'):'page');render('story');}
 function back(){if(!st.history.length)return;const prev=st.history.pop();st={...st,...prev,history:st.history};save();microNoise();render('story');}
-// On a phone the illustration is stacked above the text. Move the *new*
-// page's text to reading height, not the old choice position or site top.
-// Desktop keeps the spread's artwork and story together.
+// On a phone the illustration is stacked below the text. Keep the new
+// scene's opening at reading height, not the previous choice position.
+// A rapid second choice can arrive before the first frame callback, so one
+// shared generation owns BOTH alignment and restoration of scroll behaviour.
+let readingPositionGeneration=0;
+let readingPositionOriginalScrollBehavior=null;
 function positionPageForReading(mode){
+  const generation=++readingPositionGeneration;
   const mobile=window.matchMedia('(max-width:720px)').matches;
   const target=document.querySelector(mode==='cover'?'.cover':mobile?'.story-page':'#gamebook');
   if(!target)return;
-  const root=document.documentElement,previous=root.style.scrollBehavior;
+  const root=document.documentElement;
+  if(readingPositionOriginalScrollBehavior===null)
+    readingPositionOriginalScrollBehavior=root.style.scrollBehavior;
   root.style.scrollBehavior='auto';
   const align=()=>{
-    if(!target.isConnected)return;
+    if(generation!==readingPositionGeneration||!target.isConnected)return;
     const header=document.querySelector('[data-ccg-header]');
     const style=header?getComputedStyle(header):null;
     const rect=header?header.getBoundingClientRect():null;
     const pinned=style&&(style.position==='fixed'||(style.position==='sticky'&&rect.top<=2));
     const offset=pinned?Math.max(0,rect.height)+12:12;
     const top=Math.max(0,window.scrollY+target.getBoundingClientRect().top-offset);
-    window.scrollTo(0,top);
+    if(Math.abs(window.scrollY-top)>1)window.scrollTo(0,top);
   };
   align();
-  requestAnimationFrame(()=>{align();root.style.scrollBehavior=previous;});
+  // One layout frame is not always enough on a mobile browser that adjusts
+  // its viewport after replacing the book spread. Restrict the correction
+  // to the next two frames; never jump the user after they begin reading.
+  requestAnimationFrame(()=>{
+    if(generation!==readingPositionGeneration)return;
+    align();
+    requestAnimationFrame(()=>{
+      if(generation!==readingPositionGeneration)return;
+      align();
+      root.style.scrollBehavior=readingPositionOriginalScrollBehavior;
+      readingPositionOriginalScrollBehavior=null;
+    });
+  });
 }
 function render(mode='story'){
   const x=document.getElementById('app');
