@@ -176,7 +176,7 @@
     if(!record&&!skipped)return"";
     const resolved=Boolean(record?.resolved||record?.cleansed);
     if(!resolved){
-      return `<br><br><b data-v142-warden-legacy="true">WARDEN LEGACY</b><br>WARDEN UNRESOLVED${skipped?" · WARDEN DEBT +1":""} · Later major guardians retain this floor's corruption.`;
+      return `<br><br><b data-v142-warden-legacy="true">OPTIONAL WARDEN</b><br>${skipped?"WARDEN SKIPPED · WARDEN DEBT +1 · Later major guardians inherit this floor's corruption.":"WARDEN NOT CLEARED · Main floor objective complete. Descending will add 1 Warden Debt stack."}`;
     }
     const fragments=fragmentCount(record),cache=record?.cacheFragmentAwarded?"WARDEN CACHE CLAIMED":"WARDEN CACHE UNCLAIMED — SECOND SEAL FRAGMENT MISSED",refuge=record?.refugeEstablished?`REFUGE ESTABLISHED · RETURN-REST ${record?.refugeRestUsed?"SPENT":"AVAILABLE"}`:"REFUGE NOT ESTABLISHED";
     return `<br><br><b data-v142-warden-legacy="true">WARDEN LEGACY</b><br>WARDEN CLEANSED · SEAL FRAGMENTS ${fragments}/2 · ${cache} · ${refuge}.`;
@@ -184,7 +184,7 @@
   function appendWardenLegacySummary(r,floor){
     try{
       if(!UI?.floorSummary)return false;const html=wardenLegacyHtml(r,floor);if(!html)return false;
-      const existing=String(UI.floorSummary.innerHTML||"");if(existing.includes('data-v142-warden-legacy="true"'))return false;
+      const existing=String(UI.floorSummary.innerHTML||"");if(existing.includes('data-v142-warden-status="true"')||existing.includes('data-v142-warden-legacy="true"'))return false;
       UI.floorSummary.innerHTML=existing+html;return true;
     }catch(_){return false}
   }
