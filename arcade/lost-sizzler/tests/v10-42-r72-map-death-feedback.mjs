@@ -72,9 +72,14 @@ assert.match(fullMap,/room\?\.sanctuary&&\(visited\.has\(Number\(room\.id\)\)\|\
 assert.match(fullMap,/shop\?\.active&&\(shop\?\.discovered\|\|revealAll\)/,"full map shop markers must allow explicit Cartographer's Eye reveal");
 assert.match(fullMap,/drawMarker\(context,q,"#64ffa2","plus"\)/,"full map sanctuary must use a green plus");
 assert.match(fullMap,/CCGLostSizzlerV142WardenNavigationCues\?\.markerState/,"full map must include current Warden navigation markers");
-assert.match(fullMap,/shape==="triangle"/,"full map marker renderer must support the player triangle");
-assert.match(fullMap,/drawMarker\(context,p1,"#6cecff","triangle","YOU"\)/,"full map player marker must not fall back to the legacy square");
-assert.match(fullMapCss,/ccg-map-player\{[^}]*clip-path:polygon\(50% 0,100% 100%,0 100%\)/,"full map legend must show the same triangle player symbol");
+assert.match(fullMap,/shape==="player"/,"full map must draw the square player marker with a dark centre");
+assert.doesNotMatch(fullMap,/shape==="triangle"/,"full map must not draw the rejected triangle");
+assert.match(fullMap,/drawMarker\(context,p1,"#6cecff","player","YOU"\)/,"full map YOU marker must be the same square as the compact radar");
+assert.match(fullMap,/drawMarker\(context,item,"#ffd85a","circle"\)/,"map keys must use the same round marker as the radar");
+assert.match(fullMap,/drawMarker\(context,shop,"#ffd85a","shop"\)/,"full-map shops must have a distinct shop marker");
+assert.match(fullMapCss,/ccg-map-player\{[^}]*clip-path:none/,"full-map legend must use a square player marker");
+assert.match(fullMapCss,/ccg-map-key\{[^}]*border-radius:50%/,"key legend must match the round map key");
+assert.match(fullMapCss,/ccg-map-shop::before/,"shop legend must match the mapped shop glyph");
 assert.match(warden,/const refuge=h\.v142CleansedRefuge/,"Warden refuge marker must come from the real cleansed refuge state, not a legacy checkpoint");
 assert.match(warden,/row\?\.domainDiscovered\|\|h\.r114MapRevealed/,"Cartographer's Eye must reveal the active Warden domain marker without fabricating ordinary discovery");
 assert.doesNotMatch(warden,/rgba\(100,255,162/,"green cross styling is reserved for Sanctuary, not Warden refuge");

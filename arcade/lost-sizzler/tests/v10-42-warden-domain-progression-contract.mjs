@@ -84,7 +84,10 @@ run.floor=3;run.floorComplete=false;delete host.v142WardenDomain;
 death.alive=true;death.v142WardenRewarded=false;death.v142WardenDefeated=false;
 context.floorComplete("contract");
 assert.deepEqual([...run.v142SkippedWardenFloors],[],"Opening the floor-clear choice must not record Warden debt while the player can still stay and resolve the domain");
-assert.match(UI.floorSummary.innerHTML,/WARDEN DOMAIN: UNRESOLVED/,"Floor-clear summary should explain that unresolved Warden business remains available");
+assert.match(UI.floorSummary.innerHTML,/OPTIONAL WARDEN NOT CLEARED/,"Floor-clear summary must distinguish optional Warden business from the completed main objective");
+assert.match(UI.floorSummary.innerHTML,/Main floor objective complete/,"Floor-clear summary must not imply the main objective was left unfinished");
+assert.match(UI.floorSummary.innerHTML,/data-v142-warden-status="true"/,"One authoritative optional Warden status owner must be marked to prevent duplicate notices");
+assert.match(UI.floorSummary.innerHTML,/descend and take 1 Warden Debt stack/,"Skipping the optional Warden must still explain the real debt consequence");
 context.descendFloor();
 assert.deepEqual([...run.v142SkippedWardenFloors],[3],"Actually descending with an available Warden unresolved should record one debt floor");
 

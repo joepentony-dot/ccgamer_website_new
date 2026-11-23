@@ -35,7 +35,9 @@ assert.match(notices,/addEventListener\("ccg:floor-start",resetForFloor\)/,"noti
 
 const floorCompleteWrapper=warden.match(/if\(baseFloorComplete\)floorComplete=function\(by\)\{[\s\S]*?return result\};/)?.[0]||"";
 assert.doesNotMatch(floorCompleteWrapper,/skipFloor\(/,"opening the floor-clear overlay must not create Warden debt");
-assert.match(floorCompleteWrapper,/WARDEN DOMAIN: UNRESOLVED/,"unresolved Warden status must remain actionable while the player can stay");
+assert.match(floorCompleteWrapper,/OPTIONAL WARDEN NOT CLEARED/,"remaining optional Warden status must be actionable while the player can stay");
+assert.match(floorCompleteWrapper,/Main floor objective complete/,"the optional Warden warning must not undo the completed main objective");
+assert.match(floorCompleteWrapper,/data-v142-warden-status="true"/,"the authoritative status must prevent duplicate floor-clear warnings");
 assert.match(warden,/if\(baseDescendFloor\)descendFloor=function\(\)\{[\s\S]*skipFloor\(\)[\s\S]*baseDescendFloor/,"Warden debt must be committed only by actual descent");
 
 assert.match(firearm,/first\?"WEAPON ACQUIRED":"WEAPON EVOLVED"/,"ordinary firearm evolution must retain generic progression labels");

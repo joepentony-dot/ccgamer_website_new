@@ -179,7 +179,7 @@ try{
   assert.deepEqual(opening.inventory,[{kind:"potion",name:"Restoration Potion",short:"POTION",qty:2}],"Seeded inventory state must be visible before the first descent.");
 
   const floor2=await completeFirstFloorThroughExit(page,{game:"Archon",nextFloor:2});
-  assert.equal(floor2.floorName,"1541 DRIVEWORKS","First descent must enter 1541 Driveworks.");
+  assert.equal(floor2.floorName,"IRONFORGE DEPTHS","First descent must enter Ironforge Depths.");
   assert.deepEqual(floor2.bankedGames,["Archon"],"Floor 1 rescued C64 games must be banked before entering Floor 2.");
   assert.deepEqual(floor2.rpgStats,opening.rpgStats,"RPG attributes must survive the first real startWorld transition.");
   assert.deepEqual(floor2.inventory,opening.inventory,"Inventory state must survive the first real startWorld transition.");
@@ -194,7 +194,7 @@ try{
   assert.deepEqual(floor3.bankedGames,["Archon","Bruce Lee"],"Rescued games from Floors 1–2 must remain banked.");
 
   const floor4=await bankAndDescend(page,{game:"Commando",domain:"iron",relic:"iron-heart",essence:4,sigil:"sigilReveal",nextFloor:4});
-  assert.equal(floor4.floorName,"BUDGET VAULTS","Third descent must enter Budget Vaults.");
+  assert.equal(floor4.floorName,"FORGOTTEN VAULTS","Third descent must enter Forgotten Vaults.");
   assert.deepEqual(floor4.claimedDomains,["iron"],"The Iron Key must survive descent out of Iron Keep.");
   assert.deepEqual(floor4.relics,["threshold-compass","iron-heart"],"Iron Keep relic rewards must survive descent into Floor 4.");
   assert.equal(floor4.sigilReveal,true,"Reveal must survive descent out of Iron Keep.");
@@ -204,15 +204,15 @@ try{
   const floor5=await bankAndDescend(page,{game:"Defender of the Crown",essence:5,nextFloor:5});
   assert.equal(floor5.floor,5,"Fourth descent must reach campaign Floor 5.");
   assert.equal(floor5.deepest,5,"Deepest-floor tracking must reach 5 after four live descents.");
-  assert.equal(floor5.floorName,"CARTRIDGE CATACOMBS","Fourth descent must enter Cartridge Catacombs.");
+  assert.equal(floor5.floorName,"SHATTERED CATACOMBS","Fourth descent must enter Shattered Catacombs.");
   assert.deepEqual(floor5.claimedDomains,["iron"],"Only the Iron Key should be bound by Floor 5; Bone and Ash belong to Floors 7 and 11.");
   assert.deepEqual(floor5.rpgStats,opening.rpgStats,"All six RPG attributes must survive the first four fifteen-floor transitions.");
   assert.deepEqual(floor5.inventory,opening.inventory,"Inventory state must survive the first four fifteen-floor transitions.");
-  assert.deepEqual(floor5.relics,["threshold-compass","iron-heart"],"Relics accumulated through Iron Keep must survive into Cartridge Catacombs.");
-  assert.equal(floor5.vessel,true,"The persistent Banishment Vessel must survive into Cartridge Catacombs.");
-  assert.equal(floor5.essence,5,"Banishment Essence must survive into Cartridge Catacombs.");
+  assert.deepEqual(floor5.relics,["threshold-compass","iron-heart"],"Relics accumulated through Iron Keep must survive into Shattered Catacombs.");
+  assert.equal(floor5.vessel,true,"The persistent Banishment Vessel must survive into Shattered Catacombs.");
+  assert.equal(floor5.essence,5,"Banishment Essence must survive into Shattered Catacombs.");
   assert.equal(floor5.essenceCost,3,"The Banishment Essence cost must remain stable across live floor transitions.");
-  assert.equal(floor5.sigilReveal,true,"Reveal must survive into Cartridge Catacombs.");
+  assert.equal(floor5.sigilReveal,true,"Reveal must survive into Shattered Catacombs.");
   assert.equal(floor5.sigilWard,false,"Ward must remain locked until the Bone Key floor.");
   assert.equal(floor5.sigilBind,false,"Bind must remain locked until the Ash Key floor.");
   assert.deepEqual(floor5.bankedGames,["Archon","Bruce Lee","Commando","Defender of the Crown"],"Each earlier floor's rescued C64 game must remain banked on Floor 5.");
@@ -220,7 +220,7 @@ try{
   assert.deepEqual(floor5.persistentCollection,["Archon","Bruce Lee","Commando","Defender of the Crown"],"The persistent local C64 collection must mirror all four banked rescues.");
   assert.equal(floor5.mode,"playing","Floor 5 must return to normal playing mode after its entry prompt is dismissed.");
   assert.equal(floor5.controller,"dungeon-solo","The Solo Dungeon controller must survive all four campaign transitions.");
-  assert.equal(floor5.runActive,"true","The canonical run must remain active on Cartridge Catacombs entry.");
+  assert.equal(floor5.runActive,"true","The canonical run must remain active on Shattered Catacombs entry.");
   const campaignShape=await page.evaluate(()=>({
     maxFloors:Number(window.CCG_CONFIG?.maxFloors||0),
     floor7:window.CCG_CONFIG?.proceduralDungeon?.campaignFloors?.find(row=>Number(row.floor)===7)?.name||"",
