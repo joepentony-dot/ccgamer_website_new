@@ -101,21 +101,64 @@ async function verifyAudioAndIsolation(){
   assert.equal(dotfile.status,404,"Hidden server files must be inaccessible");
 }
 // Controlled performance acceptance inside the genuine packaged Windows EXE.
-// It does not import or recreate the owner's unavailable original save/seed.
-async function verifyWindowsFloorFivePressure(page){
+// A second pass must restore a real Floor 5 entry checkpoint through the
+// normal Resume Saved Run button, not reconstruct an in-memory saved run.
+// Neither synthetic pressure pass claims to reproduce the owner's missing save.
+async function verifyWindowsFloorFivePressure(page,{resumeCheckpoint=false}={}){
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true,null,{timeout:45000});
-  await page.click("#solo-btn");
+  if(resumeCheckpoint){
+    await page.waitForFunction(()=>{
+      const saved=window.CCGProgression?.loadCheckpoint?.();
+      const button=document.getElementById("continue-save-btn");
+      return Number(saved?.floor)===5&&Boolean(button)&&!button.classList.contains("hidden");
+    },null,{timeout:30000});
+    await page.click("#continue-save-btn");
+  }else await page.click("#solo-btn");
   await page.waitForFunction(()=>mode==="playing"&&Boolean(p1&&host&&world),null,{timeout:30000});
-  const staged=await page.evaluate(()=>{
-    beginRun({seed:"WIN-FLOOR-5-THREE-THREATS"});
-    run.floor=5;run.deepest=5;run.modifier=null;
-    startWorld(PGR.floorSeed(run),false,true,false);
+  // The menu click may still be completing deferred fullscreen/audio startup.
+  // Settle the actual first run before deliberately constructing the fixture;
+  // otherwise its pending start can replace our Floor 5 run mid-setup.
+  await page.waitForTimeout(550);
+  const staged=await page.evaluate(resumeCheckpoint=>{
+    if(!resumeCheckpoint){
+      // #solo-btn has already created the real running player. Calling
+      // beginRun a second time while a run is active can be refused by the
+      // production run-owner guard, leaving its original random seed intact.
+      // Construct the synthetic deterministic run from the game progression
+      // API instead; save/restore below still uses the real menu and storage.
+      run=PGR.makeRun({difficulty:run?.difficulty||"ARCADE",
+        seed:"WIN-FLOOR-5-THREE-THREATS"});
+      if(String(run?.seed||"")!=="WIN-FLOOR-5-THREE-THREATS")
+        return {error:"Progression API did not create requested Floor 5 fixture seed",seed:run?.seed};
+      run.floor=5;run.deepest=5;run.modifier=null;
+      startWorld(PGR.floorSeed(run),false,true,false);
+      // Capture the authoritative Floor 5 *entrance* before touching bosses,
+      // player stats or generators; normal checkpoint resume restarts the floor.
+      const checkpoint=captureFloorEntryCheckpoint();
+      if(Number(checkpoint?.floor)!==5||!saveFloorCheckpoint(false))
+        return {error:"Cannot save a genuine Floor 5 entry checkpoint"};
+      if(String(run?.seed||"")!=="WIN-FLOOR-5-THREE-THREATS")
+        return {error:"Saving the Floor 5 checkpoint changed the active run",
+          seed:run?.seed,checkpointSeed:checkpoint?.run?.seed,
+          currentFloor:run?.floor,checkpointFloor:checkpoint?.floor};
+    }
+    const saved=PGR.loadCheckpoint();
+    if(Number(saved?.floor)!==5||Number(run?.floor)!==5||
+       String(saved?.run?.seed||"")!==String(run?.seed||""))
+      return {error:"Missing or mismatched Floor 5 checkpoint after restart",
+        savedFloor:saved?.floor,activeFloor:run?.floor};
+
     const fight=host?.r114BossFight,room=world?.rooms?.[fight?.roomId];
     const guardian=(host?.enemies||[]).find(e=>e.alive&&e.id===fight?.bossId);
     const death=(host?.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker);
     const count=host?.stalker,gens=(host?.generators||[]).filter(g=>g.alive);
     if(!room||!guardian||!death||!count||gens.length!==3)
-      return {error:"Missing canonical Windows Floor 5 actors or generators",seed:run?.seed};
+      return {error:"Missing canonical Windows Floor 5 actors or generators",
+        seed:run?.seed,checkpointSeed:saved?.run?.seed,
+        floor:run?.floor,restore:Boolean(resumeCheckpoint),
+        bossFight:Boolean(fight),guardian:Boolean(guardian),
+        deathStalker:Boolean(death),countLoadula:Boolean(count),
+        remainingGenerators:gens.length};
     // Move the test actors into a verified, walkable Guardian room as in the
     // already-qualified browser pressure contract. This is a synthetic setup.
     const cells=[];
@@ -152,13 +195,15 @@ async function verifyWindowsFloorFivePressure(page){
     updateStalker(16);updateFloorObjective();
     return {
       triggered,mode:String(mode),floor:Number(run.floor),
+      resumeCheckpoint:Boolean(resumeCheckpoint),seed:String(run.seed||""),
+      checkpointScore:Number(saved.score||0),
       generatorCount:(host.generators||[]).filter(g=>g.alive).length,
       guardianAlive:Boolean(guardian.alive),countAwake:Boolean(count.awake),
       deathAlive:Boolean(death.alive),complete:Boolean(host.objective?.complete),
       frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
       elapsed:Number(host.floorElapsed||0)
     };
-  });
+  },resumeCheckpoint);
   assert.ok(!staged.error,"Packaged Windows Floor 5 setup: "+JSON.stringify(staged));
   assert.equal(staged.triggered,true);
   assert.equal(staged.mode,"playing");
@@ -197,6 +242,7 @@ async function verifyWindowsFloorFivePressure(page){
     assert.ok(windowSample.elapsed>=800,"Packaged Windows game clock stopped progressing: "+JSON.stringify(windows));
   }
   console.log("WINDOWS FLOOR 5 TRIPLE-THREAT PASS: "+JSON.stringify({staged,windows}));
+  return staged;
 }
 
 async function main(){
@@ -224,16 +270,20 @@ async function main(){
         ["assets/audio/music/"+filename+".wav"],
         "Packaged browser soundtrack must choose local track for "+mood);
     }
-    await verifyWindowsFloorFivePressure(run.page);
+    const firstPressure=await verifyWindowsFloorFivePressure(run.page);
     await run.page.evaluate(([key,value])=>localStorage.setItem(key,value),[probeKey,probeValue]);
     assert.equal(await run.page.evaluate(key=>localStorage.getItem(key),probeKey),probeValue);
     await stop(run);run=null;
 
     run=await start();
     assert.equal(await run.page.evaluate(key=>localStorage.getItem(key),probeKey),probeValue,
-      "The actual Windows application must preserve saved progress across launches");
-    await run.page.evaluate(key=>localStorage.removeItem(key),probeKey);
-    console.log("WINDOWS EXE SMOKE PASS: real packaged game, 5 WAV soundtrack routes and selected local playlists, OGG byte-range, hidden-file protection, persisted storage after EXE restart");
+      "The actual Windows application must preserve browser-origin storage across launches");
+    const restoredPressure=await verifyWindowsFloorFivePressure(run.page,{resumeCheckpoint:true});
+    assert.equal(restoredPressure.resumeCheckpoint,true,"Second triple-threat probe must use the real resumed Floor 5 checkpoint");
+    assert.equal(restoredPressure.seed,firstPressure.seed,"Resume must restore the original saved run seed");
+    assert.equal(restoredPressure.checkpointScore,firstPressure.checkpointScore,"Resume must retain the floor-entry checkpoint score");
+    await run.page.evaluate(key=>{localStorage.removeItem(key);PGR.clearCheckpoint()},probeKey);
+    console.log("WINDOWS EXE SMOKE PASS: real packaged game, 5 WAV soundtrack routes and selected local playlists, OGG byte-range, hidden-file protection, actual Floor 5 checkpoint resumed through the game menu after EXE restart and triple-threat pressure rechecked");
   }finally{await stop(run)}
 }
 main().catch(error=>{console.error(error);process.exitCode=1});
