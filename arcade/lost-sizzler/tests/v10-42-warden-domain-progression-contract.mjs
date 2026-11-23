@@ -122,4 +122,75 @@ assert.equal(player2.health,7,"Master Seal should grant its immediate health rew
 assert.equal(player2.armor,4,"Master Seal should grant its immediate armour reward to Player 2 in split-screen");
 assert.equal(context.window.CCGProgression.effectiveSight(player,run),8,"Seal Sense should add one sight tile outside Static Veil");
 
+
+// R183: a JSON-restored host can retain an ACTIVE, stale Warden domain even
+// while the serialised run records a completed, same-floor Death Stalker.
+// Reconcile the room and its bound generator without inventing a second kill,
+// Seal Fragment, reward or other-floor cleanse.
+const r183Original="death-stalker-old-id",r183Rebuilt="death-stalker-new-id";
+const r183Floor5={resolved:true,sourceKind:"death-stalker",sourceId:r183Original,
+  resolvedSourceId:r183Original,killFragmentAwarded:true,cacheFragmentAwarded:true};
+const r183Reset=(record,sourceKind="death-stalker",sourceId=r183Rebuilt)=>{
+  run.floor=5;run.v142WardenFloors["5"]=record;
+  host.v142WardenDomain={floor:5,roomId:1,sourceKind,sourceId,
+    active:true,cleansed:false,inside:true,generatorIds:[generator.id]};
+  generator.alive=true;generator.powered=true;generator.v142WardenSuppressed=false;generator.spawnCooldown=200;
+  world.rooms[1].v142WardenCorrupted=true;world.rooms[1].v142WardenCleansed=false;
+};
+r183Reset({...r183Floor5});
+const r183SealBefore=run.v142SealFragments,r183KillsBefore=run.stats.wardenKills||0;
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,false,
+  "Restored active domain must honour an independently saved, same-floor Death Stalker victory");
+assert.equal(host.v142WardenDomain.cleansed,true,
+  "Restored Warden domain must be marked cleansed without a second kill");
+assert.equal(host.v142WardenDomain.inside,false,
+  "Corruption should not retain an inside-state after reconciliation");
+assert.equal(world.rooms[1].v142WardenCorrupted,false,
+  "The restored Warden room must stop emitting an already-cleansed corruption aura");
+assert.equal(world.rooms[1].v142WardenCleansed,true);
+assert.equal(generator.v142WardenSuppressed,true,
+  "The original bound generator must stay suppressed after a saved victory");
+assert.ok(generator.spawnCooldown>=1e11,
+  "A restored Warden-bound generator must not restart reinforcements");
+context.startWorld();tick();
+assert.equal(run.v142SealFragments,r183SealBefore,
+  "Reconciliation is not a new Warden kill and must not award Seal Fragments");
+assert.equal(run.stats.wardenKills||0,r183KillsBefore,
+  "Reconciliation must never add a new Warden kill");
+
+r183Reset({...r183Floor5}, "death-stalker", r183Original);
+context.startWorld();
+assert.equal(host.v142WardenDomain.cleansed,true,
+  "An exactly matching saved Warden source must also restore the cleansed domain");
+
+r183Reset({resolved:true,sourceKind:"count-loadula",resolvedSourceId:"count-loadula"});
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "Count Loadula's victory cannot erase an unbeaten Death Stalker domain");
+assert.equal(generator.v142WardenSuppressed,false);
+
+r183Reset({resolved:false,sourceKind:"death-stalker",resolvedSourceId:r183Original});
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "An unresolved Warden domain must remain active");
+
+r183Reset({resolved:false,skipped:true,sourceKind:"death-stalker",resolvedSourceId:r183Original});
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "A skipped Warden is not a victory and must not receive cleansing effects");
+
+r183Reset({resolved:true,sourceKind:"count-loadula",resolvedSourceId:"shared"}, "death-stalker", "shared");
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "A matching actor ID with the wrong Warden type must never cleanse the domain");
+
+run.v142WardenFloors["4"]={resolved:true,sourceKind:"death-stalker",
+  resolvedSourceId:r183Original};
+r183Reset({resolved:false,sourceKind:"death-stalker",resolvedSourceId:r183Original});
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "A saved victory on another floor cannot cleanse the current Warden domain");
+console.log("PASS R183 restored Warden domain, room and generator honour same-floor victory; negative controls and no duplicate rewards");
+
 console.log("PASS v10-42 Warden exact-source persistence + split-safe domain + Seal progression contract");
