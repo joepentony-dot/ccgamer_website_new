@@ -71,6 +71,21 @@ try {
           observer.observe(node,{attributes:true,attributeFilter:['class','style','data-run-active']});
         }
         document.addEventListener('fullscreenchange',()=>record('fullscreenchange'));
+        // Capture the actual interaction that unexpectedly opens the dossier.
+        // These listeners are observational and never prevent/default or redirect input.
+        for(const type of ['pointerdown','pointerup','click','touchstart','touchend','keydown']){
+          document.addEventListener(type,event=>{
+            const target=event.target;
+            const id=target?.id||target?.closest?.('[id]')?.id||'';
+            const action=target?.closest?.('[data-action]')?.dataset?.action||'';
+            const key=event.key||'';
+            if(history.length>75)history.shift();
+            history.push({t:Math.round(performance.now()),event:'input:'+type,id,action,key,
+              target:target?.tagName||'',mode:String(mode),
+              dossierHidden:document.getElementById('named-dossier-panel')?.classList.contains('hidden')});
+          },true);
+        }
+
       }
       const generators=host.generators||[];
       if(generators.length<3)throw new Error('Floor 5 three-generator encounter missing');
