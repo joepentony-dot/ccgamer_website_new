@@ -7,6 +7,14 @@ on:
       - '.github/workflows/dungeon-carnage-windows-installer.yml'
       - 'scripts/build-c64-dungeon-carnage-itch-package.mjs'
       - 'arcade/lost-sizzler/**'
+  # Recheck packaged Windows runtime on main when Windows tests or this gate change.
+  # Normal gameplay commits remain PR-qualified; this is not a per-commit build.
+  push:
+    branches:
+      - main
+    paths:
+      - 'desktop/dungeon-carnage/windows/**'
+      - '.github/workflows/dungeon-carnage-windows-installer.yml'
   workflow_dispatch:
 
 permissions:
@@ -142,6 +150,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload private owner preview artifacts
+        # Only manual/PR jobs expose preview download artifacts; push checks are smoke-only.
+        if: github.event_name != 'push'
         uses: actions/upload-artifact@v4
         with:
           name: C64-Dungeon-Carnage-Windows-Preview
