@@ -1390,7 +1390,7 @@
     <loc>https://www.cheekycommodoregamer.co.uk/games/commando/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/fkyfZgzwim4/maxresdefault.jpg</video:thumbnail_loc>
-      <video:title>Commando – The C64 Arcade Conversion with an Unforgettable SID Tune</video:title>
+      <video:title>Commando (C64) – They Cut a Level for Rob Hubbard&apos;s Music!</video:title>
       <video:description>️ Commando (1985) – Commodore 64 Run-and-Gun Arcade Action Released in 1985 by Elite Systems for the Commodore 64, Commando is a vertical-scrolling run-and-gun shooter that adapts Capcom’s arcade hit for home computers. You take on the role of Super Joe, a lone soldier battling through enemy territory with the mission to survive, push forward, and rescue captured hostages. The gameplay is fast, direct, and relentless. Armed with a machine gun and limited grenades, you must clear waves of enemy soldiers, avoid ambushes from bunkers, and keep moving upward through hostile environments. With only three stages, the focus is firmly on reflexes, positioning, and efficient use of firepower rather than exploration or progression systems. On the Commodore 64, Commando delivers solid sprite work and confident vertical scrolling that keeps the action flowing smoothly. The real highlight is Rob Hubbard’s iconic soundtrack, which injects urgency and atmosphere into every firefight and remains one of the most celebrated pieces of C64 game music.</video:description>
       <video:player_loc>https://www.youtube.com/embed/fkyfZgzwim4</video:player_loc>
       <video:duration>576</video:duration>
@@ -2555,10 +2555,12 @@
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/games/gloom/</loc>
     <video:video>
-      <video:thumbnail_loc>https://i.ytimg.com/vi/eciifDta8Kk/hqdefault.jpg</video:thumbnail_loc>
-      <video:title>Gloom – Amiga Gameplay &amp; Review | Cheeky Commodore Gamer</video:title>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/eciifDta8Kk/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Gloom (1995) – Was This the Amiga&apos;s Answer to DOOM?</video:title>
       <video:description>Released in 1995 by Black Magic Software and published by Guildhall Leisure, Gloom is a fast-paced first-person shooter developed for the Commodore Amiga. Programmed by Mark Sibly, the game arrived when Amiga owners were desperate for their own answer to the hugely successful PC game Doom. Combining frantic combat, gruesome violence and maze-based exploration, Gloom became one of the Amiga&apos;s most recognisable 3D shooters. You battle through futuristic spacecraft corridors, Gothic environments and the depths of Hell, fighting soldiers, robots, demons and supernatural enemies while searching for each level&apos;s exit. Unlimited ammunition, weapon upgrades and the infamous Meaty and Messy violence settings keep the action relentless, with defeated enemies exploding into bloody body parts.</video:description>
       <video:player_loc>https://www.youtube.com/embed/eciifDta8Kk</video:player_loc>
+      <video:duration>524</video:duration>
+      <video:publication_date>2026-11-11T18:30:33Z</video:publication_date>
     </video:video>
   </url>
   <url>
