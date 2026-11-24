@@ -1,10 +1,9 @@
-/**
- * Sierra Crossfire CRT — transport bridge, not a proof of fair gameplay.
- * Explicit, independently enabled transport injection is required.
- * Unimported by the production emulator: no network or public score writes.
- */
+import { isCrtFinalCandidate, SIERRA_ATTEMPT_PROFILE } from './sierra-heliohost-attempt.mjs';
+
+/** Coordinates a single pending-review attempt without blocking the emulator. */
 export class SierraAutomaticAttempt {
   #transport;
+  #profile;
   #started=false;
   #finished=false;
   #stopped=false;
@@ -12,7 +11,8 @@ export class SierraAutomaticAttempt {
   #finishPromise=null;
   #finishDispatched=false;
 
-  constructor(transport=null) {
+  constructor(transport=null,profile=SIERRA_ATTEMPT_PROFILE) {
+    this.#profile=profile;
     this.#transport=transport?.enabled===true ? transport : null;
   }
   get enabled(){return this.#transport!==null;}
@@ -42,13 +42,7 @@ export class SierraAutomaticAttempt {
 
     if(!candidate||this.#finished||!this.#startPromise)return null;
     // A client cannot claim verification, eligibility or trustworthiness.
-    if(candidate.kind!=='sierra-crt-local-final-candidate' ||
-       candidate.verified!==false ||
-       candidate.eligibleForSubmission!==false ||
-       !Number.isInteger(candidate.score)||candidate.score<0 ||
-       candidate.score>999999||
-       !Number.isInteger(candidate.stableFrames)||
-       candidate.stableFrames<25||candidate.stableFrames>120) return null;
+    if(!isCrtFinalCandidate(candidate,this.#profile))return null;
 
     this.#finished=true;
     const final=Object.freeze({

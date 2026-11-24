@@ -28,10 +28,11 @@ export function normaliseArenaBoard(value, expected) {
   if(value.status!=='available'||!Array.isArray(value.records))
     return Object.freeze({status:value.status==='no-published-challenge'?'no-challenge':'unavailable',rows:[]});
   const rows=[];
+  const maxScore=expected.maxScore??99999999;
   for(const raw of value.records.slice(0,5)){
     if(!raw||typeof raw!=='object'||typeof raw.playerName!=='string'||
        raw.playerName.trim().length===0||raw.playerName.length>64||
-       !Number.isSafeInteger(raw.score)||raw.score<0||raw.score>99999999)continue;
+       !Number.isSafeInteger(raw.score)||raw.score<0||raw.score>maxScore)continue;
     rows.push(Object.freeze({rank:rows.length+1,name:raw.playerName,score:raw.score}));
   }
   return Object.freeze({status:rows.length?'ranked':'empty',rows});

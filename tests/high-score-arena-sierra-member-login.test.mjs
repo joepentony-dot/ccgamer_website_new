@@ -90,3 +90,10 @@ test('native form fallback cannot send credentials if the module does not load',
  assert.match(login, /<button[^>]+id="scoreLoginSubmit"[^>]+disabled/);
  for (const input of login.matchAll(/<input[^>]*>/g)) assert.doesNotMatch(input[0], /\bname=/);
 });
+
+test('sign-in returns to Dropzone only for its exact approved emulator destination',()=>{
+ const destination='/emulator/c64/?game=owner-crt-more-dropzone&autoplay=1&scores=1';
+ assert.equal(safeSierraReturn(destination),destination);
+ assert.equal(safeSierraReturn(destination+'&scores=1'),GAME);
+ assert.equal(safeSierraReturn(destination+'&start=1'),GAME);
+});

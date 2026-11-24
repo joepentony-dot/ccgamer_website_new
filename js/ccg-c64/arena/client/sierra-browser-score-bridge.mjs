@@ -6,7 +6,7 @@
  * The browser cannot verify honest play or place a score on a public board.
  * No fallback to old Crossfire PRG, Tron, Supabase, or a guessed identity.
  */
-import { acquireSierraAttempt, SIERRA_CATALOG_ID } from './sierra-heliohost-attempt.mjs';
+import { acquireSierraAttempt, SIERRA_ATTEMPT_PROFILE } from './sierra-heliohost-attempt.mjs';
 import { SierraAutomaticAttempt } from './sierra-auto-run-controller.mjs';
 import { readHelioHostSierraBoard } from './sierra-heliohost-board.mjs';
 
@@ -15,6 +15,10 @@ const SCORE_PARAM='scores';
 const QUERY_MAX=512;
 
 export function isSierraHelioHostScoreIntent(query,origin) {
+ return isCrtHelioHostScoreIntent(query,origin,SIERRA_ATTEMPT_PROFILE);
+}
+
+export function isCrtHelioHostScoreIntent(query,origin,profile) {
  if(origin!==CCG_SITE_ORIGIN||typeof query!=='string'||
     query.length>QUERY_MAX) return false;
  try {
@@ -22,7 +26,7 @@ export function isSierraHelioHostScoreIntent(query,origin) {
   if(params.getAll(SCORE_PARAM).length!==1 ||
      params.get(SCORE_PARAM)!=='1' ||
      params.getAll('game').length!==1 ||
-     params.get('game')!==SIERRA_CATALOG_ID) return false;
+     params.get('game')!==profile.catalogId) return false;
   // Reject ambiguous duplicated autoload/start selectors if present.
   for(const name of ['autoplay','start'])if(params.getAll(name).length>1)return false;
   return true;
@@ -31,10 +35,10 @@ export function isSierraHelioHostScoreIntent(query,origin) {
 
 export class SierraHelioHostScoreBridge {
  #closed=false;#transport=null;#run=null;#connecting=null;
- #abort=null;#armedForRun=false;#finished=false;
+ #abort=null;#armedForRun=false;#finished=false;#awaitingReceipt=false;
  constructor({enabled=false,origin='',fetchImpl=globalThis.fetch,
               onStatus=()=>{},onBoard=()=>{},acquire=acquireSierraAttempt,
-              readBoard=readHelioHostSierraBoard}={}) {
+              readBoard=readHelioHostSierraBoard,profile=SIERRA_ATTEMPT_PROFILE}={}) {
   this.enabled=enabled===true&&origin===CCG_SITE_ORIGIN;
   this.origin=origin;
   this.fetchImpl=fetchImpl;
@@ -42,11 +46,12 @@ export class SierraHelioHostScoreBridge {
   this.onBoard=onBoard;
   this.acquire=acquire;
   this.readBoard=readBoard;
+  this.profile=profile;
  }
  get connected(){return this.#run?.enabled===true&&!this.#closed;}
  get finished(){return this.#finished;}
  #status(value) { if(!this.#closed)this.onStatus(value); }
- connect() {
+ connect({loadPublicBoard=true}={}) {
   if(!this.enabled||this.#closed)return Promise.resolve(false);
   if(this.#connecting)return this.#connecting;
   this.#status('CHECKING HELIOHOST MEMBER SESSION');
@@ -54,13 +59,13 @@ export class SierraHelioHostScoreBridge {
   // Public, approved-only Sierra rankings are independent of member login.
   // This is a credential-free GET, and only the explicit scores=1 Sierra
   // preview constructs this bridge. Submission still requires auth and CSRF.
-  void this.loadBoard('alltime');
+  if(loadPublicBoard)void this.loadBoard('alltime');
   this.#connecting=(async()=>{
    let transport=null;
    try {
     transport=await this.acquire({
       enabled:true,websiteOrigin:this.origin,
-      fetchImpl:this.fetchImpl,signal:this.#abort.signal
+      fetchImpl:this.fetchImpl,signal:this.#abort.signal,profile:this.profile
     });
     if(this.#closed) {
       transport?.invalidate?.();
@@ -71,7 +76,7 @@ export class SierraHelioHostScoreBridge {
       return false;
     }
     this.#transport=transport;
-    this.#run=new SierraAutomaticAttempt(transport);
+    this.#run=new SierraAutomaticAttempt(transport,this.profile);
     this.#status('SIGNED IN · START A NEW GAME TO REQUEST SCORE');
     // Deferred F1 intent is retained by the parent Arena controller until
     // member/CSRF is ready. This bridge only arms on explicit armed().
@@ -100,9 +105,17 @@ export class SierraHelioHostScoreBridge {
    if(this.enabled)this.#status('HELIOHOST NOT READY · SCORE LOCAL ONLY');
    return false;
   }
-  if(this.#finished || this.#run?.stopped) {
-   this.#status('RELOAD TO RECORD ANOTHER RUN');
+  if(this.#awaitingReceipt) {
+   this.#status('PREVIOUS SCORE STILL PROCESSING · CURRENT RUN LOCAL ONLY');
    return false;
+  }
+  if(this.#run?.stopped)return false;
+  if(this.#finished) {
+   const next=this.#transport.newAttempt?.();
+   if(!next?.enabled)return false;
+   this.#transport=next;
+   this.#run=new SierraAutomaticAttempt(next,this.profile);
+   this.#finished=false;
   }
   this.#armedForRun=true;
   this.#status('RUN ARMED · HELIOHOST REQUEST STARTS AT 000000');
@@ -123,17 +136,18 @@ export class SierraHelioHostScoreBridge {
   }
   if(!result || this.#finished)return;
   this.#finished=true;
+  this.#awaitingReceipt=true;
+  this.#armedForRun=false;
   const score=final?.score;
   this.#status('GAME OVER · AWAITING HELIOHOST RECEIPT');
   void Promise.resolve(result).then(receipt=>{
    if(this.#closed)return;
    if(receipt?.status==='pending-review'&&receipt.scoreReceived===score) {
-    this.#status('SCORE '+String(score).padStart(6,'0')+' RECEIVED · PENDING REVIEW');
-    void this.loadBoard('alltime');
+    this.#status('SCORE '+String(score).padStart(String(this.profile.maxScore).length,'0')+' RECEIVED · PENDING REVIEW');
    }else this.#status('SUBMISSION NOT CONFIRMED · LOCAL SCORE ONLY');
   }).catch(()=>{
    this.#status('SUBMISSION FAILED · LOCAL SCORE ONLY');
-  });
+  }).finally(()=>{this.#awaitingReceipt=false;});
  }
  stop() {
   if(this.#closed)return;

@@ -1,12 +1,7 @@
 /**
- * CCG Crossfire High Score Arena: verified-CRT automatic visual pilot.
- *
- * This is a READ-ONLY visual pilot for the Sierra Online CRT. The separate
- * Atlantis/Pantheon PRG observer and backend are NOT this game. There is NO
- * score detection, backend read, login handshake or submission until
- * CRT-specific gameplay eligibility is independently verified.
- * The live emulator mounts automatically after normal LOAD of the exact
- * checksum-verified Sierra CRT, without a special query parameter.
+ * Crossfire Arena for the checksum-verified Sierra Online CRT.
+ * The public board is independent of the opt-in member score flow.
+ * Submitted scores are pending review until the server publishes them.
  */
 import { identifyArenaMedia } from "./arena/arena-game-profiles.mjs";
 import { isVerifiedSierraCrossfireCrt } from "./game-catalog.js";
@@ -149,7 +144,7 @@ export async function mountCrossfirePreview({
 
   let mode="alltime", disposed=false, scoreBridge=null;
   let scoreGate=scoreRequested?"checking":"disabled";
-  let scoreWaitFrames=0, scoreArmPending=false, resolveScoreReady=null;
+  let scoreArmPending=false, resolveScoreReady=null;
   let scoreReadySettled=!scoreRequested;
   const scoreReadyPromise=scoreRequested
     ? new Promise(resolve=>{resolveScoreReady=resolve;}) : Promise.resolve(false);
@@ -186,7 +181,7 @@ export async function mountCrossfirePreview({
   // login or submission opt-in. The verified Sierra CRT and exact website
   // origin still guard this read-only connection.
   if(websiteOrigin==="https://www.cheekycommodoregamer.co.uk") {
-    void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261119_sierra_public_rankings_independent_auth_v1").then(mod=>{
+    void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261124_arena_nonblocking_crossfire_v1").then(mod=>{
       if(disposed || (typeof isCurrent==="function" && !isCurrent()) ||
          (scoreRequested && scoreGate!=="checking")) {
         finishScoreHandshake("unavailable");
@@ -249,18 +244,6 @@ export async function mountCrossfirePreview({
             }
             return started;
           },
-          canStart:()=>{
-            if(!scoreRequested || scoreGate!=="checking")return true;
-            // A slow/nonexistent auth server must not block offline play
-            // indefinitely. After five seconds of *ready gameover* frames,
-            // decline online submission and launch a local-only game.
-            if(++scoreWaitFrames>=250) {
-              remoteHint.textContent="HELIOHOST TIMED OUT · LOCAL GAME ONLY";
-              scoreBridge?.stop();
-              finishScoreHandshake("unavailable");
-            }
-            return scoreGate!=="checking";
-          },
           onPress:startF1,
           onRelease:releaseF1
         }) : null;
@@ -293,8 +276,7 @@ export async function mountCrossfirePreview({
     },
     observe(ram) {
       if(disposed)return;
-      // Original Sierra cartridge was SHA verified during mount. Inspect only
-      // emulator RAM; no member or score network traffic is ever initiated.
+      // Observe the verified cartridge without waiting for the score service.
       const candidate=readSierraCrossfireScreenScores(ram);
       const completed=localRun.observe(ram);
       scoreBridge?.observe(localRun,completed);
