@@ -100,7 +100,6 @@ test('one authenticated 170-point run submits ONCE and only pending-review recei
  assert.equal(calls[1][1].verified,false);
  assert(statuses.includes('SCORE 000170 RECEIVED · PENDING REVIEW'));
  assert(models.some(x=>x.board==='alltime'));
- assert.equal(bridge.armed(),false,'one use per page; no second stale member receipt');
  bridge.observe({phase:'completed'},final(170));
  assert.equal(calls.length,2);
  bridge.stop();
@@ -195,5 +194,40 @@ test('invalidated game cancels server attempt and cannot finish or be rearmed',a
  assert.equal(bridge.armed(),false);
  bridge.observe({phase:'completed',lastScore:150},final(150));
  assert(!actions.includes('finish'));
+ bridge.stop();
+});
+
+test('a new run on the same cartridge uses a fresh attempt after the prior receipt',async()=>{
+ const calls=[];
+ let acknowledge;
+ const transport=run=>({
+  enabled:true,
+  start:async()=>{calls.push(['start',run]);return {status:'started'};},
+  finish:async candidate=>{
+   calls.push(['finish',run,candidate.score]);
+   if(run===1)return new Promise(resolve=>{acknowledge=resolve;});
+   return {status:'pending-review',scoreReceived:candidate.score};
+  },
+  newAttempt:()=>transport(run+1)
+ });
+ const bridge=new SierraHelioHostScoreBridge({
+  enabled:true,origin:CCG_SITE_ORIGIN,acquire:async()=>transport(1),
+  readBoard:async()=>({status:'unavailable'})
+ });
+ assert.equal(await bridge.connect(),true);
+ assert.equal(bridge.armed(),true);
+ bridge.observe({phase:'running',lastScore:0});
+ bridge.observe({phase:'completed'},final(170));
+ await nextTurn();
+ assert.equal(bridge.armed(),false);
+ bridge.observe({phase:'running',lastScore:0});
+ assert.deepEqual(calls,[['start',1],['finish',1,170]]);
+ acknowledge({status:'pending-review',scoreReceived:170});
+ await nextTurn();
+ assert.equal(bridge.armed(),true);
+ bridge.observe({phase:'running',lastScore:0});
+ bridge.observe({phase:'completed'},final(280));
+ await nextTurn();
+ assert.deepEqual(calls,[['start',1],['finish',1,170],['start',2],['finish',2,280]]);
  bridge.stop();
 });

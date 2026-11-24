@@ -31,7 +31,7 @@ export function isSierraHelioHostScoreIntent(query,origin) {
 
 export class SierraHelioHostScoreBridge {
  #closed=false;#transport=null;#run=null;#connecting=null;
- #abort=null;#armedForRun=false;#finished=false;
+ #abort=null;#armedForRun=false;#finished=false;#awaitingReceipt=false;
  constructor({enabled=false,origin='',fetchImpl=globalThis.fetch,
               onStatus=()=>{},onBoard=()=>{},acquire=acquireSierraAttempt,
               readBoard=readHelioHostSierraBoard}={}) {
@@ -100,9 +100,17 @@ export class SierraHelioHostScoreBridge {
    if(this.enabled)this.#status('HELIOHOST NOT READY · SCORE LOCAL ONLY');
    return false;
   }
-  if(this.#finished || this.#run?.stopped) {
-   this.#status('RELOAD TO RECORD ANOTHER RUN');
+  if(this.#awaitingReceipt) {
+   this.#status('PREVIOUS SCORE STILL PROCESSING · CURRENT RUN LOCAL ONLY');
    return false;
+  }
+  if(this.#run?.stopped)return false;
+  if(this.#finished) {
+   const next=this.#transport.newAttempt?.();
+   if(!next?.enabled)return false;
+   this.#transport=next;
+   this.#run=new SierraAutomaticAttempt(next);
+   this.#finished=false;
   }
   this.#armedForRun=true;
   this.#status('RUN ARMED · HELIOHOST REQUEST STARTS AT 000000');
@@ -123,17 +131,18 @@ export class SierraHelioHostScoreBridge {
   }
   if(!result || this.#finished)return;
   this.#finished=true;
+  this.#awaitingReceipt=true;
+  this.#armedForRun=false;
   const score=final?.score;
   this.#status('GAME OVER · AWAITING HELIOHOST RECEIPT');
   void Promise.resolve(result).then(receipt=>{
    if(this.#closed)return;
    if(receipt?.status==='pending-review'&&receipt.scoreReceived===score) {
     this.#status('SCORE '+String(score).padStart(6,'0')+' RECEIVED · PENDING REVIEW');
-    void this.loadBoard('alltime');
    }else this.#status('SUBMISSION NOT CONFIRMED · LOCAL SCORE ONLY');
   }).catch(()=>{
    this.#status('SUBMISSION FAILED · LOCAL SCORE ONLY');
-  });
+  }).finally(()=>{this.#awaitingReceipt=false;});
  }
  stop() {
   if(this.#closed)return;

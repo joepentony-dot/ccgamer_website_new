@@ -212,7 +212,7 @@ test('score-enabled Sierra displays approved public ranking without member sign-
  controller.dispose();
 });
 
-test('one-click F1 waits for real asynchronous member readiness',async()=>{
+test('one-click F1 starts while member auth is pending and arms only while the run is at zero',async()=>{
  let releaseMember;
  const keys=[],posts=[];
  const transport=async(url,options)=>{
@@ -229,13 +229,12 @@ test('one-click F1 waits for real asynchronous member readiness',async()=>{
   startF1:()=>{keys.push('press');return true;},releaseF1:()=>keys.push('release')});
  for(let i=0;i<100&&!releaseMember;i++)await turn();
  assert.equal(typeof releaseMember,'function');
- for(let i=0;i<60;i++)player.observe(ram(0,true));
- assert.deepEqual(keys,[]);
+ for(let i=0;i<33;i++)player.observe(ram(0,true));
+ assert.deepEqual(keys,['press','release']);
+ player.observe(ram(0));
+ assert.deepEqual(posts,[]);
  releaseMember(reply({account:{id:'01234567-89ab-4abc-8def-0123456789ab'}}));
  assert.equal(await player.whenHelioHostReady(),true);
- player.observe(ram(0,true));
- for(let i=0;i<8;i++)player.observe(ram(0,true));
- assert.deepEqual(keys,['press','release']);
  player.observe(ram(0));await turn();
  player.observe(ram(10));
  for(let i=0;i<25;i++)player.observe(ram(10,true));
@@ -261,27 +260,27 @@ test('offline handshake permits local one-click F1 with zero HelioHost POSTs',as
  player.dispose();
 });
 
-test('a hung HelioHost member request times out without holding the game hostage',async()=>{
+test('late authentication cannot submit a game that has already earned points',async()=>{
  let late;const keys=[],calls=[];
  const doc=fakeDocument(),stage=doc.createElement('div');
  const player=await mountCrossfirePreview({entry,bytes,stage,doc,subtle,launchQuery:link,scoreQuery:link,websiteOrigin:ORIGIN,
   scoreFetchImpl:async(url,options)=>{
    calls.push(options.method);
    if(url.endsWith('/v1/member/me'))return new Promise(resolve=>{late=resolve});
+   if(url.endsWith('/v1/member/csrf'))return reply({csrf:'b'.repeat(64)});
    return {ok:false};
   },
   startF1:()=>{keys.push('press');return true;},releaseF1:()=>keys.push('release')});
  for(let i=0;i<100&&!late;i++)await turn();
  assert.equal(typeof late,'function');
- for(let i=0;i<292;i++)player.observe(ram(0,true));
+ for(let i=0;i<33;i++)player.observe(ram(0,true));
  assert.deepEqual(keys,['press','release']);
- assert.equal(await player.whenHelioHostReady(),false);
- late(reply({account:{id:'01234567-89ab-4abc-8def-0123456789ab'}}));
- await turn();await turn();
  player.observe(ram(0));player.observe(ram(20));
+ late(reply({account:{id:'01234567-89ab-4abc-8def-0123456789ab'}}));
+ assert.equal(await player.whenHelioHostReady(),true);
  for(let i=0;i<25;i++)player.observe(ram(20,true));
  assert(!calls.includes('POST'));
- assert(stage.after.find(n=>n.tag==='p'&&String(n.textContent).includes('TIMED OUT')));
+ assert(stage.after.find(n=>n.tag==='p'&&String(n.textContent).includes('HELIOHOST WAS NOT READY')));
  player.dispose();
 });
 

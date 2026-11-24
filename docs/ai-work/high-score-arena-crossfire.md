@@ -218,3 +218,9 @@ If the emulator changes media or resets while verifying the PRG, the obsolete la
 - Rendered Chromium passed the narrow portrait cases and 680×320, then caught the desktop loading instructions taking over the mobile landscape grid above 760px. Hide that duplicated loading help only in Sierra immersive landscape. Capture the rendered desktop and mobile layouts in the existing Chromium job. Cache v254.
 
 - Chromium passed all six geometries, but its saved screenshots exposed the emulator header and site navigation painted on top of the landscape playbar. Suppressed those two rows during Sierra immersive play, with a rendered hit-test for the playbar, joystick, FIRE/JUMP and save-state buttons. Cache v255.
+
+## 24 November 2026 — Crossfire score flow on Dropzone PR #3116
+
+- The Sierra quick-start releases F1 on verified local PAL timing even while the member check is pending. A late session can arm only while that run is still at zero. If points were already earned, F1 on a later game can start a fresh attempt.
+- After a pending-review receipt settles, another genuine F1 start can acquire a new one-use attempt in the same page. A run begun while the previous receipt is outstanding stays local. Receiving a pending score does not refresh the public board.
+- The focused Arena Node suite passed. Pages and hosted member, score and publication acceptance remain pending.

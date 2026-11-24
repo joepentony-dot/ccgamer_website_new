@@ -89,6 +89,13 @@ export class SierraPendingAttempt {
  }
  get enabled(){return this.#enabled;}
  get active(){return this.#receipt!==null;}
+ newAttempt() {
+  if(!this.#enabled)return null;
+  return new SierraPendingAttempt({
+   enabled:true,authenticated:true,csrfToken:this.#csrf,
+   websiteOrigin:SITE_ORIGIN,fetchImpl:this.#fetch
+  });
+ }
  async #post(body) {
   const reply=await this.#fetch(SIERRA_API_ORIGIN+SIERRA_ATTEMPT_ROUTE,{
    method:'POST',mode:'cors',credentials:'include',cache:'no-store',
