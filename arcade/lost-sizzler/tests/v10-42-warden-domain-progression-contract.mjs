@@ -31,7 +31,10 @@ const context={
 };
 context.window.CCG_CONFIG={maxFloors:5,stalker:{name:"Count Loadula"}};
 context.window.CCGProgression={effectiveSight:()=>7};
-context.window.CCGWorld={roomAt};
+context.window.CCGWorld={roomAt,playerWalkable:(m,x,y,h)=>
+  m[y]?.[x]===0&&!(h.blockingDecor||[]).some(d=>d.x===x&&d.y===y)&&
+  !(h.doors||[]).some(d=>d.x===x&&d.y===y&&(d.locked||!d.open))&&
+  !(h.generators||[]).some(g=>g.alive&&g.x===x&&g.y===y)};
 vm.createContext(context);
 vm.runInContext(source,context,{filename:"v10-42-warden-domain-progression.js"});
 
@@ -79,6 +82,54 @@ const checkpoint={...host.v142WardenCheckpoint};
 player.x=1;player.y=1;
 context.hurtPlayer(player,99);
 assert.deepEqual({x:player.x,y:player.y},{x:checkpoint.x,y:checkpoint.y},"Normal death should relocate the respawn to the cleansed Warden anchor");
+
+// R184: a cleansed Warden checkpoint is not necessarily a safe respawn cell.
+// Execute the real hurtPlayer wrapper against solid generators, loot objects,
+// another local player, and a completely blocked room. No new rewards/deaths
+// beyond the base death penalty may be invented by this safety correction.
+const r184BaseGenerator={x:generator.x,y:generator.y};
+const r184SealCount=run.v142SealFragments;
+const respawnThroughWarden=()=>{player.x=1;player.y=1;context.hurtPlayer(player,99);return{x:player.x,y:player.y}};
+generator.x=checkpoint.x;generator.y=checkpoint.y;generator.alive=true;
+const awayFromGenerator=respawnThroughWarden();
+assert.notDeepEqual(awayFromGenerator,{x:checkpoint.x,y:checkpoint.y},
+  "A live generator on the anchor must be solid to the recovering player");
+assert.equal(roomAt(world,awayFromGenerator.x,awayFromGenerator.y),checkpoint.roomId,
+  "The anchor should seek an alternative walkable tile in its own room");
+generator.x=r184BaseGenerator.x;generator.y=r184BaseGenerator.y;
+
+const obstructingChest={id:"r184-anchor-chest",x:checkpoint.x,y:checkpoint.y,active:true};
+host.chests.push(obstructingChest);
+assert.notDeepEqual(respawnThroughWarden(),{x:checkpoint.x,y:checkpoint.y},
+  "An active chest must not be covered by a newly respawned player");
+host.chests.splice(host.chests.indexOf(obstructingChest),1);
+
+const obstructingDoor={id:"r184-anchor-door",x:checkpoint.x,y:checkpoint.y,open:false,locked:true};
+host.doors.push(obstructingDoor);
+assert.notDeepEqual(respawnThroughWarden(),{x:checkpoint.x,y:checkpoint.y},
+  "A locked door must never become a recovery tile");
+host.doors.splice(host.doors.indexOf(obstructingDoor),1);
+
+const r184OtherPlayer={x:player2.x,y:player2.y};
+player2.x=checkpoint.x;player2.y=checkpoint.y;
+assert.notDeepEqual(respawnThroughWarden(),{x:checkpoint.x,y:checkpoint.y},
+  "A recovery anchor must not stack two local players on the same tile");
+player2.x=r184OtherPlayer.x;player2.y=r184OtherPlayer.y;
+
+const r184Room=world.rooms[checkpoint.roomId],r184Tiles=[];
+for(let y=r184Room.y;y<=r184Room.y+r184Room.h;y++)
+  for(let x=r184Room.x;x<=r184Room.x+r184Room.w;x++){
+    r184Tiles.push({x,y,value:world.map[y][x]});
+    world.map[y][x]=1;
+  }
+assert.deepEqual(respawnThroughWarden(),{x:1,y:1},
+  "A fully obstructed Warden room must leave the normal entrance respawn intact");
+for(const q of r184Tiles)world.map[q.y][q.x]=q.value;
+assert.equal(run.v142SealFragments,r184SealCount,
+  "Changing recovery position must not create Seal Fragments");
+assert.deepEqual(host.v142WardenCheckpoint,checkpoint,
+  "Blocked recovery must preserve the previously earned anchor for later deaths");
+
 
 run.floor=3;run.floorComplete=false;delete host.v142WardenDomain;
 death.alive=true;death.v142WardenRewarded=false;death.v142WardenDefeated=false;
