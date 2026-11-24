@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <meta name="referrer" content="no-referrer">
-  <title>Crossfire Score Sign-In | Cheeky Commodore Gamer</title>
+  <title>Arcade Score Sign-In | Cheeky Commodore Gamer</title>
   <link rel="stylesheet" href="/resources/css/auth.css">
-  <script type="module" src="/resources/js/auth/heliohost-score-login.js?ccg_rev=20261118_sierra_arena_layout_v5"></script>
+  <script type="module" src="/resources/js/auth/heliohost-score-login.js?ccg_rev=20261124_arena_score_sign_in_v2"></script>
 </head>
 <body>
   <main class="auth-shell">
     <section class="auth-card" aria-labelledby="scoreLoginHeading">
-      <h1 id="scoreLoginHeading">Crossfire High Score Sign-In</h1>
-      <p class="auth-subtitle">This is the separate HelioHost member sign-in used for verified Sierra On-Line Crossfire score submissions. Your existing website and Supabase login is not automatically a HelioHost session.</p>
+      <h1 id="scoreLoginHeading">High Score Arena Sign-In</h1>
+      <p class="auth-subtitle">Use your HelioHost member account to submit scores for Crossfire and Dropzone.</p>
       <p class="auth-field-help">Only accounts activated on the new HelioHost member service can sign in here. Scores are submitted privately for human review, never automatically added to the public leaderboard.</p>
       <form id="scoreMemberLogin" method="post" novalidate>
         <div class="auth-field">
@@ -26,10 +26,10 @@
         </div>
         <p class="auth-field-help">Never enter your Plesk password, private owner key, authenticator setup key or recovery codes here.</p>
         <div id="scoreLoginStatus" class="auth-message is-info" role="status" aria-live="polite">The HelioHost member service must be released before scores can be submitted.</div>
-        <button id="scoreLoginSubmit" class="auth-btn" type="submit" disabled>Sign in for Crossfire scores</button>
+        <button id="scoreLoginSubmit" class="auth-btn" type="submit" disabled>Sign in for scores</button>
       </form>
       <nav class="auth-links" aria-label="Other destinations">
-        <a id="scoreReturnLink" href="/emulator/c64/?game=owner-crt-more-crossfiresierraonline-0c60e852f438&amp;autoplay=1&amp;start=1&amp;scores=1">Return to Crossfire</a>
+        <a id="scoreReturnLink" href="/emulator/c64/?game=owner-crt-more-crossfiresierraonline-0c60e852f438&amp;autoplay=1&amp;start=1&amp;scores=1">Return to the emulator</a>
         <a href="/auth/heliohost-score-register.html">New HelioHost member registration (pending activation)</a>
         <a href="/auth/login.html">Existing website sign-in</a>
       </nav>

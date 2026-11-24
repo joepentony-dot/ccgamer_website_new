@@ -10,6 +10,8 @@ const API_ORIGIN="https://api.cheekycommodoregamer.co.uk";
 const GAME_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 const GAME_PATH="/emulator/c64/";
 const CANONICAL_RETURN=GAME_PATH+"?game="+GAME_ID+"&autoplay=1&start=1&scores=1";
+const DROPZONE_ID="owner-crt-more-dropzone";
+const DROPZONE_RETURN=GAME_PATH+"?game="+DROPZONE_ID+"&autoplay=1&scores=1";
 const CSRF=/^[a-f0-9]{64}$/;
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const MAX_REPLY=4096;
@@ -20,10 +22,9 @@ export function safeSierraReturn(value) {
   const url=new URL(value,SITE_ORIGIN);
   if(url.origin!==SITE_ORIGIN||url.pathname!==GAME_PATH||url.hash)return CANONICAL_RETURN;
   const p=url.searchParams;
-  if(p.size!==4||p.getAll("game").length!==1||p.get("game")!==GAME_ID||
-     p.getAll("scores").length!==1||p.get("scores")!=="1"||
-     p.getAll("autoplay").length!==1||p.get("autoplay")!=="1"||
-     p.getAll("start").length!==1||p.get("start")!=="1")return CANONICAL_RETURN;
+  if(p.size===3&&p.getAll("game").length===1&&p.get("game")===DROPZONE_ID&&
+     p.getAll("scores").length===1&&p.get("scores")==="1"&&
+     p.getAll("autoplay").length===1&&p.get("autoplay")==="1")return DROPZONE_RETURN;
   return CANONICAL_RETURN;
  }catch{return CANONICAL_RETURN;}
 }
@@ -95,7 +96,7 @@ export function initHelioHostScoreLogin(doc=globalThis.document,loc=globalThis.l
     email:enteredEmail,password:enteredPassword,fetchImpl,origin:loc.origin
    });
    if(ok) {
-    status.textContent="HelioHost member session confirmed. Returning to Crossfire.";
+    status.textContent="HelioHost member session confirmed. Returning to the emulator.";
     // The host-only HttpOnly session cookie is carried by the browser, never
     // manually read or exposed to the emulator JavaScript.
     loc.assign(returnTo);

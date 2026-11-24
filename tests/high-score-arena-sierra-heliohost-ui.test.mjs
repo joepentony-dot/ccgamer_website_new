@@ -9,7 +9,7 @@ const digest=Buffer.from(entry.sha256,'hex');
 const subtle={digest:async()=>digest.buffer.slice(digest.byteOffset,digest.byteOffset+digest.byteLength)};
 const link='?game='+entry.id+'&autoplay=1&start=1&scores=1';
 class Element {
- constructor(doc,tag){this.ownerDocument=doc;this.tag=tag;this.textContent='';this.children=[];this.events=new Map();this.attributes={};this.removed=false;}
+ constructor(doc,tag){this.ownerDocument=doc;this.tag=tag;this.textContent='';this.children=[];this.events=new Map();this.attributes={};this.removed=false;this.classList={toggle(){}};}
  setAttribute(a,v){this.attributes[a]=String(v);}
  removeAttribute(a){delete this.attributes[a];}
  append(...items){this.children.push(...items);}
@@ -305,4 +305,91 @@ test('mobile Arena keeps a compact score strip and an independently scrolling ex
  assert(controller);
  assert.equal(stage.after.attributes['data-ccg-arena-mobile-status'],'compact');
  controller.dispose();
+});
+
+test('Dropzone captured frames submit only an opted-in completed CRT run to its own route',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const {DROPZONE_CRT,mountDropzoneArenaPreview}=await import('../js/ccg-c64/arena/games/dropzone/preview.mjs');
+ const evidence=JSON.parse(await readFile(new URL('./fixtures/high-score-arena/dropzone/terminal-video-evidence.json',import.meta.url),'utf8'));
+ const dropzoneDigest=Buffer.from(DROPZONE_CRT.sha256,'hex');
+ const dropzoneSubtle={digest:async()=>dropzoneDigest.buffer.slice(dropzoneDigest.byteOffset,dropzoneDigest.byteOffset+dropzoneDigest.byteLength)};
+ const doc=fakeDocument(),stage=doc.createElement('div');
+ const machine={cia2:{vicBank:0x8000},vic2:{regs:new Uint8Array(64)},mem:{}};
+ machine.vic2.regs[0x18]=0xe0;
+ const writes=[];
+ let reads=0,memberReads=0;
+ const fetchImpl=async(url,options)=>{
+  if(url.endsWith('/v1/member/me')){
+   memberReads++;
+   return reply({account:{id:'01234567-89ab-4abc-8def-0123456789ab'}});
+  }
+  if(url.endsWith('/v1/member/csrf'))return reply({csrf:'b'.repeat(64)});
+  if(url.includes('/leaderboard')){
+   assert.match(url,/\/v1\/arena\/dropzone\/leaderboard/);
+   assert.equal(options.credentials,'omit');
+   reads++;
+   return reply({ok:true,gameKey:'c64-dropzone',board:'alltime',challengeSlug:null,
+    status:'available',records:[{playerName:'Fixture Player',score:1234560}]});
+  }
+  assert.match(url,/\/v1\/arena\/dropzone\/attempt$/);
+  const payload=JSON.parse(options.body);
+  writes.push(payload);
+  return payload.action==='start'?reply({
+   ok:true,status:'started',attemptId:'01234567-89ab-4abc-8def-0123456789ab',
+   nonce:'a'.repeat(64),publicRankingUpdated:false,reviewRequired:true
+  }):reply({
+   ok:true,status:'pending-review',scoreReceived:payload.score,
+   publicRankingUpdated:false,reviewRequired:true
+  });
+ };
+ const dropzoneOptions={
+  entry:{...DROPZONE_CRT,approved:true},bytes:new Uint8Array(DROPZONE_CRT.bytes),
+  stage,doc,subtle:dropzoneSubtle,websiteOrigin:ORIGIN,scoreFetchImpl:fetchImpl,
+  getMachine:()=>machine
+ };
+ const guest=await mountDropzoneArenaPreview(dropzoneOptions);
+ await turn();
+ assert.equal(memberReads,0);
+ assert.equal(reads,1);
+ assert(stage.after.find(el=>el.textContent==='Fixture Player, 1,234,560 points'));
+ guest.dispose();
+
+ const player=await mountDropzoneArenaPreview({...dropzoneOptions,
+  scoreQuery:'?game='+DROPZONE_CRT.id+'&scores=1'});
+ await turn();
+ assert.equal(memberReads,1);
+ function observe(name,count=1){
+  const sample=evidence.samples.find(item=>item.name===name);
+  const ram=new Uint8Array(65536);
+  ram.set(sample.hud,0xBB20);
+  machine.mem.ram=ram;
+  const pixels=new Uint8ClampedArray(384*272*4);
+  evidence.bands.forEach((band,g)=>{
+   const mask=Buffer.from(sample.bands[g],'hex');
+   let index=0;
+   for(let y=band.y0;y<band.y1;y++)for(let x=band.x0;x<band.x1;x+=2){
+    if(mask[index>>3]&(128>>(index&7)))pixels.fill(255,(y*384+x)*4,(y*384+x)*4+3);
+    index++;
+   }
+  });
+  machine.vic2.frameBuffer=pixels;
+  for(let i=0;i<count;i++)player.observe(ram);
+ }
+ for(let run=0;run<2;run++){
+  observe('fire2-edge3-350f');
+  await turn();
+  observe('fire2-edge3-800f');
+  observe('no-input-2600');
+  observe('no-input-2750',24);
+  assert.equal(writes.length,run*2+1);
+  observe('no-input-2825',2);
+  await turn();
+  assert.equal(writes.length,run*2+2);
+ }
+ assert.deepEqual(writes.map(body=>body.action),['start','finish','start','finish']);
+ assert.equal(writes[0].gameKey,'c64-dropzone');
+ assert.equal(writes[1].score,280);
+ assert.equal(writes[1].diagnostic.kind,'dropzone-crt-local-final-candidate');
+ assert(stage.after.find(el=>el.textContent==='SCORE 0000280 RECEIVED · PENDING REVIEW'));
+ player.dispose();
 });

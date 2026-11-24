@@ -1,20 +1,21 @@
 /**
  * Dropzone CRT-only high-score Arena VISUAL stage.
  * The exact CRT HUD reader and visual GAME OVER sequence are verified from
- * original emulator captures. No server authentication or ranked submissions.
- * Never use unrelated Crossfire memory or alter member leaderboard records.
+ * original emulator captures. The server controls admission and publication.
  */
-import { renderArenaBoard, normaliseArenaBoard } from "../../view/arena-board.mjs";
-import { readDropzoneHudScore } from "./score-reader.mjs";
+import { renderArenaBoard } from "../../view/arena-board.mjs";
+import { DROPZONE_ATTEMPT_PROFILE } from "../../client/sierra-heliohost-attempt.mjs";
+import { SierraHelioHostScoreBridge, isCrtHelioHostScoreIntent } from "../../client/sierra-browser-score-bridge.mjs";
+import { readHelioHostCrtBoard } from "../../client/sierra-heliohost-board.mjs";
 import { DropzoneLocalRunObserver } from "./run-observer.mjs";
-const GAME_KEY = "c64-dropzone";
+const GAME_KEY = DROPZONE_ATTEMPT_PROFILE.gameKey;
 export const DROPZONE_CRT = Object.freeze({
-  id: "owner-crt-more-dropzone",
+  id: DROPZONE_ATTEMPT_PROFILE.catalogId,
   title: "Dropzone",
   format: "crt",
   filename: "dropzone.crt",
-  bytes: 82144,
-  sha256: "0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7",
+  bytes: DROPZONE_ATTEMPT_PROFILE.mediaBytes,
+  sha256: DROPZONE_ATTEMPT_PROFILE.mediaSha256,
   url: "/emulator/c64/media/cartridge-replacements/dropzone.crt"
 });
 const CSS_URL = "/resources/css/ccg-high-score-arena-dropzone.css?ccg_rev=20261119_dropzone_phone_leaderboard_only_v1";
@@ -35,11 +36,12 @@ export async function verifyDropzoneMedia(entry, bytes, subtle=globalThis.crypto
 
 export async function mountDropzoneArenaPreview({
   entry,bytes,stage,doc=globalThis.document,subtle,
-  getMachine=()=>null,isCurrent=()=>true
+  getMachine=()=>null,isCurrent=()=>true,websiteOrigin="",scoreQuery="",scoreFetchImpl=globalThis.fetch
 }={}) {
   if (!stage || !doc?.createElement || !doc.head ||
       !(await verifyDropzoneMedia(entry,bytes,subtle??globalThis.crypto?.subtle)) ||
       !isCurrent()) return null;
+  const scoreRequested=isCrtHelioHostScoreIntent(scoreQuery,websiteOrigin,DROPZONE_ATTEMPT_PROFILE);
   const stylesheet=doc.createElement("link");
   stylesheet.rel="stylesheet";
   stylesheet.href=CSS_URL;
@@ -58,7 +60,9 @@ export async function mountDropzoneArenaPreview({
   const title=doc.createElement("h2");
   title.textContent="DROPZONE · HIGH SCORE ARENA";
   const notice=doc.createElement("p");
-  notice.textContent="DROPZONE CRT · SCORE SUBMISSIONS DISABLED";
+  notice.textContent=scoreRequested
+    ?"DROPZONE CRT · SCORE SUBMISSIONS REQUESTED"
+    :"DROPZONE CRT · SCORE SUBMISSIONS DISABLED";
   intro.append(title,notice);
 
   const startHint=doc.createElement("p");
@@ -74,6 +78,13 @@ export async function mountDropzoneArenaPreview({
   const challenge=doc.createElement("button");
   challenge.type="button"; challenge.textContent="CHALLENGE";
   modes.append(alltime,challenge);
+  if(scoreRequested){
+    const signIn=doc.createElement("a");
+    const returnTo="/emulator/c64/?game="+DROPZONE_CRT.id+"&autoplay=1&scores=1";
+    signIn.href="/auth/heliohost-score-login.html?returnTo="+encodeURIComponent(returnTo);
+    signIn.textContent="SIGN IN FOR SCORES";
+    modes.append(signIn);
+  }
 
   const display=doc.createElement("div");
   display.className="ccg-arena-preview__display";
@@ -87,6 +98,9 @@ export async function mountDropzoneArenaPreview({
   const hint=doc.createElement("p");
   hint.textContent="LOCAL HUD SCORE · UNVERIFIED · NO RANKED SUBMISSIONS";
   run.append(score,hint);
+  const remoteHint=doc.createElement("p");
+  remoteHint.className="ccg-arena-preview__submission";
+  if(scoreRequested)run.append(remoteHint);
   display.append(board,run);
   section.append(intro,startHint,modes,display);
 
@@ -108,23 +122,36 @@ export async function mountDropzoneArenaPreview({
   }
   let mode="alltime",disposed=false,lastScore=null,lastPhase="inactive";
   const localRun=new DropzoneLocalRunObserver();
+  let boardRequest=null;
   function show(){
     if(disposed)return;
-    alltime.setAttribute("aria-pressed",String(mode==="alltime"));
-    challenge.setAttribute("aria-pressed",String(mode==="challenge"));
-    // There is no Dropzone server game key or trusted completed-run observer.
-    // Unavailable board data MUST NOT be replaced with another game's scores.
-    renderArenaBoard(board,normaliseArenaBoard({
-      ok:true,gameKey:GAME_KEY,board:mode,challengeSlug:null,
-      status:mode==="challenge"?"no-published-challenge":"unavailable",
-      records:[]
-    },{gameKey:GAME_KEY,board:mode,challengeSlug:null}),{mode});
+    const view=mode;
+    alltime.setAttribute("aria-pressed",String(view==="alltime"));
+    challenge.setAttribute("aria-pressed",String(view==="challenge"));
+    const options={mode:view,digitWidth:7};
+    renderArenaBoard(board,{status:"unavailable",rows:[]},options);
+    if(websiteOrigin!=="https://www.cheekycommodoregamer.co.uk")return;
+    boardRequest?.abort();
+    const request=new AbortController();
+    boardRequest=request;
+    void readHelioHostCrtBoard(GAME_KEY,{
+      enabled:true,board:view,fetchImpl:scoreFetchImpl,signal:request.signal
+    }).then(result=>{
+      if(!disposed&&isCurrent()&&!request.signal.aborted&&boardRequest===request)
+        renderArenaBoard(board,result,options);
+    });
   }
   alltime.addEventListener("click",()=>{mode="alltime";show();});
   challenge.addEventListener("click",()=>{mode="challenge";show();});
   show();
+  const scoreBridge=scoreRequested?new SierraHelioHostScoreBridge({
+    enabled:true,origin:websiteOrigin,fetchImpl:scoreFetchImpl,
+    profile:DROPZONE_ATTEMPT_PROFILE,
+    onStatus:value=>{if(!disposed)remoteHint.textContent=value;}
+  }):null;
+  let onlineRun=false, onlineStartTried=false;
+  if(scoreBridge)void scoreBridge.connect({loadPublicBoard:false});
   return Object.freeze({
-    // Until actual cartridge-specific memory forensics: no guessed score.
     observe(ram){
       if(disposed||!isCurrent())return;
       const machine=getMachine();
@@ -135,12 +162,39 @@ export async function mountDropzoneArenaPreview({
       const update=localRun.observe({
         ram,screenBase,frameBuffer:machine.vic2.frameBuffer
       });
+      if(scoreBridge?.connected){
+        if(update.phase==="active"&&update.score===0&&
+           (lastPhase==="inactive"||lastPhase==="completed"||lastScore===0)&&
+           !onlineStartTried){
+          onlineStartTried=true;
+          onlineRun=scoreBridge.armed();
+        }
+        if(onlineRun&&(update.phase==="inactive"||
+            (lastPhase!=="completed"&&update.score!==null&&lastScore!==null&&update.score<lastScore))){
+          scoreBridge.observe({phase:"invalid"});
+          onlineRun=false;
+        }
+        if(onlineRun&&update.phase==="active"){
+          scoreBridge.observe({phase:"running",lastScore:update.score});
+        }
+        if(onlineRun&&update.justCompleted){
+          scoreBridge.observe({phase:"completed"},{
+            kind:DROPZONE_ATTEMPT_PROFILE.finalKind,
+            score:update.score,stableFrames:localRun.terminalCount,
+            verified:false,eligibleForSubmission:false
+          });
+          onlineRun=false;
+        }
+      }
+      if(update.justCompleted)onlineStartTried=false;
       if(update.phase==="completed"){
         if(lastPhase!=="completed"||lastScore!==update.score){
           lastScore=update.score;
           score.textContent=update.score.toLocaleString("en-GB");
           score.setAttribute("aria-label","Local Dropzone GAME OVER score "+update.score);
-          hint.textContent="GAME OVER · LOCAL FINAL SCORE · NOT SUBMITTED";
+          hint.textContent=scoreRequested
+            ?"GAME OVER · LOCAL FINAL SCORE"
+            :"GAME OVER · LOCAL FINAL SCORE · NOT SUBMITTED";
         }
         lastPhase="completed";
         return;
@@ -156,6 +210,7 @@ export async function mountDropzoneArenaPreview({
         :"LOCAL HUD SCORE · NOT VERIFIED FOR SUBMISSION";
     },
     invalidate(){if(!disposed){
+      scoreBridge?.stop();
       localRun.reset();
       lastScore=null;
       lastPhase="inactive";
@@ -165,6 +220,8 @@ export async function mountDropzoneArenaPreview({
     dispose(){
       if(disposed)return;
       disposed=true;
+      boardRequest?.abort();
+      scoreBridge?.stop();
       setOpen(false);
       mobileToggle?.removeEventListener("click",onToggle);
       if(mobileToggle){

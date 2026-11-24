@@ -2197,3 +2197,5 @@ Keep #2705 draft and unmerged. Main has advanced beyond the earlier checkpoint; 
 ## 24 November 2026 — Crossfire score flow on Dropzone PR #3116
 
 - Crossfire starts independently of member-service latency and supports another ranked attempt after the previous receipt settles. The focused Arena Node suite passed. Public activation still depends on the HelioHost release. See [the Arena workstream](ai-work/high-score-arena-crossfire.md).
+
+- Dropzone now has an approved-board and opt-in GAME OVER submission candidate on the same PR. Backend source PR #16 merged with independent per-game release flags. The HelioHost runtime and public release are pending.

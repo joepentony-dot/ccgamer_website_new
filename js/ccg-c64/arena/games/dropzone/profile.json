@@ -22,7 +22,7 @@
     "joystickPort": 2
   },
   "score": {
-    "status": "local-0-10-280-reader-and-gameover-video-observer-no-submission",
+    "status": "exact-crt-score-and-gameover-with-pending-review-transport",
     "hudLocation": "bottom-left",
     "screenMemoryBase": "0xB800",
     "screenColumn": 0,
@@ -66,7 +66,7 @@
     },
     "reader": "./score-reader.mjs",
     "runObserver": "./run-observer.mjs",
-    "notes": "Exact CRT real PAL capture recorded active score 0, 10, 280; GAME OVER white text visible at diagnostic relative frames 2750..3350, absent at 2600 and 3425. Local video observer requires 25 consecutive matching frames plus zero-to-positive score transition. Native in-game ranking varies; only first two text lines are matched. Server score eligibility remains disabled.",
+    "notes": "Exact CRT real PAL capture recorded active score 0, 10, 280; GAME OVER white text visible at diagnostic relative frames 2750..3350, absent at 2600 and 3425. Local video observer requires 25 consecutive matching frames plus zero-to-positive score transition. Native in-game ranking varies; only first two text lines are matched. Server admission and publication require explicit release.",
     "screenDigitLayout": {
       "startX": 26,
       "topY": 162,
@@ -133,7 +133,7 @@
   "rollout": {
     "runtimeWired": true,
     "publicSubmissionEnabled": false,
-    "notes": "Exact SHA-pinned CRT mounts Dropzone overlay, reads score 0/10/280 locally and freezes end-of-run score after 25 stable GAME OVER PAL frames. NO HelioHost or authenticated scoring. Requires independent CI, browser acceptance and backend admission before release."
+    "notes": "Exact SHA-pinned CRT mounts Dropzone overlay, reads score 0/10/280 locally and freezes end-of-run score after 25 stable GAME OVER PAL frames. Opt-in authenticated submission is wired for server review. The host has not released the Dropzone API."
   },
   "evidence": {
     "type": "owner-supplied-screenshots",

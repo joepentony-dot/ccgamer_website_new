@@ -224,3 +224,6 @@ If the emulator changes media or resets while verifying the PRG, the obsolete la
 - The Sierra quick-start releases F1 on verified local PAL timing even while the member check is pending. A late session can arm only while that run is still at zero. If points were already earned, F1 on a later game can start a fresh attempt.
 - After a pending-review receipt settles, another genuine F1 start can acquire a new one-use attempt in the same page. A run begun while the previous receipt is outstanding stays local. Receiving a pending score does not refresh the public board.
 - The focused Arena Node suite passed. Pages and hosted member, score and publication acceptance remain pending.
+
+- The existing Dropzone branch now reads its own approved-only HelioHost board with seven-digit rendering and uses the same authenticated, one-use attempt transport as Sierra. The original Dropzone observer requires an active zero-to-positive score transition and 25 GAME OVER frames. Requests need an explicit score-enabled canonical link and the server can only return pending review.
+- Backend source PR #16 passed its isolated MariaDB lifecycle and merged. The website Arena suite exercised two consecutive Dropzone runs using the captured CRT frames and a simulated endpoint. The Dropzone release flags and hosted verification remain pending.

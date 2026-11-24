@@ -168,10 +168,12 @@ async function mountSelectedArenaPreview(entry, bytes) {
     const generation = arenaPreviewGeneration;
     const verifiedMachine = machine;
     try {
-      const module = await import("./arena/games/dropzone/preview.mjs?ccg_rev=20261119_dropzone_arena_visual_v1");
+      const module = await import("./arena/games/dropzone/preview.mjs?ccg_rev=20261124_dropzone_public_board_v1");
       if (generation !== arenaPreviewGeneration || machine !== verifiedMachine) return;
       const controller = await module.mountDropzoneArenaPreview({
         entry, bytes, stage: screenStage,
+        websiteOrigin: window.location.origin,
+        scoreQuery: window.location.search,
         getMachine: () => verifiedMachine,
         isCurrent: () => generation === arenaPreviewGeneration &&
           machine === verifiedMachine

@@ -1,15 +1,20 @@
-/**
- * Exact Sierra On-Line Crossfire CRT -> independent HelioHost candidate.
- * NOT imported by the public emulator. Network is OFF by default.
- * This is not anti-cheat: accepted finishes remain PRIVATE/pending review.
- * Never reuse the unrelated Atlantis/Pantheon PRG or Crossfire-Tron route.
- */
+/** Authenticated, one-use attempt transport for the supported CRT profiles. */
 export const SIERRA_API_ORIGIN='https://api.cheekycommodoregamer.co.uk';
 export const SIERRA_ATTEMPT_ROUTE='/v1/arena/sierra-crossfire/attempt';
 export const SIERRA_GAME_KEY='c64-crossfire-sierra-online';
 export const SIERRA_CATALOG_ID='owner-crt-more-crossfiresierraonline-0c60e852f438';
 export const SIERRA_MEDIA_SHA256='0c60e852f438ab9b6b325a1ecedb69ae1bbff9d1519584e52d6bb31df26c14ab';
 export const SIERRA_MEDIA_BYTES=65728;
+export const SIERRA_ATTEMPT_PROFILE=Object.freeze({
+ path:SIERRA_ATTEMPT_ROUTE,gameKey:SIERRA_GAME_KEY,catalogId:SIERRA_CATALOG_ID,
+ mediaSha256:SIERRA_MEDIA_SHA256,mediaBytes:SIERRA_MEDIA_BYTES,
+ finalKind:'sierra-crt-local-final-candidate',minScore:0,maxScore:999999,maxFrames:120
+});
+export const DROPZONE_ATTEMPT_PROFILE=Object.freeze({
+ path:'/v1/arena/dropzone/attempt',gameKey:'c64-dropzone',catalogId:'owner-crt-more-dropzone',
+ mediaSha256:'0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7',mediaBytes:82144,
+ finalKind:'dropzone-crt-local-final-candidate',minScore:1,maxScore:9999999,maxFrames:100
+});
 const SITE_ORIGIN='https://www.cheekycommodoregamer.co.uk';
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const NONCE=/^[a-f0-9]{64}$/;
@@ -17,31 +22,34 @@ const SLUG=/^[a-z0-9][a-z0-9-]{2,98}[a-z0-9]$/;
 const CSRF=/^[a-f0-9]{64}$/;
 const MAX_REPLY=4096;
 
-export function sierraStartPayload({board='alltime',challengeSlug=null}={}) {
+export function sierraStartPayload({board='alltime',challengeSlug=null}={},profile=SIERRA_ATTEMPT_PROFILE) {
  if(board!=='alltime'&&board!=='challenge')return null;
  if(board==='alltime'&&challengeSlug!==null)return null;
  if(board==='challenge'&&(!SLUG.test(challengeSlug||'')||typeof challengeSlug!=='string'))return null;
  return Object.freeze({
-  action:'start',gameKey:SIERRA_GAME_KEY,catalogId:SIERRA_CATALOG_ID,
-  mediaSha256:SIERRA_MEDIA_SHA256,mediaBytes:SIERRA_MEDIA_BYTES,
+  action:'start',gameKey:profile.gameKey,catalogId:profile.catalogId,
+  mediaSha256:profile.mediaSha256,mediaBytes:profile.mediaBytes,
   rulesVersion:1,board,challengeSlug
  });
 }
 
-export function sierraFinishPayload(receipt,final) {
+export function isCrtFinalCandidate(final,profile=SIERRA_ATTEMPT_PROFILE) {
+ return final?.kind===profile.finalKind &&
+   final.verified===false && final.eligibleForSubmission===false &&
+   Number.isInteger(final.score) && final.score>=profile.minScore && final.score<=profile.maxScore &&
+   Number.isInteger(final.stableFrames) && final.stableFrames>=25 && final.stableFrames<=profile.maxFrames;
+}
+
+export function sierraFinishPayload(receipt,final,profile=SIERRA_ATTEMPT_PROFILE) {
  if(!receipt || !UUID.test(receipt.attemptId||'') || !NONCE.test(receipt.nonce||'') ||
-    !final || final.kind!=='sierra-crt-local-final-candidate' ||
-    final.verified!==false || final.eligibleForSubmission!==false ||
-    !Number.isInteger(final.score) || final.score<0 || final.score>999999 ||
-    !Number.isInteger(final.stableFrames) ||
-    final.stableFrames<25 || final.stableFrames>120)return null;
+    !isCrtFinalCandidate(final,profile))return null;
  return Object.freeze({
   action:'finish',attemptId:receipt.attemptId,nonce:receipt.nonce,
   score:final.score,
   diagnostic:Object.freeze({
-   kind:'sierra-crt-local-final-candidate',
-   gameId:SIERRA_CATALOG_ID,
-   mediaSha256:SIERRA_MEDIA_SHA256,
+   kind:profile.finalKind,
+   gameId:profile.catalogId,
+   mediaSha256:profile.mediaSha256,
    score:final.score,
    stableGameOverFrames:final.stableFrames,
    trust:'unverified-client-session'
@@ -60,7 +68,7 @@ async function readBoundedJSON(response) {
 
 /** Requires a signed-in independent member and server-provided CSRF token. */
 export async function acquireSierraAttempt({
- enabled=false,websiteOrigin='',fetchImpl=globalThis.fetch,signal
+ enabled=false,websiteOrigin='',fetchImpl=globalThis.fetch,signal,profile=SIERRA_ATTEMPT_PROFILE
 }={}) {
  if(enabled!==true || websiteOrigin!==SITE_ORIGIN ||
     typeof fetchImpl!=='function'||signal?.aborted)return null;
@@ -74,17 +82,19 @@ export async function acquireSierraAttempt({
   const csrf=await get('/v1/member/csrf');
   if(signal?.aborted||!CSRF.test(csrf?.csrf||''))return null;
   return new SierraPendingAttempt({
-   enabled:true,authenticated:true,csrfToken:csrf.csrf,fetchImpl,websiteOrigin
+   enabled:true,authenticated:true,csrfToken:csrf.csrf,fetchImpl,websiteOrigin,profile
   });
  } catch { return null; }
 }
 
 export class SierraPendingAttempt {
- #enabled;#csrf;#fetch;#receipt=null;#used=false;#pending=false;#version=0;
+ #enabled;#csrf;#fetch;#profile;#receipt=null;#used=false;#pending=false;#version=0;
  constructor({enabled=false,authenticated=false,csrfToken='',
-              websiteOrigin='',fetchImpl=globalThis.fetch}={}) {
+              websiteOrigin='',fetchImpl=globalThis.fetch,profile=SIERRA_ATTEMPT_PROFILE}={}) {
   this.#enabled=enabled===true&&authenticated===true&&
-   websiteOrigin===SITE_ORIGIN&&CSRF.test(csrfToken)&&typeof fetchImpl==='function';
+   websiteOrigin===SITE_ORIGIN&&CSRF.test(csrfToken)&&typeof fetchImpl==='function'&&
+   (profile===SIERRA_ATTEMPT_PROFILE||profile===DROPZONE_ATTEMPT_PROFILE);
+  this.#profile=profile;
   this.#csrf=csrfToken;this.#fetch=fetchImpl;
  }
  get enabled(){return this.#enabled;}
@@ -93,11 +103,11 @@ export class SierraPendingAttempt {
   if(!this.#enabled)return null;
   return new SierraPendingAttempt({
    enabled:true,authenticated:true,csrfToken:this.#csrf,
-   websiteOrigin:SITE_ORIGIN,fetchImpl:this.#fetch
+   websiteOrigin:SITE_ORIGIN,fetchImpl:this.#fetch,profile:this.#profile
   });
  }
  async #post(body) {
-  const reply=await this.#fetch(SIERRA_API_ORIGIN+SIERRA_ATTEMPT_ROUTE,{
+  const reply=await this.#fetch(SIERRA_API_ORIGIN+this.#profile.path,{
    method:'POST',mode:'cors',credentials:'include',cache:'no-store',
    redirect:'error',
    headers:{'Content-Type':'application/json','X-CCG-CSRF':this.#csrf},
@@ -111,7 +121,7 @@ export class SierraPendingAttempt {
  }
  async start(selection={}) {
   if(!this.#enabled||this.#used||this.#pending||this.#receipt)return null;
-  const payload=sierraStartPayload(selection);
+  const payload=sierraStartPayload(selection,this.#profile);
   if(!payload)return null;
   this.#pending=true;
   const version=this.#version;
@@ -132,7 +142,7 @@ export class SierraPendingAttempt {
  }
  async finish(candidate) {
   if(!this.#enabled||!this.#receipt||this.#used||this.#pending)return null;
-  const payload=sierraFinishPayload(this.#receipt,candidate);
+  const payload=sierraFinishPayload(this.#receipt,candidate,this.#profile);
   if(!payload)return null;
   this.#receipt=null;this.#used=true;this.#version++;
   try {
