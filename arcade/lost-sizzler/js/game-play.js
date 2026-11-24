@@ -549,7 +549,10 @@ function triggerBossFight(p){
   S.sfx("alert");shake=Math.max(shake,8);showToast(`BOSS — ${fight.name}`,`${fight.subtitle||"The chamber seals."} Defeat it to reopen the room. Teleport is suppressed while the boss lives.`,"red",10500);host.revision++;return true
 }
 function bossBurst(fight,boss,phase){
-  // Boss shots travel on integer grid steps. Fractional diagonal directions\n  // reach WORLD.walkable(map, x, y) with non-integer indexes and throw in\n  // phase two/three, stopping the gameplay tick mid-Guardian fight.\n  const dirs=phase>=2?[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]:[[1,0],[-1,0],[0,1],[0,-1]];
+  // Boss shots travel on integer grid steps. Fractional diagonal directions
+  // reach WORLD.walkable(map, x, y) with non-integer indexes and throw in
+  // phase two/three, stopping the gameplay tick mid-Guardian fight.
+  const dirs=phase>=2?[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]:[[1,0],[-1,0],[0,1],[0,-1]];
   const style=phase>=3&&fight.floor===15?(Math.floor(performance.now()/900)%2?"fire":"shock"):fight.style||"shock",power=phase>=3?3:2,ttl=phase>=3?12:10;
   for(const [dx,dy] of dirs)spawnEnemyShot({x:boss.x,y:boss.y,dx,dy,power,style,ttl,source:fight.name,enemyId:boss.id,damageScale:1});
   S.sfx(style==="fire"?"flame":"enemy");shake=Math.max(shake,phase>=3?10:6)
