@@ -549,7 +549,10 @@ function triggerBossFight(p){
   S.sfx("alert");shake=Math.max(shake,8);showToast(`BOSS — ${fight.name}`,`${fight.subtitle||"The chamber seals."} Defeat it to reopen the room. Teleport is suppressed while the boss lives.`,"red",10500);host.revision++;return true
 }
 function bossBurst(fight,boss,phase){
-  const dirs=phase>=2?[[1,0],[-1,0],[0,1],[0,-1],[.707,.707],[.707,-.707],[-.707,.707],[-.707,-.707]]:[[1,0],[-1,0],[0,1],[0,-1]];
+  // Boss shots travel on integer grid steps. Fractional diagonal directions
+  // reach WORLD.walkable(map, x, y) with non-integer indexes and throw in
+  // phase two/three, stopping the gameplay tick mid-Guardian fight.
+  const dirs=phase>=2?[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]:[[1,0],[-1,0],[0,1],[0,-1]];
   const style=phase>=3&&fight.floor===15?(Math.floor(performance.now()/900)%2?"fire":"shock"):fight.style||"shock",power=phase>=3?3:2,ttl=phase>=3?12:10;
   for(const [dx,dy] of dirs)spawnEnemyShot({x:boss.x,y:boss.y,dx,dy,power,style,ttl,source:fight.name,enemyId:boss.id,damageScale:1});
   S.sfx(style==="fire"?"flame":"enemy");shake=Math.max(shake,phase>=3?10:6)
@@ -1134,7 +1137,7 @@ function updateRescue(){
   }
 }
 function updateStalker(dt){
-  SYS.enforceDeathStalkerSingleton?.(host);
+  SYS.enforceDeathStalkerSingleton?.(host,run);
   const s=host.stalker;if(!s||s.permanentlyBanished||!C.stalker.enabled||run.floor<C.stalker.startFloor){S.setStalkerNear(Boolean(host.voidStalkerInSight));return}
   s.spawnTimer-=dt;if(!s.awake&&s.spawnTimer<=0){s.awake=true;s.seen=false;s.hp=s.maxHp;s.vulnerableMs=0;s._banishWarned=false;S.sfx("stalker");showToast("SOMETHING HAS ENTERED THE VAULT","COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.","red",9000);logEvent("The normal music seems suddenly less confident.","red",10000)}if(!s.awake)return;
   if(s.stunMs>0){s.stunMs-=dt;return}s.moveCooldown-=dt;const targets=localPlayers(),target=targets.sort((a,b)=>md(a,s)-md(b,s))[0];if(!target)return;if(SYS.inSanctuary(world,target.x,target.y)){s.near=false;s.seen=false;s.moveCooldown=Math.max(500,Number(s.moveCooldown)||0);S.setStalkerNear(Boolean(host.voidStalkerInSight));return}const sees=W.sameRoom(world,s,target)||A.lineOfSight(world.map,s,target,C.enemy.lineOfSightRange,host);if(sees)s.seen=true;

@@ -6,6 +6,7 @@ const fs = require("fs");
 const http = require("http");
 const path = require("path");
 const { spawn, spawnSync } = require("child_process");
+const publicHeaderShell = require("./normalize-public-header-shell.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const HOST = "127.0.0.1";
@@ -80,6 +81,22 @@ function createServer() {
     }
 
     const contentType = MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
+    // Pages inserts the canonical public header at build time. Reproduce
+    // that exact transformation for the new adventure in this local real-
+    // browser audit, rather than testing an unnormalised source-only page.
+    if (filePath === path.join(ROOT, "choose-your-own-adventure", "index.html")) {
+      const original = fs.readFileSync(filePath, "utf8");
+      const staged = publicHeaderShell.normaliseHtml(original, {
+        root: ROOT,
+        relativePath: "choose-your-own-adventure/index.html"
+      });
+      if (!staged.publicHeaderInserted || !staged.html.includes('data-ccg-nav-toggle')) {
+        throw new Error("Staged adventure did not receive the canonical public header");
+      }
+      res.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
+      res.end(staged.html);
+      return;
+    }
     res.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
     res.end(fs.readFileSync(filePath));
   });
@@ -703,6 +720,205 @@ async function assertInstallDestinationNavigation(sessionId, width) {
   }
 }
 
+async function assertAdventureGamesHubLink(sessionId, width) {
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 844 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/games/ccg-games/?ccg-adventure-hub-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, `(function () {
+    return !!document.querySelector('a.ccg-original-card__link[href="/choose-your-own-adventure/"]')
+      && !!document.querySelector('a.ccg-games-hub__button[href="/choose-your-own-adventure/"]')
+      && !!document.getElementById('ccg-originals-title');
+  })()`, `CCG Games adventure launch card at ${width}px`, 9000);
+
+  const present = await execute(sessionId, `return (function () {
+    const card = document.querySelector('a.ccg-original-card__link[href="/choose-your-own-adventure/"]');
+    const section = card?.closest('section');
+    const originalMaintenance = document.getElementById('ccg-originals-title');
+    return {
+      links: document.querySelectorAll('a[href="/choose-your-own-adventure/"]').length,
+      sectionTitle: section?.querySelector('h2')?.textContent.trim() || '',
+      visible: card && getComputedStyle(card).display !== 'none',
+      existingGamesPreserved: !!originalMaintenance &&
+        !!Array.from(document.querySelectorAll('.ccg-original-card h3')).find(h => h.textContent.includes('C64 Dungeon Carnage')),
+      title: card?.closest('.ccg-original-card')?.querySelector('h3')?.textContent.trim() || ''
+    };
+  })()`);
+  if (present.links !== 2 || !present.visible || !present.existingGamesPreserved ||
+      present.title !== 'The Great 8-Bit Decision') {
+    throw new Error(`CCG Games hub adventure link failed at ${width}px: ${JSON.stringify(present)}`);
+  }
+
+  await clickElement(sessionId, 'a.ccg-original-card__link[href="/choose-your-own-adventure/"]');
+  await waitUntil(sessionId, `(function () {
+    return location.pathname === '/choose-your-own-adventure/'
+      && !!document.querySelector('#app [data-action="home"]')
+      && !!document.querySelector('[data-ccg-nav-toggle]');
+  })()`, `CCG Games adventure link navigation at ${width}px`, 12000);
+  console.log(`CCG Games original-card link to live adventure route passed at ${width}px.`);
+}
+
+async function assertAdventureMobileMenu(sessionId, width) {
+  await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 844 });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/choose-your-own-adventure/?ccg-mobile-menu-audit=${Date.now()}`
+  });
+  await waitUntil(sessionId, `(function () {
+    const header = document.querySelector('[data-ccg-header]');
+    const menu = header?.querySelector('[data-ccg-nav-toggle]');
+    return header && menu && document.querySelector('#app .mast')
+      && document.querySelector('[data-ccg-adventure-mobile-navigation]')
+      && document.querySelector('[data-ccg-drawer-primary]')
+      && document.querySelector('[data-ccg-drawer-secondary]');
+  })()`, `staged adventure and shared menu at ${width}px`, 12000);
+
+  const before = await execute(sessionId, `return (function () {
+    const button = document.querySelector('[data-ccg-nav-toggle]');
+    const drawer = document.querySelector('[data-ccg-nav-drawer]');
+    return {
+      runtimeCopies: document.querySelectorAll('script[src="/js/ccg-global.js"]').length,
+      buttonExpanded: button?.getAttribute('aria-expanded'),
+      drawerHidden: drawer?.getAttribute('aria-hidden'),
+      bookCover: !!document.querySelector('#app [data-action="home"]'),
+      storyPages: !!document.getElementById('story-data')
+    };
+  })()`);
+  if (before.runtimeCopies !== 1 || before.buttonExpanded !== "false" ||
+      before.drawerHidden !== "true" || !before.bookCover || !before.storyPages) {
+    throw new Error(`Adventure navigation bootstrap failed at ${width}px: ${JSON.stringify(before)}`);
+  }
+
+  // A real WebDriver pointer click must open the canonical mobile drawer.
+  await clickElement(sessionId, "[data-ccg-nav-toggle]");
+  await waitUntil(sessionId, `(function () {
+    const header = document.querySelector('[data-ccg-header]');
+    const toggle = header?.querySelector('[data-ccg-nav-toggle]');
+    const drawer = header?.querySelector('[data-ccg-nav-drawer]');
+    return header?.classList.contains('ccg-header--nav-open')
+      && toggle?.getAttribute('aria-expanded') === 'true'
+      && drawer?.getAttribute('aria-hidden') === 'false'
+      && drawer.querySelector('[data-ccg-drawer-primary] a[href="/home.html"]')
+      && drawer.querySelector('[data-ccg-drawer-secondary] a[href="/quiz/quiz.html"]');
+  })()`, `open adventure hamburger drawer at ${width}px`, 9000);
+
+  const panel = await execute(sessionId, `return (function () {
+    const drawer = document.querySelector('[data-ccg-nav-drawer]');
+    const menuPanel = drawer?.querySelector('.ccg-nav-drawer__panel');
+    const rect = menuPanel?.getBoundingClientRect();
+    const styles = menuPanel ? getComputedStyle(menuPanel) : null;
+    return {
+      visible: Boolean(rect && rect.width > 100 && rect.height > 100 &&
+        styles.display !== 'none' && styles.visibility !== 'hidden'),
+      coverIntact: Boolean(document.querySelector('#app [data-action="home"]')),
+      bodyLocked: document.body.classList.contains('ccg-body--nav-open')
+    };
+  })()`);
+  if (!panel.visible || !panel.coverIntact || !panel.bodyLocked) {
+    throw new Error(`Adventure mobile drawer content failed at ${width}px: ${JSON.stringify(panel)}`);
+  }
+
+  await clickElement(sessionId, "[data-ccg-nav-drawer] .ccg-nav-drawer__close");
+  await waitUntil(sessionId, `(function () {
+    const header = document.querySelector('[data-ccg-header]');
+    return header && !header.classList.contains('ccg-header--nav-open')
+      && header.querySelector('[data-ccg-nav-toggle]').getAttribute('aria-expanded') === 'false'
+      && header.querySelector('[data-ccg-nav-drawer]').getAttribute('aria-hidden') === 'true'
+      && !document.body.classList.contains('ccg-body--nav-open');
+  })()`, `close adventure mobile menu at ${width}px`, 9000);
+  console.log(`Adventure real mobile menu open/close and gamebook preservation passed at ${width}px.`);
+}
+
+
+async function assertAdventureReadingAndPhotos(sessionId, width) {
+  await webdriver("POST", "/session/" + sessionId + "/window/rect",
+    { width, height: width <= 720 ? 700 : 800 });
+  await webdriver("POST", "/session/" + sessionId + "/url", {
+    url: auditBaseUrl() + "/choose-your-own-adventure/?ccg-reading-test=" + Date.now()
+  });
+  await waitUntil(sessionId, "!!document.querySelector('#app [data-action=open]')",
+    "adventure cover at " + width + "px", 12000);
+  await execute(sessionId, "localStorage.removeItem('ccg-gamebook-c64-1983-v2');return true;");
+  await webdriver("POST", "/session/" + sessionId + "/refresh", {});
+  await waitUntil(sessionId, "!!document.querySelector('#app [data-action=open]')",
+    "fresh adventure cover at " + width + "px", 12000);
+  await clickElement(sessionId, "#app [data-action=open]");
+  await waitUntil(sessionId, "document.querySelector('#gamebook')?.dataset.sceneTheme==='living'",
+    "first gamebook page at " + width + "px", 9000);
+
+  const snapshot = async () => execute(sessionId, `return (function() {
+    const book=document.getElementById('gamebook');
+    const mobile=matchMedia('(max-width:720px)').matches;
+    const reading=mobile?book?.querySelector('.story-page'):book;
+    const header=document.querySelector('[data-ccg-header]');
+    const style=header?getComputedStyle(header):null;
+    const rect=header?.getBoundingClientRect();
+    const pinned=style&&(style.position==='fixed'||(style.position==='sticky'&&rect.top<=2));
+    const expected=pinned?rect.height+12:12;
+    const gallery=book?.querySelector('.story-photo-strip');
+    return {
+      theme:book?.dataset.sceneTheme,
+      accent:getComputedStyle(book).getPropertyValue('--scene-accent').trim(),
+      top:reading?.getBoundingClientRect().top,
+      expected:expected,
+      images:gallery?.querySelectorAll('img').length,
+      galleryDisplay:gallery?getComputedStyle(gallery).display:null,
+      photoLabels:gallery?.textContent||'',
+      headingTop:book?.querySelector('.story-page h2')?.getBoundingClientRect().top,
+      proseTop:book?.querySelector('.story-text p')?.getBoundingClientRect().top,
+      artTop:book?.querySelector('.art-page')?.getBoundingClientRect().top,
+      storyBottom:book?.querySelector('.story-page')?.getBoundingClientRect().bottom,
+      viewportHeight:innerHeight,
+      choices:book?.querySelectorAll('.choice').length
+    };
+  })()`);
+  const readingAligned = `(function() {
+    const book=document.getElementById('gamebook');
+    const page=innerWidth<=720?book?.querySelector('.story-page'):book;
+    if(!page)return false;
+    const header=document.querySelector('[data-ccg-header]');
+    const style=header?getComputedStyle(header):null;
+    const rect=header?.getBoundingClientRect();
+    const pinned=style&&(style.position==='fixed'||(style.position==='sticky'&&rect.top<=2));
+    const expected=pinned?rect.height+12:12;
+    return Math.abs(page.getBoundingClientRect().top-expected)<48;
+  })()`;
+
+  await waitUntil(sessionId, readingAligned, "first page reading position at " + width + "px", 9000);
+  const mobileReadingFirst = (snap) =>
+    snap.artTop>=snap.storyBottom-4 &&
+    snap.headingTop>=0 &&
+    snap.headingTop<snap.viewportHeight*0.48 &&
+    snap.proseTop>=0 &&
+    snap.proseTop<snap.viewportHeight-120 &&
+    Math.abs(snap.top-snap.expected)<48;
+  const first=await snapshot();
+  if(first.images<1||first.photoLabels.includes('Real ')||first.choices<2||
+     (width<=720&&(first.galleryDisplay==='none'||!mobileReadingFirst(first)))) {
+    throw new Error("Initial adventure photo layout failed: "+JSON.stringify(first));
+  }
+
+  await clickElement(sessionId, "#gamebook [data-choice='1']");
+  await waitUntil(sessionId, "document.querySelector('#gamebook')?.dataset.sceneTheme==='news'",
+    "news story after answer at " + width + "px", 9000);
+  await waitUntil(sessionId, readingAligned, "next page reading position at " + width + "px", 9000);
+  const next=await snapshot();
+  if(next.accent===first.accent||next.images<1||
+     (width<=720&&(next.galleryDisplay==='none'||!mobileReadingFirst(next)))) {
+    throw new Error("Adventure page transition/colour failed: "+JSON.stringify(next));
+  }
+
+  await clickElement(sessionId, "#gamebook [data-action='back']");
+  await waitUntil(sessionId, "document.querySelector('#gamebook')?.dataset.sceneTheme==='living'",
+    "back navigation after answer at " + width + "px", 9000);
+  await waitUntil(sessionId, readingAligned, "back page reading position at " + width + "px", 9000);
+  const back=await snapshot();
+  if(back.accent!==first.accent||back.images<1||
+     (width<=720&&!mobileReadingFirst(back))) {
+    throw new Error("Adventure back transition failed: "+JSON.stringify(back));
+  }
+  console.log("Adventure story scroll, colour, and hardware photos passed at "+width+"px.");
+}
+
 async function main() {
   const driverPath = findChromeDriver();
   const siteServer = LIVE_BASE_URL ? null : createServer();
@@ -737,6 +953,12 @@ async function main() {
       }
     });
     sessionId = session.sessionId;
+
+    // The adventure's public header is injected by Pages; its mobile menu
+    // must be interactive on real rendered small-screen pages.
+    for (const width of [390, 430]) await assertAdventureMobileMenu(sessionId, width);
+    for (const width of [390, 1440]) await assertAdventureGamesHubLink(sessionId, width);
+    for (const width of [320, 360, 390, 430, 720, 1440]) await assertAdventureReadingAndPhotos(sessionId, width);
 
     // A fresh and a repeat visit in one browser profile must both stay free
     // of the retired Ask CCG launcher on desktop and mobile-sized viewports.

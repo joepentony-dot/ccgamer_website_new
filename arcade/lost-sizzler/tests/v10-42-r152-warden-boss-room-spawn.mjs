@@ -11,8 +11,8 @@ assert.match(source,/countRoom:stalkRoom,deathRoom:deathStalkerRoom\}=selectWard
   "Count must use the selected non-boss room");
 assert.match(source,/const room=deathStalkerRoom,vq=freeInRoom\(world,room,used\)/,
   "The unique floor Death Stalker must use its independently selected room");
-assert.match(source,/enforceDeathStalkerSingleton\(host\)/,
-  "Existing Death Stalker singleton protection must remain installed");
+assert.match(source,/enforceDeathStalkerSingleton\(host,run\)/,
+  "The Death Stalker singleton protection must receive exact-floor run state");
 assert.match(source,/id:"count-loadula"/,"Count's canonical actor identity must remain");
 assert.match(source,/id=`death-stalker-floor-\$\{run\.floor\|\|1\}`/,
   "The authored floor Death Stalker identity must remain");

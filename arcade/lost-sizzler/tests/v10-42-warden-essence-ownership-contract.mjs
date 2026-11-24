@@ -166,6 +166,8 @@ c.damageEnemy(pair.death,999,"energy",c.p1);
 assert.equal(pair.death.alive,false);
 assert.deepEqual(earnedBadges,["LS_STALKER_BANISHED"],"The actual Death Stalker defeat must grant the existing achievement");
 assert.equal(pair.death.v142WardenDefeated,true);
+assert.deepEqual(Array.from(c.run.v142DefeatedWardenIds?.["4"]||[]),[pair.death.id],
+  "The real Death Stalker kill must persist an exact-floor run tombstone");
 assert.equal(c.run.stats.kills,2);
 assert.deepEqual(Array.from(c.host.defeatedDeathStalkers),[pair.death.id]);
 assert.equal(c.score,900+7500,"Paired ordinary guardian and Warden retain their separate rewards");
@@ -182,6 +184,8 @@ countOnly.ctx.window.CCGLostSizzlerAchievementsV129={award:key=>countBadges.push
 assert.equal(countOnly.ctx.permanentlyBanish(countOnly.count,countOnly.ctx.p1),true);
 assert.equal(countOnly.ctx.hitStalker({x:countOnly.count.x,y:countOnly.count.y,power:999,owner:"p1"}),true);
 assert.equal(countOnly.count.v142WardenDefeated,true);
+assert.deepEqual(Array.from(countOnly.ctx.run.v142DefeatedWardenIds?.["4"]||[]),["count-loadula"],
+  "The real Count Loadula kill must persist an independent exact-floor tombstone");
 assert.deepEqual(countBadges,[],"Count Loadula must not grant the Death Stalker achievement");
 
 function killAtOccupiedCell(kind){
@@ -560,5 +564,236 @@ checkWardenRender(()=>wardRender.renderCount(),"VULNERABLE",1);
 wardRender.host.stalker.v142WardBroken=false;wardRender.host.stalker.vulnerableMs=200;
 checkWardenRender(()=>wardRender.renderCount(),"VULNERABLE",1);
 console.log("PASS real canvas Warden labels/health follow sealed, Ward-Broken and legacy temporary-vulnerable state");
+
+// R171: a lost primary defeat ledger must not resurrect a Warden whose
+// timed chamber or matching cleansed domain independently records its defeat.
+// The ordinary singleton recovery for undefeated actors remains intact.
+const r171Guard=soloEncounter().ctx.SYS.enforceDeathStalkerSingleton;
+const r171Id="death-stalker-floor-4";
+const r171Missing=extra=>({
+  enemies:[],deathStalkerId:r171Id,deathStalkerSpawn:{x:5,y:5,roomId:0},
+  v142CampaignFloor:4,defeatedDeathStalkers:[],timedRooms:[],voidStalkers:[],
+  ...extra
+});
+const timedWitness=r171Missing({timedRooms:[{id:"timed0",hunterId:r171Id,stalkerDefeated:true}]});
+assert.equal(r171Guard(timedWitness),null,"A defeated timed-chamber Warden must never be reconstructed");
+assert.deepEqual(Array.from(timedWitness.defeatedDeathStalkers),[r171Id],
+  "Lost defeat ledger should be repaired from exact matching timed-chamber evidence");
+assert.equal(timedWitness.enemies.length,0);
+r171Guard(timedWitness);
+assert.equal(timedWitness.enemies.length,0,"Later gameplay ticks cannot resurrect a timed-chamber defeat");
+const domainWitness=r171Missing({v142WardenDomain:{floor:4,sourceId:r171Id,cleansed:true}});
+assert.equal(r171Guard(domainWitness),null,"Cleansed Death Stalker domain must suppress reconstruction");
+assert.deepEqual(Array.from(domainWitness.defeatedDeathStalkers),[r171Id]);
+const unrelatedCount=r171Missing({v142WardenDomain:{floor:4,sourceId:"count-loadula",cleansed:true}});
+assert.equal(r171Guard(unrelatedCount).id,r171Id,"A Count-only clearance cannot erase the living Death Stalker");
+assert.equal(unrelatedCount.enemies.length,1);
+const genuinelyMissing=r171Missing();
+assert.equal(r171Guard(genuinelyMissing).id,r171Id,"Undefeated missing Death Stalker must still be repaired");
+assert.equal(r171Guard(genuinelyMissing).id,r171Id);
+assert.equal(genuinelyMissing.enemies.length,1,"Repeated singleton checks cannot create duplicates");
+const staleDuplicate=r171Missing({
+  enemies:[{id:r171Id,x:5,y:5,alive:true,deathStalker:true,voidStalker:true}],
+  v142WardenDomain:{floor:4,sourceId:r171Id,cleansed:true}
+});
+assert.equal(r171Guard(staleDuplicate).alive,false,
+  "An old live duplicate cannot override an independently confirmed domain defeat");
+console.log("PASS R171 independent Warden defeat tombstones and retained single-spawn recovery");
+
+// R173: a real campaign run keeps its resolved Warden's exact source ID,
+// even if a partial host restore loses the defeated-ID, timed-room and
+// transient domain records. That last independent tombstone must be honoured.
+const r173Saved={floor:4,v142WardenFloors:{"4":{resolved:true,resolvedSourceId:r171Id}}};
+const r173Missing=r171Missing();
+assert.equal(r171Guard(r173Missing,r173Saved),null,
+  "Persisted, exact-floor Death Stalker clearance must prevent reconstruction");
+assert.deepEqual(Array.from(r173Missing.defeatedDeathStalkers),[r171Id],
+  "Reconciliation should repair the missing defeat list from serialized run evidence");
+r171Guard(r173Missing,r173Saved);
+assert.equal(r173Missing.enemies.length,0,
+  "Later ticks cannot create a duplicate after run-state defeat reconciliation");
+const r173Stale=r171Missing({enemies:[{
+  id:r171Id,x:5,y:5,alive:true,deathStalker:true,voidStalker:true
+}]});
+assert.equal(r171Guard(r173Stale,r173Saved).alive,false,
+  "A live stale Death Stalker must be marked defeated by its matching run tombstone");
+const r173FreshHost=r171Missing({deathStalkerId:"",
+  enemies:[{id:r171Id,x:5,y:5,alive:true,deathStalker:true,voidStalker:true}]
+});
+assert.equal(r171Guard(r173FreshHost,r173Saved).alive,false,
+  "A newly generated host without a saved ID must respect run-level defeat");
+const r173WrongSource={floor:4,v142WardenFloors:{"4":{resolved:true,resolvedSourceId:"count-loadula"}}};
+const r173WrongFloor={floor:5,v142WardenFloors:{"4":{resolved:true,resolvedSourceId:r171Id}}};
+assert.equal(r171Guard(r171Missing(),r173WrongSource).id,r171Id,
+  "Count Loadula's clearance must not remove the unbeaten Death Stalker");
+assert.equal(r171Guard(r171Missing(),r173WrongFloor).id,r171Id,
+  "A prior floor's clearance must not suppress a new floor Warden");
+console.log("PASS R173 serialised exact-source defeat survives lost host tombstones");
+
+// R174: independent per-floor tombstones survive a transient rebuilt host for
+// BOTH named supernatural actors, even when no Warden-domain record exists.
+const r174Ledger={floor:4,v142DefeatedWardenIds:{"4":[r171Id,"count-loadula"]}};
+const r174Host=r171Missing({
+  stalker:{id:"count-loadula",awake:false,permanentlyBanished:false,near:true,
+    hp:42,maxHp:42,spawnTimer:100,stunMs:20}
+});
+assert.equal(r171Guard(r174Host,r174Ledger),null,
+  "A run-level Death Stalker tombstone alone must suppress host reconstruction");
+assert.deepEqual(Array.from(r174Host.defeatedDeathStalkers),[r171Id],
+  "A missing Death Stalker host ledger must be repaired from the run record");
+assert.equal(r174Host.stalker.permanentlyBanished,true,
+  "Previously defeated Count Loadula must remain banished after host recreation");
+assert.equal(r174Host.stalker.awake,false);
+assert.equal(r174Host.stalker.hp,0);
+assert.equal(r174Host.stalker.v142WardenDefeated,true);
+assert.equal(r174Host.stalker.v142WardenRewarded,true);
+assert.equal(r174Host.stalker.spawnTimer,Number.POSITIVE_INFINITY);
+r171Guard(r174Host,r174Ledger);
+assert.equal(r174Host.enemies.length,0,
+  "Repeated singleton ticks cannot resurrect a recorded Death Stalker");
+assert.equal(r174Host.stalker.permanentlyBanished,true);
+const r174Unbeaten=r171Missing({stalker:{id:"count-loadula",awake:false,permanentlyBanished:false,spawnTimer:100}});
+const r174NewRun={floor:4,v142DefeatedWardenIds:{}};
+assert.equal(r171Guard(r174Unbeaten,r174NewRun)?.id,r171Id,
+  "A fresh run may still reconstruct an actually unbeaten Death Stalker");
+assert.equal(r174Unbeaten.stalker.permanentlyBanished,false,
+  "A fresh run must not inherit an old Count Loadula defeat");
+const r174NextFloor=r171Missing({
+  v142CampaignFloor:5,deathStalkerId:"death-stalker-floor-5",
+  stalker:{id:"count-loadula",awake:false,permanentlyBanished:false,spawnTimer:100}
+});
+assert.equal(r171Guard(r174NextFloor,r174Ledger)?.id,"death-stalker-floor-5",
+  "Floor 4's saved victories must not erase a Floor 5 Death Stalker");
+assert.equal(r174NextFloor.stalker.permanentlyBanished,false,
+  "Floor 4 Count tombstones must not affect Count on Floor 5");
+const r174CountDomain=r171Missing({stalker:{
+  id:"count-loadula",awake:true,permanentlyBanished:false,spawnTimer:0
+}});
+r171Guard(r174CountDomain,{
+  floor:4,v142WardenFloors:{"4":{resolved:true,resolvedSourceId:"count-loadula"}}
+});
+assert.equal(r174CountDomain.stalker.permanentlyBanished,true,
+  "Legacy Count-owned cleansed domain should also survive without the new tombstone");
+console.log("PASS R174 independent Count and Death Stalker floor tombstones / fresh-floor safety");
+
+// R182: a legitimately defeated floor Warden must remain defeated if a
+// regenerated host assigns its singleton a DIFFERENT actor ID. Earlier exact-ID
+// tombstones could not recognise that stale-host identity. Match the saved
+// floor/domain type rather than removing the independent Count or future floors.
+const r182OriginalId="death-stalker-floor-4-old",r182RegeneratedId="death-stalker-floor-4-rebuilt";
+const r182ClearedRun={floor:4,
+  v142WardenFloors:{"4":{resolved:true,sourceKind:"death-stalker",
+    sourceId:r182OriginalId,resolvedSourceId:r182OriginalId}},
+  v142DefeatedWardenIds:{"4":[r182OriginalId]}};
+const r182RebuiltHost=staleId=>r171Missing({
+  deathStalkerId:staleId,enemies:[{id:r182RegeneratedId,x:5,y:5,
+    alive:true,deathStalker:true,voidStalker:true}]
+});
+const r182Restored=r182RebuiltHost(r182RegeneratedId);
+assert.equal(r171Guard(r182Restored,r182ClearedRun).alive,false,
+  "A regenerated ID must not revive an already-cleansed same-floor Death Stalker");
+assert.ok(r182Restored.defeatedDeathStalkers.includes(r182RegeneratedId),
+  "The regenerated ID must enter the host defeat ledger");
+r171Guard(r182Restored,r182ClearedRun);
+assert.equal(r182Restored.enemies.length,1,"Repeated reconciliation must preserve singleton count");
+assert.equal(r182Restored.enemies[0].alive,false,
+  "Subsequent ticks must not reawaken a regenerated defeated Warden");
+const r182StaleHostId=r182RebuiltHost(r182OriginalId);
+assert.equal(r171Guard(r182StaleHostId,r182ClearedRun).alive,false,
+  "A stale host ID must not bypass run-level floor clearance");
+const r182CountOnly={floor:4,v142WardenFloors:{"4":{
+  resolved:true,sourceKind:"count-loadula",resolvedSourceId:"count-loadula"}}};
+assert.equal(r171Guard(r182RebuiltHost(r182RegeneratedId),r182CountOnly).alive,true,
+  "Count-only clearance must not erase a separate undefeated Death Stalker");
+const r182NotCleared={floor:4,v142WardenFloors:{"4":{
+  resolved:false,sourceKind:"death-stalker",resolvedSourceId:r182OriginalId}}};
+assert.equal(r171Guard(r182RebuiltHost(r182RegeneratedId),r182NotCleared).alive,true,
+  "An unresolved Death Stalker domain must not be treated as defeated");
+const r182WrongFloor={floor:5,v142WardenFloors:{"5":{
+  resolved:true,sourceKind:"death-stalker",resolvedSourceId:r182OriginalId}}};
+assert.equal(r171Guard(r182RebuiltHost(r182RegeneratedId),r182WrongFloor).alive,true,
+  "Another floor's defeat must not suppress the active Floor 4 Warden");
+console.log("PASS R182 changed-ID restored Warden stays defeated; fresh, Count and cross-floor safeguards");
+
+
+
+
+
+
+// R171_REAL_ALCHEMIST_FLASK_ROUNDTRIP: use the real Essence
+// award/budget owner, Alchemist purchase boundary and both supernatural
+// Ward-Break combat actors in one encounter. The Vessel can hold only
+// enough Essence for ONE charge, so earn the next three after spending it.
+const alchemistRoundTrip=soloEncounter(),ar=alchemistRoundTrip.ctx,arNotices=[];
+ar.p1.x=6;ar.p1.y=5;
+ar.p1.banishmentEssence=0;
+ar.activeShop={id:"alchemist-test",title:"BANISHMENT ALCHEMIST",v142Alchemist:true};
+ar.window.CCGDungeonProgressionFoundation={ready:true};
+ar.window.CCGLostSizzlerV142ProceduralOverhaul={essenceCost:()=>3};
+ar.buyShopItem=()=>false;
+ar.renderShop=()=>{};
+ar.showToast=(title,message)=>arNotices.push({title:String(title),message:String(message)});
+
+// Source-execute the actual procedural economy functions, not a made-up
+// six-Essence starting balance that the live Vessel disallows.
+const r171EconomySource=readOwner("v10-42-procedural-overhaul");
+const r171EconomyStart=r171EconomySource.indexOf("  function floorEssenceState(");
+const r171EconomyEnd=r171EconomySource.indexOf("  function scanEssenceSources(",r171EconomyStart);
+assert.ok(r171EconomyStart>=0&&r171EconomyEnd>r171EconomyStart,
+  "Real floor Essence award and budget functions must be present");
+ar.PD={essenceRequired:3};
+ar.PROG=ar.PGR;
+ar.currentHost=()=>ar.host;
+ar.currentRun=()=>ar.run;
+ar.essenceCost=()=>3;
+ar.initRpg=()=>{};
+ar.announce=()=>{};
+vm.runInContext(r171EconomySource.slice(r171EconomyStart,r171EconomyEnd)+
+  "\nthis.r171AwardEssence=awardEssence;",ar,
+  {filename:"v10-42-procedural-overhaul.js::floorEssenceState/awardEssence"});
+for(let i=0;i<3;i++){
+  assert.equal(ar.r171AwardEssence(ar.p1,1,"First charge source",{silent:true}),true,
+    "Real Essence awards must fund the first Flask");
+}
+assert.equal(ar.p1.banishmentEssence,3,"The Vessel fills to one Flask cost, not six");
+assert.equal(ar.r171AwardEssence(ar.p1,1,"Overfill source",{silent:true}),false,
+  "Vessel cannot accept more Essence until a charge is spent");
+
+vm.runInContext(readOwner("v10-42-artefact-shop-stability"),ar,
+  {filename:"v10-42-artefact-shop-stability.js"});
+assert.equal(ar.window.CCGLostSizzlerV142ArtefactShopStability.isInstalled(),true,
+  "Real shop boundary must be installed before live Alchemist purchases");
+assert.equal(ar.buyShopItem("banishment"),true,"First actual Alchemist purchase succeeds");
+assert.equal(ar.p1.banishmentEssence,0,"First purchase deducts only the required Essence");
+assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),1);
+assert.equal(ar.buyShopItem("banishment"),false,
+  "Real Alchemist must refuse a second charge while the first is carried");
+assert.equal(ar.p1.banishmentEssence,0,"Refused extra Flask cannot consume Essence");
+assert.equal(ar.activateBanishment(ar.p1),true,
+  "First shop-purchased charge breaks the nearer sealed Death Stalker");
+assert.equal(alchemistRoundTrip.death.v142WardBroken,true);
+assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),0);
+
+for(let i=0;i<3;i++){
+  assert.equal(ar.r171AwardEssence(ar.p1,1,"Second charge source",{silent:true}),true,
+    "Further earned Essence must refill the Vessel after first Ward Break");
+}
+assert.equal(ar.p1.banishmentEssence,3);
+assert.equal(ar.r171AwardEssence(ar.p1,1,"Beyond floor budget",{silent:true}),false,
+  "The two-Warden floor cannot grant unlimited extra Essence");
+assert.equal(ar.buyShopItem("banishment"),true,
+  "Alchemist must allow a second purchase after first charge is consumed");
+assert.equal(ar.p1.banishmentEssence,0);
+assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),1);
+assert.equal(ar.activateBanishment(ar.p1),true,
+  "Second genuinely purchased charge breaks the different sealed Count");
+assert.equal(alchemistRoundTrip.count.v142WardBroken,true);
+assert.equal(ar.run.stats.wardsBroken,2);
+assert.equal(ar.PGR.inventoryKindCount(ar.p1,"banishment"),0);
+assert.equal(ar.activateBanishment(ar.p1),false,
+  "A third attempt without a new charge must not affect either Warden");
+assert.equal(ar.run.stats.wardsBroken,2);
+assert.equal(ar.score,0,"Ward-breaking alone cannot award combat kill score");
+console.log("PASS R171 real Essence earn-buy-break-re-earn-buy-break against both Wardens");
 
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");

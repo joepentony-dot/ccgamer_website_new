@@ -31,7 +31,10 @@ const context={
 };
 context.window.CCG_CONFIG={maxFloors:5,stalker:{name:"Count Loadula"}};
 context.window.CCGProgression={effectiveSight:()=>7};
-context.window.CCGWorld={roomAt};
+context.window.CCGWorld={roomAt,playerWalkable:(m,x,y,h)=>
+  m[y]?.[x]===0&&!(h.blockingDecor||[]).some(d=>d.x===x&&d.y===y)&&
+  !(h.doors||[]).some(d=>d.x===x&&d.y===y&&(d.locked||!d.open))&&
+  !(h.generators||[]).some(g=>g.alive&&g.x===x&&g.y===y)};
 vm.createContext(context);
 vm.runInContext(source,context,{filename:"v10-42-warden-domain-progression.js"});
 
@@ -80,11 +83,62 @@ player.x=1;player.y=1;
 context.hurtPlayer(player,99);
 assert.deepEqual({x:player.x,y:player.y},{x:checkpoint.x,y:checkpoint.y},"Normal death should relocate the respawn to the cleansed Warden anchor");
 
+// R184: a cleansed Warden checkpoint is not necessarily a safe respawn cell.
+// Execute the real hurtPlayer wrapper against solid generators, loot objects,
+// another local player, and a completely blocked room. No new rewards/deaths
+// beyond the base death penalty may be invented by this safety correction.
+const r184BaseGenerator={x:generator.x,y:generator.y};
+const r184SealCount=run.v142SealFragments;
+const respawnThroughWarden=()=>{player.x=1;player.y=1;context.hurtPlayer(player,99);return{x:player.x,y:player.y}};
+generator.x=checkpoint.x;generator.y=checkpoint.y;generator.alive=true;
+const awayFromGenerator=respawnThroughWarden();
+assert.notDeepEqual(awayFromGenerator,{x:checkpoint.x,y:checkpoint.y},
+  "A live generator on the anchor must be solid to the recovering player");
+assert.equal(roomAt(world,awayFromGenerator.x,awayFromGenerator.y),checkpoint.roomId,
+  "The anchor should seek an alternative walkable tile in its own room");
+generator.x=r184BaseGenerator.x;generator.y=r184BaseGenerator.y;
+
+const obstructingChest={id:"r184-anchor-chest",x:checkpoint.x,y:checkpoint.y,active:true};
+host.chests.push(obstructingChest);
+assert.notDeepEqual(respawnThroughWarden(),{x:checkpoint.x,y:checkpoint.y},
+  "An active chest must not be covered by a newly respawned player");
+host.chests.splice(host.chests.indexOf(obstructingChest),1);
+
+const obstructingDoor={id:"r184-anchor-door",x:checkpoint.x,y:checkpoint.y,open:false,locked:true};
+host.doors.push(obstructingDoor);
+assert.notDeepEqual(respawnThroughWarden(),{x:checkpoint.x,y:checkpoint.y},
+  "A locked door must never become a recovery tile");
+host.doors.splice(host.doors.indexOf(obstructingDoor),1);
+
+const r184OtherPlayer={x:player2.x,y:player2.y};
+player2.x=checkpoint.x;player2.y=checkpoint.y;
+assert.notDeepEqual(respawnThroughWarden(),{x:checkpoint.x,y:checkpoint.y},
+  "A recovery anchor must not stack two local players on the same tile");
+player2.x=r184OtherPlayer.x;player2.y=r184OtherPlayer.y;
+
+const r184Room=world.rooms[checkpoint.roomId],r184Tiles=[];
+for(let y=r184Room.y;y<=r184Room.y+r184Room.h;y++)
+  for(let x=r184Room.x;x<=r184Room.x+r184Room.w;x++){
+    r184Tiles.push({x,y,value:world.map[y][x]});
+    world.map[y][x]=1;
+  }
+assert.deepEqual(respawnThroughWarden(),{x:1,y:1},
+  "A fully obstructed Warden room must leave the normal entrance respawn intact");
+for(const q of r184Tiles)world.map[q.y][q.x]=q.value;
+assert.equal(run.v142SealFragments,r184SealCount,
+  "Changing recovery position must not create Seal Fragments");
+assert.deepEqual(JSON.parse(JSON.stringify(host.v142WardenCheckpoint)),checkpoint,
+  "Blocked recovery must preserve the previously earned anchor for later deaths");
+
+
 run.floor=3;run.floorComplete=false;delete host.v142WardenDomain;
 death.alive=true;death.v142WardenRewarded=false;death.v142WardenDefeated=false;
 context.floorComplete("contract");
 assert.deepEqual([...run.v142SkippedWardenFloors],[],"Opening the floor-clear choice must not record Warden debt while the player can still stay and resolve the domain");
-assert.match(UI.floorSummary.innerHTML,/WARDEN DOMAIN: UNRESOLVED/,"Floor-clear summary should explain that unresolved Warden business remains available");
+assert.match(UI.floorSummary.innerHTML,/OPTIONAL WARDEN NOT CLEARED/,"Floor-clear summary must distinguish optional Warden business from the completed main objective");
+assert.match(UI.floorSummary.innerHTML,/Main floor objective complete/,"Floor-clear summary must not imply the main objective was left unfinished");
+assert.match(UI.floorSummary.innerHTML,/data-v142-warden-status="true"/,"One authoritative optional Warden status owner must be marked to prevent duplicate notices");
+assert.match(UI.floorSummary.innerHTML,/descend and take 1 Warden Debt stack/,"Skipping the optional Warden must still explain the real debt consequence");
 context.descendFloor();
 assert.deepEqual([...run.v142SkippedWardenFloors],[3],"Actually descending with an available Warden unresolved should record one debt floor");
 
@@ -118,5 +172,76 @@ assert.equal(player.armor,3,"Master Seal should grant its immediate armour rewar
 assert.equal(player2.health,7,"Master Seal should grant its immediate health reward to Player 2 in split-screen");
 assert.equal(player2.armor,4,"Master Seal should grant its immediate armour reward to Player 2 in split-screen");
 assert.equal(context.window.CCGProgression.effectiveSight(player,run),8,"Seal Sense should add one sight tile outside Static Veil");
+
+
+// R183: a JSON-restored host can retain an ACTIVE, stale Warden domain even
+// while the serialised run records a completed, same-floor Death Stalker.
+// Reconcile the room and its bound generator without inventing a second kill,
+// Seal Fragment, reward or other-floor cleanse.
+const r183Original="death-stalker-old-id",r183Rebuilt="death-stalker-new-id";
+const r183Floor5={resolved:true,sourceKind:"death-stalker",sourceId:r183Original,
+  resolvedSourceId:r183Original,killFragmentAwarded:true,cacheFragmentAwarded:true};
+const r183Reset=(record,sourceKind="death-stalker",sourceId=r183Rebuilt)=>{
+  run.floor=5;run.v142WardenFloors["5"]=record;
+  host.v142WardenDomain={floor:5,roomId:1,sourceKind,sourceId,
+    active:true,cleansed:false,inside:true,generatorIds:[generator.id]};
+  generator.alive=true;generator.powered=true;generator.v142WardenSuppressed=false;generator.spawnCooldown=200;
+  world.rooms[1].v142WardenCorrupted=true;world.rooms[1].v142WardenCleansed=false;
+};
+r183Reset({...r183Floor5});
+const r183SealBefore=run.v142SealFragments,r183KillsBefore=run.stats.wardenKills||0;
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,false,
+  "Restored active domain must honour an independently saved, same-floor Death Stalker victory");
+assert.equal(host.v142WardenDomain.cleansed,true,
+  "Restored Warden domain must be marked cleansed without a second kill");
+assert.equal(host.v142WardenDomain.inside,false,
+  "Corruption should not retain an inside-state after reconciliation");
+assert.equal(world.rooms[1].v142WardenCorrupted,false,
+  "The restored Warden room must stop emitting an already-cleansed corruption aura");
+assert.equal(world.rooms[1].v142WardenCleansed,true);
+assert.equal(generator.v142WardenSuppressed,true,
+  "The original bound generator must stay suppressed after a saved victory");
+assert.ok(generator.spawnCooldown>=1e11,
+  "A restored Warden-bound generator must not restart reinforcements");
+context.startWorld();tick();
+assert.equal(run.v142SealFragments,r183SealBefore,
+  "Reconciliation is not a new Warden kill and must not award Seal Fragments");
+assert.equal(run.stats.wardenKills||0,r183KillsBefore,
+  "Reconciliation must never add a new Warden kill");
+
+r183Reset({...r183Floor5}, "death-stalker", r183Original);
+context.startWorld();
+assert.equal(host.v142WardenDomain.cleansed,true,
+  "An exactly matching saved Warden source must also restore the cleansed domain");
+
+r183Reset({resolved:true,sourceKind:"count-loadula",resolvedSourceId:"count-loadula"});
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "Count Loadula's victory cannot erase an unbeaten Death Stalker domain");
+assert.equal(generator.v142WardenSuppressed,false);
+
+r183Reset({resolved:false,sourceKind:"death-stalker",resolvedSourceId:r183Original});
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "An unresolved Warden domain must remain active");
+
+r183Reset({resolved:false,skipped:true,sourceKind:"death-stalker",resolvedSourceId:r183Original});
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "A skipped Warden is not a victory and must not receive cleansing effects");
+
+r183Reset({resolved:true,sourceKind:"count-loadula",resolvedSourceId:"shared"}, "death-stalker", "shared");
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "A matching actor ID with the wrong Warden type must never cleanse the domain");
+
+run.v142WardenFloors["4"]={resolved:true,sourceKind:"death-stalker",
+  resolvedSourceId:r183Original};
+r183Reset({resolved:false,sourceKind:"death-stalker",resolvedSourceId:r183Original});
+context.startWorld();
+assert.equal(host.v142WardenDomain.active,true,
+  "A saved victory on another floor cannot cleanse the current Warden domain");
+console.log("PASS R183 restored Warden domain, room and generator honour same-floor victory; negative controls and no duplicate rewards");
 
 console.log("PASS v10-42 Warden exact-source persistence + split-safe domain + Seal progression contract");

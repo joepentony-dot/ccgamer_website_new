@@ -8,7 +8,7 @@ window.CCGProgression=(()=>{
     {id:"spread",name:"Spread Gun",element:"physical",power:1,delay:1.08,shots:3,ammo:1,desc:"Three-way spread at close and mid range."},
     {id:"pierce",name:"Piercing Beam",element:"energy",power:2,delay:1.22,shots:1,ammo:1,pierce:2,desc:"Cuts through more than one target."},
     {id:"repeater",name:"Rapid Repeater",element:"physical",power:1,delay:.58,shots:1,ammo:1,desc:"Fast fire at the cost of control."},
-    {id:"fire",name:"SID Fire Lance",element:"fire",power:2,delay:1.35,shots:1,ammo:1,desc:"Heavy fire damage. One trigger pull still costs one ammo."},
+    {id:"fire",name:"Ember Lance",element:"fire",power:2,delay:1.35,shots:1,ammo:1,desc:"A concentrated fire strike. Costs one ammunition per shot."},
     {id:"shock",name:"Shockwave Emitter",element:"shock",power:2,delay:1.5,shots:8,ammo:1,ttl:4,desc:"Short-range blast in every direction. One trigger pull costs one ammo."}
   ];
   const modifiers=[

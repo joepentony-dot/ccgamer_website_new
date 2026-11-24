@@ -299,7 +299,18 @@ window.CCGSystems=(()=>{
     }else{
       for(let y=cy-1;y<=cy+1;y++)for(let x=room.x;x<=room.x+room.w;x++){const q={x,y};if(x===cx)bridge.push(q);else pit.push(q)}
     }
-    if([...pit,...bridge].some(q=>world.map[q.y]?.[q.x]!==0))return null;
+    // Reject an optional puzzle room when its required crossing lane is
+    // already occupied by a monster, chest, loot or another placed feature.
+    // Floor terrain alone is insufficient: movePlayer checks live collision
+    // and can stop before triggerWeightBridge sees the far-side crossing.
+    // The entrance and landing tiles matter as much as the three bridge spans.
+    const dx=side==="west"?1:side==="east"?-1:0,dy=side==="north"?1:side==="south"?-1:0;
+    const sorted=[...bridge].sort((a,b)=>dx?(a.x-b.x)*dx:(a.y-b.y)*dy);
+    const approach={x:sorted[0].x-dx,y:sorted[0].y-dy};
+    const landing={x:sorted[sorted.length-1].x+dx,y:sorted[sorted.length-1].y+dy};
+    const crossing=[approach,...bridge,landing];
+    if([...pit,...crossing].some(q=>world.map[q.y]?.[q.x]!==0))return null;
+    if(crossing.some(q=>used.has(cell(q.x,q.y))))return null;
     const far=q=>side==="west"?q.x>cx+2:side==="east"?q.x<cx-2:side==="north"?q.y>cy+2:q.y<cy-2;
     let reward=firstFreeCell(world,room,used,far);if(!reward){reward=firstFreeCell(world,room,used,q=>side==="west"?q.x>cx:side==="east"?q.x<cx:side==="north"?q.y>cy:q.y<cy)}if(!reward)return null;
     const wallCandidate=q=>{
@@ -675,7 +686,7 @@ window.CCGSystems=(()=>{
       const room=deathStalkerRoom,vq=freeInRoom(world,room,used),vhp=6+(run.floor||1)*2,id=`death-stalker-floor-${run.floor||1}`;
       const v={id,...vq,x0:vq.x,y0:vq.y,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.deathStalkerSpawn={x:v.x,y:v.y,roomId:room?.id??-1};host.enemies.push(v);host.voidStalkers.push(v.id)
     }
-    enforceDeathStalkerSingleton(host);
+    enforceDeathStalkerSingleton(host,run);
 
     // Floor identity and difficulty tuning.
     const floorInfo=PGR.floorInfo(run),diff=PGR.difficulty(run),hpFloor=1+(Math.max(1,run.floor)-1)*.12,armoured=run.modifier?.id==="ARMOURED_ENEMIES"?1.3:1,playerLevel=Math.max(1,run.playerLevelHint||1),levelSteps=playerLevel-1;
@@ -736,11 +747,49 @@ window.CCGSystems=(()=>{
     return host;
   }
 
-  function enforceDeathStalkerSingleton(host){
+  function enforceDeathStalkerSingleton(host,runState=null){
     if(!host)return null;
-    const previousId=String(host.deathStalkerId||"");
     let stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
+    const previousId=String(host.deathStalkerId||stalkers[0]?.id||"");
     const defeatedIds=new Set((host.defeatedDeathStalkers||[]).map(id=>String(id)));
+    // The independently serialized run can retain an exact floor Warden
+    // clearance even when a legacy restore loses every host-level tombstone.
+    // Never apply a different floor or Count Loadula's clearance to this ID.
+    const runFloor=Math.floor(Number(runState?.floor)||0);
+    const hostFloor=Math.floor(Number(host.v142CampaignFloor??runFloor)||0);
+    const record=runFloor>0&&runFloor===hostFloor?runState?.v142WardenFloors?.[String(runFloor)]:null;
+    const savedRunDefeat=Boolean(record?.resolved===true&&String(record.resolvedSourceId||"")===previousId);
+    const savedDefeats=runFloor>0&&runFloor===hostFloor&&Array.isArray(runState?.v142DefeatedWardenIds?.[String(runFloor)])
+      ?runState.v142DefeatedWardenIds[String(runFloor)].map(id=>String(id)):[];
+    // A regenerated floor can assign a new actor ID even though the saved
+    // domain confirms its sole Death Stalker was already cleansed. Preserve
+    // that same-floor outcome without treating Count or another floor as dead.
+    const cleansedFloorDeathStalker=Boolean(record?.resolved===true&&
+      record?.sourceKind==="death-stalker"&&String(record.resolvedSourceId||""));
+    // Count is not an ordinary enemy and does not use the Death Stalker
+    // singleton ledger. Recover his exact-floor defeat before he can spawn.
+    const count=host.stalker,countId=String(count?.id||"");
+    if(count&&countId==="count-loadula"&&(
+      savedDefeats.includes(countId)||
+      (record?.resolved===true&&String(record.resolvedSourceId||"")===countId)
+    )){
+      count.awake=false;count.near=false;count.permanentlyBanished=true;
+      count.v142WardenDefeated=true;count.v142WardenRewarded=true;
+      count.v142WardBroken=false;count.v142WardState="defeated";
+      count.hp=0;count.spawnTimer=Number.POSITIVE_INFINITY;count.stunMs=0;
+    }
+    // Independent floor-local defeat records prevent old host state from
+    // reviving a dead Warden if its primary defeated-ID ledger was lost.
+    const witnessedDefeat=Boolean(previousId&&(
+      savedRunDefeat||savedDefeats.includes(previousId)||cleansedFloorDeathStalker||
+      (host.timedRooms||[]).some(room=>String(room?.hunterId||"")===previousId&&room?.stalkerDefeated===true)||
+      (host.v142WardenDomain?.cleansed===true&&String(host.v142WardenDomain?.sourceId||"")===previousId)
+    ));
+    if(witnessedDefeat){
+      host.defeatedDeathStalkers=Array.isArray(host.defeatedDeathStalkers)?host.defeatedDeathStalkers:[];
+      if(!host.defeatedDeathStalkers.includes(previousId))host.defeatedDeathStalkers.push(previousId);
+      defeatedIds.add(previousId);
+    }
     if(!stalkers.length&&previousId&&!defeatedIds.has(previousId)&&host.deathStalkerSpawn){
       const q=host.deathStalkerSpawn,level=Math.max(1,Number(host.v142CampaignFloor||1)),hp=6+level*2;
       const restored={id:previousId,x:Number(q.x),y:Number(q.y),x0:Number(q.x),y0:Number(q.y),kind:"ghost",hp,maxHp:hp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};
@@ -750,7 +799,7 @@ window.CCGSystems=(()=>{
     const floorIds=new Set(stalkers.map(e=>String(e.id||"")));
     // A previously banished floor Stalker stays banished even if an older
     // duplicate entry was still marked alive during state reconciliation.
-    const permanentlyDefeated=stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||
+    const permanentlyDefeated=cleansedFloorDeathStalker||stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||
       Boolean(previousId&&floorIds.has(previousId)&&defeatedIds.has(previousId));
     if(stalkers.length>1)host.enemies=(host.enemies||[]).filter(e=>!(e?.deathStalker&&e?.voidStalker)||e===keep);
     if(keep){

@@ -39,6 +39,8 @@ const REVIEWED_FOREIGN_REGISTRY_ADDITIONS = new Set([
     "games/discover/index.html",
     "games/ccg-games/index.html",
     "games/commodore-quest/index.html",
+    // Exact owner-published, canonical C64 interactive gamebook route.
+    "choose-your-own-adventure/index.html",
     "videos/index.html"
 ]);
 const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
@@ -54,6 +56,8 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         `${SITE_ORIGIN}/games/discover/`,
         `${SITE_ORIGIN}/games/ccg-games/`,
         `${SITE_ORIGIN}/games/commodore-quest/`,
+        // C64 gamebook: real indexable, self-canonical page in the reviewed registry.
+        `${SITE_ORIGIN}/choose-your-own-adventure/`,
         `${SITE_ORIGIN}/videos/`,
         // Independently verified documentary watch route, retained from current main.
         `${SITE_ORIGIN}/retro-specials/retro-games-real-prizes-porsche-swords-25000/`,
@@ -64,7 +68,9 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         // Owner-published Arcade 50 quiz: real indexable, self-canonical watch page.
         `${SITE_ORIGIN}/retro-specials/50-arcade-games-can-you-identify-them/`,
         // Owner-authorised C64 vs Amiga 100-game watch page; exact self-canonical route only.
-        `${SITE_ORIGIN}/retro-specials/c64-vs-amiga-100-games-compared/`
+        `${SITE_ORIGIN}/retro-specials/c64-vs-amiga-100-games-compared/`,
+        // Published SID documentary: only its exact self-canonical watch route.
+        `${SITE_ORIGIN}/retro-specials/50-commodore-64-sid-tunes-zzap64/`
     ])]
 ]);
 const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
@@ -377,6 +383,22 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems, autho
                 canonicals.length !== 1 || canonicals[0] !== arcadeQuizUrl ||
                 robots.length !== 1 || !/^index,follow(?:,|$)/i.test(robots[0])) {
                 problems.push("Arcade 50 quiz sitemap exception requires one self-canonical, indexable page");
+            }
+        }
+    }
+    // Exact, source-backed SID documentary sitemap exception. Do not admit
+    // another watch page, duplicate URL, redirect, or noindex route here.
+    if (label === "sitemap-pages.xml") {
+        const sidUrl = `${SITE_ORIGIN}/retro-specials/50-commodore-64-sid-tunes-zzap64/`;
+        if (currentLocs.includes(sidUrl)) {
+            const sidHtml = readRequired(path.join(repoRoot, "retro-specials", "50-commodore-64-sid-tunes-zzap64", "index.html"));
+            const canonicals = extractCanonicalUrls(sidHtml);
+            const robots = extractRobotsDirectives(sidHtml);
+            if (currentLocs.filter((loc) => loc === sidUrl).length !== 1 ||
+                canonicals.length !== 1 || canonicals[0] !== sidUrl ||
+                robots.length !== 1 || !/^index,follow(?:,|$)/i.test(robots[0]) ||
+                !sidHtml.includes('data-ccg-video-watch="true"')) {
+                problems.push("C64 SID documentary sitemap exception requires one self-canonical, indexable watch page");
             }
         }
     }

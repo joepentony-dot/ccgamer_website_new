@@ -191,6 +191,16 @@
     // sealing the defeat, or a missing kills field can strand score, XP and cache.
     if(!r.stats||typeof r.stats!=="object"||Array.isArray(r.stats))r.stats={};
     target.v142WardenRewarded=true;target.v142WardenDefeated=true;target.v142WardState="defeated";target.v142WardBroken=false;
+    // This independent run-level tombstone survives a transient host rebuild.
+    // Keep it exact-floor and exact-actor: different floors and new runs still
+    // generate their own legitimate Count/Death Stalker encounters.
+    const floorKey=String(floorNo()),sourceId=String(target.id||(isCount(target)?"count-loadula":""));
+    if(sourceId){
+      if(!r.v142DefeatedWardenIds||typeof r.v142DefeatedWardenIds!=="object"||Array.isArray(r.v142DefeatedWardenIds))r.v142DefeatedWardenIds={};
+      const saved=Array.isArray(r.v142DefeatedWardenIds[floorKey])?r.v142DefeatedWardenIds[floorKey]:[];
+      if(!saved.includes(sourceId))saved.push(sourceId);
+      r.v142DefeatedWardenIds[floorKey]=saved;
+    }
     const name=label(target);
     if(isCount(target)){
       target.awake=false;target.near=false;target.permanentlyBanished=true;target.spawnTimer=Number.POSITIVE_INFINITY;target.hp=0;target.stunMs=0;
@@ -275,6 +285,9 @@
       announce("WARD-BREAK NOT APPLIED","The target's ward changed before the charge could take effect. Your charge has been returned.","cyan",6000);
       return false;
     }
+    // A spent charge must immediately clear the mobile dock's held label.
+    // Payment failures and refunds must not emit a false consumption event.
+    try{window.dispatchEvent(new CustomEvent("ccg:dungeon-inventory-changed",{detail:{kind:"banishment",source:"ward-break",count:PROG.inventoryKindCount(player,"banishment")}}))}catch(_){}
     return true;
   };
   useBanishment=function(player){return activateBanishment(player)};

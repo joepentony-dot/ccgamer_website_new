@@ -96,6 +96,61 @@ try{
   assert.equal(results.levelUp.created,true,"authoritative ccg:level-up must start the R169 Level Up clip");
   assert.ok(results.levelUp.expectedStarts.some(start=>Math.abs(results.levelUp.currentTime-start)<0.001),
     "Level Up must seek to one of its R169 recorded alternate takes");
+  // R176: a floor-generation trap banner arriving on the same turn as a
+  // new-run event must never steal the initial recorded welcome. The actual
+  // voice director is exercised against controlled Audio instances.
+  const opening=await page.evaluate(async()=>{
+    const api=window.CCGLostSizzlerVoice;
+    api.stop("opening-regression");
+    api.state.lastByKey.delete("trap");
+    api.state.lastByKey.delete("trapsNearby");
+    api.state.lastByKey.delete("welcome");
+    const newRun={floor:1};
+    window.run=newRun;window.mode="playing";
+    window.dispatchEvent(new CustomEvent("ccg:run-started",{detail:{run:newRun}}));
+    window.dispatchEvent(new CustomEvent("ccg:toast-shown",{detail:{title:"TRAP ACTIVE",text:"Generated hazard room warning."}}));
+    const immediate=api.state.active?.key||null;
+    await new Promise(resolve=>setTimeout(resolve,260));
+    const result={immediate,after:api.state.active?.key||null,
+      welcomePlayed:api.state.lastByKey.has("welcome"),trapPlayed:api.state.lastByKey.has("trap")};
+    api.stop("opening-regression-end");
+    return result;
+  });
+  assert.equal(opening.immediate,null,"generated trap banner must not speak ahead of the run welcome");
+  assert.equal(opening.after,"welcome","opening welcome recording must start after the normal 180ms run-start delay");
+  assert.equal(opening.welcomePlayed,true,"opening welcome must really pass through the recorded voice director");
+  assert.equal(opening.trapPlayed,false,"new run must not start by announcing a stale trap");
+
+  const pickedUp=await page.evaluate(async()=>{
+    const api=window.CCGLostSizzlerVoice;
+    api.stop("bronze-key-regression");
+    for(const key of ["bronzeKeyCollected","chestKeyRequired"])api.state.lastByKey.delete(key);
+    window.dispatchEvent(new CustomEvent("ccg:toast-shown",{detail:{title:"BRONZE KEY COLLECTED",text:"This can open a locked chest."}}));
+    window.dispatchEvent(new CustomEvent("ccg:item-collected",{detail:{kind:"bronze"}}));
+    await new Promise(resolve=>setTimeout(resolve,0));
+    const result={active:api.state.active?.key||null,
+      pickupSpoken:api.state.lastByKey.has("bronzeKeyCollected"),
+      chestWarningSpoken:api.state.lastByKey.has("chestKeyRequired")};
+    api.stop("bronze-key-regression-end");
+    return result;
+  });
+  assert.equal(pickedUp.active,"bronzeKeyCollected","real bronze-key pickup must select the recorded bronze pickup clip");
+  assert.equal(pickedUp.pickupSpoken,true,"bronze-key event must produce pickup speech");
+  assert.equal(pickedUp.chestWarningSpoken,false,"descriptive chest text must not be mistaken for a locked-chest interaction");
+
+  const death=await page.evaluate(async()=>{
+    const api=window.CCGLostSizzlerVoice;
+    api.stop("death-event-regression");api.state.lastByKey.delete("playerDeath");
+    window.dispatchEvent(new CustomEvent("ccg:player-death",{detail:{requiresConfirmation:true}}));
+    await new Promise(resolve=>setTimeout(resolve,0));
+    const result={active:api.state.active?.key||null,spoken:api.state.lastByKey.has("playerDeath")};
+    api.stop("death-event-regression-end");
+    return result;
+  });
+  assert.equal(death.active,"playerDeath","canonical death confirmation must route to the owner's recorded death cue");
+  assert.equal(death.spoken,true,"death event must start recorded speech, not merely show the overlay");
+
+  console.log("R176 voice event routing passed: opening welcome, bronze key pickup and death recording.");
   console.log("R169 recorded voice browser catalogue passed: 124 owner keys + 3 R69 fallback keys + authoritative Level Up event.");
 }finally{
   await browser.close();

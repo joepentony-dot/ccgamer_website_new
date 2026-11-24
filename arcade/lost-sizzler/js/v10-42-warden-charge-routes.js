@@ -10,7 +10,7 @@
   const ROUTES={
     1:{id:"alchemist-baseline",name:"ALCHEMIST ROUTE",objective:"Distil Banishment Essence at the sanctuary Alchemist.",reward:"The baseline route stays available for the entire run."},
     2:{id:"capacitor-core",name:"CAPACITOR CORE",objective:"Destroy any monster generator on this depth.",reward:"A ruptured generator yields one field-ready Ward-Break Charge."},
-    3:{id:"arena-seal",name:"ARENA SEAL",objective:"Clear both waves of the sealed arena.",reward:"The arena seal condenses into one field-ready Ward-Break Charge."},
+    3:{id:"memory-vault",name:"MEMORY VAULT",objective:"Solve the five-pad Memory Vault sequence on Floor 3.",reward:"The solved vault releases one field-ready Ward-Break Charge."},
     4:{id:"ashen-catalyst",name:"ASHEN CATALYST",objective:"Invoke any shrine on this depth.",reward:"The spent shrine leaves enough residue for one field-ready Ward-Break Charge."},
     5:{id:"seal-forge",name:"SEAL FORGE",objective:"Enter Floor 5 carrying at least 6 Seal Fragments.",reward:"Ward Temper forges one field-ready Ward-Break Charge without consuming Essence."}
   };
@@ -27,19 +27,26 @@
     r=init(r);if(!r)return null;const key=String(n),profile=ROUTES[n]||ROUTES[1];return r.v142WardChargeRoutes[key]||(r.v142WardChargeRoutes[key]={floor:n,routeId:profile.id,unlocked:n===1,delivered:false,pending:false,rewardType:null});
   }
   function hasCharge(p=P()){try{return Boolean(p&&PGR.firstInventory(p,"banishment")>=0)}catch(_){return false}}
+  // Match the procedural Vessel's authoritative cost. Field-route credits
+  // must not exceed that capacity and later vanish at the next Essence award.
+  function vesselCapacity(p){
+    const cost=Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p))||
+      Number(p?.banishmentEssenceCost)||Number(C.stalker?.flaskArtefacts)||3;
+    return Math.max(2,Math.floor(cost));
+  }
   function sealCount(r=R()){return Math.max(0,Math.floor(Number(r?.v142SealFragments)||0))}
   function conditionMet(n=floor(),h=H(),r=R()){
     if(n===1)return true;
     if(!h||!r)return false;
     if(n===2)return (h.generators||[]).some(g=>g&&g.alive===false);
-    if(n===3)return (h.arenas||[]).some(a=>a?.cleared);
+    if(n===3)return Boolean(h.memoryPuzzle?.solved);
     if(n===4)return (h.shrines||[]).some(s=>s&&s.active===false);
     if(n===5)return sealCount(r)>=6;
     return false;
   }
   function sourceText(n,h=H()){
     if(n===2){const g=(h?.generators||[]).find(x=>x&&x.alive===false);return g?.id?`Generator ${g.id} destroyed`:"Monster generator destroyed"}
-    if(n===3)return"Sealed arena cleared";
+    if(n===3)return"Memory Vault sequence solved";
     if(n===4)return"Shrine invoked";
     if(n===5)return`${sealCount()} Seal Fragments carried into Floor 5`;
     return"Sanctuary Alchemist";
@@ -64,8 +71,18 @@
   function deliverRoute(n=floor(),p=P(),r=R()){
     const row=state(n,r),profile=ROUTES[n];if(!row||!profile||n===1||!row.unlocked||row.delivered||!p)return false;
     if(hasCharge(p)){
-      p.banishmentEssence=Math.max(0,Math.floor(Number(p.banishmentEssence)||0))+1;row.delivered=true;row.pending=false;row.rewardType="essence";row.deliveredAt=Date.now();
-      toast(`${profile.name} CONVERTED`,`You already carry a Ward-Break Charge, so this route stabilises as +1 Banishment Essence instead of stockpiling a second free charge. Vessel Essence: ${p.banishmentEssence}.`,"purple",9000);sfx("pickup");broadcast();syncNow();return true;
+      const capacity=vesselCapacity(p),held=Math.max(0,Math.floor(Number(p.banishmentEssence)||0));
+      if(held>=capacity){
+        // Preserve the actual earned reward in serialized run state until the
+        // player spends the carried charge or makes space in the Vessel.
+        // Delivering +1 beyond capacity would be silently truncated by
+        // ProceduralOverhaul.awardEssence, permanently losing this reward.
+        row.pending=true;
+        if(!row.vesselWarningShown){row.vesselWarningShown=true;toast(`${profile.name} REWARD RESERVED`,`You already carry a Ward-Break Charge and your Essence Vessel is full (${held}/${capacity}). Your earned field reward stays reserved until you spend that charge or free Vessel space. It will be delivered automatically.`,"cyan",9500)}
+        return false;
+      }
+      p.banishmentEssence=held+1;row.delivered=true;row.pending=false;row.rewardType="essence";row.deliveredAt=Date.now();
+      toast(`${profile.name} CONVERTED`,`You already carry a Ward-Break Charge, so this route stabilises as +1 Banishment Essence instead of stockpiling a second free charge. Vessel Essence: ${p.banishmentEssence}/${capacity}.`,"purple",9000);sfx("pickup");broadcast();syncNow();return true;
     }
     if(addReadyCharge(p)){
       row.delivered=true;row.pending=false;row.rewardType="charge";row.deliveredAt=Date.now();
@@ -91,7 +108,7 @@
     if(row.delivered)return row.rewardType==="essence"?`WARD ROUTE: ${profile.name} → +1 ESSENCE`:`WARD ROUTE: ${profile.name} → CHARGE EARNED`;
     if(row.pending)return`WARD ROUTE: ${profile.name} READY`;
     if(n===2)return"WARD ROUTE: DESTROY GENERATOR";
-    if(n===3)return"WARD ROUTE: CLEAR ARENA";
+    if(n===3)return"WARD ROUTE: SOLVE MEMORY VAULT";
     if(n===4)return"WARD ROUTE: INVOKE SHRINE";
     return`WARD ROUTE: SEALS ${sealCount(r)}/6`;
   }

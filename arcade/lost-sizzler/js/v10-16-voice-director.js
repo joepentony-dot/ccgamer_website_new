@@ -64,6 +64,7 @@
   const MAX_RECORDED_CLIP_MS=10000;
   const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),ownerVoiceIndexes:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0,pendingGesture:null,enemyRoomVoiceKeys:new Set(),guardianVoiceSeen:new WeakSet(),banishmentPromptSeen:new WeakSet()};
   let voiceContext=null,voiceImpulse=null;
+  let announcedRun=null,pendingWelcomeRun=null;
   const primedVoiceSources=new Set(),primingVoiceSources=new Set();
 
   const lines={
@@ -360,11 +361,17 @@
         let started=false;try{started=Boolean(sayKey(key,{cooldown:0}))}catch(_){}
         if(started){if(currentRun)state.ammoPickupRuns.add(currentRun);else state.ammoPickupFallbackSpoken=true}
       }
-    }else if(key)try{sayKey(key)}catch(_){}
+    }else if(key)try{sayKey(key,key==="bronzeKeyCollected"?{cooldown:0,priority:70,interrupt:true}:{})}catch(_){}
     if(kind==="loot"&&lootKind==="artefact"&&!state.artefactLorePlayed){
       state.artefactLorePlayed=true;
       setTimeout(()=>{try{sayKey("essenceLore",{cooldown:0})}catch(_){}},2300)
     }
+  }
+  function onPlayerDeathVoice(event){
+    // Canonical deaths are emitted by game-play after the respawn state is committed.
+    // That gameplay path can bypass the wrapped hurtPlayer function entirely.
+    if(event?.detail?.requiresConfirmation!==true)return;
+    try{sayKey("playerDeath",{cooldown:0,priority:96,interrupt:true})}catch(_){}
   }
   function onHazardDamageVoice(){
     setTimeout(()=>{try{sayKey("hazardPain",{cooldown:45000})}catch(_){}},420);
@@ -372,11 +379,13 @@
   function onShopFirearmUpgradeVoice(){try{sayKey("weaponUpgraded",{cooldown:0})}catch(_){}}
   function onFirearmEvolvedVoice(event){const detail=event?.detail||{},before=Math.max(0,Number(detail.beforeTier)||0),after=Math.max(0,Number(detail.afterTier)||0);if(detail.first||after<=before)return;try{sayKey("weaponUpgraded",{cooldown:0})}catch(_){}}
   window.addEventListener?.("ccg:item-collected",onRecordedPickupVoice);
+  window.addEventListener?.("ccg:player-death",onPlayerDeathVoice);
   window.addEventListener?.("ccg:hazard-damage",onHazardDamageVoice);
   window.addEventListener?.("ccg:shop-firearm-upgrade",onShopFirearmUpgradeVoice);
   window.addEventListener?.("ccg:firearm-evolved",onFirearmEvolvedVoice);
   window.addEventListener?.("pagehide",()=>{
     window.removeEventListener?.("ccg:item-collected",onRecordedPickupVoice);
+    window.removeEventListener?.("ccg:player-death",onPlayerDeathVoice);
     window.removeEventListener?.("ccg:hazard-damage",onHazardDamageVoice);
     window.removeEventListener?.("ccg:shop-firearm-upgrade",onShopFirearmUpgradeVoice);
     window.removeEventListener?.("ccg:firearm-evolved",onFirearmEvolvedVoice);
@@ -395,7 +404,9 @@
   function loadulaEncounterVisible(){return Boolean(host?.stalker?.awake&&!host.stalker.permanentlyBanished&&sharesLiveRoom(host.stalker))}
 
   function classifyToast(title,text){
-    const s=`${title||""} ${text||""}`.toUpperCase();
+    const heading=String(title||"").trim().toUpperCase(),s=`${title||""} ${text||""}`.toUpperCase();
+    // Only the event title may authorize an interaction cue. Descriptive text
+    // may mention a trap, key or chest without the action actually occurring.
     if(/GILDED ELF CAUGHT|100 GOLD JACKPOT/.test(s))return"gildedCaught";
     if(/GILDED ELF ESCAPED|TOO SLOW/.test(s))return"gildedEscaped";
     if(/GILDED ELF/.test(s))return"gildedElf";
@@ -407,9 +418,9 @@
     if(/FLOOR MUTATION/.test(s))return"mutation";
     if(/CURSED CARTRIDGE/.test(s))return"cursed";
     if(/MYSTERY POTION/.test(s))return"mysteryPotion";
-    if(/LOCKED BRONZE DOOR/.test(s))return"bronzeKeyRequired";
-    if(/BRONZE DOOR UNLOCKED/.test(s))return"bronzeDoorUnlocked";
-    if(/LOCKED CHEST/.test(s))return"chestKeyRequired";
+    if(/LOCKED BRONZE DOOR/.test(heading))return"bronzeKeyRequired";
+    if(/BRONZE DOOR UNLOCKED/.test(heading))return"bronzeDoorUnlocked";
+    if(/^LOCKED CHEST$/.test(heading))return"chestKeyRequired";
     if(/MECHANICAL GATE/.test(s))return"findSwitch";
     if(/DOOR SEALED/.test(s))return"doorSealed";
     if(/FLOOR OBJECTIVE COMPLETE/.test(s))return"exitSealed";
@@ -433,9 +444,9 @@
     if(/INVENTORY FULL/.test(s))return"inventoryFull";
     if(/BANISHMENT FLASK (?:ACQUIRED|DISTILLED)/.test(s))return"banishmentFlaskAcquired";
     if(/EXIT SIGIL/.test(s)&&/ACQUIRED|FOUND|COLLECTED/.test(s))return"exitSigilAcquired";
-    if(/BRONZE KEY/.test(s)&&/FOUND|COLLECTED|ACQUIRED/.test(s))return"bronzeKeyCollected";
+    if(/BRONZE KEY/.test(heading)&&/FOUND|COLLECTED|ACQUIRED/.test(heading))return"bronzeKeyCollected";
     if(/WEAPON EVOLVED|FIREARM UPGRADE COMPLETE/.test(s))return"weaponUpgraded";
-    if(/HAZARD CHAMBER|TRAPS NEARBY/.test(s))return"trapsNearby";
+    if(/HAZARD CHAMBER|TRAPS NEARBY/.test(heading))return"trapsNearby";
     // Lore, door and shop messages also mention these names. A threat cue is
     // authorised only by the corresponding live enemy in the player's room.
     if(/COUNT LOADULA|LOADULA/.test(s)&&loadulaEncounterVisible())return"loadula";
@@ -448,7 +459,7 @@
     if(/WEEKLY VAULT.*RUN OVER/.test(s))return"weeklyDeath";
     if(/BOULDER.*RUN/.test(s))return"boulder";
     if(/^DANGER\s*—/.test(s))return"dangerRoom";
-    if(/TRAP|HAZARD.*MOVE/.test(s))return"trap";
+    if(/\bTRAP\b/.test(heading)||/^HAZARD.*MOVE/.test(heading))return"trap";
     if(/SANCTUARY/.test(s)){
       try{const room=world?.rooms?.[W.roomAt(world,p1?.x,p1?.y)];if(room?.sanctuary)return"sanctuary"}catch(_){}
       return"";
@@ -461,10 +472,16 @@
   }
 
   function onAuthoritativeToast(event){
+    // World-generation banners can be emitted before a run begins. They are not
+    // a player encounter and must not speak over the upcoming welcome.
+    if(mode==="menu")return;
     const meta=event?.detail||{};
     if(meta?.ccgDialogueVoiceHandled!==true){
       const key=classifyToast(meta.title,meta.text);
       if(!key)return;
+      // Run-opening world banners must not replace the delayed welcome with
+      // speculative trap speech before the player has begun exploring.
+      if(pendingWelcomeRun===run&&(key==="trap"||key==="trapsNearby"))return;
       const activeRun=typeof run==="object"?run:null;
       try{sayKey(key)}catch(_){}
       if(key==="arenaLockdown")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("surviveAmbush",{cooldown:0})}catch(_){}},2400);
@@ -501,20 +518,20 @@
       return result;
     };
   }
-  let announcedRun=null;
   function resetRunVoiceState(){
     stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");
   }
   function onAuthoritativeRunStarted(event){
     const detail=event?.detail||{},activeRun=detail.run||(typeof run==="object"?run:null);
     if(!activeRun||announcedRun===activeRun)return;
-    announcedRun=activeRun;resetRunVoiceState();
+    announcedRun=activeRun;pendingWelcomeRun=activeRun;resetRunVoiceState();
     setTimeout(()=>{
       try{
         if(run!==activeRun||mode!=="playing")return;
-        sayKey("welcome",{cooldown:0});
+        sayKey("welcome",{cooldown:0,priority:62,interrupt:true});
         if(detail.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
       }catch(_){}
+      finally{if(pendingWelcomeRun===activeRun)pendingWelcomeRun=null}
     },180);
   }
   window.addEventListener("ccg:run-started",onAuthoritativeRunStarted);

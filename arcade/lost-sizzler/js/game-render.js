@@ -255,7 +255,7 @@ function drawDungeonStoneRelief(s,x,y,h){
 }
 const FLOOR_TILE_PALETTES=Object.freeze({
   1:Object.freeze({id:"threshold-stone",name:"THRESHOLD STONE",floor:"rgba(105,99,94,.085)",wall:"rgba(88,84,82,.105)",accent:"#a8a39c"}),
-  2:Object.freeze({id:"drive-steel",name:"1541 DRIVE STEEL",floor:"rgba(48,78,96,.11)",wall:"rgba(37,63,82,.14)",accent:"#72d7ff"}),
+  2:Object.freeze({id:"drive-steel",name:"IRONFORGE STEEL",floor:"rgba(48,78,96,.11)",wall:"rgba(37,63,82,.14)",accent:"#72d7ff"}),
   3:Object.freeze({id:"iron-keep",name:"IRON KEEP",floor:"rgba(92,65,49,.12)",wall:"rgba(72,48,39,.15)",accent:"#d6a46c"}),
   4:Object.freeze({id:"budget-amber",name:"BUDGET VAULTS",floor:"rgba(128,86,34,.12)",wall:"rgba(94,61,24,.15)",accent:"#ffd85a"}),
   5:Object.freeze({id:"cartridge-green",name:"CARTRIDGE CATACOMBS",floor:"rgba(44,101,78,.13)",wall:"rgba(29,72,57,.16)",accent:"#72ff9b"}),
@@ -1838,7 +1838,7 @@ function renderRadarPanel(p){
   const key=(host.items||[]).find(i=>i.active&&i.kind==="key");if(key&&ex.has(`${key.x},${key.y}`)&&inside(key)){const x=px(key),y=py(key);radarCtx.save();radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.lineWidth=1;radarCtx.beginPath();radarCtx.arc(x,y,3.2,0,Math.PI*2);radarCtx.fill();radarCtx.stroke();radarCtx.restore()}
   const sigil=(host.items||[]).find(i=>i.active&&i.kind==="exitSigil");if(sigil&&(ex.has(`${sigil.x},${sigil.y}`)||visibleTo(p,sigil.x,sigil.y)))host.radarSigilSeen={x:sigil.x,y:sigil.y};
   const sigilGate=(host.doors||[]).find(d=>d.sigilGate);if(sigilGate&&(ex.has(`${sigilGate.x},${sigilGate.y}`)||visibleTo(p,sigilGate.x,sigilGate.y)))host.radarSigilGateSeen={x:sigilGate.x,y:sigilGate.y};
-  const gateNav=Boolean(host.exitSigilCollected&&host.radarSigilGateSeen),marker=gateNav?host.radarSigilGateSeen:(!host.exitSigilCollected?host.radarSigilSeen:null),legend=document.getElementById("radar-sigil-label");if(legend)legend.textContent=gateNav?"SIGIL GATE":"SIGIL";
+  const gateNav=Boolean(host.exitSigilCollected&&host.radarSigilGateSeen),marker=gateNav?host.radarSigilGateSeen:(!host.exitSigilCollected?host.radarSigilSeen:null),legend=document.getElementById("radar-sigil-label");if(legend){legend.textContent=gateNav?"SIGIL GATE":"SIGIL";legend.previousElementSibling?.classList.toggle("is-gate",gateNav)}
   if(marker&&inside(marker)){const q=marker;radarCtx.save();radarCtx.fillStyle=gateNav?P.purple:P.gold;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1;radarCtx.beginPath();radarCtx.moveTo(px(q),py(q)-5);radarCtx.lineTo(px(q)+5,py(q));radarCtx.lineTo(px(q),py(q)+5);radarCtx.lineTo(px(q)-5,py(q));radarCtx.closePath();radarCtx.fill();radarCtx.stroke();if(gateNav){radarCtx.fillStyle=P.white;radarCtx.fillRect(px(q)-1,py(q)-3,2,6)}radarCtx.restore()}
   for(const cache of host.deathCaches||[])if(cache.active&&inside(cache)){const cx=px(cache),cy=py(cache);radarCtx.save();radarCtx.strokeStyle="#ff6076";radarCtx.lineWidth=2;radarCtx.beginPath();radarCtx.moveTo(cx-3,cy-3);radarCtx.lineTo(cx+3,cy+3);radarCtx.moveTo(cx+3,cy-3);radarCtx.lineTo(cx-3,cy+3);radarCtx.stroke();radarCtx.restore()}
   for(const shop of host.shops||[])if(shop.active&&(shop.discovered||revealAll)&&inside(shop)){const sx=px(shop),sy=py(shop);radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.fillRect(sx-4,sy-3,8,6);radarCtx.strokeRect(sx-4,sy-3,8,6);radarCtx.fillStyle=P.cyan;radarCtx.fillRect(sx-3,sy-1,2,3);radarCtx.fillRect(sx+1,sy-1,2,3)}

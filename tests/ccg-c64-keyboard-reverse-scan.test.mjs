@@ -201,10 +201,20 @@ test("actual handler releases modified Tab and pre-held J/W, guards shortcuts an
   }
   for (const code of ['KeyJ', 'KeyW']) {
     send(code, true);
-    assert(cia.isKeyDown(...KEY_MAP[code]));
+    if (code === 'KeyW') {
+      assert(!cia.isKeyDown(...KEY_MAP[code]),
+        'With KEYBOARD JOY ON, W must affect only the joystick, not the CIA keyboard');
+      assert(context.keyboardJoystickKeys.has(code),
+        'W must be held in the joystick state before Alt is pressed');
+    } else {
+      assert(cia.isKeyDown(...KEY_MAP[code]),
+        'Unmapped J must retain its native C64 keyboard binding');
+    }
     send(code, false, { altKey: true });
-    assert(!cia.isKeyDown(...KEY_MAP[code]));
-    assert(!context.keyboardJoystickKeys.has(code));
+    assert(!cia.isKeyDown(...KEY_MAP[code]),
+      'Shortcut-modified keyup must not leave native matrix keys held');
+    assert(!context.keyboardJoystickKeys.has(code),
+      'Shortcut-modified keyup must not leave joystick keys held');
   }
   assert.equal(context.joy, false);
   for (const code of ['KeyJ', 'KeyW']) {

@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.42 r3 — Warden hunt guidance, optional quest visibility, floor briefings and safe exit confirmation. */
+/* C64 Dungeon Carnage V10.42 r178 — Warden hunt guidance, optional quest visibility, floor briefings and safe exit confirmation. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_WARDEN_HUNT_GUIDANCE__)return;
@@ -30,6 +30,22 @@
   function routeProfile(n=floor()){return routeApi()?.routes?.[n]||null}
   function routeRecord(n=floor(),r=R()){return r?.v142WardChargeRoutes?.[String(n)]||null}
   function hasCharge(p=P()){try{return Boolean(p&&PGR.firstInventory(p,"banishment")>=0)}catch(_){return false}}
+  // A pending field reward has two distinct capacity reasons. A full bag
+  // with no carried charge needs an inventory slot; a carried charge with
+  // a full Essence Vessel needs that charge spent, not a second bag slot.
+  function reservationHelp(p=P()){
+    if(!hasCharge(p))return"An earned Ward-Break Charge is reserved. Free an inventory slot and it will be delivered automatically, even on a later floor.";
+    let cost;
+    try{cost=Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p))}
+    catch(_){cost=NaN}
+    if(!Number.isFinite(cost)||cost<=0)
+      cost=Number(p?.banishmentEssenceCost)||Number(C.stalker?.flaskArtefacts)||3;
+    const capacity=Math.max(1,Math.floor(cost));
+    const held=Math.max(0,Math.floor(Number(p?.banishmentEssence)||0));
+    if(held<capacity)
+      return`You already carry a Ward-Break Charge. Your reserved field reward will automatically become +1 Essence in the Vessel (${held}/${capacity} stored now); no second inventory slot is needed.`;
+    return`You already carry a Ward-Break Charge and your Essence Vessel is full (${held}/${capacity}). Spend the carried charge on a sealed Warden with B to make room; the earned field reward remains reserved and will be delivered automatically, even on a later floor.`;
+  }
   function fragmentsOnFloor(row){return Number(Boolean(row?.killFragmentAwarded||row?.fragmentAwarded))+Number(Boolean(row?.cacheFragmentAwarded))}
   function pendingRouteRows(r=R()){
     return Object.values(r?.v142WardChargeRoutes||{}).filter(row=>row&&Number(row.floor)>1&&row.unlocked&&row.pending&&!row.delivered).sort((a,b)=>Number(a.floor)-Number(b.floor));
@@ -37,8 +53,8 @@
 
   function routeInstruction(n=floor(),r=R(),p=P()){
     const profile=routeProfile(n),row=routeRecord(n,r);
+    if(pendingRouteRows(r).length)return reservationHelp(p);
     if(hasCharge(p))return"Ward-Break Charge ready — find the sealed Warden, press B in range, then finish the fight with normal weapons.";
-    if(row?.pending&&!row.delivered)return`The ${profile?.name||"field route"} reward is reserved. Free an inventory slot and it will be delivered automatically, even on a later floor.`;
     if(row?.delivered&&row.rewardType==="essence")return`${profile?.name||"Field route"} converted to +1 Essence because a charge was already carried. Distil another charge at the Alchemist if required.`;
     if(n===1)return"Baseline route: collect Banishment Essence and distil a Ward-Break Charge at the sanctuary Alchemist.";
     return`Field route: ${profile?.objective||"complete this floor's optional Ward-Break challenge"} The Alchemist remains the fallback route.`;
@@ -51,9 +67,8 @@
       if(row.cacheFragmentAwarded)return{done:true,title:"WARDEN LEGACY COMPLETE",detail:`Warden cleansed and both Seal Fragments secured (${fragmentsOnFloor(row)}/2). The refuge remains active for this floor.`};
       return{done:false,title:"WARDEN CLEANSED — CACHE FRAGMENT UNCLAIMED",detail:"The dangerous part is over, but the Warden Cache still holds this floor's second Seal Fragment."};
     }
+    if(pendingRouteRows(r).length)return{done:false,title:hasCharge(p)?"WARD BREAK READY — REWARD RESERVED":"FIELD CHARGE RESERVED",detail:reservationHelp(p)};
     if(hasCharge(p))return{done:false,title:"WARD BREAK READY",detail:"Find the Warden, break its immunity with B, then kill it normally to cleanse the domain and spawn its cache."};
-    const rr=routeRecord(n,r);
-    if(rr?.pending&&!rr.delivered)return{done:false,title:"FIELD CHARGE RESERVED",detail:"Free an inventory slot to receive the earned Ward-Break Charge. The reward is safe in run state and can deliver automatically on a later floor."};
     return{done:false,title:"PREPARE WARD BREAK",detail:routeInstruction(n,r,p)};
   }
 
@@ -64,7 +79,13 @@
 
   function questHtml(n=floor(),r=R(),p=P()){
     const profile=PROFILES[n]||PROFILES[5],state=huntState(n,r,p),done=state.done?" quest-done":"",tick=state.done?"✓ ":"";
-    return`<div class="v142-warden-contract${done}" data-v142-warden-contract="true">${tick}<b>OPTIONAL WARDEN — ${esc(profile.name)}</b><br>${esc(state.title)} · ${esc(state.detail)}<br><small>${esc(rewardText(n,r))}</small></div>`;
+    // Warden completion and earned field-route delivery are independent.
+    // Do not hide an outstanding reward beneath a completed/cached domain
+    // or confuse a completed Warden objective with a delivered charge.
+    const pending=pendingRouteRows(r),waiting=pending.length>0&&!/RESERVED/.test(state.title);
+    const floors=pending.map(row=>Number(row.floor)).join("/");
+    const reservation=waiting?`<br><span class="v142-warden-reservation" data-v142-pending-reward="true">WARD-BREAK REWARD RESERVED (F${esc(floors)}) · ${esc(reservationHelp(p))}</span>`:"";
+    return`<div class="v142-warden-contract${done}" data-v142-warden-contract="true">${tick}<b>OPTIONAL WARDEN — ${esc(profile.name)}</b><br>${esc(state.title)} · ${esc(state.detail)}${reservation}<br><small>${esc(rewardText(n,r))}</small></div>`;
   }
   function renderWardenQuest(){
     const r=R(),p=P();if(!r||!p||!UI?.quests)return false;
@@ -85,11 +106,11 @@
   function exitIssues(n=floor(),r=R(),h=H()){
     if(!r)return[];const row=record(n,r),domain=h?.v142WardenDomain,issues=[],resolved=Boolean(row?.resolved||row?.cleansed||domain?.cleansed),available=!row?.noWarden&&row?.available!==false&&Boolean(row?.available===true||domain?.active||domain?.cleansed||resolved);
     if(available&&!resolved){
-      issues.push({kind:"warden-debt",blocking:false,text:"WARDEN UNRESOLVED — leaving now adds Warden Debt, giving later major guardians +10% maximum HP and +1 armour for this skipped floor."});
+      issues.push({kind:"warden-debt",blocking:false,text:"OPTIONAL WARDEN NOT CLEARED — the main floor objective is complete. Descending without defeating the Warden adds 1 Warden Debt stack: later major guardians gain +10% maximum HP and +1 armour."});
     }else if(resolved&&!row?.cacheFragmentAwarded&&Boolean(row?.killFragmentAwarded||row?.fragmentAwarded)){
       issues.push({kind:"cache-fragment",blocking:false,text:"WARDEN CACHE UNCLAIMED — the second Seal Fragment for this floor will be left behind if you finish the floor now."});
     }
-    const pending=pendingRouteRows(r);if(pending.length){const floors=pending.map(x=>Number(x.floor)).join("/");issues.push({kind:"reserved-charge",blocking:false,text:`WARD-BREAK REWARD RESERVED (F${floors}) — this is safe in run state and will carry forward until an inventory slot is free.`})}
+    const pending=pendingRouteRows(r);if(pending.length){const floors=pending.map(x=>Number(x.floor)).join("/");issues.push({kind:"reserved-charge",blocking:false,text:`WARD-BREAK REWARD RESERVED (F${floors}) — ${reservationHelp(P())}`})}
     return issues;
   }
   function exitIssueKey(issues){return issues.filter(issue=>issue.blocking).map(issue=>issue.kind).sort().join("|")}
@@ -100,7 +121,7 @@
   function appendReservationSummary(r=R()){
     const pending=pendingRouteRows(r);if(!pending.length||!UI?.floorSummary)return false;const floors=pending.map(x=>`F${Number(x.floor)}`).join(", ");
     if(String(UI.floorSummary.innerHTML||"").includes("data-v142-reserved-ward-route"))return false;
-    UI.floorSummary.innerHTML+=`<br><br><strong data-v142-reserved-ward-route="true">WARD-BREAK REWARD RESERVED</strong><br>${esc(floors)} field-route reward${pending.length===1?" is":"s are"} safe in run state and will auto-deliver on a later floor when an inventory slot is free.`;return true;
+    UI.floorSummary.innerHTML+=`<br><br><strong data-v142-reserved-ward-route="true">WARD-BREAK REWARD RESERVED</strong><br>${esc(floors)} field-route reward${pending.length===1?" is":"s are"} safe in run state. ${esc(reservationHelp(P()))}`;return true;
   }
   function guardedFloorComplete(by){
     if(!baseFloorComplete)return false;const r=R(),h=H(),n=floor(r);if(!r||!h||r.floorComplete||M()!=="playing")return baseFloorComplete(by);
@@ -118,5 +139,5 @@
   if(baseFloorComplete)floorComplete=function(by){try{return guardedFloorComplete(by)}catch(error){console.warn("[Lost Sizzler V10.42] Warden exit guard failed safely",error);return baseFloorComplete(by)}};
 
   try{renderWardenQuest();briefFloor(false)}catch(_){}
-  window.CCGLostSizzlerV142WardenHuntGuidance={version:"V10.42 r3",profiles:PROFILES,huntState,routeInstruction,rewardText,questHtml,renderWardenQuest,floorBriefText,briefFloor,exitIssues,playerExitContact,guardedFloorComplete,appendReservationSummary};
+  window.CCGLostSizzlerV142WardenHuntGuidance={version:"V10.42 r178",profiles:PROFILES,huntState,routeInstruction,reservationHelp,rewardText,questHtml,renderWardenQuest,floorBriefText,briefFloor,exitIssues,playerExitContact,guardedFloorComplete,appendReservationSummary};
 })();

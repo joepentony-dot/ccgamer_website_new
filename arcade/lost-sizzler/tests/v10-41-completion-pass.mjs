@@ -13,6 +13,7 @@ const config=read("js/config.js");
 const deathCache=read("js/v10-4-death-cache.js");
 const progressionRecovery=read("js/v10-41-progression-recovery.js");
 const sanctuary=read("js/v10-41-sanctuary-azalea.js");
+const radar=read("js/game-render.js");
 const map=read("js/v10-41-solo-full-map.js");
 const loader=read("js/version-check.js");
 const index=read("index.html");
@@ -45,7 +46,13 @@ assert.match(sanctuary,/function drawDancer/,"sanctuary scenes must include non-
 assert.match(sanctuary,/"Hello big boy"/,"touching sanctuary dancers must trigger the requested greeting");
 assert.match(sanctuary,/function drawRadarOverlay/,"tactical radar must receive map-marker polish");
 assert.match(sanctuary,/progressionRecoveryMarkers/,"tactical radar must draw returned progression items");
-assert.match(sanctuary,/fillStyle="#6cecff"/,"tactical radar must draw a player marker");
+// R181 has one canonical player glyph; the old Sanctuary compatibility layer
+// must not paint a second player over the room-aware minimap.
+assert.match(radar,/function renderRadarPanel\(p\)/,"the canonical radar renderer must still own the player marker");
+assert.match(radar,/radarCtx\.fillStyle=P\.cyan;radarCtx\.strokeStyle=P\.white;[\s\S]*?radarCtx\.fillRect\(playerCx-playerSize\/2,playerCy-playerSize\/2,playerSize,playerSize\)/,"canonical tactical radar must draw the cyan player square");
+const overlay=sanctuary.slice(sanctuary.indexOf("  function drawRadarOverlay(p){"),sanctuary.indexOf("  function wrapUpdateRuntime(){"));
+assert.match(overlay,/__CCG_RADAR_DIAGNOSTICS__/,"compatibility markers must use the authoritative radar viewport");
+assert.doesNotMatch(overlay,/fillStyle="#6cecff"|fillStyle=P\.cyan|playerCx|shape==="triangle"/,"compatibility overlay must never draw a second player marker");
 
 assert.match(deathCache,/progressionKinds=new Set\(\["key","mainKey","bronze","bronzeKey","exitSigil","sigil"\]\)/,"essential keys and sigils must be protected from old-cache deletion");
 assert.match(deathCache,/function restoreProgressionItems/,"old cache replacement must restore progression items instead of deleting them");

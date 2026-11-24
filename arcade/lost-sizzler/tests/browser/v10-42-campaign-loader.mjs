@@ -140,7 +140,7 @@ try{
   assert.equal(audit.overhaulVersion,"V10.42","Canonical page must install the V10.42 RPG/procedural overhaul.");
   assert.equal(audit.campaignVersion,"V10.42","Canonical page must install the V10.42 fifteen-floor campaign layer.");
   assert.equal(audit.floorCount,15,"Canonical V10.42 config must expose exactly fifteen campaign floors.");
-  assert.deepEqual(audit.floorNames,["THE THRESHOLD","1541 DRIVEWORKS","IRON KEEP","BUDGET VAULTS","CARTRIDGE CATACOMBS","TAPE LABYRINTH","MOSS CRYPT","DEMO UNDERCROFT","MODEM WARRENS","SID FURNACE","EMBER DEPTHS","PIXEL FOUNDRY","HIGH SCORE CRYPT","CRT MAZE","BLOOD CITADEL"],"Canonical browser runtime must expose the intended fifteen-floor order.");
+  assert.deepEqual(audit.floorNames,["THE THRESHOLD","IRONFORGE DEPTHS","IRON KEEP","FORGOTTEN VAULTS","SHATTERED CATACOMBS","SHROUDED LABYRINTH","MOSS CRYPT","SHADOW UNDERCROFT","WHISPERING WARRENS","INFERNAL FURNACE","EMBER DEPTHS","ASHEN FOUNDRY","CRYPT OF LOST SOULS","MIRROR MAZE","BLOOD CITADEL"],"Canonical browser runtime must expose the intended fifteen-floor order.");
   assert.deepEqual(audit.domains,["iron","bone","ash"],"Floors 3, 7 and 11 must own the Iron, Bone and Ash Key domains.");
   assert.deepEqual(audit.sliceLengths,[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1],"The browser runtime must distribute the campaign A–Z deck across all fifteen floors.");
   assert.equal(audit.pickupCount,26,"The live campaign deck must contain 26 C64 rescues.");

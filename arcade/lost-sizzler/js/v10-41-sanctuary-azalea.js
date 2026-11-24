@@ -217,13 +217,25 @@
   }
 
   function drawRadarOverlay(p){
-    const canvas=document.getElementById("radar-canvas"),g=canvas?.getContext?.("2d");if(!canvas||!g||!world||!p)return;
-    const rw=canvas.width,rh=canvas.height,pad=9,cols=Math.min(C.worldWidth,Math.max(46,Math.floor(rw/6))),rows=Math.min(C.worldHeight,Math.max(24,Math.floor(rh/5.5))),minX=Math.max(0,Math.min(C.worldWidth-cols,Math.round(p.x-cols/2))),minY=Math.max(0,Math.min(C.worldHeight-rows,Math.round(p.y-rows/2))),sc=Math.min((rw-pad*2)/cols,(rh-pad*2)/rows),mw=cols*sc,mh=rows*sc,ox=(rw-mw)/2,oy=(rh-mh)/2;
+    const canvas=document.getElementById("radar-canvas"),ctx=canvas?.getContext?.("2d"),view=window.__CCG_RADAR_DIAGNOSTICS__;
+    if(!canvas||!ctx||!world||!p||!view)return;
+    // The canonical R113 radar already draws YOU as a cyan square. This
+    // retained compatibility owner must never draw a second triangle, nor
+    // compute its own wider viewport over the current room-aware minimap.
+    const rw=Number(canvas.width),rh=Number(canvas.height),sc=Number(view.scale),mw=Number(view.mapWidth),mh=Number(view.mapHeight),minX=Number(view.minX),minY=Number(view.minY);
+    if(![rw,rh,sc,mw,mh,minX,minY].every(Number.isFinite)||sc<=0||rw<=0||rh<=0||
+       rw!==Number(view.canvasWidth)||rh!==Number(view.canvasHeight)||
+       Number(view.playerMarker?.worldX)!==Number(p.x)||Number(view.playerMarker?.worldY)!==Number(p.y))return;
+    const ox=(rw-mw)/2,oy=(rh-mh)/2;
     const toScreen=q=>({x:ox+(Number(q.x)-minX+.5)*sc,y:oy+(Number(q.y)-minY+.5)*sc});
     const edgePoint=q=>{const raw=toScreen(q);return{x:Math.max(ox+5,Math.min(ox+mw-5,raw.x)),y:Math.max(oy+5,Math.min(oy+mh-5,raw.y))}};
-    g.save();
-    for(const marker of host?.progressionRecoveryMarkers||[]){if(!marker?.active)continue;const s=edgePoint(marker);g.fillStyle=marker.kind==="exitSigil"?"#b978ff":"#ffd85a";g.strokeStyle="#fff";g.lineWidth=1;g.translate(s.x,s.y);g.rotate(Math.PI/4);g.fillRect(-4,-4,8,8);g.strokeRect(-4,-4,8,8);g.rotate(-Math.PI/4);g.translate(-s.x,-s.y)}
-    const s=toScreen(p);g.fillStyle="#6cecff";g.strokeStyle="#071017";g.lineWidth=2;g.beginPath();g.moveTo(s.x,s.y-6);g.lineTo(s.x+6,s.y+5);g.lineTo(s.x-6,s.y+5);g.closePath();g.fill();g.stroke();g.restore();
+    ctx.save();
+    for(const marker of host?.progressionRecoveryMarkers||[]){
+      if(!marker?.active||!Number.isFinite(Number(marker.x))||!Number.isFinite(Number(marker.y)))continue;
+      const s=edgePoint(marker);ctx.fillStyle=marker.kind==="exitSigil"?"#b978ff":"#ffd85a";ctx.strokeStyle="#fff";ctx.lineWidth=1;
+      ctx.translate(s.x,s.y);ctx.rotate(Math.PI/4);ctx.fillRect(-4,-4,8,8);ctx.strokeRect(-4,-4,8,8);ctx.rotate(-Math.PI/4);ctx.translate(-s.x,-s.y);
+    }
+    ctx.restore();
   }
 
   function wrapUpdateRuntime(){

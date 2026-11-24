@@ -68,11 +68,17 @@ assert.equal(context.p1.mana,spentMana,"A spent refuge must not refill ammunitio
 context.run.v142WardenFloors["2"].fragmentAwarded=true;context.run.v142WardenFloors["2"].cacheFragmentAwarded=true;context.UI.floorSummary.innerHTML="BASE FLOOR SUMMARY";
 context.floorComplete("contract");
 assert.equal(baseFloorCompletions,1,"The Warden summary wrapper must preserve the existing floor-complete handler");
-assert.match(context.UI.floorSummary.innerHTML,/WARDEN LEGACY/,"Floor clear should include a Warden legacy section");
+assert.match(context.UI.floorSummary.innerHTML,/OPTIONAL WARDEN/,"Standalone fallback should identify the Warden as an optional challenge");
 assert.match(context.UI.floorSummary.innerHTML,/WARDEN CLEANSED/,"Floor clear should state that the Warden was cleansed");
 assert.match(context.UI.floorSummary.innerHTML,/SEAL FRAGMENTS 2\/2/,"Floor clear should show both floor Seal Fragments when claimed");
 assert.match(context.UI.floorSummary.innerHTML,/WARDEN CACHE CLAIMED/,"Floor clear should report a claimed Warden Cache fragment");
 assert.match(context.UI.floorSummary.innerHTML,/RETURN-REST SPENT/,"Floor clear should report the refuge rest state");
+// When the authoritative optional-Warden summary owner has already spoken,
+ // the older visual/refuge wrapper must not add a second warning or section.
+const authoritative='<strong data-v142-warden-status="true">OPTIONAL WARDEN CLEARED</strong>';
+context.UI.floorSummary.innerHTML="BASE FLOOR SUMMARY"+authoritative;
+assert.equal(context.window.CCGLostSizzlerV142WardenCleansingEffects.appendWardenLegacySummary(context.run,2),false,"One Warden status is enough on the floor-clear card");
+assert.equal(context.UI.floorSummary.innerHTML,"BASE FLOOR SUMMARY"+authoritative,"Existing authoritative status must remain untouched");
 
 // A same-floor host/world rebuild recreates environmental refuge state but cannot replay the initial reward.
 context.world=makeWorld();context.host=makeHost(2);context.p1.x=13;context.p1.y=13;context.p1.health=5;context.p1.mana=10;tick();
@@ -95,7 +101,7 @@ assert.equal(context.run.alert,58,"Generic cleansing should reduce ambient alert
 // An unresolved floor reports the debt consequence instead of pretending it was cleansed.
 context.run.v142WardenFloors["3"].resolved=false;context.run.v142SkippedWardenFloors=[3];context.UI.floorSummary.innerHTML="BASE FLOOR SUMMARY";context.floorComplete("skip-contract");
 assert.equal(baseFloorCompletions,2,"Unresolved Warden feedback must still preserve the base floor-complete handler");
-assert.match(context.UI.floorSummary.innerHTML,/WARDEN UNRESOLVED/,"Floor clear should state when the Warden was left alive");
+assert.match(context.UI.floorSummary.innerHTML,/OPTIONAL WARDEN[\s\S]*WARDEN SKIPPED/,"A Warden already recorded as skipped must be identified as an optional skipped encounter, not an unfinished main objective");
 assert.match(context.UI.floorSummary.innerHTML,/WARDEN DEBT \+1/,"Floor clear should expose the future guardian penalty from a skipped Warden");
 
 // Floor 4: dedicated hazard cells are extinguished and armour is restored once.

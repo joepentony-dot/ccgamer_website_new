@@ -50,6 +50,9 @@ jobs:
       - name: Verify VICE keyboard, controls, drag/drop and MAX Warp
         run: node tests/ccg-c64-keyboard-warp.test.mjs
 
+      - name: Guard low-latency Crossfire keyboard scheduling and other C64 timing
+        run: node --test tests/ccg-c64-crossfire-input-latency.test.mjs
+
       - name: Verify automatic warp remains active through post-RUN disk and tape loads
         run: node --test tests/ccg-c64-auto-warp-loading.test.mjs
 

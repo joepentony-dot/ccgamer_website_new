@@ -28,10 +28,60 @@
   function sourceName(e){return isCount(e)?String(C.stalker?.name||"Count Loadula"):isDeathStalker(e)?"Death Stalker":"Warden"}
   function domainSource(state=fs()){const h=H();if(!h)return null;const candidates=[...(h.enemies||[]).filter(isDeathStalker),h.stalker].filter(Boolean);if(state?.sourceId)return candidates.find(e=>sourceId(e)===String(state.sourceId))||null;return candidates.find(e=>isDeathStalker(e)&&e.alive&&!e.v142WardenDefeated)||((h.stalker&&!h.stalker.v142WardenDefeated&&!h.stalker.permanentlyBanished)?h.stalker:null)}
   function domainRoom(source){const h=H(),w=W();if(!h||!w)return null;if(source){const q=w.rooms?.[roomAt(source.x0??source.x,source.y0??source.y,w)];if(q&&q.id!==w.startRoomId&&q.id!==w.exitRoomId&&!q.sanctuary&&!q.sigilRoom)return q}const gen=new Set((h.generators||[]).filter(g=>g.alive).map(g=>g.roomId));return (w.rooms||[]).filter(q=>q.id!==w.startRoomId&&q.id!==w.exitRoomId&&!q.optional&&!q.sanctuary&&!q.sigilRoom).sort((a,b)=>(Number(gen.has(b.id))-Number(gen.has(a.id)))+((Number(b.depth)||0)-(Number(a.depth)||0)))[0]||null}
-  function installDomain(){const h=H(),w=W(),state=fs();if(!h||!w||!state)return null;if(h.v142WardenDomain?.floor===floor())return h.v142WardenDomain;const source=domainSource(state);if(!source){if(state.sourceId){state.available=true;state.noWarden=false;return null}state.available=false;if(!state.resolved)state.noWarden=true;return null}state.available=true;const key=sourceId(source),room=domainRoom(source);if(!room){if(!state.resolved){state.available=false;state.noWarden=true}return null}state.noWarden=false;state.sourceId=key;state.sourceKind=isCount(source)?"count-loadula":"death-stalker";state.sourceName=sourceName(source);const profile=PROFILES[floor()]||PROFILES[5],c=centre(room),wanted=floor()===5?2:1,generatorIds=(h.generators||[]).filter(g=>g.alive).map(g=>({id:g.id,d:dist(c,g)})).sort((a,b)=>a.d-b.d).slice(0,wanted).map(x=>x.id);h.v142WardenDomain={floor:floor(),roomId:room.id,sourceId:key,sourceKind:state.sourceKind,sourceName:state.sourceName,profileId:profile.id,profileName:profile.name,description:profile.desc,generatorIds,active:!state.resolved,cleansed:Boolean(state.resolved),inside:false,last:performance.now(),graveAt:0,emberAt:0};room.v142WardenCorrupted=!state.resolved;room.v142WardenCleansed=Boolean(state.resolved);room.dangerous=true;return h.v142WardenDomain}
+  function installDomain(){const h=H(),w=W(),state=fs();if(!h||!w||!state)return null;if(h.v142WardenDomain?.floor===floor()){
+      const existing=h.v142WardenDomain,resolvedId=String(state.resolvedSourceId||"");
+      // The run's exact-floor victory is authoritative after host restoration.
+      // A recreated Death Stalker can have a changed ID; do not mistake a
+      // Count-owned, skipped or unconfirmed domain for a cleansed Death Stalker.
+      const sameKind=!state.sourceKind||!existing.sourceKind||state.sourceKind===existing.sourceKind;
+      const exactSource=resolvedId&&resolvedId===String(existing.sourceId||"");
+      const rebuiltDeathStalker=resolvedId&&state.sourceKind==="death-stalker"&&existing.sourceKind==="death-stalker";
+      if(state.resolved&&sameKind&&(exactSource||rebuiltDeathStalker)){
+        existing.active=false;existing.cleansed=true;existing.inside=false;
+        const room=w.rooms?.[existing.roomId];
+        if(room){room.v142WardenCorrupted=false;room.v142WardenCleansed=true}
+        // A restored live generator must not resume a cleansed domain.
+        suppress(existing);
+      }
+      return existing;
+    }const source=domainSource(state);if(!source){if(state.sourceId){state.available=true;state.noWarden=false;return null}state.available=false;if(!state.resolved)state.noWarden=true;return null}state.available=true;const key=sourceId(source),room=domainRoom(source);if(!room){if(!state.resolved){state.available=false;state.noWarden=true}return null}state.noWarden=false;state.sourceId=key;state.sourceKind=isCount(source)?"count-loadula":"death-stalker";state.sourceName=sourceName(source);const profile=PROFILES[floor()]||PROFILES[5],c=centre(room),wanted=floor()===5?2:1,generatorIds=(h.generators||[]).filter(g=>g.alive).map(g=>({id:g.id,d:dist(c,g)})).sort((a,b)=>a.d-b.d).slice(0,wanted).map(x=>x.id);h.v142WardenDomain={floor:floor(),roomId:room.id,sourceId:key,sourceKind:state.sourceKind,sourceName:state.sourceName,profileId:profile.id,profileName:profile.name,description:profile.desc,generatorIds,active:!state.resolved,cleansed:Boolean(state.resolved),inside:false,last:performance.now(),graveAt:0,emberAt:0};room.v142WardenCorrupted=!state.resolved;room.v142WardenCleansed=Boolean(state.resolved);room.dangerous=true;return h.v142WardenDomain}
   function suppress(domain){const h=H(),ids=domain?.generatorIds||[],out=[];for(const g of h?.generators||[])if(g.alive&&ids.includes(g.id)){g.v142WardenSuppressed=true;g.powered=false;g.spawnCooldown=Math.max(Number(g.spawnCooldown)||0,SUPPRESS_MS);out.push(g.id)}return out}
   function shortcut(domain){const h=H(),w=W(),c=centre(w?.rooms?.[domain?.roomId]),doors=(h?.doors||[]).filter(d=>d.locked&&!d.sigilGate&&["secret","bronze","switch"].includes(d.type)).sort((a,b)=>dist(a,c)-dist(b,c)),pick=doors[0];if(!pick)return null;for(const d of pick.groupId?(h.doors||[]).filter(x=>x.groupId===pick.groupId):[pick]){d.locked=false;d.hidden=false;d.discovered=true;d.open=true;d.opening=false;d.openAt=0;d.v142WardenShortcut=true}return pick}
-  function safeCell(roomId,preferred){const h=H(),w=W(),room=w?.rooms?.[roomId];if(!h||!w||!room)return null;const origin=preferred&&roomAt(preferred.x,preferred.y,w)===roomId?preferred:centre(room);for(let rad=0;rad<7;rad++)for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){if(Math.abs(dx)+Math.abs(dy)!==rad)continue;const x=Math.round(origin.x+dx),y=Math.round(origin.y+dy);if(x<room.x||x>room.x+room.w||y<room.y||y>room.y+room.h||w.map?.[y]?.[x]!==0||(h.blockingDecor||[]).some(d=>d.x===x&&d.y===y)||(h.enemies||[]).some(e=>e.alive&&e.x===x&&e.y===y))continue;return{x,y,roomId}}return{x:Math.round(origin.x),y:Math.round(origin.y),roomId}}
+  function safeCell(roomId,preferred){
+    const h=H(),w=W(),room=w?.rooms?.[roomId];if(!h||!w||!room)return null;
+    const origin=preferred&&roomAt(preferred.x,preferred.y,w)===roomId?preferred:centre(room);
+    // Warden recovery is a real spawn. Terrain-only checks can put a player
+    // inside a live generator, a chest, another player or a sealed door.
+    const occupied=(rows,x,y,valid)=>Array.isArray(rows)&&rows.some(o=>o&&valid(o)&&o.x===x&&o.y===y);
+    const active=o=>o.active!==false,alive=o=>o.alive===true;
+    const special=o=>o.alive!==false&&o.active!==false&&!o.permanentlyBanished&&!o.rescued;
+    for(let rad=0;rad<7;rad++)for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){
+      if(Math.abs(dx)+Math.abs(dy)!==rad)continue;
+      const x=Math.round(Number(origin.x)+dx),y=Math.round(Number(origin.y)+dy);
+      if(x<room.x||x>room.x+room.w||y<room.y||y>room.y+room.h)continue;
+      const walkable=typeof WORLD.playerWalkable==="function"
+        ? WORLD.playerWalkable(w.map,x,y,h)
+        : w.map?.[y]?.[x]===0&&!occupied(h.blockingDecor,x,y,()=>true)&&
+          !occupied(h.generators,x,y,alive)&&
+          !occupied(h.doors,x,y,d=>d.locked||!d.open);
+      if(!walkable||
+         occupied(localRoster(),x,y,()=>true)||
+         occupied(h.enemies,x,y,alive)||
+         occupied(h.generators,x,y,alive)||
+         occupied(h.doors,x,y,()=>true)||
+         occupied(h.chests,x,y,active)||
+         occupied(h.items,x,y,active)||
+         occupied(h.deathCaches,x,y,active)||
+         occupied(h.switches,x,y,active)||
+         occupied(h.shrines,x,y,active)||
+         occupied(h.shops,x,y,active)||
+         occupied([h.guardian,h.stalker,h.rescue,h.trader,h.startShop],x,y,special))continue;
+      return{x,y,roomId};
+    }
+    // Never invent a "safe" tile that failed all collision checks. The
+    // ordinary death owner keeps its entrance respawn when the room is full.
+    return null;
+  }
   function cleanse(target,p){const h=H(),w=W(),state=fs(),d=installDomain(),key=sourceId(target);if(!h||!w||!state||!d||d.cleansed||!key||key!==String(d.sourceId||""))return false;d.active=false;d.cleansed=true;const room=w.rooms?.[d.roomId];if(room){room.v142WardenCorrupted=false;room.v142WardenCleansed=true}state.resolved=true;state.resolvedBy=sourceName(target);state.resolvedSourceId=key;const stopped=suppress(d),door=shortcut(d),q=safeCell(d.roomId,{x:target?.x,y:target?.y});if(q)h.v142WardenCheckpoint={...q,active:true,floor:floor(),sourceId:key};h.revision=(Number(h.revision)||0)+1;applyBossDebt(true);toast("WARDEN DOMAIN CLEANSED",`${d.profileName} is gone. ${stopped.length?`${stopped.length} bound generator${stopped.length===1?"":"s"} can no longer create reinforcements; `:""}${door?"an optional shortcut is open; ":""}${q?"future deaths on this floor now respawn at the cleansed anchor after the normal death penalty.":"The corruption is removed."}`,"green",12000);broadcast();syncNow();return true}
   function resolve(target,p){const state=fs(),d=installDomain(),key=sourceId(target);if(!state||state.resolved||state.skipped||!d||!key||key!==String(d.sourceId||""))return false;if(!cleanse(target,p))return false;state.available=true;if(!state.killFragmentAwarded){state.killFragmentAwarded=true;fragment(p,"The floor Warden released the first half of its broken seal")}const cache=(H()?.chests||[]).find(c=>c.v142WardenCache&&String(c.v142WardenSource||"")===key);if(cache){cache.v142SealEligible=true;cache.v142WardenFloor=floor()}return true}
   function scanKills(){const h=H(),p=P(),state=fs();if(!h||!p||!state||state.resolved||state.skipped)return;const d=installDomain();if(!d?.sourceId)return;const candidates=[...(h.enemies||[]),h.stalker].filter(Boolean),e=candidates.find(x=>sourceId(x)===String(d.sourceId)&&x.v142WardenRewarded&&x.v142WardenDefeated);if(e)resolve(e,p)}
@@ -46,7 +96,7 @@
   if(baseSight)PGR.effectiveSight=function(p,r){let n=Number(baseSight(p,r))||2;if(seals(r||R())>=3)n++;const d=H()?.v142WardenDomain;if(d?.active&&d.profileId==="static-veil"&&roomAt(p?.x,p?.y)===d.roomId)n-=2;return Math.max(2,n)};
   if(baseOpenChest)openChest=function(p,c){const eligible=Boolean(c?.active&&c.v142WardenCache&&c.v142SealEligible&&!c.v142SealFragmentClaimed),result=baseOpenChest(p,c);if(eligible&&c.active===false){const state=fs(Number(c.v142WardenFloor)||floor());if(state&&!state.cacheFragmentAwarded){state.cacheFragmentAwarded=true;c.v142SealFragmentClaimed=true;fragment(p,"The Warden Cache held the second half of this floor's broken seal")}}return result};
   if(baseHurt)hurtPlayer=function(p,...args){const r=R(),before=Number(r?.stats?.deaths)||0,result=baseHurt(p,...args),after=Number(r?.stats?.deaths)||0;if(after>before&&!r?.daily&&(M()==="playing"||M()==="respawning")&&p?.health>0){const cp=H()?.v142WardenCheckpoint;if(cp?.active&&cp.floor===floor(r)){const q=safeCell(cp.roomId,cp);if(q){p.x=q.x;p.y=q.y;p.rx=q.x;p.ry=q.y;try{if(typeof resetCamp==="function")resetCamp(p,true)}catch(_){}try{if(typeof reveal==="function")reveal(p)}catch(_){}try{if(typeof markRoomVisit==="function")markRoomVisit(p)}catch(_){}toast("CLEANSED WARDEN ANCHOR","The normal death penalty and death cache still apply, but you respawn at this floor's cleansed Warden anchor instead of the entrance.","green",8500);syncNow();broadcast()}}}return result};
-  if(baseFloorComplete)floorComplete=function(by){const r=R(),record=Boolean(r&&!r.floorComplete&&M()==="playing"),result=baseFloorComplete(by);if(record){const state=fs(),summary=typeof UI!=="undefined"?UI?.floorSummary:null;if(summary&&state){const status=state.resolved?`WARDEN DOMAIN: CLEANSED • Seal Fragments ${seals()}/${MAX_SEALS}${state.cacheFragmentAwarded?"":" • Cache fragment left behind"}`:state.noWarden?`WARDEN DOMAIN: none generated • Seal Fragments ${seals()}/${MAX_SEALS}`:`WARDEN DOMAIN: UNRESOLVED • Stay on this floor to finish it, or descend and accept 1 Warden Debt stack`;summary.innerHTML+=`<br><br><strong>${status}</strong>`}}return result};
+  if(baseFloorComplete)floorComplete=function(by){const r=R(),record=Boolean(r&&!r.floorComplete&&M()==="playing"),result=baseFloorComplete(by);if(record){const state=fs(),summary=typeof UI!=="undefined"?UI?.floorSummary:null;if(summary&&state){const status=state.resolved?`OPTIONAL WARDEN CLEARED • Seal Fragments ${seals()}/${MAX_SEALS}${state.cacheFragmentAwarded?"":" • Warden Cache still unclaimed"}`:(state.noWarden||state.available===false)?`OPTIONAL WARDEN: NONE ON THIS FLOOR • No Warden Debt`:`OPTIONAL WARDEN NOT CLEARED • Main floor objective complete. Stay to defeat the optional Warden, or descend and take 1 Warden Debt stack`;summary.innerHTML+=`<br><br><strong data-v142-warden-status="true">${status}</strong>`}}return result};
   if(baseDescendFloor)descendFloor=function(){const currentFloor=floor(),skipped=skipFloor();if(skipped)toast("WARDEN LEFT UNRESOLVED",`Floor ${currentFloor} adds one Warden Debt stack. Later major guardians gain +10% maximum HP and +1 armour per skipped floor.`,"red",9500);return baseDescendFloor.apply(this,arguments)};
   if(baseStartWorld)startWorld=function(...a){const r=baseStartWorld(...a);try{installDomain();checkThresholds();applyBossDebt(true)}catch(e){console.warn("[Lost Sizzler V10.42] Warden domain setup failed safely",e)}return r};
   if(baseSync)sync=function(...a){const result=baseSync(...a);try{const d=H()?.v142WardenDomain,state=fs(),count=seals();if(UI?.quickKeyring){let t=String(UI.quickKeyring.textContent||"").replace(/\s*•\s*SEALS \d+\/10(?: • CACHE FRAGMENT UNCLAIMED)?/g,"");t+=` • SEALS ${count}/${MAX_SEALS}`;if(state?.resolved&&!state.cacheFragmentAwarded)t+=" • CACHE FRAGMENT UNCLAIMED";UI.quickKeyring.textContent=t}/* Warden status is rendered by the dedicated quick-warden-status owner in r18. Do not append it to quickSpecials here: the old dual-writer path caused a perpetual add/remove DOM loop during every HUD sync. */}catch(_){}return result};
