@@ -127,7 +127,7 @@ assert.deepEqual(respawnThroughWarden(),{x:1,y:1},
 for(const q of r184Tiles)world.map[q.y][q.x]=q.value;
 assert.equal(run.v142SealFragments,r184SealCount,
   "Changing recovery position must not create Seal Fragments");
-assert.deepEqual(host.v142WardenCheckpoint,checkpoint,
+assert.deepEqual(JSON.parse(JSON.stringify(host.v142WardenCheckpoint)),checkpoint,
   "Blocked recovery must preserve the previously earned anchor for later deaths");
 
 
