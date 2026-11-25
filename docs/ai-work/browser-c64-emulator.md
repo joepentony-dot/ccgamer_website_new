@@ -1,3 +1,10 @@
+## 25 November 2026 — Android D-pad long-press haptic candidate (branch only)
+
+- Owner-approved follow-up branch `fix/c64-android-dpad-haptic-20261125` starts from Pages-qualified main `85de5609aec9453bf0738372feca55ed5f4755da`.
+- The existing captured eight-way D-pad pointer path remains unchanged. The candidate adds one D-pad-scoped, non-passive `touchstart` listener that cancels only a single-finger touch, targeting Samsung Android's brief native long-press haptic affordance without claiming OS-wide suppression. FIRE/JUMP, keyboard/gamepad, iOS search selection, SID gestures and ordinary page interactions remain outside this listener.
+- `tests/ccg-c64-eight-way-dpad.test.mjs` now checks the listener's non-passive option, single-touch cancellation and multi-touch pass-through. No score transport, release flag, backend, media, cache token or public leaderboard path changes.
+- Exact-head CI, review/merge safeguards and deployed acceptance remain pending. A real Samsung Android portrait-device hold is required to assess vibration; browser emulation cannot certify it. Do not claim the vibration is fixed until that physical check passes.
+
 ## 17 November 2026 — OWNER CORRECTION: Sierra Online CRT only (PR #3097, BRANCH ONLY)
 
 - The owner's real mobile emulator search showed four titles. Required visible result when the trusted cartridge manifest is available: **Crossfire (Sierra Online) — CRT** and the distinct **Crossfire - Tron — PRG**, with exact-title **Crossfire — PRG** and **Cross Fire — PRG** suppressed from the displayed library. Archive bytes, original catalogue IDs, deep links and every unrelated game remain preserved; absent or changed verified CRT manifest fails back to original options, not missing games.
