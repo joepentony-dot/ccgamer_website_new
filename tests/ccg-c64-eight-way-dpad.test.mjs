@@ -49,9 +49,9 @@ const touchPad = {
       setAttribute() {},
     }));
   },
-  addEventListener(type, fn) {
+  addEventListener(type, fn, options) {
     const callbacks = listeners.get(type) || [];
-    callbacks.push(fn);
+    callbacks.push({ fn, options });
     listeners.set(type, callbacks);
   },
   getBoundingClientRect() {
@@ -79,17 +79,34 @@ for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) {
   assert.equal(actual, expected[row][col], "Incorrect C64 direction mask at cell " + row + "," + col);
 }
 assert.equal(context.getMaskAt(-1, -1), 0, "Outside control must be neutral");
-function event(type, x, y, pointerId = 11) {
+function event(type, x, y, pointerId = 11, touches = undefined) {
+  let prevented = 0;
   const evt = { pointerId, pointerType: "touch", clientX: x, clientY: y,
-    preventDefault() {} };
-  for (const callback of listeners.get(type) || []) callback(evt);
+    touches: touches ?? [{ identifier: pointerId, clientX: x, clientY: y }],
+    preventDefault() { prevented++; } };
+  for (const callback of listeners.get(type) || []) callback.fn(evt);
+  return prevented;
 }
 function expectMask(mask) {
   assert.equal(holds.get(touchPad)?.mask || 0, mask);
   for (const [direction, active] of visual) assert.equal(active, direction === mask);
 }
 
-// Single-thumb diagonal directions and dragging without lifting.
+// A non-passive touchstart is scoped to the D-pad and cancels only a
+// single-finger touch, which prevents Android long-press haptic affordances
+// without taking ownership of multi-touch or unrelated page interactions.
+assert.equal(listeners.get("touchstart")?.length, 1,
+  "D-pad must install one touchstart guard");
+assert.equal(listeners.get("touchstart")[0].options?.passive, false,
+  "D-pad touchstart guard must be explicitly non-passive");
+assert.equal(event("touchstart", 70, 90), 1,
+  "Single-finger D-pad touchstart must be cancelled");
+assert.equal(event("touchstart", 70, 90, 11, [
+  { identifier: 11, clientX: 70, clientY: 90 },
+  { identifier: 12, clientX: 270, clientY: 90 },
+]), 0, "Multi-touch must remain browser-owned");
+
+ // Single-thumb diagonal directions and dragging without lifting.
 event("pointerdown", 70, 90);
 expectMask(5);
 assert(visual.get(5), "Active diagonal must illuminate");
