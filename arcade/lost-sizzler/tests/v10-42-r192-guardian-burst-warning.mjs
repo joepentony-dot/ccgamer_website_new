@@ -24,6 +24,12 @@ function check({hp=100,ms=650,triggered=true,cleared=false,alive=true,id="g"}={}
   }else assert.equal(strokes.length,0,"Inactive warnings draw nothing");
   return scope.outcome;
 }
+// Legacy sprite fixtures and standalone previews do not own an encounter.
+for(const context of [{},{host:null},{host:{}}]){
+  const scope={...context};
+  vm.createContext(scope);
+  assert.equal(vm.runInContext(warning+"\ndrawGuardianBurstWarning({alive:true,id:'g'},100,100)",scope),false);
+}
 for(const hp of [100,66,65,31,30,1])assert.equal(check({hp}),true);
 for(const ms of [651,2200,0,-1,NaN,Infinity])assert.equal(check({ms}),false);
 for(const options of [{triggered:false},{cleared:true},{alive:false},{id:"another"}])assert.equal(check(options),false);
