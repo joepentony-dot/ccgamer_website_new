@@ -1,3 +1,7 @@
+## 25 November 2026 — R193 essential-light compatibility correction
+
+- Initial R193 head `5afd6a0b4a3467f0a4bd7bb7ff50ca65ec0b0138`: new R193 canonical Node regression passed, but both qualification workflows failed the unchanged R69 hazard-presentation contract because the original essential light core RGB values were replaced. Preserve those exact core colours in all quality tiers; brighten the intermediate stop and use copper outer falloff in rich/reduced only. Same radius, opacity, gradient count and severe rendering as before. Existing R69 test left untouched. Corrected R193 regression passed 33 assertions in isolated JS; exact-head CI/review pending. Runtime correction `5fcfa5c5d92e505d0bfdc788214f05d3458e5b7a`; regression correction `0be95e87cb6c2fa8a20494953dc0eaf1118ae4c9`.
+
 ## 25 November 2026 — Dungeon R193 graduated environmental lighting (candidate)
 
 - R192 #3185 exact reconciled head `433e3597f9a148bae5f97954ab408937c1ac293b` passed 11/11 workflow groups, six Chromium shards and independent Codex review. Guarded squash merged as `a86dcbf2cdca962f278d8056377814f87e3288f1`; main manifest R192 verified. Public crawler still showed R189; deployment of R192 not independently verified.
