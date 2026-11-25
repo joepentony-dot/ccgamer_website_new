@@ -24,7 +24,7 @@
     if(!r)return null;r.v142WardChargeRoutes=r.v142WardChargeRoutes&&typeof r.v142WardChargeRoutes==="object"?r.v142WardChargeRoutes:{};return r;
   }
   function state(n=floor(),r=R()){
-    r=init(r);if(!r)return null;const key=String(n),profile=ROUTES[n]||ROUTES[1];return r.v142WardChargeRoutes[key]||(r.v142WardChargeRoutes[key]={floor:n,routeId:profile.id,unlocked:n===1,delivered:false,pending:false,rewardType:null});
+    r=init(r);if(!r)return null;const key=String(n),profile=ROUTES[n];if(!profile)return null;return r.v142WardChargeRoutes[key]||(r.v142WardChargeRoutes[key]={floor:n,routeId:profile.id,unlocked:n===1,delivered:false,pending:false,rewardType:null});
   }
   function hasCharge(p=P()){try{return Boolean(p&&PGR.firstInventory(p,"banishment")>=0)}catch(_){return false}}
   // Match the procedural Vessel's authoritative cost. Field-route credits
@@ -103,8 +103,9 @@
   }
 
   function routeStatus(n=floor(),r=R()){
-    const row=state(n,r),profile=ROUTES[n];if(!row||!profile)return"";
-    if(n===1)return"WARD ROUTE: ALCHEMIST";
+    const profile=ROUTES[n];if(!r)return"";
+    if(!profile||n===1)return"WARD ROUTE: ALCHEMIST";
+    const row=state(n,r);if(!row)return"";
     if(row.delivered)return row.rewardType==="essence"?`WARD ROUTE: ${profile.name} → +1 ESSENCE`:`WARD ROUTE: ${profile.name} → CHARGE EARNED`;
     if(row.pending)return`WARD ROUTE: ${profile.name} READY`;
     if(n===2)return"WARD ROUTE: DESTROY GENERATOR";
