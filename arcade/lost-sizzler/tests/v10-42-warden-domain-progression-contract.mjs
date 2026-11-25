@@ -30,7 +30,13 @@ const context={
   hurtPlayer:(p)=>{run.stats.deaths++;p.health=p.maxHealth;p.x=1;p.y=1;return true},floorComplete:()=>{run.floorComplete=true;return true},descendFloor:()=>{run.floor+=1;run.floorComplete=false;return true},startWorld:()=>true
 };
 context.window.CCG_CONFIG={maxFloors:5,stalker:{name:"Count Loadula"}};
-context.window.CCGProgression={effectiveSight:()=>7};
+// Use the same armour capacity owner as the production progression system.
+const progressionSource=fs.readFileSync(new URL("../js/progression.js",import.meta.url),"utf8");
+const capStart=progressionSource.indexOf("function armourCap(");
+const capEnd=progressionSource.indexOf("  function magicSackTier(",capStart);
+assert.ok(capStart>=0&&capEnd>capStart,"Canonical armour capacity owner must exist");
+const armourCap=vm.runInNewContext("("+progressionSource.slice(capStart,capEnd).trim()+")");
+context.window.CCGProgression={effectiveSight:()=>7,armourCap};
 context.window.CCGWorld={roomAt,playerWalkable:(m,x,y,h)=>
   m[y]?.[x]===0&&!(h.blockingDecor||[]).some(d=>d.x===x&&d.y===y)&&
   !(h.doors||[]).some(d=>d.x===x&&d.y===y&&(d.locked||!d.open))&&
