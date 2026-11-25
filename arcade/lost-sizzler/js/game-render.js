@@ -1207,7 +1207,8 @@ function drawEnemyChargeTelegraph(e,cx,cy){
 // Show the actual four/eight grid directions without suggesting an exact
 // future impact tile (the boss may move before the burst).
 function drawGuardianBurstWarning(e,cx,cy){
-  const fight=host?.r114BossFight,remaining=Number(fight?.attackMs);
+  // Standalone sprite renderers may not have an encounter host in scope.
+  const fight=typeof host==="undefined"?null:host?.r114BossFight,remaining=Number(fight?.attackMs);
   if(!e?.alive||!fight?.triggered||fight.cleared||fight.bossId!==e.id||
      !Number.isFinite(remaining)||remaining<=0||remaining>650)return false;
   const ratio=Math.max(0,Number(e.hp||0)/Math.max(1,Number(e.maxHp||1))),phase=ratio<=.30?3:ratio<=.65?2:1;
