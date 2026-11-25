@@ -1,3 +1,7 @@
+## 25 November 2026 — R192 qualification correction
+
+- Original R192 full qualification 45670491443, Node job 139404139550: new R192 regression passed; legacy visual-overhaul-foundation failed because its standalone sprite sandbox intentionally has no host binding. Chromium was skipped. Corrected renderer at `fb39d6f5fdfab61de8cc29f6fc3a89b985ac7354` safely returns without encounter host; no warning behaviour change for live encounters. Added absent/null/empty-host tests at `3a2566d71004e35a9505f23240431d8d2aebd7ae`; all 79 isolated assertions passed. Legacy test unchanged. Exact-head full requalification required on #3185. No merge or live claim.
+
 ## 25 November 2026 — Dungeon R192 Guardian burst warning (candidate)
 
 - R191 #3182 reconciled a concurrent catalogue-only main update; exact head `748e5804e1066c2c660e61dec3e015bd72299e1d` passed 11/11 workflows, six Chromium shards and canonical R191 Node regression. Normal squash merge `d5b8347f28cf2600060f2f52ad94e1fa3fb5cd8a` confirmed in main with R191 manifest. Public deployment unverified.
