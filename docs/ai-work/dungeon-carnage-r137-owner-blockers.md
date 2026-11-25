@@ -1,3 +1,7 @@
+## 25 November 2026 — R194 authored death-frame compatibility correction
+
+- Initial head `fd3dacf74a0c7f47db87ef73025b762bcad81419` passed 9/11 workflows and independent Codex review, but canonical and PR qualification failed the existing visual-overhaul-foundation source contract at line 64. The new R194 regression is not the reported failure. Separate elapsed fade progress from sprite progress, retaining the original authored-Puny/authored/procedural fallback assignment and sequence. Reduced-motion sprite frame remains stationary while fade advances, rich animation unchanged. Corrected source commit `3cd109870d023627dda10de0cdf85d50cfcdf2e2`; all 51 isolated R194 assertions and the exact failing legacy assertion passed. No existing tests modified or weakened. Full exact-head qualification and fresh review required before merging #3189.
+
 ## 25 November 2026 — Dungeon R194 enemy defeat presentation (candidate)
 
 - R193 #3187 exact corrected head `21f2e849a1661e8f210e3aa8912f78de80efbc41` passed 11/11 workflows, all six Chromium groups and independent Codex review after the review allowance became available. Guarded squash merge `73b5e1de3a96764fbc4b32b103346d974049b6ce` verified on main with R193 manifest. R193 public deployment not independently verified.
