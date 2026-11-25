@@ -39,7 +39,12 @@ renderLabels({measure:false});
 const separated=renderLabels({otherOwner:true,far:true});
 assert.equal(separated[3].x,304,"Second player's label stays with its own owner");
 assert.equal(separated[3].y,desktop[0].y,"Separate owner does not inherit another player's occupied lane");
-assert.equal(separated[4].y,175,"Distant combat event retains natural position");
+// FREED is far from P1, but overlaps the second player's HEALTH label.
+assert.equal(separated[4].x,336,"Combat event retains its horizontal anchor");
+assert.ok(Math.abs(separated[4].y-separated[3].y)>=25,"Nearby combat event must avoid the second player's label");
+const distant=renderLabels({far:true});
+assert.equal(distant[3].x,336);
+assert.equal(distant[3].y,175,"A genuinely non-overlapping combat event retains its natural position");
 
 // Verify the bounded fallback in an exceptionally congested viewport:
 // no infinite loop, no disappearing labels, no gameplay mutation.
