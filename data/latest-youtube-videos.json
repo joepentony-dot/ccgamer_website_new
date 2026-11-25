@@ -2,8 +2,14 @@
   "version": 1,
   "channelId": "UCHROCLVcatA449Gg-PoqlKw",
   "source": "youtube-atom-feed",
-  "syncedAt": "2026-11-23T19:00:20.130Z",
+  "syncedAt": "2026-11-25T23:39:35.422Z",
   "videos": [
+    {
+      "id": "c9exmfUeiiM",
+      "title": "Super Trolley C64 – The Jim’ll Fix It Game That Went Horribly Wrong",
+      "publishedAt": "2026-11-25T18:30:07.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/c9exmfUeiiM/mqdefault.jpg"
+    },
     {
       "id": "T-WeyFyllec",
       "title": "Who Dares Wins II (C64) – How Commando Forced a Sequel",
@@ -33,12 +39,6 @@
       "title": "80s & 90s QUIZ NIGHT – 100 FILM & VIDEO GAME QUESTIONS! | LIVE",
       "publishedAt": "2026-11-14T13:41:34.000Z",
       "thumbnail": "https://i.ytimg.com/vi/v-NhMjYBx2o/mqdefault.jpg"
-    },
-    {
-      "id": "GMH3zjOMvWI",
-      "title": "10 Gruesome Sounds – Can YOU Identify Them? | Friday the 13th C64",
-      "publishedAt": "2026-11-13T18:30:37.000Z",
-      "thumbnail": "https://i.ytimg.com/vi/GMH3zjOMvWI/mqdefault.jpg"
     }
   ]
 }
