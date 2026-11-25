@@ -64,6 +64,7 @@ const measure = [
  'font:parseFloat(getComputedStyle(e("#ccg-c64-library-search")).fontSize)};'
 ].join("\n");
 
+let delaySierraStyle=false;
 const server = http.createServer((req,res) => {
   const pathname = decodeURIComponent(new URL(req.url,"http://local").pathname);
   // GitHub Pages strips repository tooling from its published artifact.
@@ -80,7 +81,10 @@ const server = http.createServer((req,res) => {
   }
   res.writeHead(200,{"Content-Type":mime[path.extname(f)]||"application/octet-stream",
     "Cache-Control":"no-store"});
-  res.end(fs.readFileSync(f));
+  // Deliberately hold the lazy Arena stylesheet on the phone cold-load case.
+  if(delaySierraStyle && pathname==="/resources/css/ccg-high-score-arena-preview.css") {
+    setTimeout(()=>res.end(fs.readFileSync(f)),1200);
+  }else res.end(fs.readFileSync(f));
 });
 let child, session;
 try {
@@ -297,6 +301,37 @@ try {
   // actual mobile controls and measure what paints, including rotated phones.
   await emulate(session, 390, 844, true);
   const sierraUrl = crossfireUrl.replace("archive-02121", "owner-crt-more-crossfiresierraonline-0c60e852f438") + "&start=1";
+  delaySierraStyle=true;
+  await wd("POST","/session/"+session+"/goog/cdp/execute",{
+    cmd:"Network.setCacheDisabled",params:{cacheDisabled:true}
+  });
+  const startupProbe=await wd("POST","/session/"+session+"/goog/cdp/execute",{
+    cmd:"Page.addScriptToEvaluateOnNewDocument",params:{source:`
+      window.__sierraStartupProbe={frames:0,insertions:0,visibleFrames:0,visibleInsertions:0,artworkFrames:0,stop:false};
+      const probe=window.__sierraStartupProbe;
+      const sample=()=>{
+        if(probe.stop)return;
+        const panel=document.querySelector('[data-ccg-arena-preview="crossfire"]');
+        if(panel){
+          probe.frames++;
+          if(getComputedStyle(panel).display!=="none" && panel.getClientRects().length)probe.visibleFrames++;
+        }
+        const stage=document.querySelector(".ccg-c64-screen-stage");
+        if(stage && getComputedStyle(stage).backgroundImage.includes("crossfire-original-frame.webp"))probe.artworkFrames++;
+        requestAnimationFrame(sample);
+      };
+      const observer=new MutationObserver(records=>{
+        for(const record of records)for(const node of record.addedNodes){
+          if(node.nodeType===1 && node.matches('[data-ccg-arena-preview="crossfire"]')){
+            probe.insertions++;
+            if(!node.hidden)probe.visibleInsertions++;
+          }
+        }
+      });
+      observer.observe(document,{childList:true,subtree:true});
+      requestAnimationFrame(sample);
+    `}
+  });
   await wd("POST", "/session/" + session + "/url", { url: sierraUrl });
   let mobileStarted = false;
   for (let attempt = 0; attempt < 120; attempt++) {
@@ -305,6 +340,7 @@ try {
       const run = console?.querySelector('[data-local-run-phase="running"][data-one-click-phase="done"]');
       return Boolean(run?.querySelector(".ccg-arena-preview__run strong")?.textContent.match(/^\\d{6}$/)
         && console.querySelector("[data-mobile-joystick-swap]")?.textContent.includes("PORT 2")
+        && !console.querySelector("[data-mobile-arena-toggle]").hidden
         && getComputedStyle(console.querySelector(".ccg-c64-screen-stage")).backgroundImage === "none"
         && getComputedStyle(console.querySelector('[data-ccg-arena-preview="crossfire"]')).display === "none");
     `);
@@ -312,6 +348,18 @@ try {
     await sleep(250);
   }
   assert(mobileStarted, "One-click Sierra phone boot must retain local scoring and port 2 while hiding decorative artwork and score strip");
+  const startupTrace=await evaluate(session,"window.__sierraStartupProbe.stop=true;return window.__sierraStartupProbe;");
+  assert(startupTrace.frames>0 && startupTrace.insertions>0,"Startup probe must observe actual Sierra panel insertion: "+JSON.stringify(startupTrace));
+  assert.equal(startupTrace.visibleInsertions,0,"Sierra scoreboard was not hidden at insertion");
+  assert.equal(startupTrace.visibleFrames,0,"Sierra scoreboard flashed during phone loading");
+  assert.equal(startupTrace.artworkFrames,0,"Sierra desktop artwork flashed during phone loading");
+  await wd("POST","/session/"+session+"/goog/cdp/execute",{
+    cmd:"Page.removeScriptToEvaluateOnNewDocument",params:{identifier:startupProbe.identifier}
+  });
+  await wd("POST","/session/"+session+"/goog/cdp/execute",{
+    cmd:"Network.setCacheDisabled",params:{cacheDisabled:false}
+  });
+  delaySierraStyle=false;
 
   const mobileArenaLayout = `
     const rect = el => el.getBoundingClientRect();
