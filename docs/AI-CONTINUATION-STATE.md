@@ -1,3 +1,13 @@
+## 25 November 2026 — R193 essential-light compatibility correction
+
+- Initial R193 head `5afd6a0b4a3467f0a4bd7bb7ff50ca65ec0b0138`: new R193 canonical Node regression passed, but both qualification workflows failed the unchanged R69 hazard-presentation contract because the original essential light core RGB values were replaced. Preserve those exact core colours in all quality tiers; brighten the intermediate stop and use copper outer falloff in rich/reduced only. Same radius, opacity, gradient count and severe rendering as before. Existing R69 test left untouched. Corrected R193 regression passed 33 assertions in isolated JS; exact-head CI/review pending. Runtime correction `5fcfa5c5d92e505d0bfdc788214f05d3458e5b7a`; regression correction `0be95e87cb6c2fa8a20494953dc0eaf1118ae4c9`.
+
+## 25 November 2026 — Dungeon R193 graduated environmental lighting (candidate)
+
+- R192 #3185 exact reconciled head `433e3597f9a148bae5f97954ab408937c1ac293b` passed 11/11 workflow groups, six Chromium shards and independent Codex review. Guarded squash merged as `a86dcbf2cdca962f278d8056377814f87e3288f1`; main manifest R192 verified. Public crawler still showed R189; deployment of R192 not independently verified.
+- R193 changes only the existing additive light pool colour stops for player torch, fireplaces and wall lights: warm core and copper outer falloff in rich/reduced quality. Unchanged geometry, alpha, fog, actor ordering, gradient and rectangle counts, severe-quality colours, gameplay and reduced-motion timing. No claim of visual acceptance or measured FPS gain.
+- Source-executed lighting contract passed 33 assertions in an isolated JS shim; canonical Node and full Chromium/Windows/itch/site CI and independent review pending. Physical Windows freeze and second-charge acceptance and commercial release hold remain open.
+
 ## 25 November 2026 — R192 Ward-Break fixture integration correction
 
 - Corrected head `314add855a047deffc8de28c943f9af0c3555f4b` failed full qualification 45671409103 and PR qualification 45671408910 on the same existing Ward-Break source-extraction fixture: it loaded `drawEnemy` without its new Guardian warning dependency. Runtime source unchanged in this correction. Existing `v10-42-warden-essence-ownership-contract.mjs` now loads the actual `drawGuardianBurstWarning` section, not a stub; all previous immunity/label/health assertions retained. Actual extracted Ward-Break fixture passed 16 assertions in isolated V8 VM shim; commit `e478180c56a0ae2146e80c5a513463991f8c47ac`. No test disabled or weakened. Existing R192 79-assertion regression retained. Exact final head full requalification required before normal guarded merge of #3185.
