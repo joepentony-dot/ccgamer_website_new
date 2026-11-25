@@ -507,6 +507,7 @@ const mobileLibraryInput = {
   blur() { mobileSearchBlurCount++; },
 };
 const savedZoomSettings = new Map();
+const arenaVisibilityTransitions = [];
 const mobileContext = vm.createContext({
   document: {
     querySelector: selector => mobileNodes.get(selector) || null,
@@ -518,6 +519,7 @@ const mobileContext = vm.createContext({
     scrollTo(position) { mobileScrollTargets.push(position); },
   },
   screen: { focus(opts) { mobileCanvasFocusOptions.push(opts); } },
+  activeArenaPreview: null,
   localStorage: {
     getItem(key) { return savedZoomSettings.get(key) || null; },
     setItem(key, value) { savedZoomSettings.set(key, String(value)); },
@@ -602,12 +604,16 @@ findVirtual("F12").dispatch("pointerup", 4);
 assert.equal(mobileMachine.nmi, false, "RESTORE should release the NMI line");
 mobileClose.dispatch("click");
 assert.equal(mobilePanel.hidden, true, "Close must hide the keyboard");
+mobileContext.activeArenaPreview = { syncMobileVisibility() { arenaVisibilityTransitions.push(fakeConsole.classList.contains("is-mobile-playing")); } };
 mobileExit.dispatch("click");
+assert.deepEqual(arenaVisibilityTransitions, [false], "Arena visibility must sync after leaving mobile play");
 assert.equal(mobilePowerOffCount, 1, "Exit Game must stop the running C64 session");
 assert(!fakeConsole.classList.contains("is-mobile-playing"), "Exit should restore library layout");
 assert(!fakeConsole.classList.contains("is-mobile-zoomed"), "Exiting must restore uncropped library preview");
 assert.equal(mobileZoom.getAttribute("aria-pressed"), "false", "Zoom controls reset while not playing");
 mobileContext.playOnMobile("New game");
+assert.deepEqual(arenaVisibilityTransitions, [false, true], "Arena visibility must sync after entering mobile play");
+mobileContext.activeArenaPreview = null;
 assert(fakeConsole.classList.contains("is-mobile-zoomed"), "New games should honour saved mobile zoom choice");
 mobileZoom.dispatch("click"); // Switch off before desktop/fine-pointer assertions.
 assert(!fakeConsole.classList.contains("is-mobile-zoomed"));
