@@ -3630,6 +3630,14 @@ const touchDpadDirections = new Map(
 );
 let touchDpadPointerId = null;
 
+// Android browsers can offer a brief native long-press haptic while a touch
+// remains on a control, even when the eventual pointerdown is cancelled.
+// Cancel only the first single-finger touch inside the directional pad; keep
+// FIRE/JUMP, search, keyboard and normal page touch behaviour browser-owned.
+touchDpad?.addEventListener("touchstart", event => {
+  if (event.touches?.length === 1) event.preventDefault();
+}, { passive: false });
+
 function resetTouchDpadUi() {
   touchDpadPointerId = null;
   for (const button of touchDpadDirections.values()) {
