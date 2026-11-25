@@ -547,6 +547,9 @@ vm.createContext(wardRender);
 vm.runInContext(
   "const dungeonRenderPerformance={quality:\"rich\"};\n"+
   rendererSection("function dungeonRenderQuality(){","window.CCGLostSizzlerV142R70RenderPerformance=")+
+  // Include the real warning owner introduced by R192; the Ward-Break fixture
+  // has no active arena encounter and must not paint a Guardian burst warning.
+  rendererSection("function drawGuardianBurstWarning(","function drawEnemy(e){")+
   rendererSection("function drawEnemy(e){","function drawStalker(){")+
   rendererSection("function drawStalker(){","function drawPlayerResources(")+
   ";this.renderEnemy=drawEnemy;this.renderCount=drawStalker;",
