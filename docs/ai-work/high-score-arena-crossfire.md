@@ -1,3 +1,18 @@
+## 25 November 2026 — private scoped signup package deployed
+
+- Production database readiness and the actual application grants had already
+  passed. The owner received the private Resend delivery check.
+- [Backend PR #21](https://github.com/joepentony-dot/ccg-backend-independence/pull/21)
+  restricts enrollment rehearsal to a nominated address and passed local
+  SQLite enrollment, proof expiry/replay and post-activation authentication.
+- [Deployment PR #26](https://github.com/joepentony-dot/ccg-backend-heliohost-deploy/pull/26)
+  passed both deployment workflows, was pulled and deployed in Plesk, and the
+  one-off gateway task returned `PASS_INERT_RUNTIME_PIN_REFRESH`.
+- Member signup, scoring and both boards remain gated. Hosted signup and
+  session acceptance, genuine Crossfire intake, approval and durable public
+  display remain outstanding. Crossfire is first. Retain the separate
+  Dropzone release switches and the shipped mobile LOAD safeguards.
+
 ## 18 November 2026 — Mobile Sierra Arena access treatment (unmerged)
 
 - PR #3099 is merged and desktop live normal-load verification is complete: the Sierra CRT search result loads, mounts the empty Arena, and explicitly shows score submissions disabled.
