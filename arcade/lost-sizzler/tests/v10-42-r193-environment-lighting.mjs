@@ -19,11 +19,12 @@ for(const quality of ["rich","reduced","severe"]){
   const p=capture(quality,true);
   assert.equal(p.length,quality==="rich"?6:quality==="reduced"?4:3);
   const selected=quality==="severe"?[p[0],p[1],p[2]]:[p[0],p[2],p[quality==="rich"?4:3]];
-  const core=quality==="severe"?["255,177,67","255,125,42","255,157,54"]:["255,197,100","255,154,68","255,185,83"];
+  const core=["255,177,67","255,125,42","255,157,54"];
+  const mid=quality==="severe"?core:["255,197,100","255,154,68","255,185,83"];
   const edge=quality==="severe"?core:["180,95,37","197,61,25","184,85,34"];
   const strength=quality==="severe"?[.15,.16,.11]:[.21,.22,.15];
   for(let i=0;i<3;i++){
-    assert.deepEqual(selected[i].stops,[[0,"rgba("+core[i]+","+strength[i]+")"],[.25,"rgba("+core[i]+","+strength[i]*.62+")"],[.68,"rgba("+edge[i]+","+strength[i]*.18+")"],[1,"rgba("+edge[i]+",0)"]]);
+    assert.deepEqual(selected[i].stops,[[0,"rgba("+core[i]+","+strength[i]+")"],[.25,"rgba("+mid[i]+","+strength[i]*.62+")"],[.68,"rgba("+edge[i]+","+strength[i]*.18+")"],[1,"rgba("+edge[i]+",0)"]]);
   }
   assert.deepEqual(capture(quality,true,987),p,"Reduced motion keeps light radius and colour steady");
 }
