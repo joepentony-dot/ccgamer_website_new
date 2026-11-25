@@ -302,3 +302,57 @@ test('manual F1 and media disposal cancel one-click key holds safely',async()=>{
   assert.deepEqual(calls,['press','release']);
   assert.equal(stage.after.removed,true);
 });
+
+test('Sierra phone Arena is hidden at insertion, even before CSS and immersive play',async()=>{
+  const doc=fakeDocument(),stage=doc.createElement('div'),consoleEl=doc.createElement('div'),toggle=doc.createElement('button');
+  const classes=()=>{const values=new Set();return {contains:key=>values.has(key),toggle:(key,on)=>on?values.add(key):values.delete(key)};};
+  consoleEl.classList=classes();
+  consoleEl.querySelector=()=>toggle;
+  toggle.removeEventListener=(name)=>toggle.events.delete(name);
+  stage.closest=()=>consoleEl;
+  const media=doc.createElement('media');
+  media.matches=true;
+  media.removeEventListener=(name)=>media.events.delete(name);
+  doc.defaultView={matchMedia:()=>media};
+  const create=doc.createElement;
+  doc.createElement=tag=>{const el=create(tag);el.classList=classes();return el;};
+  const originalInsert=stage.insertAdjacentElement.bind(stage);
+  let hiddenAtInsertion=false;
+  stage.insertAdjacentElement=(where,node)=>{hiddenAtInsertion=node.hidden;originalInsert(where,node);};
+  const controller=await mountCrossfirePreview({entry,bytes,stage,doc,subtle:fakeCrypto});
+  assert(controller);
+  const panel=stage.after;
+  assert.equal(hiddenAtInsertion,true);
+  assert.equal(panel.hidden,true);
+  assert.equal(toggle.hidden,true);
+  toggle.click();
+  assert.equal(panel.hidden,true);
+  doc.head.children[0].events.get('load')();
+  assert.equal(toggle.hidden,false);
+  toggle.click();
+  assert.equal(panel.hidden,true,'CSS ready alone must not expose a startup panel');
+  consoleEl.classList.toggle('is-mobile-playing',true);
+  toggle.click();
+  assert.equal(panel.hidden,false);
+  assert.equal(toggle.attributes['aria-expanded'],'true');
+  toggle.click();
+  assert.equal(panel.hidden,true);
+  toggle.click();
+  consoleEl.classList.toggle('is-mobile-playing',false);
+  controller.syncMobileVisibility();
+  assert.equal(panel.hidden,true);
+  media.matches=false;media.events.get('change')();
+  assert.equal(panel.hidden,false,'Desktop/tablet presentation remains available');
+  media.matches=true;media.events.get('change')();
+  assert.equal(panel.hidden,true);
+  assert.equal(toggle.attributes['aria-expanded'],'false');
+  controller.dispose();
+  assert.equal(panel.removed,true);
+  assert.equal(toggle.hidden,true);
+  assert.equal(media.events.has('change'),false);
+});
+
+test('Sierra hidden panel cannot be painted by lazy Arena CSS',()=>{
+  const css=readFileSync(new URL('../resources/css/ccg-high-score-arena-preview.css',import.meta.url),'utf8');
+  assert.match(css,/\.ccg-arena-preview\[data-ccg-arena-preview="crossfire"\]\[hidden\]\s*\{\s*display:\s*none\s*!important/);
+});

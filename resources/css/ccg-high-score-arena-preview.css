@@ -1,5 +1,8 @@
 @import url("/js/ccg-c64/arena/view/arena-board.css");
 /* Opt-in Crossfire arena pilot. No global emulator styles are replaced. */
+.ccg-arena-preview[data-ccg-arena-preview="crossfire"][hidden] {
+  display: none !important;
+}
 .ccg-arena-preview{
   box-sizing:border-box; width:100%; min-width:0;
   background:linear-gradient(135deg,#0a1532,#030914);
@@ -44,7 +47,8 @@
 
 /* The original artwork has a transparent opening. Fit the live canvas inside
    it without moving the canvas, drop target, or fullscreen element. */
-@media (min-width: 761px) {
+/* Exclude landscape phones before immersive mobile mode exists too. */
+@media (min-width: 761px) and (pointer: fine), (min-width: 761px) and (pointer: none), (min-width: 761px) and (min-height: 501px) {
   .ccg-c64-console:not(.is-mobile-playing, :fullscreen)
     .ccg-c64-screen-stage[data-ccg-arena-frame="crossfire"]:not(:fullscreen) {
     aspect-ratio: 1672 / 941;
