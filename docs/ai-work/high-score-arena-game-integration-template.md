@@ -1,13 +1,37 @@
-# CCG High Score Arena — Reusable Game Integration Contract
+# CCG High Score Arena game integration
 
-This is the technical reuse template, **not permission to activate another game**.
+The independent HelioHost PHP and MariaDB service shares member registration,
+email verification, browser sessions, score attempts and moderation across
+eligible C64 cartridge games.
 
-Crossfire (Atlantis/Pantheon, exact C64 `archive-02121`) is the first pilot and the only registered game at present. Its score observer, data contract and original user-supplied decorative overlay must remain specific to this edition.
+| Game and exact edition | Arena game key | Cartridge catalogue entry | Bytes | SHA-256 |
+| --- | --- | --- | ---: | --- |
+| Crossfire (Sierra On-Line CRT) | `c64-crossfire-sierra-online` | `owner-crt-more-crossfiresierraonline-0c60e852f438` | 65,728 | `0c60e852f438ab9b6b325a1ecedb69ae1bbff9d1519584e52d6bb31df26c14ab` |
+| Dropzone (C64 CRT) | `c64-dropzone` | `owner-crt-more-dropzone` | 82,144 | `0bed973b322510b8a8b717fc7305ec54246dc3b00c0aa0f701702864c92253c7` |
 
-For each future game, the developer must supply a new *verified* game profile recording the exact catalogue ID, media format, source length and SHA-256; document the publisher/edition so identically named games never share records; empirically capture an initial score, two different positive results and a reliable end-of-run transition; add a dedicated score adapter and genuine-ROM regression fixtures; define lives, time, difficulty, trainers and save-state eligibility; register the game in the database as `pilot` until review; attach new artwork/skin without copying Crossfire's identity; and run isolated PostgreSQL RLS, emulator, performance, browser and independent review gates. The common backend projections and seven-segment leaderboard renderer can then be reused.
+## Add an eligible game
 
-**Security boundary:** `createArenaDiagnosticObserver` only emits an untrusted local score candidate. A separately reviewed authenticated server flow must validate eligibility, moderation and no-cheat rules before any score is inserted into private attempts or approved for public rankings. Adding a profile never enables submission. No game may be ranked solely because its name resembles an existing title.
+1. Register a unique game key and the exact catalogue ID, format, byte count,
+   SHA-256, rules version and score ceiling. Start the database game row in
+   `pilot` and keep its read and write release flags disabled. Closely named
+   games and different editions need separate identities.
+2. Exercise the original media in the existing C64 emulator. Capture a
+   genuine fresh run, zero and distinct positive scores, and a stable final
+   game-over sequence. Record the frame evidence and inputs. Verify restarts,
+   resets, other editions, model changes and saved-state disqualification.
+3. Implement a game-specific observer and evidence validator. Specify the
+   terminal-frame count, score encoding and numeric display width. Verify the
+   exact loaded media before attaching the shared attempt client or board.
+4. Reuse the member session and CSRF handshake, one-use attempt, private
+   pending-review intake, and owner-MFA moderation. Browser evidence is an
+   unverified claim. Publish only approved projections, with private fields
+   excluded. Keep per-game flags and game status independent.
+5. Attach game-specific artwork and preserve the 4:3 viewport. Match existing
+   mobile controls and keep the board behind the SCORE action where required.
+   Verify the gameplay display, mobile load, and keyboard and joystick paths.
+6. Qualify with genuine cartridge fixtures, passing deploy CI and a controlled
+   production test. Verify a genuine authenticated score receipt, moderation,
+   ordering, best-score replacement and persistence from another session.
+   Remove only the identified test records after qualification.
 
-**Overlay geometry:** the user's Crossfire prototype uses a decorative 1672×941 frame, an inner viewport, an unobstructed 4:3 game slot and a blue seven-segment score board. The visual **layout system** may be reused, but each future game's frame/title/artwork must be original or properly sourced for that game. Preserve performance, touch keyboard, CRT effects and the full existing emulator experience. Do not copy the embedded, full-resolution Crossfire art onto every unrelated game.
-
-**Current phase:** draft PR #3089 holds only inert source modules and isolated test infrastructure. Neither the Supabase backend nor C64 emulator has been changed or deployed. Actual browser integration, legitimate public score admission and final CI/review are still outstanding.
+[Current Crossfire and Dropzone checkpoint](high-score-arena-crossfire.md)
