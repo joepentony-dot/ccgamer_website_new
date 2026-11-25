@@ -1055,13 +1055,13 @@ function queueEnemyDefeatVisual(fx){
 }
 window.CCGQueueEnemyDefeatVisual=queueEnemyDefeatVisual;
 function drawEnemyDefeatVisuals(){
-  const now=performance.now(),duration=540;
+  const now=performance.now(),duration=540,reduced=typeof dungeonReducedMotion==="function"&&dungeonReducedMotion(),quality=typeof dungeonRenderQuality==="function"?dungeonRenderQuality():"rich";
   for(let i=enemyDefeatVisuals.length-1;i>=0;i--){
-    const q=enemyDefeatVisuals[i],age=now-Number(q.startedAt||now);if(age>=duration){enemyDefeatVisuals.splice(i,1);continue}
-    if(age<0||!visibleTo(focus,q.x,q.y))continue;
-    const progress=Math.max(0,Math.min(.999999,age/duration)),frame=Math.min(5,Math.floor(progress*6)),s=ws(q.x,q.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,lean=[0,.12,.28,.48,.72,.9][frame]*(q.facing?.x<0?-1:1),scaleY=[1,.98,.9,.72,.48,.2][frame],scaleX=[1,1.03,1.08,1.12,1.16,1.2][frame],alpha=[1,.94,.8,.62,.4,.16][frame],ghost={id:`defeat-${i}`,kind:q.kind||"guardian",follower:q.followerKind?{kind:q.followerKind}:null,champion:Boolean(q.champion),guardian:Boolean(q.guardian),exitWarden:Boolean(q.exitWarden),deathStalker:Boolean(q.deathStalker),voidStalker:Boolean(q.voidStalker),facing:q.facing||{x:1,y:0},aiState:"idle",hitStunMs:0,flash:0,armor:0};
-    ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy+12*progress);ctx.rotate(lean);ctx.scale(scaleX,scaleY);ctx.translate(-cx,-cy);ghost.__defeatProgress=progress;if(!drawPunyEnemySprite(ghost,cx,cy)&&!drawAuthoredDungeonEnemySprite(ghost,cx,cy))drawPixelEnemySprite(ghost,cx,cy);ctx.restore();
-    if(frame>=3){ctx.save();ctx.globalAlpha=(1-progress)*.7;ctx.fillStyle=q.color||P.pink;for(let n=0;n<4;n++){const a=n*Math.PI/2+now/130,r=8+progress*12;ctx.fillRect(cx+Math.cos(a)*r-1,cy+Math.sin(a)*r-1,3,3)}ctx.restore()}
+    const q=enemyDefeatVisuals[i],age=now-Number(q.startedAt??now);if(age>=duration){enemyDefeatVisuals.splice(i,1);continue}
+    if(age<0||(typeof tileInRenderView==="function"&&!tileInRenderView(q.x,q.y,3))||!visibleTo(focus,q.x,q.y))continue;
+    const elapsedProgress=Math.max(0,Math.min(.999999,age/duration)),progress=reduced?0:elapsedProgress,frame=Math.min(5,Math.floor(elapsedProgress*6)),s=ws(q.x,q.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,lean=[0,.12,.28,.48,.72,.9][frame]*(q.facing?.x<0?-1:1),scaleY=[1,.98,.9,.72,.48,.2][frame],scaleX=[1,1.03,1.08,1.12,1.16,1.2][frame],alpha=[1,.94,.8,.62,.4,.16][frame],ghost={id:`defeat-${i}`,kind:q.kind||"guardian",follower:q.followerKind?{kind:q.followerKind}:null,champion:Boolean(q.champion),guardian:Boolean(q.guardian),exitWarden:Boolean(q.exitWarden),deathStalker:Boolean(q.deathStalker),voidStalker:Boolean(q.voidStalker),facing:q.facing||{x:1,y:0},aiState:"idle",hitStunMs:0,flash:0,armor:0};
+    ctx.save();ctx.globalAlpha=alpha;if(!reduced){ctx.translate(cx,cy+12*progress);ctx.rotate(lean);ctx.scale(scaleX,scaleY);ctx.translate(-cx,-cy)}ghost.__defeatProgress=progress;if(!drawPunyEnemySprite(ghost,cx,cy)&&!drawAuthoredDungeonEnemySprite(ghost,cx,cy))drawPixelEnemySprite(ghost,cx,cy);ctx.restore();
+    if(frame>=3&&!reduced&&quality==="rich"){ctx.save();ctx.globalAlpha=(1-progress)*.7;ctx.fillStyle=q.color||P.pink;for(let n=0;n<4;n++){const a=n*Math.PI/2+now/130,r=8+progress*12;ctx.fillRect(cx+Math.cos(a)*r-1,cy+Math.sin(a)*r-1,3,3)}ctx.restore()}
   }
 }
 
