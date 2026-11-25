@@ -1,3 +1,10 @@
+## 25 November 2026 — Dungeon R189 combat label separation (candidate)
+
+- R188 #3176 passed 11/11 workflows including six Chromium shards and normal squash merge `88ea97581ec68075fcc021270d6a16a5e3c7e4f6`. R188 main verified; no competing Dungeon implementation PR found. Production R187/R188 runtime identities not independently verified in this run.
+- Actual R188 `game-render.js::drawEffects` executed with mixed pickup and combat text: AMMUNITION ×3 and ARMOUR draw at identical (176,174.52); XP at (176,175). R189 viewport-local bounded vertical lanes separate these at y=174.52,148.52,201 while preserving anchor, text, scale, opacity, event lifetime, draw order, score, XP, inventory and combat. Same-label aggregation and existing effect budgets remain unchanged. No new timers, network or DOM work. Extreme saturation falls back to original position rather than suppressing a genuine event; full visual overlap acceptance remains open.
+- Actual before/after renderer execution with instrumented canvas passed desktop, split viewport and top edge positioning checks; no event mutations. New canonical Node regression `v10-42-r189-combat-label-separation.mjs` covers those plus fallback text measurement, separated owners and bounded saturation; full test not yet independently executed. Both entrypoints, bootstrap and manifest staged R189 / 20261125r189. Branch `fix/dungeon-r189-combat-label-separation-20261125`.
+- Exact-head Node, six Chromium shards, Windows/itch previews, site/cache/SEO checks and guarded merge required. Original owner Floor 5 freeze, full overlap visual acceptance and second-charge physical replay remain open. No membership/commerce changes; paid release held.
+
 ## 25 November 2026 — Dungeon R188 independent Death Stalker restoration (candidate)
 
 - R187 #3175 qualified 11/11 workflows including six Chromium shards and normally squash merged as `43924430a5a95d5d67a9fa79d1ee6fe77022bb65`. Main manifest R187. Fresh public canonical HTML displays R186; R187 public runtime identity remains unverified. No competing Dungeon implementation PR identified.
