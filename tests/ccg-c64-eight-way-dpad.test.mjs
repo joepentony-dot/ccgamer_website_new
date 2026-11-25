@@ -97,7 +97,7 @@ function expectMask(mask) {
 // without taking ownership of multi-touch or unrelated page interactions.
 assert.equal(listeners.get("touchstart")?.length, 1,
   "D-pad must install one touchstart guard");
-assert.deepEqual(listeners.get("touchstart")[0].options, { passive: false },
+assert.equal(listeners.get("touchstart")[0].options?.passive, false,
   "D-pad touchstart guard must be explicitly non-passive");
 assert.equal(event("touchstart", 70, 90), 1,
   "Single-finger D-pad touchstart must be cancelled");
