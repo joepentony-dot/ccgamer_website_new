@@ -1326,10 +1326,10 @@ function punyPlayerCell(pose,d,now){
   return{row,column:Math.floor(now/240)%2}
 }
 function playerEquipmentPresentation(p){
-  const armour=Math.max(0,Math.min(12,Number(p?.armor)||0)),tier=armour>=10?4:armour>=7?3:armour>=4?2:armour>0?1:0;
+  const rawArmour=Number(p?.armor),armour=Math.max(0,Math.min(21,Number.isFinite(rawArmour)?rawArmour:0)),reinforced=armour>12,tier=armour>=10?4:armour>=7?3:armour>=4?2:armour>0?1:0;
   const sigil=Boolean(p?.sigilReveal||p?.sigilWard||p?.sigilBind||p?.sigilBanish);
   const relics=Array.isArray(p?.relics)?p.relics.length:0;
-  return{armour,tier,sigil,relics}
+  return{armour,tier,sigil,relics,reinforced}
 }
 function drawPlayerEquipmentOverlay(p,cx,cy,d){
   const gear=playerEquipmentPresentation(p);if(!gear.tier&&!gear.sigil&&!gear.relics)return;
@@ -1359,6 +1359,7 @@ function drawPlayerEquipmentOverlay(p,cx,cy,d){
     ctx.fillStyle=P.cyan;ctx.globalAlpha=.78;
     ctx.fillRect(cx-3,cy+1,1,2);ctx.fillRect(cx+2,cy+1,1,2);
     if(facingX)ctx.fillRect(cx+(facingX>0?8:-9),cy-2,1,2);
+    if(gear.reinforced){ctx.fillStyle=P.gold;ctx.fillRect(cx-4,cy-2,1,2);ctx.fillRect(cx+3,cy-2,1,2)}
     ctx.globalAlpha=1
   }
   if(gear.sigil){
@@ -1595,9 +1596,13 @@ function merchantVisual(t){
   if(id==="archivist_orin")return{skin:"#c59a7b",hair:"#6b625b",coat:"#61583c",trim:P.gold,apron:"#343327",prop:"book"};
   return{skin:"#b88969",hair:"#302327",coat:entrance?"#365b68":"#5b4537",trim:entrance?P.cyan:P.gold,apron:"#2a2528",prop:"pack"}
 }
+function merchantInteractionLabel(t){
+  const merchant=t.stage7NpcName?String(t.stage7NpcName).toUpperCase():"MERCHANT",isAlchemist=Boolean(t.v142Alchemist||String(t.title||"").includes("ALCHEMIST"));
+  return isAlchemist?"ALCHEMIST — STEP ON":`${merchant} — STEP ON`;
+}
 function drawMerchantNpc(t,s,col){
-  const v=merchantVisual(t),phase=performance.now()/420+(String(t.id||t.stage7NpcId||"shop").length*.7),bob=Math.round(Math.sin(phase)*.6),cx=s.x+C.tile/2,cy=s.y+C.tile/2+bob;
-  ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-3,12,4,0,0,Math.PI*2);ctx.fill();ctx.translate(cx,cy);ctx.shadowColor=col;ctx.shadowBlur=8;
+  const v=merchantVisual(t),still=(typeof dungeonReducedMotion==="function"&&dungeonReducedMotion())||(typeof dungeonRenderQuality==="function"&&dungeonRenderQuality()!=="rich"),phase=still?0:performance.now()/420+(String(t.id||t.stage7NpcId||"shop").length*.7),bob=Math.round(Math.sin(phase)*.6),cx=s.x+C.tile/2,cy=s.y+C.tile/2+bob;
+  ctx.save();ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-3,12,4,0,0,Math.PI*2);ctx.fill();ctx.translate(cx,cy);ctx.shadowColor=col;ctx.shadowBlur=still?0:8;
   // boots and legs
   px(0,0,-8,8,6,8,"#241d22");px(0,0,2,8,6,8,"#241d22");px(0,0,-9,14,8,3,"#100d11");px(0,0,1,14,8,3,"#100d11");
   // coat, apron and shoulders
@@ -1610,7 +1615,7 @@ function drawMerchantNpc(t,s,col){
   if(v.prop==="pack"){
     px(0,0,-15,-2,5,10,"#79552f");px(0,0,-16,0,2,6,"#b98b48");px(0,0,10,1,6,5,"#3b4650");px(0,0,12,-1,2,9,v.trim)
   }else if(v.prop==="relic"){
-    ctx.save();ctx.shadowColor=P.purple;ctx.shadowBlur=10;ctx.fillStyle=P.purple;ctx.beginPath();ctx.moveTo(13,-3);ctx.lineTo(17,2);ctx.lineTo(13,8);ctx.lineTo(9,2);ctx.closePath();ctx.fill();ctx.restore();px(0,0,-14,1,5,7,"#6d4d32")
+    ctx.save();ctx.shadowColor=P.purple;ctx.shadowBlur=still?0:10;ctx.fillStyle=P.purple;ctx.beginPath();ctx.moveTo(13,-3);ctx.lineTo(17,2);ctx.lineTo(13,8);ctx.lineTo(9,2);ctx.closePath();ctx.fill();ctx.restore();px(0,0,-14,1,5,7,"#6d4d32")
   }else{
     px(0,0,10,-2,7,11,"#765f39");px(0,0,11,-1,5,9,"#d6c997");px(0,0,12,1,3,1,"#6d5a3b");px(0,0,12,4,3,1,"#6d5a3b");px(0,0,-15,0,5,8,"#504737")
   }
@@ -1619,7 +1624,7 @@ function drawMerchantNpc(t,s,col){
   ctx.restore()
 }
 function drawSpecialObjects(){
-  const shops=host.shops?.length?host.shops:[host.trader].filter(Boolean);for(const t of shops)if(t?.active&&visibleTo(focus,t.x,t.y)){t.discovered=true;const s=ws(t.x,t.y),entrance=t.shopType==="entrance",col=entrance?P.cyan:P.gold;drawMerchantNpc(t,s,col);if(md(t,focus)<=3){const merchant=t.stage7NpcName?String(t.stage7NpcName).toUpperCase():"MERCHANT";label(entrance?`${merchant} — FLOOR SUPPLIES • STEP ON TO SHOP`:`${merchant} — SECRET TRADER • TRADE OR BUY`,s,col)}}
+  const shops=host.shops?.length?host.shops:[host.trader].filter(Boolean);for(const t of shops)if(t?.active&&visibleTo(focus,t.x,t.y)){t.discovered=true;const s=ws(t.x,t.y),entrance=t.shopType==="entrance",col=entrance?P.cyan:P.gold;drawMerchantNpc(t,s,col);if(md(t,focus)<=3)label(merchantInteractionLabel(t),s,col)}
   for(const c of host.deathCaches||[])if(c.active&&visibleTo(focus,c.x,c.y)){const s=ws(c.x,c.y);ctx.save();ctx.fillStyle="#2a1c31";ctx.strokeStyle=P.red;ctx.lineWidth=2;ctx.shadowColor=P.red;ctx.shadowBlur=9;ctx.fillRect(s.x+5,s.y+8,C.tile-10,C.tile-12);ctx.strokeRect(s.x+5,s.y+8,C.tile-10,C.tile-12);ctx.fillStyle=P.white;ctx.fillRect(s.x+10,s.y+12,C.tile-20,3);ctx.fillStyle=P.red;ctx.fillRect(s.x+C.tile/2-2,s.y+18,4,5);ctx.restore();if(md(c,focus)<=3)label("DEATH CACHE — RECOVER SCORE, XP & LOOT",s,P.red)}
   const clue=host.bloodClue;if(clue&&visibleTo(focus,clue.x,clue.y)){const s=ws(clue.x,clue.y);ctx.save();ctx.globalAlpha=.42;ctx.strokeStyle="#7f2637";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+7,s.y+10);ctx.lineTo(s.x+15,s.y+6);ctx.lineTo(s.x+21,s.y+15);ctx.lineTo(s.x+28,s.y+9);ctx.moveTo(s.x+10,s.y+27);ctx.lineTo(s.x+18,s.y+22);ctx.lineTo(s.x+25,s.y+30);ctx.lineTo(s.x+34,s.y+24);ctx.stroke();ctx.restore();if(md(clue,focus)<=2)label(clue.seen?`BLOOD CLUE — ${(clue.sequence||[]).join(" → ")}`:"FADED BLOOD MARKS",s,P.red)}
   const mem=host.memoryPuzzle;if(mem){
