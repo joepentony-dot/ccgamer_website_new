@@ -1326,10 +1326,10 @@ function punyPlayerCell(pose,d,now){
   return{row,column:Math.floor(now/240)%2}
 }
 function playerEquipmentPresentation(p){
-  const rawArmour=Number(p?.armor),armour=Math.max(0,Math.min(21,Number.isFinite(rawArmour)?rawArmour:0)),reinforced=armour>12,tier=armour>=10?4:armour>=7?3:armour>=4?2:armour>0?1:0;
+  const armour=Math.max(0,Math.min(12,Number(p?.armor)||0)),rawArmour=Number(p?.armor),valid=Number.isFinite(rawArmour),reinforced=valid&&rawArmour>12,tier=!valid?0:armour>=10?4:armour>=7?3:armour>=4?2:armour>0?1:0;
   const sigil=Boolean(p?.sigilReveal||p?.sigilWard||p?.sigilBind||p?.sigilBanish);
   const relics=Array.isArray(p?.relics)?p.relics.length:0;
-  return{armour,tier,sigil,relics,reinforced}
+  return{armour:valid?armour:0,tier,sigil,relics,reinforced}
 }
 function drawPlayerEquipmentOverlay(p,cx,cy,d){
   const gear=playerEquipmentPresentation(p);if(!gear.tier&&!gear.sigil&&!gear.relics)return;
