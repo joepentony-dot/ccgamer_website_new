@@ -55,9 +55,11 @@
     const profile=routeProfile(n),row=routeRecord(n,r);
     if(pendingRouteRows(r).length)return reservationHelp(p);
     if(hasCharge(p))return"Ward-Break Charge ready — find the sealed Warden, press B in range, then finish the fight with normal weapons.";
-    if(row?.delivered&&row.rewardType==="essence")return`${profile?.name||"Field route"} converted to +1 Essence because a charge was already carried. Distil another charge at the Alchemist if required.`;
-    if(n===1)return"Baseline route: collect Banishment Essence and distil a Ward-Break Charge at the sanctuary Alchemist.";
-    return`Field route: ${profile?.objective||"complete this floor's optional Ward-Break challenge"} The Alchemist remains the fallback route.`;
+    if(row?.delivered&&row.rewardType==="essence")return`${profile?.name||"Field route"} converted to +1 Essence because a charge was already carried. Distil another charge at an Alchemist if required.`;
+    if(row?.delivered&&row.rewardType==="charge")return`${profile?.name||"Field route"} charge already claimed. Collect Banishment Essence and distil another Ward-Break Charge at an Alchemist if required.`;
+    if(n===1)return"Baseline route: collect Banishment Essence and distil a Ward-Break Charge at an Alchemist.";
+    if(!profile)return"No additional field-charge challenge on this floor. Collect Banishment Essence and distil a Ward-Break Charge at an Alchemist.";
+    return`Field route: ${profile.objective} The Alchemist remains the fallback route.`;
   }
 
   function huntState(n=floor(),r=R(),p=P()){
