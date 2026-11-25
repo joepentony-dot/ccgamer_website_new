@@ -1786,24 +1786,24 @@ function drawDedicatedHazards(){
   }
 }
 function drawWindyCorridor(){const nest=host.spiderNest;if(!nest)return;const now=performance.now();for(const q of nest.corridorCells||[]){if(!visibleTo(focus,q.x,q.y)&&md(focus,q)>7)continue;const s=ws(q.x,q.y);ctx.save();ctx.strokeStyle="rgba(188,216,235,.45)";ctx.lineWidth=1.5;for(let n=0;n<3;n++){const drift=(now/8+n*17+q.x*9)%C.tile;ctx.beginPath();ctx.moveTo(s.x+drift-18,s.y+10+n*9);ctx.bezierCurveTo(s.x+drift-8,s.y+5+n*9,s.x+drift+4,s.y+16+n*9,s.x+drift+16,s.y+9+n*9);ctx.stroke()}ctx.restore()}}
-function lightPool(x,y,r,rgb,strength=.22,core=8){if(x+r<view.x||y+r<view.y||x-r>view.x+view.w||y-r>view.y+view.h)return;const g=ctx.createRadialGradient(x,y,core,x,y,r);g.addColorStop(0,`rgba(${rgb},${strength})`);g.addColorStop(.25,`rgba(${rgb},${strength*.62})`);g.addColorStop(.68,`rgba(${rgb},${strength*.18})`);g.addColorStop(1,`rgba(${rgb},0)`);ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2)}
+function lightPool(x,y,r,rgb,strength=.22,core=8,edgeRgb=rgb,midRgb=rgb){if(x+r<view.x||y+r<view.y||x-r>view.x+view.w||y-r>view.y+view.h)return;const g=ctx.createRadialGradient(x,y,core,x,y,r);g.addColorStop(0,`rgba(${rgb},${strength})`);g.addColorStop(.25,`rgba(${midRgb},${strength*.62})`);g.addColorStop(.68,`rgba(${edgeRgb},${strength*.18})`);g.addColorStop(1,`rgba(${edgeRgb},0)`);ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2)}
 function drawDynamicLighting(){
   const now=performance.now(),quality=dungeonRenderQuality(),richFx=quality==="rich",animateFx=richFx&&!dungeonReducedMotion(),severe=quality==="severe";ctx.save();ctx.globalCompositeOperation="lighter";
   if(focus.torchMs>0){
     const s=ws(focus.rx,focus.ry),flicker=animateFx?(.96+Math.sin(now/110)*.025):1;
-    lightPool(s.x+C.tile/2,s.y+C.tile/2,C.player.torchRadius*C.tile*flicker,"255,177,67",severe?.15:.21,14);
+    lightPool(s.x+C.tile/2,s.y+C.tile/2,C.player.torchRadius*C.tile*flicker,"255,177,67",severe?.15:.21,14,severe?"255,177,67":"180,95,37",severe?"255,177,67":"255,197,100");
     if(!severe)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*3.2,"255,229,139",.18,6)
   }
   for(const fire of world.fireplaces||[]){
     if(!tileInRenderView(fire.x,fire.y,8))continue;
     const s=ws(fire.x,fire.y),flicker=animateFx?(.96+Math.sin(now/105+fire.x)*.035):1;
-    lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*(severe?4.2:6)*flicker,"255,125,42",severe?.16:.22,8);
+    lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*(severe?4.2:6)*flicker,"255,125,42",severe?.16:.22,8,severe?"255,125,42":"197,61,25",severe?"255,125,42":"255,154,68");
     if(richFx)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.5,"255,221,128",.18,4)
   }
   for(const l of world.wallLights||[]){
     if(!tileInRenderView(l.x,l.y,8))continue;
     const s=ws(l.x,l.y),flicker=animateFx?(.97+Math.sin(now/115+l.x*4)*.025):1;
-    lightPool(s.x+C.tile/2,s.y+7,(l.radius||5)*C.tile*flicker,"255,157,54",severe?.11:.15,5)
+    lightPool(s.x+C.tile/2,s.y+7,(l.radius||5)*C.tile*flicker,"255,157,54",severe?.11:.15,5,severe?"255,157,54":"184,85,34",severe?"255,157,54":"255,185,83")
   }
   if(!severe)for(const e of host.enemies||[])if(e.alive&&e.follower&&tileInRenderView(e.x,e.y,10)){const visual=enemyVisuals.get(e.id),s=ws(visual?.rx??e.x,visual?.ry??e.y),r=(C.enemy.followerLightRadius||10)*C.tile,flicker=animateFx?(.97+Math.sin(now/120+enemySpriteSeed(e)%17)*.025):1;lightPool(s.x+C.tile/2,s.y+C.tile/2,r*flicker,"255,142,48",.2,9)}
   if(host.exitOpen){const s=ws(world.exit.x,world.exit.y);lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*4.5,"164,94,255",.18,10);if(!severe)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.2,"108,236,255",.16,5)}
