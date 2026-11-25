@@ -10,7 +10,7 @@ import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-s
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261119_crossfire_phone_leaderboard_only_v1";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261125_crossfire_phone_no_flash_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
@@ -59,10 +59,15 @@ export async function mountCrossfirePreview({
   link.rel="stylesheet";
   link.href=STYLE_URL;
   link.setAttribute("data-ccg-arena-style","crossfire");
-  doc.head.append(link);
+  // Keep a phone's Arena hidden from its very first DOM insertion, even
+  // before the lazy stylesheet or immersive gameplay has initialized.
+  const phoneMedia=doc.defaultView?.matchMedia?.(
+    "(pointer: coarse) and (max-width: 600px), (pointer: coarse) and (orientation: landscape) and (max-height: 500px)");
+  let styleReady=false;
 
   const section=doc.createElement("section");
   section.className="ccg-arena-preview";
+  section.hidden=Boolean(phoneMedia?.matches);
   section.id="ccg-mobile-arena-panel";
   section.setAttribute("data-ccg-arena-preview","crossfire");
   section.setAttribute("aria-label","Crossfire High Score Arena preview");
@@ -124,12 +129,15 @@ export async function mountCrossfirePreview({
   }
   display.append(board,run);
   section.append(intro,startHint,modes,display);
-  stage.setAttribute("data-ccg-arena-frame","crossfire");
-  stage.insertAdjacentElement("afterend",section);
-
   const mobileConsole=stage.closest?.(".ccg-c64-console");
   const mobileToggle=mobileConsole?.querySelector?.("[data-mobile-arena-toggle]");
-  const setMobileOpen=open=>{
+  const setMobileOpen=requested=>{
+    const phone=Boolean(phoneMedia?.matches);
+    const open=Boolean(requested && (!phone ||
+      (styleReady && mobileConsole?.classList?.contains?.("is-mobile-playing"))));
+    // Keep the verified observer and board state alive, but never paint the
+    // phone panel until an explicit, styled SCORE action.
+    section.hidden=phone && !open;
     section.classList?.toggle?.("is-mobile-open",open);
     section.setAttribute("data-ccg-arena-mobile-status",open?"expanded":"compact");
     mobileConsole?.classList?.toggle?.("ccg-arena-mobile-open",open);
@@ -137,10 +145,20 @@ export async function mountCrossfirePreview({
     if(mobileToggle) mobileToggle.textContent=open?"CLOSE SCORE":"SCORE";
   };
   const onMobileToggle=()=>setMobileOpen(!section.classList.contains("is-mobile-open"));
-  if(mobileToggle){
-    mobileToggle.hidden=false;
-    mobileToggle.addEventListener("click",onMobileToggle);
-  }
+  const syncPhoneToggle=()=>{
+    if(mobileToggle)mobileToggle.hidden=Boolean(phoneMedia?.matches && !styleReady);
+  };
+  const onPhoneChange=()=>{setMobileOpen(false);syncPhoneToggle();};
+  const onStyleLoad=()=>{styleReady=true;syncPhoneToggle();};
+  // Install the handler before inserting the link, including cached loads.
+  link.addEventListener("load",onStyleLoad);
+  phoneMedia?.addEventListener?.("change",onPhoneChange);
+  setMobileOpen(false);
+  syncPhoneToggle();
+  mobileToggle?.addEventListener("click",onMobileToggle);
+  doc.head.append(link);
+  stage.setAttribute("data-ccg-arena-frame","crossfire");
+  stage.insertAdjacentElement("afterend",section);
 
   let mode="alltime", disposed=false, scoreBridge=null;
   let scoreGate=scoreRequested?"checking":"disabled";
@@ -262,6 +280,9 @@ export async function mountCrossfirePreview({
   syncRunState();
   return Object.freeze({
     oneClickEnabled: Boolean(autoStarter),
+    syncMobileVisibility() {
+      if(!disposed && phoneMedia?.matches && !mobileConsole?.classList?.contains?.("is-mobile-playing"))setMobileOpen(false);
+    },
     whenHelioHostReady() { return scoreReadyPromise; },
     cancelOneClick() { autoStarter?.cancel(); },
     armFromUserF1() {
@@ -310,6 +331,8 @@ export async function mountCrossfirePreview({
       autoStarter?.cancel();
       scoreBridge?.stop();
       finishScoreHandshake("unavailable");
+      phoneMedia?.removeEventListener?.("change",onPhoneChange);
+      link.removeEventListener?.("load",onStyleLoad);
       setMobileOpen(false);
       mobileToggle?.removeEventListener("click",onMobileToggle);
       if(mobileToggle){

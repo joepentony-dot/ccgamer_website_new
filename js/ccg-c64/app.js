@@ -192,7 +192,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261124_arena_nonblocking_crossfire_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261125_crossfire_phone_no_flash_v1");
     if (generation !== arenaPreviewGeneration) return;
     const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({
@@ -386,6 +386,7 @@ function setMobilePlaying(active, label = "") {
   if (typeof configureJump === "function") configureJump(currentJumpGameId);
   mobilePlayConsole?.classList.toggle("is-mobile-playing", enabled);
   document.body?.classList.toggle("is-mobile-playing", enabled);
+  activeArenaPreview?.syncMobileVisibility?.();
   if (mobilePlaybar) mobilePlaybar.hidden = !enabled;
   if (mobileGameActions) mobileGameActions.hidden = !enabled;
   if (enabled && typeof setControlState === "function" && typeof vault !== "undefined") {

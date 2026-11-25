@@ -7,7 +7,7 @@ const WORKER_URL = "/emulator/c64/coi-service-worker.js";
 const WORKER_SCOPE = "/emulator/c64/";
 const RELOAD_KEY = "ccg.c64.coi.reloadCount";
 const MAX_RELOADS = 2;
-const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261124_arena_boards_v2";
+const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261125_crossfire_phone_no_flash_v1";
 
 const machineState = document.querySelector("[data-machine-state]");
 const stageNote = document.querySelector("[data-stage-note]");
