@@ -1,3 +1,7 @@
+## 25 November 2026 — R192 Ward-Break fixture integration correction
+
+- Corrected head `314add855a047deffc8de28c943f9af0c3555f4b` failed full qualification 45671409103 and PR qualification 45671408910 on the same existing Ward-Break source-extraction fixture: it loaded `drawEnemy` without its new Guardian warning dependency. Runtime source unchanged in this correction. Existing `v10-42-warden-essence-ownership-contract.mjs` now loads the actual `drawGuardianBurstWarning` section, not a stub; all previous immunity/label/health assertions retained. Actual extracted Ward-Break fixture passed 16 assertions in isolated V8 VM shim; commit `e478180c56a0ae2146e80c5a513463991f8c47ac`. No test disabled or weakened. Existing R192 79-assertion regression retained. Exact final head full requalification required before normal guarded merge of #3185.
+
 ## 25 November 2026 — R192 qualification correction
 
 - Original R192 full qualification 45670491443, Node job 139404139550: new R192 regression passed; legacy visual-overhaul-foundation failed because its standalone sprite sandbox intentionally has no host binding. Chromium was skipped. Corrected renderer at `fb39d6f5fdfab61de8cc29f6fc3a89b985ac7354` safely returns without encounter host; no warning behaviour change for live encounters. Added absent/null/empty-host tests at `3a2566d71004e35a9505f23240431d8d2aebd7ae`; all 79 isolated assertions passed. Legacy test unchanged. Exact-head full requalification required on #3185. No merge or live claim.
