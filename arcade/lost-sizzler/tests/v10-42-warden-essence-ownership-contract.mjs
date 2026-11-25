@@ -3,6 +3,12 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const source=fs.readFileSync(new URL("../js/v10-42-warden-purpose-overhaul.js",import.meta.url),"utf8");
+// Load the real capacity owner while retaining the split-screen inventory fixture.
+const capContext={window:{}};
+vm.createContext(capContext);
+for(const name of ["config","progression"])vm.runInContext(fs.readFileSync(new URL(`../js/${name}.js`,import.meta.url),"utf8"),capContext,{filename:`${name}.js`});
+const armourCap=capContext.window.CCGProgression.armourCap;
+assert.equal(typeof armourCap,"function");
 let timer=null;
 const p1={id:"p1",x:22,y:2,level:2,health:8,maxHealth:10,armor:1,mana:20,maxMana:100,totalXp:0,banishmentEssence:0};
 const p2={id:"p2",x:3,y:2,level:2,health:7,maxHealth:9,armor:1,mana:0,maxMana:100,totalXp:0,banishmentEssence:0};
@@ -17,6 +23,7 @@ const context={
   window:{
     CCG_CONFIG:{stalker:{name:"Count Loadula",banishPromptDistance:8}},
     CCGProgression:{
+      armourCap,
       firstInventory:()=>-1,
       inventoryRemove:()=>false,
       inventoryKindCount:()=>0
