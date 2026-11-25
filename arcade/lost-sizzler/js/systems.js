@@ -761,6 +761,11 @@ window.CCGSystems=(()=>{
     const savedRunDefeat=Boolean(record?.resolved===true&&String(record.resolvedSourceId||"")===previousId);
     const savedDefeats=runFloor>0&&runFloor===hostFloor&&Array.isArray(runState?.v142DefeatedWardenIds?.[String(runFloor)])
       ?runState.v142DefeatedWardenIds[String(runFloor)].map(id=>String(id)):[];
+    // The canonical generation ID proves this floor's unique Death Stalker
+    // was defeated even when Count owns the optional domain and a rebuild
+    // assigns the Death Stalker a different ID.
+    const savedSingletonDefeat=runFloor>0&&runFloor===hostFloor&&savedDefeats.includes(`death-stalker-floor-${runFloor}`);
+    const savedExactDefeat=Boolean(previousId&&previousId!=="count-loadula"&&(savedDefeats.includes(previousId)||savedRunDefeat));
     // A regenerated floor can assign a new actor ID even though the saved
     // domain confirms its sole Death Stalker was already cleansed. Preserve
     // that same-floor outcome without treating Count or another floor as dead.
@@ -781,7 +786,7 @@ window.CCGSystems=(()=>{
     // Independent floor-local defeat records prevent old host state from
     // reviving a dead Warden if its primary defeated-ID ledger was lost.
     const witnessedDefeat=Boolean(previousId&&(
-      savedRunDefeat||savedDefeats.includes(previousId)||cleansedFloorDeathStalker||
+      savedExactDefeat||savedSingletonDefeat||cleansedFloorDeathStalker||
       (host.timedRooms||[]).some(room=>String(room?.hunterId||"")===previousId&&room?.stalkerDefeated===true)||
       (host.v142WardenDomain?.cleansed===true&&String(host.v142WardenDomain?.sourceId||"")===previousId)
     ));
@@ -799,7 +804,8 @@ window.CCGSystems=(()=>{
     const floorIds=new Set(stalkers.map(e=>String(e.id||"")));
     // A previously banished floor Stalker stays banished even if an older
     // duplicate entry was still marked alive during state reconciliation.
-    const permanentlyDefeated=cleansedFloorDeathStalker||stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||
+    const persistedDeathStalkerDefeat=cleansedFloorDeathStalker||savedSingletonDefeat||savedExactDefeat;
+    const permanentlyDefeated=persistedDeathStalkerDefeat||stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||
       Boolean(previousId&&floorIds.has(previousId)&&defeatedIds.has(previousId));
     if(stalkers.length>1)host.enemies=(host.enemies||[]).filter(e=>!(e?.deathStalker&&e?.voidStalker)||e===keep);
     if(keep){
@@ -809,6 +815,9 @@ window.CCGSystems=(()=>{
       }
       if(permanentlyDefeated){
         keep.alive=false;
+        // A paid-for, already rewarded defeat is not a new killing blow.
+        // Prevent the late Warden scan from settling stale broken-ward HP twice.
+        if(persistedDeathStalkerDefeat){keep.hp=0;keep.permanentlyBanished=true;keep.v142WardenDefeated=true;keep.v142WardenRewarded=true;keep.v142WardBroken=false;keep.v142WardState="defeated"}
         host.defeatedDeathStalkers=Array.isArray(host.defeatedDeathStalkers)?host.defeatedDeathStalkers:[];
         if(!host.defeatedDeathStalkers.includes(keep.id))host.defeatedDeathStalkers.push(keep.id);
       }

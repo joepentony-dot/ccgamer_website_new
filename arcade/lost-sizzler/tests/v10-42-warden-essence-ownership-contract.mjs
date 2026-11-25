@@ -804,3 +804,63 @@ assert.equal(ar.score,0,"Ward-breaking alone cannot award combat kill score");
 console.log("PASS R171 real Essence earn-buy-break-re-earn-buy-break against both Wardens");
 
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");
+
+
+// R188: Count may own the optional domain even though the separate Death
+// Stalker was defeated and rewarded. A regenerated actor must not lose that
+// canonical same-floor tombstone, nor trigger the late reward settlement.
+const r188Saved={floor:4,stats:{kills:2,wardenKills:2},
+  v142WardenFloors:{"4":{resolved:true,sourceKind:"count-loadula",resolvedSourceId:"count-loadula"}},
+  v142DefeatedWardenIds:{"4":[r171Id,"count-loadula"]}};
+const r188RebuiltId="death-stalker-floor-4-rebuilt";
+const r188Host=pointer=>r171Missing({deathStalkerId:pointer,
+  enemies:[{id:r188RebuiltId,x:5,y:5,alive:true,hp:40,deathStalker:true,voidStalker:true,v142WardBroken:true,v142WardState:"broken"}],
+  stalker:{id:"count-loadula",awake:true,hp:30}});
+for(const pointer of [r188RebuiltId,r171Id,""]){
+  const h=r188Host(pointer),actor=r171Guard(h,r188Saved);
+  assert.equal(actor.alive,false,"Independent canonical kill survives changed/missing host pointer with a Count-owned domain");
+  assert.equal(actor.hp,0);
+  assert.equal(actor.v142WardenDefeated,true);
+  assert.equal(actor.v142WardenRewarded,true,"Previously settled kill is not a new reward");
+  assert.equal(actor.v142WardBroken,false);
+  assert.equal(actor.v142WardState,"defeated");
+  assert.ok(h.defeatedDeathStalkers.includes(r188RebuiltId));
+  assert.equal(h.stalker.permanentlyBanished,true);
+  r171Guard(h,r188Saved);
+  assert.equal(h.enemies.length,1);
+  assert.equal(h.enemies[0].alive,false);
+}
+const r188Absent=r188Host(r188RebuiltId);r188Absent.enemies=[];
+assert.equal(r171Guard(r188Absent,r188Saved),null,"Regenerated pointer cannot recreate an independently defeated missing singleton");
+assert.equal(r188Absent.enemies.length,0);
+const r188Alias=r188Host("old-ds");
+assert.equal(r171Guard(r188Alias,{floor:4,v142DefeatedWardenIds:{"4":["old-ds"]}}).alive,false,
+  "The saved former singleton ID also proves a stale replacement is defeated");
+for(const state of [{floor:4},{floor:4,v142DefeatedWardenIds:{"4":["count-loadula"]}},
+  {floor:5,v142DefeatedWardenIds:{"5":["death-stalker-floor-5"]}}]){
+  assert.equal(r171Guard(r188Host(r188RebuiltId),state).alive,true,"Fresh, Count-only or mismatched-floor records cannot defeat this actor");
+}
+const r188Next=r188Host("death-stalker-floor-5");r188Next.v142CampaignFloor=5;
+r188Next.enemies[0].id="death-stalker-floor-5";
+assert.equal(r171Guard(r188Next,{...r188Saved,floor:5}).alive,true,"Earlier-floor victory cannot erase the next floor's encounter");
+
+// The real Warden maintenance timer must not award score, XP, Essence or
+// a new cache when the singleton reconciles a stale broken-ward actor.
+const r188Pair=soloEncounter(),r188Ctx=r188Pair.ctx;
+r188Ctx.run=JSON.parse(JSON.stringify(r188Saved));
+r188Ctx.host.v142CampaignFloor=4;
+r188Ctx.host.deathStalkerId=r188RebuiltId;
+r188Pair.death.id=r188RebuiltId;
+r188Pair.death.v142WardBroken=true;
+r188Pair.death.v142WardState="broken";
+r188Pair.death.hp=40;
+r188Ctx.SYS.enforceDeathStalkerSingleton(r188Ctx.host,r188Ctx.run);
+r188Pair.advance(2100);
+assert.equal(r188Pair.death.alive,false);
+assert.equal(r188Pair.death.v142WardenRewarded,true);
+assert.equal(r188Ctx.run.stats.wardenKills,2);
+assert.equal(r188Ctx.score,0);
+assert.equal(r188Ctx.p1.totalXp,0);
+assert.equal(r188Ctx.p1.banishmentEssence||0,0);
+assert.equal(r188Ctx.host.chests.length,0);
+console.log("PASS R188 independent saved Death Stalker kill survives rebuilt IDs without repeat rewards, Count-only or cross-floor suppression");
