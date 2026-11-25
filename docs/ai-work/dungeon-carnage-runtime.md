@@ -1,3 +1,9 @@
+## 25 November 2026 — Dungeon R194 enemy defeat presentation (candidate)
+
+- R193 #3187 exact corrected head `21f2e849a1661e8f210e3aa8912f78de80efbc41` passed 11/11 workflows, all six Chromium groups and independent Codex review after the review allowance became available. Guarded squash merge `73b5e1de3a96764fbc4b32b103346d974049b6ce` verified on main with R193 manifest. R193 public deployment not independently verified.
+- R194 respects reduced motion in enemy defeat rendering by fading a stationary death sprite instead of tumbling/scaling it; secondary orbiting sparks are rich-quality only and disabled in reduced motion. Conservative viewport cull precedes visibility work, while the existing 540 ms expiry and shared queue remain unchanged. Corrects a zero-valued start timestamp that previously prevented expiry. No damage, score, rewards, AI or gameplay changes.
+- Source-executed regression passed 51 assertions in an isolated JS shim; full Node, Chromium, package and site qualification and independent review pending. Physical Windows freeze/second-charge acceptance and commercial release hold remain open.
+
 ## 25 November 2026 — R193 essential-light compatibility correction
 
 - Initial R193 head `5afd6a0b4a3467f0a4bd7bb7ff50ca65ec0b0138`: new R193 canonical Node regression passed, but both qualification workflows failed the unchanged R69 hazard-presentation contract because the original essential light core RGB values were replaced. Preserve those exact core colours in all quality tiers; brighten the intermediate stop and use copper outer falloff in rich/reduced only. Same radius, opacity, gradient count and severe rendering as before. Existing R69 test left untouched. Corrected R193 regression passed 33 assertions in isolated JS; exact-head CI/review pending. Runtime correction `5fcfa5c5d92e505d0bfdc788214f05d3458e5b7a`; regression correction `0be95e87cb6c2fa8a20494953dc0eaf1118ae4c9`.
