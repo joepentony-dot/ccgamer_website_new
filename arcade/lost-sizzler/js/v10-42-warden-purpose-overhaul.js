@@ -174,7 +174,7 @@
     let roomId=-1;try{if(w&&typeof W!=="undefined"&&W?.roomAt)roomId=W.roomAt(w,target.x,target.y)}catch(_){}
     h.v142WardenAftershock={roomId,sourceId:target.id||"count-loadula",sourceName:label(target),until:performance.now()+AFTERSHOCK_MS,lastTick:0};h.v142AftershockFadedShown=false;
     r.alert=Math.min(100,Math.max(Number(r.alert)||0,AFTERSHOCK_ALERT));
-    if(player){player.armor=Math.min(12,(Number(player.armor)||0)+2);const ammo=Math.max(12,Math.ceil((Number(player.maxMana)||100)*.18));player.mana=Math.min(Number(player.maxMana)||100,(Number(player.mana)||0)+ammo)}
+    if(player){{const before=Math.max(0,Number(player.armor)||0);player.armor=Math.max(before,Math.min(PROG.armourCap(player),before+2))};const ammo=Math.max(12,Math.ceil((Number(player.maxMana)||100)*.18));player.mana=Math.min(Number(player.maxMana)||100,(Number(player.mana)||0)+ammo)}
   }
 
   function grantEssence(player){
