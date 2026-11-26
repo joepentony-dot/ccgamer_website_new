@@ -117,3 +117,43 @@ test("top-rated page uses canonical public 1–10 ratings and complete bounded r
     assert.match(read("resources/js/community/top-rated-page.js"),/\/10 · /);
     assert.match(read("js/ccg-home-community.js"),/\/community\/top-rated\.html/);
 });
+
+test("desktop More handles a real first click before the deferred fit", () => {
+    const source = read("js/ccg-nav-fit.js");
+    const start = source.indexOf("    function bindMoreControls(");
+    const end = source.indexOf("    function measureFitBounds(", start);
+    assert.ok(start >= 0 && end > start);
+    const bindSource = source.slice(start, end);
+    for (const [scenario, expected] of Object.entries({
+        first: [1, 1, 0], open: [1, 0, 1], mobile: [0, 0, 0],
+        "no-links": [1, 0, 0], disabled: [1, 0, 0]
+    })) {
+        const handlers = [];
+        let fits = 0, opens = 0, closes = 0;
+        const menu = { hidden: scenario !== "open", links: scenario === "open" ? 13 : 0 };
+        const nav = { querySelector: () => menu };
+        const wrap = {};
+        class Element {
+            closest(selector) {
+                return selector === ".ccg-nav" ? nav : selector === ".ccg-nav__more" ? wrap : this;
+            }
+        }
+        const toggle = new Element();
+        toggle.disabled = false;
+        const header = { dataset: {}, contains: () => true, addEventListener(type, fn, capture) {
+            if (type === "click" && capture === true) handlers.push(fn);
+        }};
+        const document = { addEventListener() {} };
+        const bind = new Function("document", "Element", "isDesktop", "fitNavigation",
+            "menuHasOverflowLinks", "openMore", "closeMore", bindSource + "\nreturn bindMoreControls;")(
+            document, Element, () => scenario !== "mobile",
+            () => { fits++; menu.links = scenario === "no-links" ? 0 : 13; toggle.disabled = scenario === "disabled"; },
+            value => value.links > 0, () => { opens++; }, () => { closes++; }
+        );
+        bind(header);
+        assert.equal(handlers.length, 1);
+        handlers[0]({ target: toggle, preventDefault() {}, stopImmediatePropagation() {} });
+        assert.deepEqual([fits, opens, closes], expected, scenario);
+    }
+    assert.match(source, /&& \(!desktop \|\| menuHasOverflowLinks\(menu\)\)/);
+});
