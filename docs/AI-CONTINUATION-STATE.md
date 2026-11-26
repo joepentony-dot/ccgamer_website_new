@@ -1,5 +1,11 @@
 ## 26 November 2026 — R200 release label qualification correction
 
+## 26 November 2026 — Arena live membership and sign-out candidate
+
+- Live restricted HelioHost registration, delivery of one verification email, activation, member sign-in and refresh persistence passed. The account is active and no unused verification token remains. Live release switches were restored off. No scores were submitted.
+- The isolated member page now has a sign-out candidate backed by the existing CSRF-protected logout route. The focused Node suite passed all three tests. Exact-head CI, merge, live sign-out and a genuine Crossfire score lifecycle remain pending. See [Crossfire Arena](ai-work/high-score-arena-crossfire.md).
+
+
 - Initial PR #3199 head `bb2b789fb6e8f8de737b4fcec8050dc720837785`: PR Qualification 45824233057 and Full Qualification 45824233314 stopped at the unchanged public-route contract, line 29, because both visible changelog headings still named R199 while the manifest was R200. Chromium was skipped, not passed. Correct both headings and add the R200 XP conservation release note in both entrypoints, preserving R199 and earlier history. No runtime or test changes. Full fresh exact-head qualification required; no merge/live claim or new Codex request.
 
 ## 26 November 2026 — R200 death-cache XP conservation (candidate)
