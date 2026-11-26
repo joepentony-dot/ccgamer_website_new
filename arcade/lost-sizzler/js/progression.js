@@ -251,11 +251,11 @@ window.CCGProgression=(()=>{
     for(const it of cache.inventory||[]){
       const stored=cloneItem(it),quantity=itemQty(stored);
       if(inventoryAdd(player,stored)){recovered+=quantity;continue}
-      // A multi-Warp cache can partially refill an existing stack when the
-      // bag is full. Commit only successful single-spell additions; leave
-      // every unclaimed spell in the cache for a save/reload-safe retry.
+      // Stackable consumables can partially refill existing stacks when the
+      // bag is full. Commit successful single-item additions only; leave
+      // every unclaimed item in the cache for a save/reload-safe retry.
       let moved=0;
-      if(stored?.kind==="teleport"){
+      if(stored?.kind==="teleport"||["potion","torch","mapReveal"].includes(stored?.kind)){
         while(moved<quantity&&inventoryAdd(player,{...stored,qty:1})){moved++;recovered++}
       }
       if(moved<quantity)remaining.push({...stored,qty:quantity-moved})
