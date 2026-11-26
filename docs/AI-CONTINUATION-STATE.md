@@ -1,3 +1,8 @@
+## 26 November 2026 — Arena live membership and sign-out candidate
+
+- Live restricted HelioHost registration, delivery of one verification email, activation, member sign-in and refresh persistence passed. The account is active and no unused verification token remains. Live release switches were restored off. No scores were submitted.
+- The isolated member page now has a sign-out candidate backed by the existing CSRF-protected logout route. All 10 member tests passed locally; the previous PR head passed 17 workflows. Exact-head CI, merge, live sign-out and a genuine Crossfire score lifecycle remain pending. See [Crossfire Arena](ai-work/high-score-arena-crossfire.md).
+
 ## 26 November 2026 — R201 original Threshold flagstone art pilot (candidate)
 
 - Owner reaffirmed no commercial publication until full graphical overhaul, tiles, gameplay, audio, and final acceptance complete. R200 #3199 merged at `134bcb17c48b265f18c904852d1356ec9c2f3b2f`; all 11 premerge workflows and six shards passed, production smoke 45828889565 confirms live R200 and closed membership gate. Postmerge Full 45828889780 remains running; do not merge R201 until predecessor completes. No Codex request, no new schedule.

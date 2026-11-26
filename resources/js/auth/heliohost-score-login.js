@@ -1,5 +1,5 @@
 /**
- * Isolated, OPT-IN HelioHost member sign-in for one exact Sierra CRT score page.
+ * Isolated, opt-in HelioHost member sessions for compatible C64 Arena games.
  * NOT the legacy Supabase login. No local/session storage and no passwords,
  * member emails, tokens or cookies logged or copied to URL strings.
  * The server independently enforces release flags, real member credentials,
@@ -15,6 +15,7 @@ const DROPZONE_RETURN=GAME_PATH+"?game="+DROPZONE_ID+"&autoplay=1&scores=1";
 const CSRF=/^[a-f0-9]{64}$/;
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const MAX_REPLY=4096;
+const SESSION_REQUEST={method:"GET",mode:"cors",credentials:"include",cache:"no-store",redirect:"error"};
 
 export function safeSierraReturn(value) {
  if(typeof value!=="string"||value.length>512||!value.startsWith("/")||value.startsWith("//"))return CANONICAL_RETURN;
@@ -46,20 +47,33 @@ export async function signInHelioHostMember({email,password,fetchImpl=globalThis
     typeof email!=="string"||!/^\S+@\S+\.\S+$/.test(email.trim())||
     email.length>255||typeof password!=="string"||
     password.length<1||password.length>4096)return false;
- const params={method:"GET",mode:"cors",credentials:"include",cache:"no-store",redirect:"error"};
  try {
   // GET /csrf creates an isolated host-only cookie; a Supabase session
   // cannot be substituted, and the CSRF token is never exposed to a URL.
-  const token=await boundedJSON(await fetchImpl(API_ORIGIN+"/v1/member/csrf",params));
+  const token=await boundedJSON(await fetchImpl(API_ORIGIN+"/v1/member/csrf",SESSION_REQUEST));
   if(!CSRF.test(token?.csrf||""))return false;
   const response=await boundedJSON(await fetchImpl(API_ORIGIN+"/v1/member/login",{
-   method:"POST",mode:"cors",credentials:"include",cache:"no-store",redirect:"error",
+   ...SESSION_REQUEST,method:"POST",
    headers:{"Content-Type":"application/json","X-CCG-CSRF":token.csrf},
    body:JSON.stringify({email:email.trim(),password})
   }));
   if(response?.authenticated!==true||!CSRF.test(response?.csrf||""))return false;
-  const me=await boundedJSON(await fetchImpl(API_ORIGIN+"/v1/member/me",params));
+  const me=await boundedJSON(await fetchImpl(API_ORIGIN+"/v1/member/me",SESSION_REQUEST));
   return UUID.test(me?.account?.id||"");
+ }catch{return false;}
+}
+
+export async function signOutHelioHostMember({fetchImpl=globalThis.fetch,origin=""}={}) {
+ if(origin!==SITE_ORIGIN||typeof fetchImpl!=="function")return false;
+ try {
+  const token=await boundedJSON(await fetchImpl(API_ORIGIN+"/v1/member/csrf",SESSION_REQUEST));
+  if(!CSRF.test(token?.csrf||""))return false;
+  const response=await boundedJSON(await fetchImpl(API_ORIGIN+"/v1/member/logout",{
+   ...SESSION_REQUEST,method:"POST",headers:{"X-CCG-CSRF":token.csrf}
+  }));
+  if(response?.authenticated!==false||!CSRF.test(response?.csrf||""))return false;
+  const me=await fetchImpl(API_ORIGIN+"/v1/member/me",SESSION_REQUEST);
+  return me?.status===401;
  }catch{return false;}
 }
 
@@ -68,6 +82,7 @@ export function initHelioHostScoreLogin(doc=globalThis.document,loc=globalThis.l
  const form=doc?.getElementById?.("scoreMemberLogin");
  const status=doc?.getElementById?.("scoreLoginStatus");
  const button=doc?.getElementById?.("scoreLoginSubmit");
+ const signOut=doc?.getElementById?.("scoreLogout");
  const returnLink=doc?.getElementById?.("scoreReturnLink");
  const email=doc?.getElementById?.("scoreEmail");
  const password=doc?.getElementById?.("scorePassword");
@@ -77,9 +92,27 @@ export function initHelioHostScoreLogin(doc=globalThis.document,loc=globalThis.l
  if(loc?.origin!==SITE_ORIGIN) {
   status.textContent="HelioHost scoring sign-in is available only on the official CCG website.";
   button.disabled=true;
+  if(signOut)signOut.disabled=true;
   return false;
  }
  let busy=false;
+ const setBusy=value=>{
+  busy=value;
+  button.disabled=value;
+  if(signOut)signOut.disabled=value;
+ };
+ signOut?.addEventListener("click",async()=>{
+  if(busy)return;
+  setBusy(true);
+  password.value="";
+  status.textContent="Signing out of the Arena…";
+  try {
+   const ok=await signOutHelioHostMember({fetchImpl,origin:loc.origin});
+   status.textContent=ok?"Signed out of the Arena.":"Arena sign-out could not be confirmed.";
+  } finally {
+   setBusy(false);
+  }
+ });
  form.addEventListener("submit",async event=>{
   event.preventDefault();
   if(busy)return;
@@ -89,7 +122,7 @@ export function initHelioHostScoreLogin(doc=globalThis.document,loc=globalThis.l
    status.textContent="Enter an activated HelioHost member email and password.";
    return;
   }
-  busy=true;button.disabled=true;
+  setBusy(true);
   status.textContent="Checking the independent HelioHost member service…";
   try {
    const ok=await signInHelioHostMember({
@@ -105,10 +138,10 @@ export function initHelioHostScoreLogin(doc=globalThis.document,loc=globalThis.l
    }
   } finally {
    password.value="";
-   busy=false;button.disabled=false;
+   setBusy(false);
   }
  });
- button.disabled=false;
+ setBusy(false);
  return true;
 }
 if(typeof document!=="undefined")initHelioHostScoreLogin();
