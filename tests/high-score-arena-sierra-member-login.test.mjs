@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {safeSierraReturn,signInHelioHostMember} from '../resources/js/auth/heliohost-score-login.js';
+import {initHelioHostScoreLogin,safeSierraReturn,signInHelioHostMember,signOutHelioHostMember} from '../resources/js/auth/heliohost-score-login.js';
 
 const SITE='https://www.cheekycommodoregamer.co.uk';
 const API='https://api.cheekycommodoregamer.co.uk';
@@ -9,7 +9,7 @@ const GAME='/emulator/c64/?game=owner-crt-more-crossfiresierraonline-0c60e852f43
 const csrf='a'.repeat(64);
 const uuid='11111111-1111-4111-8111-111111111111';
 function reply(obj,status=200){
- return {ok:status>=200&&status<300,headers:{get:key=>key==='content-type'?'application/json; charset=utf-8':null},
+ return {status,ok:status>=200&&status<300,headers:{get:key=>key==='content-type'?'application/json; charset=utf-8':null},
          text:async()=>JSON.stringify(obj)};
 }
 test('return destination is fixed to the exact one-click Sierra CRT',()=>{
@@ -88,6 +88,7 @@ test('native form fallback cannot send credentials if the module does not load',
  const login=await readFile(new URL('../auth/heliohost-score-login.html',import.meta.url),'utf8');
  assert.match(login, /<form[^>]+method="post"/);
  assert.match(login, /<button[^>]+id="scoreLoginSubmit"[^>]+disabled/);
+ assert.match(login, /<button[^>]+id="scoreLogout"[^>]+type="button"[^>]+disabled/);
  for (const input of login.matchAll(/<input[^>]*>/g)) assert.doesNotMatch(input[0], /\bname=/);
 });
 
@@ -96,4 +97,92 @@ test('sign-in returns to Dropzone only for its exact approved emulator destinati
  assert.equal(safeSierraReturn(destination),destination);
  assert.equal(safeSierraReturn(destination+'&scores=1'),GAME);
  assert.equal(safeSierraReturn(destination+'&start=1'),GAME);
+});
+
+test("Arena sign-out uses the isolated credentialed session and checks that it ended", async () => {
+  const calls = [];
+  const replies = [reply({ csrf }), reply({ authenticated: false, csrf }), reply({}, 401)];
+  assert.equal(await signOutHelioHostMember({
+    origin: SITE,
+    fetchImpl: async (url, options) => {
+      calls.push({ url, options });
+      return replies.shift();
+    }
+  }), true);
+  assert.deepEqual(calls.map(({ url, options }) => [url, options.method]), [
+    [API + "/v1/member/csrf", "GET"],
+    [API + "/v1/member/logout", "POST"],
+    [API + "/v1/member/me", "GET"]
+  ]);
+  assert.equal(calls[1].options.headers["X-CCG-CSRF"], csrf);
+  assert.equal(calls[1].options.body, undefined);
+  for (const { options } of calls) {
+    assert.equal(options.mode, "cors");
+    assert.equal(options.credentials, "include");
+    assert.equal(options.redirect, "error");
+    assert.equal(options.cache, "no-store");
+  }
+});
+
+test("sign-out refuses other origins, missing CSRF, and any unconfirmed logout", async () => {
+  assert.equal(await signOutHelioHostMember({
+    origin: "https://other.example",
+    fetchImpl: () => assert.fail("An off-origin page must never contact the API")
+  }), false);
+  for (const [replies, count] of [
+    [[reply({})], 1],
+    [[reply({ csrf }), reply({}, 503)], 2],
+    [[reply({ csrf }), reply({ authenticated: false, csrf }), reply({ account: {} })], 3]
+  ]) {
+    let calls = 0;
+    assert.equal(await signOutHelioHostMember({
+      origin: SITE,
+      fetchImpl: async () => {
+        calls++;
+        return replies.shift();
+      }
+    }), false);
+    assert.equal(calls, count);
+  }
+});
+
+test("the sign-out button performs no eager requests and locks both controls in flight", async () => {
+  const elements = new Map([
+    "scoreMemberLogin", "scoreLoginStatus", "scoreLoginSubmit", "scoreLogout",
+    "scoreReturnLink", "scoreEmail", "scorePassword"
+  ].map(id => [id, {
+    disabled: true,
+    value: "",
+    handlers: {},
+    addEventListener(event, handler) { this.handlers[event] = handler; }
+  }]));
+  const login = elements.get("scoreLoginSubmit");
+  const logout = elements.get("scoreLogout");
+  const password = elements.get("scorePassword");
+  password.value = "unsent-test-input";
+  let requests = 0;
+  let allowToken;
+  const token = new Promise(resolve => { allowToken = resolve; });
+  const replies = [token, reply({ authenticated: false, csrf }), reply({}, 401)];
+  assert.equal(initHelioHostScoreLogin(
+    { getElementById: id => elements.get(id) },
+    { origin: SITE, search: "" },
+    async () => {
+      requests++;
+      return replies.shift();
+    }
+  ), true);
+  assert.equal(requests, 0);
+  assert.equal(logout.disabled, false);
+  const pending = logout.handlers.click();
+  assert.equal(password.value, "");
+  assert.equal(login.disabled, true);
+  assert.equal(logout.disabled, true);
+  await logout.handlers.click();
+  assert.equal(requests, 1);
+  allowToken(reply({ csrf }));
+  await pending;
+  assert.equal(elements.get("scoreLoginStatus").textContent, "Signed out of the Arena.");
+  assert.equal(login.disabled, false);
+  assert.equal(logout.disabled, false);
 });
