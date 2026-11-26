@@ -548,17 +548,34 @@ function drawDungeonPremiumMasonry(s,h,room){
     return true
   }catch(_){return false}finally{ctx.globalAlpha=alpha}
 }
-// R205: four materially different original floor sets, one atlas draw.
+// R205: rasterise the immutable 168px SVG once, not on every floor tile.
+// One bounded 110.25 KiB RGBA canvas; no per-world or per-frame allocation.
+// If the source or canvas cannot decode, keep the existing legacy floor fallback.
+let r205BiomeRasterSource=null,r205BiomeRaster=null;
+function rasterDungeonBiomeFloorR205(art){
+  if(r205BiomeRasterSource===art)return r205BiomeRaster;
+  if(r205BiomeRaster){r205BiomeRaster.width=0;r205BiomeRaster.height=0}
+  r205BiomeRasterSource=art;r205BiomeRaster=null;
+  try{
+    const atlas=document.createElement("canvas");atlas.width=168;atlas.height=168;
+    const g=atlas.getContext("2d");if(!g)return null;
+    g.imageSmoothingEnabled=false;
+    g.drawImage(art,0,0,168,168);
+    r205BiomeRaster=atlas;
+  }catch(_){return null}
+  return r205BiomeRaster
+}
 // Existing room and world ownership, protected chambers and severe fallback remain.
 function drawDungeonBiomeFloorR205(s,h,room){
   const floor=Number(run?.floor||1);
   if(!Number.isInteger(floor)||floor<2||floor>5||room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return false;
   const art=lostSizzlerPixelAssets.premiumBiomeFloorsR205;
   if(!art?.complete||art.naturalWidth!==168||art.naturalHeight!==168)return false;
+  const atlas=rasterDungeonBiomeFloorR205(art);if(!atlas)return false;
   const alpha=ctx.globalAlpha;
   try{
     ctx.globalAlpha=.9;
-    ctx.drawImage(art,((h>>>0)%4)*42,(floor-2)*42,42,42,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
+    ctx.drawImage(atlas,((h>>>0)%4)*42,(floor-2)*42,42,42,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
     return true
   }catch(_){return false}finally{ctx.globalAlpha=alpha}
 }
