@@ -7,7 +7,7 @@ const ROOT = path.resolve(import.meta.dirname, "..");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
 const SHOP = "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp";
 
-test("homepage displays the official Fourthwall shop after primary game discovery and before community", () => {
+test("homepage displays the official Fourthwall shop after primary game discovery and community", () => {
     const html = read("home.html");
     const start = html.indexOf('class="home-merch-promo"');
     const hero = html.indexOf('class="home-hero home-hero--streamlined"');
@@ -17,8 +17,8 @@ test("homepage displays the official Fourthwall shop after primary game discover
 
     assert.ok(hero >= 0 && archive > hero && start > archive,
         "game discovery must appear before the optional merchandise promotion");
-    assert.ok(community > start && support > community,
-        "merchandise stays above the community and optional support without moving those sections");
+    assert.ok(community > archive && start > community && support > start,
+        "community discovery must precede merchandise, which remains before optional support");
     assert.equal((html.match(/class="home-merch-promo"/g) || []).length, 1,
         "only one merchandise panel should exist");
     assert.ok(html.includes('rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style"'),

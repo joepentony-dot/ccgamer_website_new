@@ -124,7 +124,9 @@
     }
     const browse = element("a", "home-community-latest__game", "Find a game to rate →");
     browse.href = "/games/";
-    copy.append(browse);
+    const top = element("a", "home-community-latest__game", "Top-rated games →");
+    top.href = "/community/top-rated.html";
+    copy.append(browse, top);
 
     const recent = element("div", "home-community-review-summary", "");
     recent.append(element("strong", "", "Latest community review"));

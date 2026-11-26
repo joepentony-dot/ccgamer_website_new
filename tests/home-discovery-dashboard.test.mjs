@@ -98,3 +98,22 @@ test("refined homepage keeps all canonical routes and prepaint Pulse below archi
     assert.match(home, /href="\/choose-your-own-adventure\/"/);
     assert.equal((home.match(/https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp/g)||[]).length,1);
 });
+
+test("top-rated page uses canonical public 1–10 ratings and complete bounded reads", () => {
+    const source = read("resources/js/community/community-api.js");
+    const fn = source.match(/function aggregatePublicRatings\(rows, limit\) \{[\s\S]*?\n\}/)?.[0];
+    assert.ok(fn);
+    const aggregate = new Function(fn + ";return aggregatePublicRatings;")();
+    const rows = [{"game_key":"z-game","rating":7},{"game_key":"a-game","rating":7},{"game_key":"b-game","rating":6},{"game_key":"b-game","rating":8},{"game_key":"best-game","rating":9},{"game_key":"low-game","rating":3}];
+    assert.deepEqual(aggregate(rows,30),[{"game_slug":"best-game","avg_rating":9,"rating_count":1},{"game_slug":"b-game","avg_rating":7,"rating_count":2},{"game_slug":"a-game","avg_rating":7,"rating_count":1},{"game_slug":"z-game","avg_rating":7,"rating_count":1},{"game_slug":"low-game","avg_rating":3,"rating_count":1}]);
+    assert.deepEqual(aggregate([],30),[]);
+    assert.equal(aggregate(rows,2).length,2);
+    for (const row of [{game_key:"../bad",rating:5},{game_key:"a",rating:11},{game_key:"a",rating:0},{game_key:"a",rating:3.5}]) assert.throws(()=>aggregate([row],30));
+    const top = source.slice(source.indexOf("export async function listTopRated("),source.indexOf("export async function listActivity("));
+    assert.match(top,/\.from\('ratings'\)/);
+    assert.match(top,/\.select\('game_key,rating', \{count: 'exact'\}\)/);
+    assert.match(top,/rows\.length === expected/);
+    assert.doesNotMatch(top,/game_rating_stats|user_id|profile_id/);
+    assert.match(read("resources/js/community/top-rated-page.js"),/\/10 · /);
+    assert.match(read("js/ccg-home-community.js"),/\/community\/top-rated\.html/);
+});
