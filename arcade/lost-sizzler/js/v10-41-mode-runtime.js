@@ -313,6 +313,12 @@
         if(typeof combat==="function"){context.hordeCombat=combat(dt);state.hordeCombatPreFrames++}
       }catch(error){console.warn("[Lost Sizzler mode runtime] Horde combat pre-frame failed",error)}
     }
+    // R203: a slow Canvas frame must not leave held keyboard movement
+    // dependent solely on the maintenance interval. The existing R30 guard
+    // still owns the physical held set, mode checks and key-release handling.
+    if(current.id===IDS.DUNGEON_SOLO||current.id===IDS.SPLIT_SCREEN){
+      try{window.CCGLostSizzlerV141R30?.reassertHeldInput?.()}catch(error){console.warn("[Lost Sizzler mode runtime] Held-input pre-frame recovery failed",error)}
+    }
     return context
   }
 

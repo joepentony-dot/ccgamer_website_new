@@ -214,26 +214,42 @@ function drawDungeonStoneRelief(s,x,y,h){
       const g=stone.getContext("2d");if(!g){dungeonStoneReliefUnavailable=true;return false}
       g.imageSmoothingEnabled=false;
       let variant=0;
-      const depth=Math.max(8,Math.round(tile*.30)),cheek=Math.max(5,Math.round(tile*.15)),
+      // R203: deeper south faces, slimmer side reveals and stepped shoulders.
+      // Every detail is baked into the existing bounded edge atlas.
+      const depth=Math.max(8,Math.round(tile*.38)),cheek=Math.max(5,Math.round(tile*.19)),
         face=(fx,fy,fw,fh,vertical=false)=>{
-          g.fillStyle="rgba(8,6,12,.80)";g.fillRect(fx,fy,fw,fh);
-          g.fillStyle="#48424a";g.fillRect(fx+1,fy+1,fw-2,fh-2);
-          g.fillStyle=th.wall;g.globalAlpha=.35;g.fillRect(fx+1,fy+1,fw-2,fh-2);g.globalAlpha=1;
-          g.fillStyle="rgba(199,186,166,.22)";g.fillRect(fx+1,fy+1,fw-2,2);
-          g.fillStyle="rgba(3,5,9,.44)";g.fillRect(fx+1,fy+fh-3,fw-2,2);
-          g.fillStyle=th.hi;g.globalAlpha=.35;g.fillRect(fx+1,fy+3,1,fh-6);g.globalAlpha=1;
-          g.fillStyle="rgba(6,5,10,.64)";
+          const rect=(x,y,w,h,colour)=>{if(w>0&&h>0){g.fillStyle=colour;g.fillRect(fx+x,fy+y,w,h)}};
+          rect(0,0,fw,fh,"#211e24");
+          rect(1,1,fw-2,fh-2,"#51494c");
+          g.globalAlpha=.30;rect(1,1,fw-2,fh-2,th.wall);g.globalAlpha=1;
+          rect(1,1,fw-2,1,"rgba(211,194,171,.38)");
+          rect(2,2,fw-4,1,"rgba(177,158,140,.23)");
+          rect(1,fh-3,fw-2,2,"rgba(13,10,16,.70)");
+          rect(1,fh-1,fw-2,1,"#17141b");
           if(vertical){
-            for(let joint=8+variant;joint<fh-3;joint+=11)g.fillRect(fx+1,fy+joint,fw-2,1);
+            rect(1,3,1,fh-6,"rgba(183,165,146,.30)");
+            rect(fw-2,3,1,fh-6,"rgba(10,8,13,.54)");
+            for(let joint=7+variant;joint<fh-3;joint+=10){
+              rect(1,joint,fw-2,1,"#29232a");
+              rect(2,joint+1,fw-3,1,"rgba(190,170,151,.19)");
+            }
           }else{
-            const seam=Math.floor(fh/2);g.fillRect(fx+1,fy+seam,fw-2,1);
-            for(let joint=9+variant*3;joint<fw-3;joint+=16){
-              g.fillRect(fx+joint,fy+2,1,seam-2);
-              if(joint+7<fw-3)g.fillRect(fx+joint+7,fy+seam+1,1,fh-seam-3);
+            const seam=Math.max(4,Math.floor(fh*.54));
+            rect(1,seam,fw-2,1,"#282329");
+            rect(2,seam+1,fw-4,1,"rgba(192,174,155,.25)");
+            rect(1,seam+2,fw-2,fh-seam-5,"rgba(13,10,17,.16)");
+            for(let joint=7+variant*3;joint<fw-3;joint+=14){
+              rect(joint,3,1,seam-3,"#30292e");
+              rect(joint+1,3,1,seam-3,"rgba(182,165,149,.18)");
+              if(joint+6<fw-3){
+                rect(joint+6,seam+2,1,fh-seam-5,"#272228");
+                rect(joint+7,seam+2,1,fh-seam-5,"rgba(164,147,132,.17)");
+              }
             }
           }
-          // Chipped capstone exposes warm stone without another animation.
-          g.fillStyle="rgba(222,203,167,.38)";g.fillRect(fx+2+variant,fy+2,2,1);
+          rect(1,2,1,2,"#81736a");rect(fw-3,2,2,1,"#302a30");
+          rect(2+variant,2,2,1,"rgba(221,203,178,.35)");
+          if(fw>=12)rect(fw-7-variant,fh-5,2,1,"rgba(17,14,21,.43)");
         };
       // Rasterise in local tile coordinates so mortar/chips remain identical.
       for(variant=0;variant<3;variant++)for(let edge=0;edge<4;edge++){

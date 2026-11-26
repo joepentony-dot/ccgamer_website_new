@@ -41,7 +41,7 @@ jobs:
         run: |
           set -euo pipefail
           renderer=arcade/lost-sizzler/js/game-render.js
-          git show "HEAD^1:$renderer" > "$RUNNER_TEMP/base-renderer.js"
+          git show "${{ github.event.pull_request.base.sha }}:$renderer" > "$RUNNER_TEMP/base-renderer.js"
           cp "$renderer" "$RUNNER_TEMP/candidate-renderer.js"
           trap 'cp "$RUNNER_TEMP/candidate-renderer.js" "$renderer"' EXIT
           cp "$RUNNER_TEMP/base-renderer.js" "$renderer"
@@ -75,6 +75,9 @@ jobs:
             assert.deepEqual(before.map(identity),cases.map(identity),'before and after must use matching floor, seed, canvas and motion settings');
             for(const row of before){
               assert.equal(row.frameIntervalsMs.count,45);
+              assert.equal(row.controlledRichSubmissionMs?.quality,'rich');
+              assert.equal(row.controlledRichSubmissionMs?.count,7);
+              assert.ok(Number.isFinite(row.controlledRichSubmissionMs.median)&&row.controlledRichSubmissionMs.median>=0);
               for(const kind of ['canvas','hud']){
                 assert.ok(fs.statSync(path.join(beforeDir,row.device+'-floor-'+row.floor+'-'+kind+'.png')).size>1024);
               }
@@ -86,6 +89,9 @@ jobs:
             assert.deepEqual(rows.map(v=>v.floor),Array.from({length:15},(_,i)=>i+1));
             for(const row of rows){
               assert.equal(row.frameIntervalsMs.count,45);
+              assert.equal(row.controlledRichSubmissionMs?.quality,'rich');
+              assert.equal(row.controlledRichSubmissionMs?.count,7);
+              assert.ok(Number.isFinite(row.controlledRichSubmissionMs.median)&&row.controlledRichSubmissionMs.median>=0);
               assert.ok(row.canvas.width>0&&row.canvas.height>0&&row.generated.rooms>0);
               for(const kind of ['canvas','hud']){
                 const png=path.join(dir,device+'-floor-'+row.floor+'-'+kind+'.png');
