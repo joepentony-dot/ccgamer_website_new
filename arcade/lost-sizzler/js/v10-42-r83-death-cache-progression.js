@@ -84,7 +84,8 @@
     // The base recovery returns all cached XP through the normal XP owner. Move
     // the portion that originally came from banked XP back out of floor XP so
     // run accounting is restored, not merely the player's visible total.
-    const banked=Math.max(0,Number(bundle.bankedXpLost)||0);
+    // Never re-bank XP rejected by the current floor level cap.
+    const banked=Math.min(Math.max(0,Number(bundle.bankedXpLost)||0),Math.max(0,Number(result.xp)||0));
     if(run&&banked>0){
       run.floorXP=Math.max(0,Number(run.floorXP||0)-banked);
       run.bankedXP=Math.max(0,Number(run.bankedXP||0)+banked)
