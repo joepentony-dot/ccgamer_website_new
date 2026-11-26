@@ -7,7 +7,7 @@
   <meta name="referrer" content="no-referrer">
   <title>Arcade Score Sign-In | Cheeky Commodore Gamer</title>
   <link rel="stylesheet" href="/resources/css/auth.css">
-  <script type="module" src="/resources/js/auth/heliohost-score-login.js?ccg_rev=20261124_arena_score_sign_in_v2"></script>
+  <script type="module" src="/resources/js/auth/heliohost-score-login.js?ccg_rev=20261126_arena_member_session_v1"></script>
 </head>
 <body>
   <main class="auth-shell">
@@ -27,6 +27,7 @@
         <p class="auth-field-help">Never enter your Plesk password, private owner key, authenticator setup key or recovery codes here.</p>
         <div id="scoreLoginStatus" class="auth-message is-info" role="status" aria-live="polite">The HelioHost member service must be released before scores can be submitted.</div>
         <button id="scoreLoginSubmit" class="auth-btn" type="submit" disabled>Sign in for scores</button>
+        <button id="scoreLogout" class="auth-btn" type="button" disabled>Sign out of Arena</button>
       </form>
       <nav class="auth-links" aria-label="Other destinations">
         <a id="scoreReturnLink" href="/emulator/c64/?game=owner-crt-more-crossfiresierraonline-0c60e852f438&amp;autoplay=1&amp;start=1&amp;scores=1">Return to the emulator</a>
