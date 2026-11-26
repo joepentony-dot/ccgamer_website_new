@@ -55,3 +55,16 @@ test("featured gameplay video buttons deterministically start the embed", () => 
     assert.match(js, /playVideo\(player\)/);
     assert.doesNotMatch(js, /if \(hasVideo && iframe && isMobileDevice\)/);
 });
+
+test("home mobile carousel position follows actual scroll and clamps both ends", () => {
+    const source = read("js/home-dynamic.js");
+    const fn = source.match(/function carouselIndex\(positions, left, max\) \{[\s\S]*?\n    \}/)?.[0];
+    assert.ok(fn);
+    const index = new Function(fn + "; return carouselIndex;")();
+    for (const [positions,left,max,want] of [[[],0,0,0],[[0,100,180],0,180,0],[[0,100,180],95,180,1],[[0,100,180],179,180,2],[[0,100,180],55,180,1],[[0,0],0,0,0],[[0,50,50],50,50,2]]) assert.equal(index(positions,left,max),want);
+    const css = read("resources/css/home-mobile-launchpad.css");
+    assert.match(css, /padding-bottom: 58px/);
+    assert.match(css, /grid-template-columns: 44px minmax\(0, 1fr\) 44px/);
+    assert.match(source, /grid\.addEventListener\("scroll", queue, \{ passive: true \}\)/);
+    assert.match(source, /prefers-reduced-motion: reduce/);
+});

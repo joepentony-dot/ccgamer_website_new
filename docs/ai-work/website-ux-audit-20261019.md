@@ -1,3 +1,7 @@
+## 26 November 2026 — Omega refinement mobile carousel controls (BRANCH ONLY)
+
+- Add actual previous/next controls and visible position/swipe hints to existing Archive Pulse and featured-video grids using their actual child positions, passive scroll updates, resize and child-list observation, reduced-motion preference, accessible labels/disabled state and no additional network requests or cloned cards. CSS reserves the 44px control row before first paint, compact 112px Pulse cards with readable metadata, home-only system body text, smaller video play control and nonbreaking footer labels. Keep desktop grid, randomizer, video playback, shared thumbnails and navigation routes intact. Seven actual-source position cases passed; full browser interaction/CLS and actual visual checks outstanding. Cache v280. Community real 1–10 rating read-path and further route/section consolidation remain queued on this same branch.
+
 ## 26 November 2026 — Omega homepage refinement (BRANCH ONLY)
 
 - #3207 merged e29dddb634eecd31528be69e1c1153674fd519a1, exact candidate tree, 23/23 PR workflows and 96 staged CLS measurements passed. Both production hosting builds and live navigation passed; original desktop More postmerge failure passed one controlled rerun. Owner's actual mobile screenshots show duplicate THEA1200 promotions, tall Pulse cards, missing carousel indicators, redundant routes and weak review invitation. Keep exclusive homepage slot; R205 and competing Arena website edits held. Full Lighthouse/postmerge qualification remains tracked separately.
