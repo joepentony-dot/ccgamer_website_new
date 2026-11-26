@@ -3672,6 +3672,7 @@ touchDpad?.addEventListener("touchstart", event => {
 }, { passive: false });
 
 function resetTouchDpadUi() {
+  setTouchDpadMask(0);
   touchDpadPointerId = null;
   touchDpadRect = null;
   renderTouchStick();
