@@ -1,3 +1,9 @@
+## 26 November 2026 — R198 Alchemist fallback feedback (dependent preparation)
+
+- R198 prepared on exact R197 draft head `9cdaeee0388ac8c18b40cdadcf44480c9976a277`; R195–R197 remain unmerged. General chat development continues; no new Codex request, no merge-gate bypass.
+- `v10-42-r55-shop-feedback.js` previously sent silent `banishment` purchase failures through ordinary Score fallback; retired Score purchases could also receive misleading wallet messages. R198 classifies retired Score, Alchemist eligibility, actual Essence cost including legacy Artefacts, existing carried charge and otherwise blocked distillation before ordinary currency logic. Avoids premature capacity claims where legacy payment could free a slot. No transaction, inventory, price, or currency mutations. Existing ordinary Gold/legacy Score feedback remains intact. Source `8404b9eb602ec97a16b90e40bcff7f401d05e60d`, regression `8a7c894a7d977ccf3bc8719b88349c40bf8f3218`; 33 isolated assertions passed. Full qualification pending.
+- R198 candidate V10.42 r198 / 20261126r198. Not released. Physical Windows acceptance and commercial release remain held. Reconcile with current main and satisfy all existing merge gates before integration.
+
 ## 26 November 2026 — R197 wearable action comparison (dependent preparation)
 
 - R197 prepared on exact R196 draft head `6534ec861162f957693df9a345077f4f652b419c`; no main-targeted R197 PR. R195 and R196 remain unmerged. Continue development in general chat; no new Codex request. Existing merge gates remain intact.
