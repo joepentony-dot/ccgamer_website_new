@@ -379,6 +379,48 @@ try {
   });
   delaySierraStyle=false;
 
+  // Actual Chromium touch events, not synthetic DOM pointer handlers:
+  // start inside the controller, steer beyond its edge, then lift.
+  const touchCommand = (type, points) => wd("POST","/session/"+session+"/goog/cdp/execute",{
+    cmd:"Input.dispatchTouchEvent",params:{type,touchPoints:points}
+  });
+  const padGeometry=await evaluate(session,`
+    const p=document.querySelector(".ccg-c64-touch-dpad"), b=document.querySelector("[data-touch-pad-mode]");
+    if(b.getAttribute("aria-pressed")==="true")b.click();
+    const r=p.getBoundingClientRect();
+    return {x:r.x+r.width/2,y:r.y+r.height/2,right:r.right,width:r.width,vw:innerWidth};
+  `);
+  const inside={x:Math.round(padGeometry.x+padGeometry.width/3),y:Math.round(padGeometry.y),id:1};
+  const outside={x:Math.round(Math.min(padGeometry.right+12,padGeometry.vw-2)),y:inside.y,id:1};
+  assert(outside.x>padGeometry.right,"Test needs real off-edge touch space");
+  const directionPressed=()=>evaluate(session,`
+    return document.querySelector('.ccg-c64-touch-dpad button[data-joy-mask="8"]').getAttribute("aria-pressed")==="true";
+  `);
+  for(const mode of ["dpad","stick"]){
+    if(mode==="stick")await evaluate(session,'document.querySelector("[data-touch-pad-mode]").click();');
+    try {
+      await touchCommand("touchStart",[inside]);
+      await sleep(80);
+      assert.equal(await directionPressed(),true,mode+" must steer right");
+      await touchCommand("touchMove",[outside]);
+      await sleep(80);
+      assert.equal(await directionPressed(),true,mode+" must retain right beyond the visible pad");
+    } finally {
+      await touchCommand("touchEnd",[]);
+    }
+    await sleep(80);
+    assert.equal(await directionPressed(),false,mode+" must release on finger lift");
+    if(mode==="stick"){
+      const centered=await evaluate(session,`
+        const s=document.querySelector(".ccg-c64-touch-dpad").style;
+        return s.getPropertyValue("--ccg-stick-x")==="0%" && s.getPropertyValue("--ccg-stick-y")==="0%";
+      `);
+      assert(centered,"Thumbstick must visually centre on release");
+    }
+  }
+  await evaluate(session,'document.querySelector("[data-touch-pad-mode]").click();');
+  console.log("PASS real Chromium touch capture beyond the D-pad and thumbstick");
+
   const mobileArenaLayout = `
     const rect = el => el.getBoundingClientRect();
     const node = selector => document.querySelector(selector);
