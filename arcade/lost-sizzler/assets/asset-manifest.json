@@ -19,6 +19,21 @@
       "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
     },
     "visualOverhaul": {
+      "r201ThresholdFlagstoneAtlas": {
+        "asset": "assets/pixel/visual-overhaul/r201/threshold-flagstones.svg",
+        "creator": "CCG project original artwork, programmatically authored for R201",
+        "provenance": "Original self-contained SVG geometry and pixel shading; no imported third-party art or reference image tracing.",
+        "dimensionsPx": [
+          168,
+          42
+        ],
+        "cells": [
+          4,
+          1
+        ],
+        "tilePx": 42,
+        "scope": "Floor 1 ordinary floor tiles only; existing local CC0 fallback and protected room appearance retained."
+      },
       "playerSheet": "assets/pixel/explorer-sheet-v10-34.png",
       "enemyWarriorSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/warrior-red.png",
       "enemySoldierSheet": "assets/pixel/visual-overhaul/shade-puny-enemies/soldier-red.png",
