@@ -362,7 +362,7 @@ const DISCOVERY_PRIORITY_SCRIPT = String.raw`
 return (function () {
     var pathname = location.pathname;
     var selectors = pathname === "/home.html"
-        ? [".home-hero", ".home-section--archive-dashboard", ".home-merch-promo", ".home-community-latest"]
+        ? [".home-hero", ".home-section--archive-dashboard", ".home-community-latest", ".home-merch-promo"]
         : [".games-hero", ".games-tools", ".games-omega-discovery", ".games-library"];
     return selectors.map(function (selector) {
         var element = document.querySelector(selector);

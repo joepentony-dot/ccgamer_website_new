@@ -1150,3 +1150,80 @@ function calmHeroCards() {
         card.style.setProperty('--glow-alpha', '0.30');
     });
 }
+
+
+// HOME CAROUSEL CONTROLS: no autoplay, cloned cards or additional requests.
+(function () {
+    "use strict";
+    function carouselIndex(positions, left, max) {
+        if (!positions.length || max <= 1) return 0;
+        if (left >= max - 2) return positions.length - 1;
+        let nearest = 0;
+        for (let i = 1; i < positions.length; i++) {
+            if (Math.abs(positions[i] - left) < Math.abs(positions[nearest] - left)) nearest = i;
+        }
+        return nearest;
+    }
+
+    function attachCarousel(panel, grid, selector, label) {
+        if (!panel || !grid || panel.querySelector(".ccg-home-carousel-controls")) return;
+        const bar = document.createElement("div");
+        bar.className = "ccg-home-carousel-controls";
+        bar.setAttribute("role", "group");
+        bar.setAttribute("aria-label", label + " navigation");
+        const makeButton = (direction, symbol) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = symbol;
+            button.setAttribute("aria-label", direction + " " + label);
+            return button;
+        };
+        const prev = makeButton("Previous", "‹");
+        const next = makeButton("Next", "›");
+        const counter = document.createElement("span");
+        counter.className = "ccg-home-carousel-position";
+        counter.setAttribute("aria-live", "polite");
+        bar.append(prev, counter, next);
+        panel.appendChild(bar);
+        let raf = 0;
+        let state = { positions: [], index: 0, max: 0 };
+        const measure = () => {
+            raf = 0;
+            const cards = [...grid.children].filter(card => card.matches(selector) && !card.classList.contains("home-video-card--loading"));
+            const max = Math.max(0, grid.scrollWidth - grid.clientWidth);
+            const left = Math.max(0, Math.min(max, grid.scrollLeft));
+            const first = cards[0]?.getBoundingClientRect().left ?? 0;
+            const positions = cards.map(card => Math.min(max, Math.max(0, card.getBoundingClientRect().left - first)));
+            const index = carouselIndex(positions, left, max);
+            state = { positions, index, max };
+            prev.setAttribute("aria-disabled", String(!max || index === 0));
+            next.setAttribute("aria-disabled", String(!max || index >= positions.length - 1));
+            const message = positions.length ? (index + 1) + " of " + positions.length + (max > 1 ? " · Swipe for more" : "") : "Loading picks…";
+            if (counter.textContent !== message) counter.textContent = message;
+        };
+        const queue = () => { if (!raf) raf = requestAnimationFrame(measure); };
+        const move = delta => {
+            measure();
+            const index = Math.max(0, Math.min(state.positions.length - 1, state.index + delta));
+            if (!state.max || index === state.index || !state.positions.length) return;
+            grid.scrollTo({ left: index === state.positions.length - 1 ? state.max : state.positions[index], behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+        };
+        prev.addEventListener("click", () => move(-1));
+        next.addEventListener("click", () => move(1));
+        grid.addEventListener("scroll", queue, { passive: true });
+        window.addEventListener("resize", queue, { passive: true });
+        if (typeof ResizeObserver === "function") new ResizeObserver(queue).observe(grid);
+        if (typeof MutationObserver === "function") new MutationObserver(queue).observe(grid, { childList: true });
+        queue();
+    }
+
+    function init() {
+        if (document.documentElement.dataset.ccgPage !== "home") return;
+        const pulse = document.querySelector(".ccg-archive-pulse[data-ccg-static-pulse='true']");
+        const featured = document.querySelector(".home-featured-videos");
+        attachCarousel(pulse, pulse?.querySelector(".ccg-archive-pulse__grid"), ".ccg-archive-pulse__card", "archive picks");
+        attachCarousel(featured, featured?.querySelector("[data-ccg-video-grid]"), ".home-video-card", "featured videos");
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
+    else init();
+})();

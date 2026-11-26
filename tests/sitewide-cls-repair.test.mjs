@@ -152,7 +152,12 @@ test('Home owns real mode status, Archive Pulse and artwork in its initial HTML'
   const home = fs.readFileSync('home.html', 'utf8');
   const hero = home.indexOf('<section class="home-hero');
   assert(home.indexOf('id="ccgModeIdentityBar"') < hero);
-  assert(home.indexOf('data-ccg-archive-pulse="true"') < hero);
+  const archive = home.indexOf('class="home-archive-launchpad"');
+  const pulse = home.indexOf('data-ccg-archive-pulse="true"');
+  const videos = home.indexOf('class="home-featured-videos"');
+  assert(hero >= 0 && hero < archive && archive < pulse && pulse < videos,
+    'static Archive Pulse belongs after the primary discovery routes, before featured videos');
+  assert.match(home, /<\/section>\n<script src="\/js\/ccg-archive-pulse-randomizer\.js"><\/script>/);
   const games = JSON.parse(fs.readFileSync('games/games-index.json'));
   for (const slug of ['ace-of-aces', '20-tons']) {
     const game = games.find(row => row.slug === slug);

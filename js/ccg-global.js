@@ -2954,6 +2954,23 @@ function setupFooterSignatureRotator() {
             </nav>
         `;
 
+        if (pageType === "home") {
+            const play = nav.querySelector('[data-ccg-floating-section="genres"]');
+            const explore = nav.querySelector('[data-ccg-floating-section="collections"]');
+            if (play) {
+                play.href = buildUrl("emulator/c64/");
+                play.dataset.ccgFloatingSection = "play";
+                play.setAttribute("aria-label", "Play C64 games");
+                play.querySelector(".ccg-floating-nav__label").textContent = "Play";
+            }
+            if (explore && document.getElementById("home-highlights-title")) {
+                explore.href = "#home-highlights-title";
+                explore.dataset.ccgFloatingSection = "explore";
+                explore.setAttribute("aria-label", "Explore the archive");
+                explore.querySelector(".ccg-floating-nav__label").textContent = "Explore";
+            }
+        }
+
         document.body.appendChild(nav);
         root.classList.add("ccg-has-floating-nav");
 
