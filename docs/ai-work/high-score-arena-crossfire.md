@@ -2,7 +2,7 @@
 
 - Production one-address signup created the member, Resend delivered one verification email, and the owner verified it. MariaDB confirmed activation with no unused proof. Secure sign-in redirected to the Sierra CRT emulator, which still showed a signed-in session after a full refresh. Signup, temporary member API and all score release flags were switched back off. No score was submitted.
 - The scoped member sign-in page adds an explicit Arena sign-out button. It calls the existing protected logout endpoint only upon user action and reports success only after the identity endpoint returns HTTP 401. No eager API calls or changes to the shared site login. Public code cache advances to v276.
-- Local checks: `node --check resources/js/auth/heliohost-score-login.js` and `node --test tests/heliohost-arena-sign-out.test.mjs` passed on Node 24.22.3. Exact-head CI and required merge gates, deployed sign-out, and the genuine Crossfire score through moderation and leaderboard retrieval are outstanding. Dropzone follows Crossfire.
+- Local checks: `node --check resources/js/auth/heliohost-score-login.js` and `node --test tests/high-score-arena-sierra-member-login.test.mjs` passed all 10 tests on Node 24.22.3. Exact-head CI and required merge gates, deployed sign-out, and the genuine Crossfire score through moderation and leaderboard retrieval are outstanding. Dropzone follows Crossfire.
 
 ## 25 November 2026 — private scoped signup package deployed
 
