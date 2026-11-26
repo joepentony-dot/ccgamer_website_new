@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/dungeon-carnage-visual-baseline.yml'
+      - 'arcade/lost-sizzler/js/game-render.js'
 
 permissions:
   contents: read
