@@ -45,6 +45,24 @@
   function fallbackFeedback(id,allowGeneric=true){
     const key=String(id||""),p=player(),shop=typeof activeShop!=="undefined"?activeShop:null;
     if(!p||!shop)return false;
+    // The Alchemist transaction uses Essence, not the ordinary shop wallet.
+    // Do not preflight capacity before legacy physical Artefacts are consumed:
+    // that payment can free the destination slot in an otherwise full pack.
+    if(key==="banishmentScore"){
+      state.fallbacks++;
+      return setStatus("WARD-BREAK SCORE PURCHASE RETIRED","Earn a Ward-Break Charge through a floor challenge or distil one from Essence at an Alchemist. Score cannot buy a charge.","cyan","retired-score-purchase")
+    }
+    if(key==="banishment"){
+      const report=(title,text,tone,reason)=>{state.fallbacks++;return setStatus(title,text,tone,reason)};
+      if(!(shop.v142Alchemist||String(shop.title||"").includes("ALCHEMIST")))return report("ALCHEMIST REQUIRED","Find a Banishment Alchemist to distil a Ward-Break Charge.","cyan","alchemist-required");
+      const need=Math.max(1,Math.floor(Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p))||Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
+      const count=value=>Math.max(0,Math.floor(Number(value)||0));
+      const items=Array.isArray(p.inventory)?p.inventory:[],physical=items.reduce((sum,item)=>sum+(item?.kind==="artefact"?Math.max(1,count(item.qty)||1):0),0),have=count(p.banishmentEssence)+physical;
+      if(have<need)return report("NOT ENOUGH BANISHMENT ESSENCE",`The Alchemist requires ${need} Essence. Your Vessel and any legacy Artefacts currently provide ${have}.`,"red","insufficient-essence");
+      if(items.some(item=>item?.kind==="banishment"))return report("WARD-BREAK CHARGE ALREADY CARRIED","Use your existing Ward-Break Charge before distilling another.","cyan","charge-already-carried");
+      if(!allowGeneric)return false;
+      return report("DISTILLATION BLOCKED","Check the available unlocked inventory slots. The Alchemist requires Essence, not Score or Gold.","red","distillation-blocked")
+    }
     const foundation=window.CCGDungeonProgressionFoundation;
     const goldOwned=Boolean(foundation?.ready&&typeof foundation.goldBalance==="function"&&typeof foundation.shopGoldPrice==="function"&&typeof run!=="undefined"&&run);
     if(goldOwned&&key!=="banishment"){
