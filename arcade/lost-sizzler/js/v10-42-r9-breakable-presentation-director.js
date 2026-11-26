@@ -69,6 +69,16 @@
     return indexFor(hostState)?.map?.get(`${Math.floor(Number(x)||0)},${Math.floor(Number(y)||0)}`)||[];
   }
 
+  // Share original Threshold wood artwork with the ordinary furniture owner.
+  // R8 still exclusively owns breakage, HP, rewards and objective progress.
+  function drawThresholdBreakableArt(prop,s){
+    if(prop.destroyed||prop.hazardous||prop.webbed)return false;
+    const type=prop.kind==="rotted-crate"?"crate":prop.kind==="rain-barrel"?"barrel":null;
+    if(!type||typeof drawDungeonPremiumFurniture!=="function")return false;
+    const hash=(Math.imul(Math.floor(prop.x)||0,73856093)^Math.imul(Math.floor(prop.y)||0,19349663))>>>0;
+    try{return drawDungeonPremiumFurniture({type,x:prop.x,y:prop.y},s,hash)===true}catch(_){return false}
+  }
+
   function silhouette(ctx,s,tile,prop,style){
     const cx=s.x+tile*.5,base=s.y+tile*.80,w=tile*.54,h=tile*.52,p=style.palette;
     ctx.save();
@@ -76,7 +86,9 @@
     ctx.fillStyle="rgba(0,0,0,.28)";ctx.beginPath();ctx.ellipse(cx,base+tile*.07,w*.58,tile*.105,0,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=`rgba(${p.body},.92)`;ctx.strokeStyle=`rgba(${p.edge},.82)`;ctx.lineWidth=Math.max(1,tile*.035);
     const kind=String(prop.kind||"");
-    if(style.material==="web"){
+    const premium=drawThresholdBreakableArt(prop,s);
+    if(premium){/* Keep the shared contact shadow and live HP crack below. */}
+    else if(style.material==="web"){
       ctx.beginPath();ctx.ellipse(cx,base-h*.42,w*.48,h*.52,0,0,Math.PI*2);ctx.fill();ctx.stroke();
       ctx.strokeStyle=`rgba(${p.edge},.58)`;ctx.lineWidth=1;
       for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(cx,base-h*.44);ctx.lineTo(cx+i*w*.28,base-h*.96);ctx.stroke()}
