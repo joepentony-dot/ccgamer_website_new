@@ -1,3 +1,9 @@
+## 26 November 2026 — Omega mobile homepage exclusive integration (BRANCH ONLY)
+
+- Owner-approved homepage simplification. R205 #3205 parked open at 63cccdeed99258b30710f81d42822b833a408d18; existing Dungeon and Arena website schedules instructed to remain read-only for website changes, with isolated Arena backend work permitted. No new automation. Base main f1aa562ddcbbce80a3eb9c416298d32a5c1ffd0c.
+- First candidate commit on feat/omega-mobile-homepage-20261126 reconciles only the validated THEA1200 hunks from #3169 onto exact current main: homepage card, dedicated details/metadata, scoped CSS and existing precise guard extension. Preserves exact affiliate URL and all previous href occurrences; code cache v276 to v277. #3118 and #3169 remain open, do not independently merge. Source hunk validation passed; full CI and live browser acceptance not run. No old cache version imported.
+- Next integrate the cumulative offline mobile launchpad candidate, both media owners, exact all-or-nothing guard and tests. Preserve existing desktop, intro, modes, links, counters, thumbnail isolation and account/backend safeguards. Run full actual browser/CI and Lighthouse with before/after visual review before deployment. Do not claim fixture results are full-site evidence. No Codex or Work required for connector source work; no main changes or production deploy.
+
 ## 1 November 2026 — Retro Specials deployed-browser acceptance (BRANCH ONLY)
 
 - After security fix #2995 merged at `6b3cd58f88cf8bc5fc604ca5cda964d1ae8f6b3d` and Pages/live navigation succeeded, the existing live browser workflow did **not** exercise Retro Specials thumbnail fallback or search. Public static HTML retrieval alone is not a desktop/mobile interaction test.
