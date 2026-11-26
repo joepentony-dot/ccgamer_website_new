@@ -460,7 +460,7 @@ html[data-ccg-page="home"] .home-archive-route--mobile-quick {
    Hardware news is separate and is NOT hidden by these selectors. */
 html[data-ccg-page="home"] .home-mobile-shop-support { display: none !important; }
 @media (max-width: 520px) {
-    html[data-ccg-page="home"]:has(.home-mobile-shop-support) :is(.home-merch-promo, .ccg-amazon-home-promo, .home-support-art) { display: none !important; }
+    html[data-ccg-page="home"]:has(.home-mobile-shop-support) :is(.ccg-amazon-home-promo, .home-support-art) { display: none !important; }
     html[data-ccg-page="home"] .home-mobile-shop-support {
         display: block !important;
         box-sizing: border-box;
@@ -536,9 +536,8 @@ html[data-ccg-page="home"] .home-mobile-media > :where(summary, .home-mobile-med
     }
 }
 
-/* Stage 9 — mobile hierarchy. No DOM mutation or added network work.
- * Reading-flow keeps sequential focus aligned with the visual order in
- * supporting browsers; older browsers retain DOM order and a compact Pulse.
+/* Mobile Archive Pulse density. No DOM mutation or added network work.
+ * Preserve original DOM and focus order; compact the existing Pulse instead.
  * Do not change the locked Pulse fallback markup or randomizer.
  */
 @media (max-width: 520px) {
@@ -563,13 +562,12 @@ html[data-ccg-page="home"] .home-mobile-media > :where(summary, .home-mobile-med
     html[data-ccg-page="home"]:has(.home-hero__actions--streamlined > a.home-hero__cta--mobile-play[href="/emulator/c64/"]) .home-c64-emulator-promo {
         display: none;
     }
-    @supports (reading-flow: flex-visual) {
-        html[data-ccg-page="home"] .ccg-main--home:has(> .ccg-archive-pulse[data-ccg-static-pulse="true"]) {
-            display: flex; flex-direction: column; reading-flow: flex-visual;
-        }
-        html[data-ccg-page="home"] .ccg-main--home > .ccg-home-search-command { order: -3; }
-        html[data-ccg-page="home"] .ccg-main--home > .home-hero,
-        html[data-ccg-page="home"] .ccg-main--home > .home-hero + .ccg-omega-divider { order: -2; }
-        html[data-ccg-page="home"] .ccg-main--home > .home-section--archive-dashboard { order: -1; min-width: 0; }
-    }
+    /* Retain source order after actual staged CLS failure; no main display/order override. */
+}
+
+/* Preserve the one canonical Fourthwall panel and link on both modes and sizes. */
+@media (max-width: 520px) {
+    html[data-ccg-page="home"] .home-merch-promo__link { grid-template-columns: 38px minmax(0, 1fr); gap: 8px; padding: 10px; }
+    html[data-ccg-page="home"] .home-merch-promo__mark { width: 38px; height: 38px; }
+    html[data-ccg-page="home"] .home-merch-promo__action { min-height: 44px; }
 }
