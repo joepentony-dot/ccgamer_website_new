@@ -644,3 +644,15 @@ html[data-ccg-page="home"] .ccg-home-carousel-controls { display: none; }
     html[data-ccg-page="home"] .home-featured-videos .home-video-card__play { min-width: 44px; min-height: 44px; padding: 5px 10px; font-size: .75rem; }
     html[data-ccg-page="home"] .ccg-floating-nav__label { font-size: clamp(.48rem, 1.9vw, .65rem); white-space: nowrap; overflow-wrap: normal; }
 }
+
+@media (max-width: 520px) {
+    html[data-ccg-page="home"] .home-community-latest__header { align-items: center; gap: 6px; }
+    html[data-ccg-page="home"] .home-community-latest__header > div { flex: 1 1 130px; }
+    html[data-ccg-page="home"] .home-community-latest__all { font-family: system-ui, sans-serif; font-size: .75rem; }
+    html[data-ccg-page="home"] .home-community-latest__copy { width: 100%; min-width: 0; display: grid; gap: 7px; }
+    html[data-ccg-page="home"] .home-community-rating-pick { display: grid; gap: 4px; padding: 9px; border: 1px solid rgba(var(--accent-rgb, 0,221,255), .3); }
+    html[data-ccg-page="home"] .home-community-rating-pick__title { font-weight: 700; overflow-wrap: anywhere; }
+    html[data-ccg-page="home"] .home-community-rating-pick__score { font: 600 .85rem/1.35 system-ui, sans-serif; color: #d7ecff; }
+    html[data-ccg-page="home"] .home-community-review-summary { display: grid; gap: 3px; border-top: 1px solid rgba(var(--accent-rgb,0,221,255), .2); padding-top: 8px; }
+    html[data-ccg-page="home"] .home-community-review-summary > strong { font-size: .85rem; }
+}

@@ -68,3 +68,15 @@ test("home mobile carousel position follows actual scroll and clamps both ends",
     assert.match(source, /grid\.addEventListener\("scroll", queue, \{ passive: true \}\)/);
     assert.match(source, /prefers-reduced-motion: reduce/);
 });
+
+test("home community rating summary uses genuine 1–10 data and distinguishes empty from invalid", () => {
+    const source = read("js/ccg-home-community.js");
+    const fn = source.match(/function ratingSummary\(row\) \{[\s\S]*?\n  \}/)?.[0];
+    assert.ok(fn);
+    const summary = new Function(fn + "; return ratingSummary;")();
+    for (const [input,want] of [[{"rating_count":2,"average_rating":8.5},{"count":2,"average":8.5}],[{"rating_count":"1","average_rating":"10"},{"count":1,"average":10}],[{"rating_count":0,"average_rating":0},{"count":0,"average":null}],[null,null],[{"rating_count":2,"average_rating":11},null],[{"rating_count":-1,"average_rating":5},null],[{"rating_count":1.2,"average_rating":8},null],[{"rating_count":2,"average_rating":null},null],[{"rating_count":1,"average_rating":0},null]]) assert.deepEqual(summary(input),want);
+    assert.match(source, /supabase\.rpc\("ccg_game_rating_summary"/);
+    assert.match(source, /Reviews are temporarily unavailable/);
+    assert.match(source, /#ccg-community-game-title/);
+    assert.doesNotMatch(source, /\.from\("ratings"\)/);
+});
