@@ -92,10 +92,39 @@ try{
   await page.waitForTimeout(70);
   await page.evaluate(()=>input.clear());
   await page.waitForTimeout(140);
-  const reasserted=await page.evaluate(code=>({held:input.has(code),count:window.CCGLostSizzlerV141R30.state.inputReassertions}),inputReassert.code);
+  const reasserted=await page.evaluate(code=>({
+    held:input.has(code),count:window.CCGLostSizzlerV141R30.state.inputReassertions,
+    bridges:window.CCGLostSizzlerV141R30.state.inputBridges,
+    mode,runActive:document.body.dataset.runActive,
+    hidden:document.hidden,focused:document.hasFocus(),activeElement:document.activeElement?.id||document.activeElement?.tagName,
+    input:[...input],controller:window.CCGLostSizzlerModeRuntime?.snapshot?.()?.activeId
+  }),inputReassert.code);
   await page.keyboard.up(inputReassert.code);
-  assert.equal(reasserted.held,true,"held movement must be reinserted after another layer clears the shared input set");
+  assert.equal(reasserted.held,true,"held movement must be reinserted after another layer clears the shared input set: "+JSON.stringify(reasserted));
   assert.ok(reasserted.count>beforeReassert,"input reassertion counter must record the self-heal");
+
+  // A simulated shared-input clear and a real controller frame in the same
+  // JS task prove recovery without allowing the interval to run between them.
+  await prepareSolo(page,"R30-FRAME-REASSERT");
+  const frameDirection=await directionFor(page);assert.ok(frameDirection);
+  await page.keyboard.down(frameDirection.code);
+  try{
+    const frameRecovery=await page.evaluate(code=>{
+      const guard=window.CCGLostSizzlerV141R30,controller=window.CCGLostSizzlerModeRuntime;
+      const count=guard.state.inputReassertions;
+      const prior=input.has(code);input.clear();
+      const boundary=controller.state.sharedFrameBoundary;
+      boundary(0);
+      return{prior,recovered:input.has(code),delta:guard.state.inputReassertions-count};
+    },frameDirection.code);
+    assert.equal(frameRecovery.prior,true,"physical keydown must reach the shared input set");
+    assert.equal(frameRecovery.recovered,true,"a real local simulation frame must recover the held key without waiting for the timer");
+    assert.ok(frameRecovery.delta>=1,"frame recovery must use the existing held-input owner");
+  }finally{await page.keyboard.up(frameDirection.code)}
+  const noGhost=await page.evaluate(code=>{
+    input.clear();window.CCGLostSizzlerModeRuntime.state.sharedFrameBoundary(0);return input.has(code);
+  },frameDirection.code);
+  assert.equal(noGhost,false,"a released key must never be reasserted by a subsequent frame");
 
   await prepareSolo(page,"R30-DEAD-WRAPPER");
   const deadDirection=await directionFor(page);assert.ok(deadDirection);

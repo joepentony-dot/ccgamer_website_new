@@ -272,13 +272,31 @@ try{
           const stoneBuilds=dungeonRenderPerformance.stoneReliefRasterBuilds||0;
           renderView(p1,{x:0,y:0,w:canvas.width,h:canvas.height});
           const warmCacheMisses=(dungeonRenderPerformance.stoneReliefRasterBuilds||0)-stoneBuilds;
+          const adaptiveQuality=String(dungeonRenderQuality());
+          // Compare fixed-rich synchronous Canvas submissions separately
+          // from adaptive RAF intervals. No change to production quality.
+          const controlled=[];
+          const priorQuality=dungeonRenderPerformance.quality;
+          try{
+            dungeonRenderPerformance.quality="rich";
+            const viewport={x:0,y:0,w:canvas.width,h:canvas.height};
+            renderView(p1,viewport);renderView(p1,viewport);
+            for(let n=0;n<7;n++){
+              const started=performance.now();
+              renderView(p1,viewport);
+              controlled.push(performance.now()-started);
+            }
+          }finally{dungeonRenderPerformance.quality=priorQuality}
+          const ordered=controlled.slice().sort((a,b)=>a-b);
+          const controlledRichSubmissionMs={quality:"rich",count:ordered.length,
+            median:Number(ordered[3].toFixed(3)),max:Number(ordered.at(-1).toFixed(3))};
           const values=[...frames].sort((a,b)=>a-b);
           const percentile=ratio=>Number(values[Math.min(values.length-1,Math.floor((values.length-1)*ratio))].toFixed(2));
           return{
             floor:selectedFloor,seed:String(seed),
             viewport:{width:innerWidth,height:innerHeight},
             canvas:{width:canvas.width,height:canvas.height},
-            quality:String(typeof dungeonRenderQuality==="function"?dungeonRenderQuality():"unavailable"),
+            quality:adaptiveQuality,controlledRichSubmissionMs,
             prefersReducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
             renderMotionReduced:Boolean(window.CCGLostSizzlerV142R70RenderPerformance?.reducedMotion?.()),
             stonework:{cacheEntries:dungeonStoneReliefCache.size,pixelBytes:dungeonStoneReliefBytes,byteBudget:DUNGEON_STONE_PIXEL_BUDGET,entryLimit:DUNGEON_STONE_ATLAS_LIMIT,warmCacheMisses,pilot:selectedFloor===1},
@@ -349,7 +367,7 @@ try{
       await mobileContext.close();
     }
     fs.writeFileSync(path.join(output,"frame-baseline.json"),JSON.stringify({
-      source:"Existing Canvas engine, controlled fixed run seed; RAF intervals only, not draw/GPU timing",
+      source:"Existing Canvas engine, controlled fixed run seed; adaptive RAF intervals and fixed-rich synchronous Canvas submission, not GPU timing",
       sourceHead:process.env.GITHUB_SHA||"local-working-copy",
       cacheWork:stoneCacheWork,
       cases:samples
