@@ -186,7 +186,7 @@ try {
 
   // Exercise the immersive layout rather than only the library. Geometry
   // is measured in real Chromium at small portrait and landscape viewports.
-  for (const [width, height] of [[320, 680], [390, 844], [844, 390]]) {
+  for (const [width, height] of [[320, 680], [360, 780], [390, 844], [412, 915], [844, 390]]) {
     await emulate(session, width, height, true);
     const v = await evaluate(session, [
       'var e=s=>document.querySelector(s);',
@@ -220,7 +220,25 @@ try {
       "Touch controls and bottom selector must appear after game screen");
     assert(v.opts.bottom <= height+4 && v.screen.height >= 35,
       "Immersive game screen or bottom buttons fall outside mobile viewport");
-    console.log("PASS C64 immersive mobile controls "+width+"x"+height);
+    // Both controller modes must occupy exactly the same physical footprint.
+    const padMode = await evaluate(session, [
+      'var pad=document.querySelector(".ccg-c64-touch-dpad"),toggle=document.querySelector("[data-touch-pad-mode]");',
+      'var rect=e=>{var r=e.getBoundingClientRect();return [r.x,r.y,r.width,r.height];};',
+      'if(toggle.getAttribute("aria-pressed")==="true")toggle.click();',
+      'var before=rect(pad),screen=rect(document.querySelector(".ccg-c64-screen-stage")),button=rect(toggle);',
+      'toggle.click();var mode=pad.dataset.mode,pressed=toggle.getAttribute("aria-pressed"),after=rect(pad),screenAfter=rect(document.querySelector(".ccg-c64-screen-stage"));',
+      'var hidden=getComputedStyle(pad.querySelector("button")).visibility,ball=getComputedStyle(pad,"::after").content;',
+      'toggle.click();return {before,after,screen,screenAfter,button,mode,pressed,hidden,ball,restored:pad.dataset.mode};'
+    ].join("\n"));
+    assert.equal(padMode.mode,"stick");
+    assert.equal(padMode.pressed,"true");
+    assert.equal(padMode.hidden,"hidden");
+    assert.notEqual(padMode.ball,"none");
+    assert.deepEqual(padMode.after,padMode.before,"Thumbstick must not resize or move directional controls");
+    assert.deepEqual(padMode.screenAfter,padMode.screen,"Controller choice must not move the C64 screen");
+    assert(padMode.button[2]>=44 && padMode.button[3]>=36,"Controller selector must be reachable");
+    assert.equal(padMode.restored,"dpad");
+    console.log("PASS C64 immersive mobile controls and optional thumbstick "+width+"x"+height);
     await evaluate(session, [
       'document.querySelector(".ccg-c64-console").classList.remove("is-mobile-playing");',
       'document.body.classList.remove("is-mobile-playing");',
@@ -360,6 +378,48 @@ try {
     cmd:"Network.setCacheDisabled",params:{cacheDisabled:false}
   });
   delaySierraStyle=false;
+
+  // Actual Chromium touch events, not synthetic DOM pointer handlers:
+  // start inside the controller, steer beyond its edge, then lift.
+  const touchCommand = (type, points) => wd("POST","/session/"+session+"/goog/cdp/execute",{
+    cmd:"Input.dispatchTouchEvent",params:{type,touchPoints:points}
+  });
+  const padGeometry=await evaluate(session,`
+    const p=document.querySelector(".ccg-c64-touch-dpad"), b=document.querySelector("[data-touch-pad-mode]");
+    if(b.getAttribute("aria-pressed")==="true")b.click();
+    const r=p.getBoundingClientRect();
+    return {x:r.x+r.width/2,y:r.y+r.height/2,right:r.right,width:r.width,vw:innerWidth};
+  `);
+  const inside={x:Math.round(padGeometry.x+padGeometry.width/3),y:Math.round(padGeometry.y),id:1};
+  const outside={x:Math.round(Math.min(padGeometry.right+12,padGeometry.vw-2)),y:inside.y,id:1};
+  assert(outside.x>padGeometry.right,"Test needs real off-edge touch space");
+  const directionPressed=()=>evaluate(session,`
+    return document.querySelector('.ccg-c64-touch-dpad button[data-joy-mask="8"]').getAttribute("aria-pressed")==="true";
+  `);
+  for(const mode of ["dpad","stick"]){
+    if(mode==="stick")await evaluate(session,'document.querySelector("[data-touch-pad-mode]").click();');
+    try {
+      await touchCommand("touchStart",[inside]);
+      await sleep(80);
+      assert.equal(await directionPressed(),true,mode+" must steer right");
+      await touchCommand("touchMove",[outside]);
+      await sleep(80);
+      assert.equal(await directionPressed(),true,mode+" must retain right beyond the visible pad");
+    } finally {
+      await touchCommand("touchEnd",[]);
+    }
+    await sleep(80);
+    assert.equal(await directionPressed(),false,mode+" must release on finger lift");
+    if(mode==="stick"){
+      const centered=await evaluate(session,`
+        const s=document.querySelector(".ccg-c64-touch-dpad").style;
+        return s.getPropertyValue("--ccg-stick-x")==="0%" && s.getPropertyValue("--ccg-stick-y")==="0%";
+      `);
+      assert(centered,"Thumbstick must visually centre on release");
+    }
+  }
+  await evaluate(session,'document.querySelector("[data-touch-pad-mode]").click();');
+  console.log("PASS real Chromium touch capture beyond the D-pad and thumbstick");
 
   const mobileArenaLayout = `
     const rect = el => el.getBoundingClientRect();

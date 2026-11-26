@@ -1,3 +1,8 @@
+## 26 November 2026 — optional mobile thumbstick candidate (source only)
+
+- Owner approved an optional ball-style virtual joystick and extended captured D-pad motion. Candidate retains one shared directional input owner, existing FIRE/JUMP/START pointers, Android single-touch guard, digital eight-way masks, and a persistent D-pad/stick toggle. Initial touch must be inside; captured drags can leave the rectangle. Fixed-base stick uses a radial neutral zone, visually bounded travel, automatic centring and preference fallback. D-pad remains default. Existing screen footprint and game/score paths are unchanged in source.
+- Branch `fix/c64-mobile-thumbstick-20261126` based on `014fce72ed2145d0038b3c5c85a9253b4182ff10`; no production merge or physical-device acceptance. Focused test source extends the existing actual-handler harness. Full exact-head CI, real Chromium mobile layout/touch checks, cache delivery and Samsung/iOS acceptance remain required. Coordinate existing Arena website task and Dungeon work; do not duplicate candidate. No new backend or score release changes.
+
 ## 25 November 2026 — Android D-pad long-press haptic candidate (branch only)
 
 - Owner-approved follow-up branch `fix/c64-android-dpad-haptic-20261125` starts from Pages-qualified main `85de5609aec9453bf0738372feca55ed5f4755da`.

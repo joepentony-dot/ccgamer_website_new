@@ -3261,6 +3261,46 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   .ccg-c64-faq-footer { font-size: 0.78rem; }
 }
 
+/* Optional touch thumbstick uses the existing D-pad footprint and input owner. */
+.ccg-c64-touch-dpad[data-mode="stick"] {
+  position: relative;
+  isolation: isolate;
+  --ccg-stick-x: 0%;
+  --ccg-stick-y: 0%;
+}
+.ccg-c64-touch-dpad[data-mode="stick"] > button { visibility: hidden; }
+.ccg-c64-touch-dpad[data-mode="stick"]::before,
+.ccg-c64-touch-dpad[data-mode="stick"]::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.ccg-c64-touch-dpad[data-mode="stick"]::before {
+  inset: 4%;
+  border: 2px solid #28cde8;
+  background: radial-gradient(circle, #172945 0 49%, #0a1429 50% 68%, #1b3a55 69% 72%, #091122 73%);
+  box-shadow: inset 0 0 16px #123c58, 0 0 8px #168ba1;
+}
+.ccg-c64-touch-dpad[data-mode="stick"]::after {
+  width: 42%;
+  aspect-ratio: 1;
+  left: calc(50% + var(--ccg-stick-x));
+  top: calc(50% + var(--ccg-stick-y));
+  transform: translate(-50%, -50%);
+  border: 2px solid #68e9ff;
+  background: radial-gradient(circle at 32% 26%, #91efff, #087ca6 44%, #06314e 85%);
+  box-shadow: 0 0 10px #159dbb;
+}
+.ccg-c64-mobile-pad-mode[aria-pressed="true"] {
+  border-color: #30d5eb;
+  color: #d6faff;
+}
+.ccg-c64-console.is-mobile-playing .ccg-c64-touch-options {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr) minmax(0, 0.75fr) minmax(0, 1.4fr);
+}
+
 /* Owner-approved FIND A GAME green beacon — 15 October 2026.
    Colour-only, scoped to the existing emulator library section.
    All layout, hidden states, touch targets and the LOAD mechanism remain owned

@@ -38,7 +38,13 @@ assert(from !== -1 && to > from, "Eight-way joystick source section must exist")
 
 const listeners = new Map();
 const visual = new Map();
+const modeListeners = new Map();
+const preferences = new Map();
+const modeButton = { textContent: "", setAttribute() {}, addEventListener(type, fn) { modeListeners.set(type, fn); } };
 const touchPad = {
+  dataset: {},
+  style: { setProperty() {} },
+  releasePointerCapture() {},
   querySelectorAll() {
     return masks.map(mask => ({
       dataset: { joyMask: String(mask) },
@@ -63,7 +69,8 @@ const holds = new Map();
 const fireButton = {};
 let syncs = 0;
 const context = vm.createContext({
-  document: { querySelector: selector => selector === ".ccg-c64-touch-dpad" ? touchPad : null },
+  document: { querySelector: selector => selector === ".ccg-c64-touch-dpad" ? touchPad : selector === "[data-touch-pad-mode]" ? modeButton : null },
+  localStorage: { getItem: key => preferences.get(key), setItem: (key, value) => preferences.set(key, value) },
   touchHeldButtons: holds,
   syncTouchJoystick() { syncs++; },
   inputStatus: { textContent: "" },
@@ -140,10 +147,34 @@ expectMask(0);
 event("pointerdown", 70, 190);
 expectMask(4);
 event("pointermove", 500, 500);
-expectMask(0);
+expectMask(10);
+event("pointermove", -100, 190);
+expectMask(4);
 event("pointermove", 270, 290);
 expectMask(10);
 context.resetPad();
 assert([...visual.values()].every(active => !active), "Reset must clear all pressed styling");
 assert(syncs >= 10, "Touch input must synchronise with the actual joystick pipeline");
+// A new gesture cannot start outside; captured motion can continue there.
+event("pointerdown", -100, 190);
+expectMask(0);
+event("pointermove", 270, 190);
+expectMask(0);
+modeListeners.get("click")();
+assert.equal(touchPad.dataset.mode, "stick");
+assert.equal(preferences.get("ccg.emulator.c64.touchPadMode"), "stick");
+event("pointerdown", 170, 190);
+expectMask(0);
+for (const [x,y,mask] of [[270,190,8],[270,290,10],[170,290,2],[70,290,6],[70,190,4],[70,90,5],[170,90,1],[270,90,9],[700,190,8]]) {
+  event("pointermove", x, y);
+  expectMask(mask);
+}
+holds.set(fireButton, { mask: 16, pointerId: 12 });
+modeListeners.get("click")();
+expectMask(0);
+assert.equal(holds.get(fireButton).mask, 16);
+assert.equal(touchPad.dataset.mode, "dpad");
+event("pointermove", 270, 190);
+expectMask(0);
+holds.delete(fireButton);
 console.log("Eight-way mobile joystick regression tests passed.");
