@@ -19,6 +19,21 @@
       "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
     },
     "visualOverhaul": {
+      "r204ThresholdFurnitureAtlas": {
+        "asset": "assets/pixel/visual-overhaul/r204/threshold-furniture.svg",
+        "creator": "CCG project original pixel furniture, authored for R204",
+        "provenance": "Original hand-constructed SVG silhouettes, wood grain, metalwork and book details; no imported art or reference tracing.",
+        "dimensionsPx": [
+          420,
+          42
+        ],
+        "cells": [
+          10,
+          1
+        ],
+        "tilePx": 42,
+        "scope": "Ordinary Floor 1 crate/barrel variants, bookcase, shelf, table, desk/readingDesk, bench and roundChair; no new placement, existing collision/damage owners and fallback retained."
+      },
       "r202ThresholdMasonryAtlas": {
         "asset": "assets/pixel/visual-overhaul/r202/threshold-masonry.svg",
         "creator": "CCG project original artwork, programmatically authored for R202",
