@@ -283,6 +283,10 @@
     const current=wearables(player)[slot];
     return `CURRENT: ${current?current.name+" · "+effectText(current):"EMPTY"} · NEW: ${item.name||"WEARABLE GEAR"} · ${effectText(item)} · ACTION: ${equipmentSwapLabel(current,item)}`
   }
+  function wearableActionDescription(player,item){
+    const slot=wearableSlot(item);if(!slot)return"Equipment slot unavailable — inspect this item";
+    return `${SLOT_LABELS[slot]} SLOT · ${wearableComparison(player,item)}`
+  }
   if(typeof itemInfoDetails==="function"){
     const baseInfo=itemInfoDetails;
     itemInfoDetails=function r80WearableInfo(item){
@@ -306,7 +310,7 @@
     const slots=wearables(player);
     strip.innerHTML=SLOT_ORDER.map(slot=>{
       const item=slots[slot],candidate=bestCarriedForSlot(player,slot),action=candidate?(item?"SWAP BEST":"EQUIP BEST"):"";
-      const equipButton=candidate?`<button type="button" data-r80-equip-slot="${slot}" aria-label="${escHtml(action+" "+candidate.item.name+" in "+SLOT_LABELS[slot]+" slot")}" title="${escHtml("Equip "+candidate.item.name+" from carried inventory")}" >${action}</button>`:"";
+      const equipButton=candidate?`<button type="button" data-r80-equip-slot="${slot}" aria-label="${escHtml(action+" "+candidate.item.name+" in "+SLOT_LABELS[slot]+" slot. "+wearableActionDescription(player,candidate.item))}" title="${escHtml(wearableActionDescription(player,candidate.item))}" >${action}</button>`:"";
       const unequipButton=item?`<button type="button" data-r80-unequip="${slot}" aria-label="${escHtml("Unequip "+item.name)}">UNEQUIP</button>`:"";
       return `<article class="r80-wearable-card ${item?"equipped":"empty"}" data-r80-slot="${slot}"><span>${SLOT_LABELS[slot]}</span><b>${escHtml(item?.name||"EMPTY")}</b><small>${escHtml(item?effectText(item):candidate?"CARRIED: "+candidate.item.name:"FIND WEARABLE GEAR IN DUNGEON CHESTS")}</small><div class="r80-wearable-actions">${equipButton}${unequipButton}</div></article>`
     }).join("");
@@ -348,7 +352,8 @@
       const target=wearableSlot(item),current=target?wearables(player)[target]:null;
       const button=document.createElement("button");button.type="button";
       button.textContent=equipmentSwapLabel(current,item);
-      button.title=target?`${SLOT_LABELS[target]}: ${current?"Replace "+current.name:"Equip in empty slot"}`:"Equipment slot unavailable — inspect this item";
+      button.title=wearableActionDescription(player,item);
+      button.setAttribute("aria-label",`${button.textContent} ${item.name||"WEARABLE GEAR"}. ${button.title}`);
       button.dataset.r80Equip=String(index);
       button.addEventListener("click",event=>{
         event.preventDefault();event.stopPropagation();

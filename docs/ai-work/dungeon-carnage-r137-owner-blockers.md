@@ -1,3 +1,9 @@
+## 26 November 2026 — R197 wearable action comparison (dependent preparation)
+
+- R197 prepared on exact R196 draft head `6534ec861162f957693df9a345077f4f652b419c`; no main-targeted R197 PR. R195 and R196 remain unmerged. Continue development in general chat; no new Codex request. Existing merge gates remain intact.
+- `v10-42-r80-wearable-equipment.js` adds comparison descriptions to existing quick-equip/quick-swap and carried wearable buttons, showing current and candidate gear effects with escaped tooltip/accessible text. Retains existing selection ordering, action labels, equip transactions, equipment effects and five slots. Actual extracted comparison and render owners passed 32 isolated assertions, including empty and occupied slots, escaped names, accessible controls, unchanged selection and immutable fixture state. Source `60b0ee94c20a799010fba73d995cdd1377edef71`, regression `44249ab3827dfb993d4b50ffc289c910aecdd7ec`. Exact-head CI and visual acceptance pending.
+- R197 candidate version V10.42 r197 / 20261126r197; no public release, no Windows acceptance claim, no commercial release. Reconcile onto current main after predecessor qualification before any protected merge.
+
 ## 26 November 2026 — R196 expanded inventory help (general chat)
 
 - Draft dependent PR #3193 targets R195 candidate branch, never main. R195 #3192 remains 11/11 automated qualified, independent Codex review deferred after usage limit, no merge. R196 first draft head `6489084c98e90c1f16420e93ddcb23eea8712268` triggered five workflows; full qualification against main remains outstanding.
