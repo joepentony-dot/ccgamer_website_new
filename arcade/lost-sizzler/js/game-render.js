@@ -68,6 +68,7 @@ const lostSizzlerPixelAssets=(()=>{
     environmentTiles:make(selected("environmentTileset")),
     premiumThresholdFurniture:make("assets/pixel/visual-overhaul/r204/threshold-furniture.svg"),
     premiumThresholdMasonry:make("assets/pixel/visual-overhaul/r202/threshold-masonry.svg"),
+    premiumBiomeFloorsR205:make("assets/pixel/visual-overhaul/r205/ironforge-keep-vault-catacomb-floors.svg"),
     premiumThresholdFlagstones:make("assets/pixel/visual-overhaul/r201/threshold-flagstones.svg"),
     floorTiles:[
       make(selected("floorTile1","assets/pixel/visual-overhaul/0x72/floor-1.png")),
@@ -547,6 +548,20 @@ function drawDungeonPremiumMasonry(s,h,room){
     return true
   }catch(_){return false}finally{ctx.globalAlpha=alpha}
 }
+// R205: four materially different original floor sets, one atlas draw.
+// Existing room and world ownership, protected chambers and severe fallback remain.
+function drawDungeonBiomeFloorR205(s,h,room){
+  const floor=Number(run?.floor||1);
+  if(!Number.isInteger(floor)||floor<2||floor>5||room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return false;
+  const art=lostSizzlerPixelAssets.premiumBiomeFloorsR205;
+  if(!art?.complete||art.naturalWidth!==168||art.naturalHeight!==168)return false;
+  const alpha=ctx.globalAlpha;
+  try{
+    ctx.globalAlpha=.9;
+    ctx.drawImage(art,((h>>>0)%4)*42,(floor-2)*42,42,42,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
+    return true
+  }catch(_){return false}finally{ctx.globalAlpha=alpha}
+}
 function drawTile(x,y){
   const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0;
   if(wall){
@@ -581,11 +596,14 @@ function drawTile(x,y){
   }
   const h=tileHash(x,y,variant+roomId),theme=room?.theme||"WARP_GALLERY";ctx.fillStyle=(x+y+variant)%2?th.floor:th.alt;ctx.fillRect(s.x,s.y,C.tile,C.tile);
   const floorSet=lostSizzlerPixelAssets.floorTiles||[],floorArt=floorSet.length?floorSet[h%floorSet.length]:null;
-  if(!drawDungeonPremiumFlagstone(s,h,room)&&floorArt?.complete&&floorArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.78;ctx.drawImage(floorArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+  const premiumBiomeFloor=drawDungeonBiomeFloorR205(s,h,room);
+  if(!drawDungeonPremiumFlagstone(s,h,room)&&floorArt?.complete&&floorArt.naturalWidth>=16&&!premiumBiomeFloor){const alpha=ctx.globalAlpha;ctx.globalAlpha=.78;ctx.drawImage(floorArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
   applyFloorTilePalette(s,false);
-  // Layered flagstone: recessed seams, fine grain, scuffs and theme inlays.
+  // Layered flagstone fallback; R205 has its seams and grain baked in.
+  if(!premiumBiomeFloor){
   ctx.fillStyle="rgba(255,255,255,.035)";ctx.fillRect(s.x+2,s.y+2,C.tile-5,2);ctx.fillRect(s.x+2,s.y+4,2,C.tile-7);ctx.fillStyle="rgba(0,0,0,.18)";ctx.fillRect(s.x,s.y+C.tile-4,C.tile,4);ctx.fillRect(s.x+C.tile-4,s.y,4,C.tile);ctx.strokeStyle="rgba(0,0,0,.22)";ctx.lineWidth=1;ctx.strokeRect(s.x+.5,s.y+.5,C.tile-1,C.tile-1);
   for(let grain=0;grain<3;grain++){const gx=4+((h>>>(grain*5))%(C.tile-9)),gy=5+((h>>>(grain*7+3))%(C.tile-10));ctx.fillStyle=grain===0?"rgba(255,255,255,.035)":"rgba(0,0,0,.07)";ctx.fillRect(s.x+gx,s.y+gy,1+(h>>grain)%3,1)}
+  }
   if(roomId<0)drawCorridorDetail(s,x,y,h,th);
   if(h%9===0){ctx.strokeStyle="rgba(7,4,10,.38)";ctx.beginPath();ctx.moveTo(s.x+5+(h%8),s.y+9);ctx.lineTo(s.x+17,s.y+18);ctx.lineTo(s.x+13+(h%11),s.y+30);ctx.stroke();ctx.strokeStyle=th.hi+"22";ctx.beginPath();ctx.moveTo(s.x+6+(h%8),s.y+9);ctx.lineTo(s.x+18,s.y+18);ctx.stroke()}
   if(h%13===0){ctx.fillStyle="rgba(8,4,12,.16)";ctx.beginPath();ctx.ellipse(s.x+10+(h%22),s.y+9+((h>>>6)%20),6+(h%4),3+(h%3),0,0,Math.PI*2);ctx.fill()}
