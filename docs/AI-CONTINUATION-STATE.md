@@ -1,3 +1,7 @@
+## 26 November 2026 — R200 release label qualification correction
+
+- Initial PR #3199 head `bb2b789fb6e8f8de737b4fcec8050dc720837785`: PR Qualification 45824233057 and Full Qualification 45824233314 stopped at the unchanged public-route contract, line 29, because both visible changelog headings still named R199 while the manifest was R200. Chromium was skipped, not passed. Correct both headings and add the R200 XP conservation release note in both entrypoints, preserving R199 and earlier history. No runtime or test changes. Full fresh exact-head qualification required; no merge/live claim or new Codex request.
+
 ## 26 November 2026 — R200 death-cache XP conservation (candidate)
 
 - R199 consolidated PR #3195 squash-merged at `014fce72ed2145d0038b3c5c85a9253b4182ff10`, all 11 premerge workflows and all seven postmerge workflow groups passed including production smoke 45790598049 and navigation 45791004933. Current main `3fd793a5fe584a71b1dd9cbe31064042b8a25435` retains R199. #3193/#3194 are superseded and must never be merged independently.
