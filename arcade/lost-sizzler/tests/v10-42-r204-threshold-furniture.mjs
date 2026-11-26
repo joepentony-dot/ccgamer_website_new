@@ -33,3 +33,28 @@ assert.match(furniture,/const premiumFurniture=drawDungeonPremiumFurniture\(d,q,
 assert.match(furniture,/else if\(propArt\?\.complete&&propArt\.naturalWidth\)/);
 assert.match(furniture,/blocker\.hp<blocker\.maxHp/);
 console.log("R204 original furniture variants, single bitmap, protected rooms, severe/decode fallback and damage owner PASS");
+
+
+// R9 also owns objective-prop silhouettes: exercise its actual helper and
+// silhouette, not just the ordinary furniture drawing route.
+const director=read("js/v10-42-r9-breakable-presentation-director.js");
+const start=director.indexOf("  function drawThresholdBreakableArt("),end=director.indexOf("  function pruneFx(",start);
+assert.ok(start>=0&&end>start);
+const submissions=[],marks=[];
+const spy={save(){},restore(){},beginPath(){},ellipse(){},fill(){},stroke(){marks.push("stroke")},moveTo(){},lineTo(){},fillRect(){marks.push("rect")},strokeRect(){marks.push("outline")},arc(){}};
+const propBox={drawDungeonPremiumFurniture(d,q,h){submissions.push({d,q,h});return propBox.ready},ready:true,reduced:()=>true,constrained:()=>false};
+vm.createContext(propBox);vm.runInContext(director.slice(start,end),propBox);
+const style={material:"wood",palette:{body:"118,76,46",edge:"213,154,87",detail:"80,48,31"},health:1,hazardous:false};
+const location={x:8,y:12},p=Object.freeze({kind:"rotted-crate",x:5,y:6,hp:3,maxHp:3,destroyed:false});
+propBox.silhouette(spy,location,42,p,style);
+assert.equal(submissions.length,1);assert.equal(submissions[0].d.type,"crate");
+assert.equal(marks.length,0,"successful original art must not draw legacy box or cross braces");
+propBox.silhouette(spy,location,42,{...p,kind:"rain-barrel"},{...style,health:.5});
+assert.equal(submissions.at(-1).d.type,"barrel");assert.deepEqual(marks,["stroke"],"damage crack must remain");
+for(const patch of [{destroyed:true},{hazardous:true},{webbed:true},{kind:"forge-cask"},{kind:"fallen-statue"}]){
+ const count=submissions.length;assert.equal(propBox.drawThresholdBreakableArt({...p,...patch},location),false);assert.equal(submissions.length,count);
+}
+marks.length=0;propBox.ready=false;propBox.silhouette(spy,location,42,p,style);
+assert.ok(marks.includes("outline"),"failed decode or out-of-scope art must retain procedural silhouette");
+assert.equal(p.hp,3);
+console.log("R204 objective crates/barrels, legacy fallback and damage feedback PASS");
