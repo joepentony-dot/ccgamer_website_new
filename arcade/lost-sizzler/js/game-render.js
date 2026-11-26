@@ -66,6 +66,7 @@ const lostSizzlerPixelAssets=(()=>{
     switchButtonDown:make(selected("switchButtonDown","assets/pixel/visual-overhaul/0x72/button-blue-down.png")),
     sigils:make(selected("sigilSheet","assets/pixel/visual-overhaul/cc0-portal/portal-sheet.png")),
     environmentTiles:make(selected("environmentTileset")),
+    premiumThresholdMasonry:make("assets/pixel/visual-overhaul/r202/threshold-masonry.svg"),
     premiumThresholdFlagstones:make("assets/pixel/visual-overhaul/r201/threshold-flagstones.svg"),
     floorTiles:[
       make(selected("floorTile1","assets/pixel/visual-overhaul/0x72/floor-1.png")),
@@ -516,13 +517,28 @@ function drawDungeonPremiumFlagstone(s,h,room){
     return true
   }catch(_){return false}finally{ctx.globalAlpha=alpha}
 }
+// R202: masonry courses are pre-authored pixels, not extra per-frame effects.
+function drawDungeonPremiumMasonry(s,h,room){
+  if(Number(run?.floor||1)!==1||room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return false;
+  const art=lostSizzlerPixelAssets.premiumThresholdMasonry;
+  if(!art?.complete||art.naturalWidth!==252||art.naturalHeight!==42)return false;
+  const hash=h>>>0,cell=hash%31===0?5:hash%23===0?4:hash%4;
+  const alpha=ctx.globalAlpha;
+  try{
+    ctx.globalAlpha=.88;
+    ctx.drawImage(art,cell*42,0,42,42,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
+    return true
+  }catch(_){return false}finally{ctx.globalAlpha=alpha}
+}
 function drawTile(x,y){
   const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0;
   if(wall){
     const h=tileHash(x,y,variant),course=(y+h%2)%2,theme=room?.theme||"WARP_GALLERY";ctx.fillStyle="#08060b";ctx.fillRect(s.x,s.y,C.tile,C.tile);ctx.fillStyle=th.wall;ctx.fillRect(s.x+1,s.y+1,C.tile-2,C.tile-2);
     const wallArt=h%31===0?lostSizzlerPixelAssets.wallTiles?.hole2:h%23===0?lostSizzlerPixelAssets.wallTiles?.hole1:lostSizzlerPixelAssets.wallTiles?.mid;
-    if(wallArt?.complete&&wallArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.72;ctx.drawImage(wallArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+    const premiumMasonry=drawDungeonPremiumMasonry(s,h,room);
+    if(!premiumMasonry&&wallArt?.complete&&wallArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.72;ctx.drawImage(wallArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
     applyFloorTilePalette(s,true);
+    if(!premiumMasonry){
     // Deep blockwork: inset courses, mortar, chipped corners and directional bevels.
     ctx.fillStyle="rgba(255,255,255,.075)";ctx.fillRect(s.x+2,s.y+2,C.tile-4,3);ctx.fillRect(s.x+2,s.y+5,2,C.tile-9);ctx.fillStyle="rgba(0,0,0,.34)";ctx.fillRect(s.x+C.tile-5,s.y+5,4,C.tile-6);ctx.fillRect(s.x+5,s.y+C.tile-5,C.tile-9,4);
     ctx.strokeStyle="rgba(8,5,12,.52)";ctx.lineWidth=2;for(let row=0;row<2;row++){const yy=s.y+9+row*16,offset=(row+course)%2?10:-6;ctx.beginPath();ctx.moveTo(s.x+2,yy);ctx.lineTo(s.x+C.tile-3,yy);ctx.stroke();for(let joint=offset;joint<C.tile;joint+=21){ctx.beginPath();ctx.moveTo(s.x+joint,yy);ctx.lineTo(s.x+joint,yy+15);ctx.stroke()}}
@@ -534,6 +550,7 @@ function drawTile(x,y){
     ctx.strokeStyle="rgba(255,255,255,.035)";ctx.lineWidth=1;ctx.strokeRect(s.x+5,s.y+6,C.tile-10,C.tile-11);
     if(h%5===0){ctx.fillStyle="rgba(0,0,0,.28)";ctx.fillRect(s.x+5+(h%23),s.y+7+((h>>>4)%24),3+(h%5),2);ctx.fillStyle=th.hi+"45";ctx.fillRect(s.x+6+(h%23),s.y+7+((h>>>4)%24),2,1)}
     if(h%11===0){ctx.strokeStyle="rgba(8,4,12,.68)";ctx.lineWidth=1.4;ctx.beginPath();const sx=s.x+7+(h%25),sy=s.y+5+((h>>>7)%18);ctx.moveTo(sx,sy);ctx.lineTo(sx-3,sy+7);ctx.lineTo(sx+2,sy+12);ctx.lineTo(sx-2,sy+19);ctx.stroke()}
+    }
     // Theme-specific wall hardware keeps rooms materially distinct.
     if(theme==="SID_REACTOR"||theme==="1541_WORKSHOP"){ctx.fillStyle="#77818d";for(const [rx,ry] of [[6,7],[C.tile-9,7],[6,C.tile-10],[C.tile-9,C.tile-10]])ctx.fillRect(s.x+rx,s.y+ry,3,3);ctx.strokeStyle=th.accent+"70";ctx.beginPath();ctx.moveTo(s.x+8,s.y+C.tile/2);ctx.lineTo(s.x+C.tile-8,s.y+C.tile/2);ctx.stroke()}
     else if(theme==="C64_ARCHIVE"||theme==="TAPE_STORE"){ctx.fillStyle="rgba(11,8,16,.5)";ctx.fillRect(s.x+8,s.y+12,C.tile-16,14);ctx.strokeStyle=th.accent+"62";ctx.strokeRect(s.x+9,s.y+13,C.tile-18,12);ctx.fillStyle=th.accent+"75";ctx.fillRect(s.x+13,s.y+17,5,4);ctx.fillRect(s.x+C.tile-18,s.y+17,5,4)}
