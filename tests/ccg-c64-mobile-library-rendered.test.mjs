@@ -186,7 +186,7 @@ try {
 
   // Exercise the immersive layout rather than only the library. Geometry
   // is measured in real Chromium at small portrait and landscape viewports.
-  for (const [width, height] of [[320, 680], [390, 844], [844, 390]]) {
+  for (const [width, height] of [[320, 680], [360, 780], [390, 844], [412, 915], [844, 390]]) {
     await emulate(session, width, height, true);
     const v = await evaluate(session, [
       'var e=s=>document.querySelector(s);',
@@ -220,7 +220,25 @@ try {
       "Touch controls and bottom selector must appear after game screen");
     assert(v.opts.bottom <= height+4 && v.screen.height >= 35,
       "Immersive game screen or bottom buttons fall outside mobile viewport");
-    console.log("PASS C64 immersive mobile controls "+width+"x"+height);
+    // Both controller modes must occupy exactly the same physical footprint.
+    const padMode = await evaluate(session, [
+      'var pad=document.querySelector(".ccg-c64-touch-dpad"),toggle=document.querySelector("[data-touch-pad-mode]");',
+      'var rect=e=>{var r=e.getBoundingClientRect();return [r.x,r.y,r.width,r.height];};',
+      'if(toggle.getAttribute("aria-pressed")==="true")toggle.click();',
+      'var before=rect(pad),screen=rect(document.querySelector(".ccg-c64-screen-stage")),button=rect(toggle);',
+      'toggle.click();var mode=pad.dataset.mode,pressed=toggle.getAttribute("aria-pressed"),after=rect(pad),screenAfter=rect(document.querySelector(".ccg-c64-screen-stage"));',
+      'var hidden=getComputedStyle(pad.querySelector("button")).visibility,ball=getComputedStyle(pad,"::after").content;',
+      'toggle.click();return {before,after,screen,screenAfter,button,mode,pressed,hidden,ball,restored:pad.dataset.mode};'
+    ].join("\n"));
+    assert.equal(padMode.mode,"stick");
+    assert.equal(padMode.pressed,"true");
+    assert.equal(padMode.hidden,"hidden");
+    assert.notEqual(padMode.ball,"none");
+    assert.deepEqual(padMode.after,padMode.before,"Thumbstick must not resize or move directional controls");
+    assert.deepEqual(padMode.screenAfter,padMode.screen,"Controller choice must not move the C64 screen");
+    assert(padMode.button[2]>=44 && padMode.button[3]>=36,"Controller selector must be reachable");
+    assert.equal(padMode.restored,"dpad");
+    console.log("PASS C64 immersive mobile controls and optional thumbstick "+width+"x"+height);
     await evaluate(session, [
       'document.querySelector(".ccg-c64-console").classList.remove("is-mobile-playing");',
       'document.body.classList.remove("is-mobile-playing");',
