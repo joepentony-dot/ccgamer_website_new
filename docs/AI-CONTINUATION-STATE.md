@@ -1,10 +1,15 @@
-## 26 November 2026 — R200 release label qualification correction
-
 ## 26 November 2026 — Arena live membership and sign-out candidate
 
 - Live restricted HelioHost registration, delivery of one verification email, activation, member sign-in and refresh persistence passed. The account is active and no unused verification token remains. Live release switches were restored off. No scores were submitted.
-- The isolated member page now has a sign-out candidate backed by the existing CSRF-protected logout route. The focused Node suite passed all three tests. Exact-head CI, merge, live sign-out and a genuine Crossfire score lifecycle remain pending. See [Crossfire Arena](ai-work/high-score-arena-crossfire.md).
+- The isolated member page now has a sign-out candidate backed by the existing CSRF-protected logout route. All 10 member tests passed locally; the previous PR head passed 17 workflows. Exact-head CI, merge, live sign-out and a genuine Crossfire score lifecycle remain pending. See [Crossfire Arena](ai-work/high-score-arena-crossfire.md).
 
+## 26 November 2026 — R201 original Threshold flagstone art pilot (candidate)
+
+- Owner reaffirmed no commercial publication until full graphical overhaul, tiles, gameplay, audio, and final acceptance complete. R200 #3199 merged at `134bcb17c48b265f18c904852d1356ec9c2f3b2f`; all 11 premerge workflows and six shards passed, production smoke 45828889565 confirms live R200 and closed membership gate. Postmerge Full 45828889780 remains running; do not merge R201 until predecessor completes. No Codex request, no new schedule.
+- Begin the premium-art programme with a new original self-contained four-cell 42px flagstone atlas for ordinary Floor 1, local asset with recorded provenance. Existing renderer loads it through the same versioned image owner, substitutes one bitmap for the existing floor sprite (no per-frame Canvas allocation), retains existing tints, gameplay overlays, protected rooms, later floors, severe-quality path and CC0 decode fallback. Isolated actual helper execution passes 57 assertions, source syntax and manifest parse pass; new Node contract added. This is a pilot, NOT a completed graphical overhaul or visual acceptance.
+- Existing visual evidence workflow now also runs on game-render.js changes; retain before/after same-seed 15-floor desktop/reduced-motion mobile captures and RAF metrics. Review actual captures and measured performance before merge; no claim of artistic acceptance or GPU improvement. Full exact-head qualification and package parity still required. P0 physical Windows incidents, soundtrack/voice and commercial release remain HOLD. Candidate V10.42 r201 / 20261126r201.
+
+## 26 November 2026 — R200 release label qualification correction
 
 - Initial PR #3199 head `bb2b789fb6e8f8de737b4fcec8050dc720837785`: PR Qualification 45824233057 and Full Qualification 45824233314 stopped at the unchanged public-route contract, line 29, because both visible changelog headings still named R199 while the manifest was R200. Chromium was skipped, not passed. Correct both headings and add the R200 XP conservation release note in both entrypoints, preserving R199 and earlier history. No runtime or test changes. Full fresh exact-head qualification required; no merge/live claim or new Codex request.
 

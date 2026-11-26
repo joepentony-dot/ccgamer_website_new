@@ -66,6 +66,7 @@ const lostSizzlerPixelAssets=(()=>{
     switchButtonDown:make(selected("switchButtonDown","assets/pixel/visual-overhaul/0x72/button-blue-down.png")),
     sigils:make(selected("sigilSheet","assets/pixel/visual-overhaul/cc0-portal/portal-sheet.png")),
     environmentTiles:make(selected("environmentTileset")),
+    premiumThresholdFlagstones:make("assets/pixel/visual-overhaul/r201/threshold-flagstones.svg"),
     floorTiles:[
       make(selected("floorTile1","assets/pixel/visual-overhaul/0x72/floor-1.png")),
       make(selected("floorTile2","assets/pixel/visual-overhaul/0x72/floor-2.png")),
@@ -502,6 +503,19 @@ function drawTilePerformance(x,y){
     if(edge){ctx.fillStyle="rgba(0,0,0,.10)";ctx.fillRect(s.x,s.y,C.tile,C.tile)}
   }
 }
+// R201: original, locally authored flagstone artwork. Existing room palette,
+ // corridor marks and gameplay overlays remain above this single bitmap draw.
+function drawDungeonPremiumFlagstone(s,h,room){
+  if(Number(run?.floor||1)!==1||room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return false;
+  const art=lostSizzlerPixelAssets.premiumThresholdFlagstones;
+  if(!art?.complete||art.naturalWidth!==168||art.naturalHeight!==42)return false;
+  const alpha=ctx.globalAlpha;
+  try{
+    ctx.globalAlpha=.82;
+    ctx.drawImage(art,((h>>>0)%4)*42,0,42,42,Math.round(s.x),Math.round(s.y),C.tile,C.tile);
+    return true
+  }catch(_){return false}finally{ctx.globalAlpha=alpha}
+}
 function drawTile(x,y){
   const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0;
   if(wall){
@@ -533,7 +547,7 @@ function drawTile(x,y){
   }
   const h=tileHash(x,y,variant+roomId),theme=room?.theme||"WARP_GALLERY";ctx.fillStyle=(x+y+variant)%2?th.floor:th.alt;ctx.fillRect(s.x,s.y,C.tile,C.tile);
   const floorSet=lostSizzlerPixelAssets.floorTiles||[],floorArt=floorSet.length?floorSet[h%floorSet.length]:null;
-  if(floorArt?.complete&&floorArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.78;ctx.drawImage(floorArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+  if(!drawDungeonPremiumFlagstone(s,h,room)&&floorArt?.complete&&floorArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.78;ctx.drawImage(floorArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
   applyFloorTilePalette(s,false);
   // Layered flagstone: recessed seams, fine grain, scuffs and theme inlays.
   ctx.fillStyle="rgba(255,255,255,.035)";ctx.fillRect(s.x+2,s.y+2,C.tile-5,2);ctx.fillRect(s.x+2,s.y+4,2,C.tile-7);ctx.fillStyle="rgba(0,0,0,.18)";ctx.fillRect(s.x,s.y+C.tile-4,C.tile,4);ctx.fillRect(s.x+C.tile-4,s.y,4,C.tile);ctx.strokeStyle="rgba(0,0,0,.22)";ctx.lineWidth=1;ctx.strokeRect(s.x+.5,s.y+.5,C.tile-1,C.tile-1);
