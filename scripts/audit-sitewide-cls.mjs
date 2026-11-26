@@ -185,6 +185,24 @@ try {
     assert.equal(await page.locator('[data-ccg-global-search-trigger]').count(), 1);
     assert.equal(await page.locator('.ccg-auth-slot').count(), 1);
     if (url === '/home.html' && [390, 412, 1440].includes(width)) {
+      const disclosure = page.locator('#homeCommunityLatest details.home-community-disclosure');
+      const summary = disclosure.locator('summary');
+      const panel = disclosure.locator('.home-community-disclosure__body');
+      assert.equal(await disclosure.getAttribute('open'), null, 'Community must begin collapsed');
+      assert.equal(await panel.isVisible(), false, 'Collapsed community content must be hidden');
+      await summary.scrollIntoViewIfNeeded();
+      await summary.click();
+      assert.equal(await disclosure.evaluate(el => el.open), true);
+      await panel.waitFor({ state: 'visible' });
+      await panel.getByRole('link', { name: 'Latest reviews →', exact: true }).waitFor({ state: 'visible' });
+      await panel.getByRole('link', { name: 'Top-rated games →', exact: true }).waitFor({ state: 'visible' });
+      assert(await panel.evaluate(el => el.scrollWidth <= el.clientWidth + 1), 'Expanded community overflows horizontally');
+      await page.locator('#homeCommunityLatest').screenshot({ path: path.join(reportDir, `home-${mode}-${width}-community-open.png`) });
+      await summary.focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await disclosure.evaluate(el => el.open), false, 'Keyboard must close community');
+      assert.equal(await panel.isVisible(), false);
+      console.log(`Homepage community mouse open/keyboard close and links passed at ${width}px in ${mode} mode`);
       // Retain the whole staged homepage, including the below-fold sections.
       // This runs only after the original loading and interaction assertions.
       await page.evaluate(() => window.scrollTo(0, 0));
