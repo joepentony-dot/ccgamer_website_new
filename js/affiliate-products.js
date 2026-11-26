@@ -535,6 +535,12 @@
         lastHomeConfig = config;
 
         const existing = document.querySelector(HOME_SPOTLIGHT_SELECTOR);
+        // The static homepage owns the hardware feature and the Retro Shop route.
+        // Do not inject a second promotion, including at the legacy shop switch.
+        if (document.querySelector("section.ccg-thea1200-home")) {
+            existing?.remove();
+            return;
+        }
         const hero = document.querySelector(".home-hero");
         const promo = config?.homepageRetroShop;
         const switchAt = Date.parse(toSafeString(promo?.start));
@@ -571,6 +577,7 @@
         if (document.documentElement.getAttribute("data-ccg-page") !== "home") return;
         if (homeSwitchTimer !== null) window.clearTimeout(homeSwitchTimer);
         homeSwitchTimer = null;
+        if (document.querySelector("section.ccg-thea1200-home")) return;
 
         const switchAt = Date.parse(toSafeString(config?.homepageRetroShop?.start));
         const remaining = switchAt - Date.now();

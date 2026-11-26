@@ -77,86 +77,99 @@
     }
   }
 
-  function renderEmpty(mount) {
-    mount.replaceChildren();
-    const copy = document.createElement("div");
-    copy.className = "home-community-latest__copy";
-    const title = document.createElement("strong");
-    title.textContent = "Be the first to leave a community review";
-    const note = document.createElement("p");
-    note.className = "home-community-latest__review";
-    note.textContent = "Open any game page, sign in and share your verdict out of 10.";
-    const link = document.createElement("a");
-    link.className = "home-community-latest__game";
-    link.href = "/games/";
-    link.textContent = "Choose a game →";
-    copy.append(title, note, link);
-    mount.append(copy);
+  function safeGameKey(value) {
+    const slug = text(value).trim().toLowerCase().replace(/_/g, "-");
+    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? slug : "";
   }
 
-  function renderLatest(mount, row, titles) {
-    const key = text(row.game_key).trim().toLowerCase().replace(/_/g, "-");
-    const title = titles.get(key) || key.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()) || "Community game";
-    const body = text(row.body).trim();
+  function ratingSummary(row) {
+    if (!row || row.rating_count == null || row.average_rating == null) return null;
+    const count = Number(row.rating_count), average = Number(row.average_rating);
+    if (!Number.isSafeInteger(count) || count < 0 || !Number.isFinite(average)) return null;
+    if (count === 0) return { count: 0, average: null };
+    if (average < 1 || average > 10) return null;
+    return { count, average };
+  }
 
-    mount.replaceChildren();
-    const copy = document.createElement("div");
-    copy.className = "home-community-latest__copy";
+  function selectedGame() {
+    const pick = document.querySelector('.ccg-archive-pulse [data-ccg-archive-pulse="game-of-the-day"]');
+    const match = pick?.getAttribute("href")?.match(/^\/games\/([a-z0-9-]+)\/$/);
+    const key = safeGameKey(match?.[1]);
+    const title = text(pick?.querySelector(".ccg-archive-pulse__name")?.textContent).trim();
+    return key && title ? { key, title } : null;
+  }
 
-    const game = document.createElement("a");
-    game.className = "home-community-latest__game";
-    game.href = gameUrl(key);
-    game.textContent = title + " received the latest review";
+  function element(tag, className, content) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    node.textContent = content;
+    return node;
+  }
 
-    const review = document.createElement("p");
-    review.className = "home-community-latest__review";
-    review.textContent = body ? "“" + (body.length > 180 ? body.slice(0, 177) + "…" : body) + "”" : "A new member verdict has been posted.";
+  function renderCommunity(mount, pick, score, reviewState, row, titles) {
+    const copy = element("div", "home-community-latest__copy", "");
+    copy.append(element("strong", "", "Rate the games you remember"));
+    copy.append(element("p", "home-community-latest__review", "Your scores out of 10 help other Commodore gamers discover their next favourite."));
+    if (pick) {
+      const feature = element("div", "home-community-rating-pick", "");
+      feature.append(element("span", "home-community-rating-pick__title", pick.title));
+      const status = score
+        ? score.count ? score.average.toFixed(1) + "/10 · " + score.count + (score.count === 1 ? " community vote" : " community votes") : "Not rated yet"
+        : "Community score unavailable";
+      feature.append(element("span", "home-community-rating-pick__score", status));
+      const rate = element("a", "ccg-community-btn", "Rate this game");
+      rate.href = gameUrl(pick.key) + "#ccg-community-game-title";
+      feature.append(rate);
+      copy.append(feature);
+    }
+    const browse = element("a", "home-community-latest__game", "Find a game to rate →");
+    browse.href = "/games/";
+    const top = element("a", "home-community-latest__game", "Top-rated games →");
+    top.href = "/community/top-rated.html";
+    copy.append(browse, top);
 
-    const meta = document.createElement("span");
-    meta.className = "home-community-latest__meta";
-    const date = row.created_at ? new Date(row.created_at) : null;
-    meta.textContent = date && !Number.isNaN(date.valueOf())
-      ? "Posted " + new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(date)
-      : "Latest community activity";
-
-    copy.append(game, review, meta);
-
-    const action = document.createElement("a");
-    action.className = "ccg-community-btn";
-    action.href = gameUrl(key) + "#ccg-community-game-title";
-    action.textContent = "Read the verdict";
-
-    mount.append(copy, action);
+    const recent = element("div", "home-community-review-summary", "");
+    recent.append(element("strong", "", "Latest community review"));
+    if (reviewState === "ready" && row) {
+      const key = safeGameKey(row.game_key);
+      const title = titles.get(key) || key.replace(/-/g, " ").replace(/\b\w/g, letter => letter.toUpperCase());
+      const game = element("a", "home-community-latest__game", title);
+      game.href = gameUrl(key) + "#ccg-community-game-title";
+      const body = text(row.body).trim();
+      recent.append(game, element("p", "home-community-latest__review", body ? "“" + (body.length > 140 ? body.slice(0, 137) + "…" : body) + "”" : "Read the latest member review."));
+    } else {
+      recent.append(element("p", "home-community-latest__review", reviewState === "empty" ? "No public reviews yet. Share your first verdict." : "Reviews are temporarily unavailable."));
+    }
+    copy.append(recent);
+    mount.replaceChildren(copy);
   }
 
   async function init() {
     installLostSizzlerHeroLogo();
-
     const mount = document.getElementById(mountId);
-    if (!mount || !window.ccgSupabase) return;
-
+    if (!mount) return;
+    const pick = selectedGame();
+    let score = null, row = null, reviewState = "unavailable", titles = new Map();
     try {
-      const [supabase, titles] = await Promise.all([
-        window.ccgSupabase.getClient(),
-        loadGameTitles()
+      if (!window.ccgSupabase) throw Error("Community client unavailable");
+      const supabase = await window.ccgSupabase.getClient();
+      const [scoreResult, reviewResult] = await Promise.allSettled([
+        pick ? supabase.rpc("ccg_game_rating_summary", { p_game_key: pick.key }) : Promise.resolve(null),
+        supabase.from("comments").select("game_key,body,created_at").eq("deleted", false).not("game_key", "is", null).order("created_at", { ascending: false }).limit(1)
       ]);
-      const { data, error } = await supabase
-        .from("comments")
-        .select("game_key,body,created_at")
-        .eq("deleted", false)
-        .order("created_at", { ascending: false })
-        .limit(1);
-
-      if (error) throw error;
-      if (!data || !data.length) {
-        renderEmpty(mount);
-        return;
+      if (scoreResult.status === "fulfilled" && scoreResult.value && !scoreResult.value.error) {
+        const data = scoreResult.value.data;
+        score = ratingSummary(Array.isArray(data) ? data[0] : data);
       }
-      renderLatest(mount, data[0], titles);
+      if (reviewResult.status === "fulfilled" && !reviewResult.value.error && Array.isArray(reviewResult.value.data)) {
+        row = reviewResult.value.data[0] || null;
+        reviewState = row && safeGameKey(row.game_key) ? "ready" : row ? "unavailable" : "empty";
+        if (reviewState === "ready") titles = await loadGameTitles();
+      }
     } catch (error) {
-      console.error("[CCG HOME COMMUNITY] Could not load latest review", error);
-      renderEmpty(mount);
+      console.warn("[CCG HOME COMMUNITY] Read unavailable", error);
     }
+    renderCommunity(mount, pick, score, reviewState, row, titles);
   }
 
   if (document.readyState === "loading") {

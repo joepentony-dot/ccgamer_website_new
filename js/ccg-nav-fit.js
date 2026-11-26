@@ -191,13 +191,13 @@
             const nav = toggle.closest(".ccg-nav");
             const more = toggle.closest(".ccg-nav__more");
             const menu = nav?.querySelector("[data-ccg-more-menu]");
-            if (!nav || !more || !menu || !menuHasOverflowLinks(menu)) {
-                if (nav && more && menu) {
-                    populateMore(menu, []);
-                    syncMoreAvailability(nav, more, toggle, menu);
-                }
-                return;
-            }
+            if (!nav || !more || !menu || !isDesktop()) return;
+
+            // A real first click can arrive before the scheduled initial fit.
+            // Finish the canonical desktop fit synchronously instead of
+            // dropping that click or exposing only supporting destinations.
+            fitNavigation();
+            if (toggle.disabled || !menuHasOverflowLinks(menu)) return;
 
             if (menu.hidden) openMore(toggle, menu);
             else closeMore(toggle, menu);
@@ -359,7 +359,8 @@
         const desktop = isDesktop();
         const items = allNavItems(nav);
         const signature = `${window.innerWidth}|${desktop}|${document.fonts?.status}|${items.map(item => item.querySelector(".ccg-nav__link")?.outerHTML || "").join("\n")}`;
-        if (lastFittedNav === nav && lastFitSignature === signature) {
+        if (lastFittedNav === nav && lastFitSignature === signature
+            && (!desktop || menuHasOverflowLinks(menu))) {
             // Height-only resizes still change popover clearance and its 70vh
             // maximum. Keep the same links, but keep the open menu on screen.
             if (!menu.hidden && isPopoverOpen(menu)) positionPopover(toggle, menu);
