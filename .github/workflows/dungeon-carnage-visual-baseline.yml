@@ -41,7 +41,7 @@ jobs:
         run: |
           set -euo pipefail
           renderer=arcade/lost-sizzler/js/game-render.js
-          git show "HEAD^1:$renderer" > "$RUNNER_TEMP/base-renderer.js"
+          git show "${{ github.event.pull_request.base.sha }}:$renderer" > "$RUNNER_TEMP/base-renderer.js"
           cp "$renderer" "$RUNNER_TEMP/candidate-renderer.js"
           trap 'cp "$RUNNER_TEMP/candidate-renderer.js" "$renderer"' EXIT
           cp "$RUNNER_TEMP/base-renderer.js" "$renderer"

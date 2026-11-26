@@ -1,0 +1,33 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import vm from "node:vm";
+const read=p=>fs.readFileSync(new URL("../js/"+p,import.meta.url),"utf8");
+const guard=read("v10-41-r30-global-movement-guard.js"),controller=read("v10-41-mode-runtime.js");
+const select=(s,a,b)=>{const i=s.indexOf(a),j=s.indexOf(b,i);assert.ok(i>=0&&j>i);return s.slice(i,j)};
+const guardFunctions=select(guard,"  function playerForCode(","  function directionForCode(");
+const preFrame=select(controller,"  function preSharedFrame(","  function postSharedFrame(");
+const input=new Set(),held=new Set(),player={};
+const state={inputBridges:0,inputReassertions:0,sharedPreFrames:0};
+const IDS={DUNGEON_SOLO:"solo",SPLIT_SCREEN:"split",SPY_ONLINE:"spy"};
+const current={id:"solo",profile:{family:"dungeon"}};
+const box={input,held,state,IDS,p1:player,p2:null,MOVE_CODES:new Set(["ArrowRight","KeyJ"]),P2_CODES:new Set(["KeyJ"]),watches:{p1:{},p2:{}},playing:()=>box.active,editableVisible:target=>target==="editor",setDir(){},sync:()=>current,active:true,window:{},console};
+vm.createContext(box);
+vm.runInContext(guardFunctions+preFrame+"\nwindow.CCGLostSizzlerV141R30={reassertHeldInput};",box);
+for(const id of ["solo","split"]){
+ current.id=id;box.active=true;
+ box.bridgeKeyDown({code:"ArrowRight",target:null});input.clear();
+ const before=state.inputReassertions;box.preSharedFrame(0);
+ assert.ok(input.has("ArrowRight"));assert.equal(state.inputReassertions,before+1);
+ box.preSharedFrame(0);assert.equal(state.inputReassertions,before+1);
+ box.bridgeKeyUp({code:"ArrowRight"});input.clear();box.preSharedFrame(0);
+ assert.equal(input.has("ArrowRight"),false);
+ box.bridgeKeyDown({code:"KeyJ",target:null});input.clear();box.preSharedFrame(0);
+ assert.ok(input.has("KeyJ"));box.clearHeld();input.clear();box.preSharedFrame(0);assert.equal(input.size,0);
+}
+current.id="solo";
+box.bridgeKeyDown({code:"ArrowRight",target:"editor"});input.clear();box.preSharedFrame(0);assert.equal(input.size,0);
+box.bridgeKeyDown({code:"ArrowRight",target:null});input.clear();box.active=false;box.preSharedFrame(0);
+assert.equal(input.size,0);assert.equal(held.size,0);box.active=true;box.preSharedFrame(0);assert.equal(input.size,0);
+box.bridgeKeyDown({code:"ArrowRight",target:null});input.clear();current.id="spy";box.preSharedFrame(0);assert.equal(input.size,0);
+current.id="other";box.preSharedFrame(0);assert.equal(input.size,0);box.clearHeld();
+console.log("R203 local simulation pre-frame held-input recovery, key-up, blur and non-playing isolation PASS");

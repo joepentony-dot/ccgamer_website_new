@@ -1,3 +1,8 @@
+## 26 November 2026 — R203 qualification hold: held-key recovery
+
+- R202 live main fbf110af49206be28d63fb7056df747a18a9e11d, postmerge Full 45855475202 failed shard 4 twice (jobs 140033902810 and 140052519762): existing R30 held-input reinsertion assertion at line 97. R203 original head 7f14e41608bb271616b365441eba8818f20ca351 passed 12/12 workflows, including this test in shard 4, and actual visual artifact 15136617693 inspected. Do not dismiss repeated predecessor failure as noise. No rerun loop or bypass.
+- R203 candidate now calls the existing R30 held-key reassertion from the authoritative shared pre-frame boundary only for Solo and split screen. This removes reliance solely on the 40ms maintenance timer when rendering delays it; exact underlying failure remains unconfirmed. Existing timer, physical held-set, key-up, blur and non-playing checks retained. Original 140ms browser assertion unchanged except diagnostics, plus deterministic real-frame recovery/no-ghost test and new Node contract. 18 actual extracted-source assertions passed. Require fresh exact-head CI and visual assessment plus explicit regression disposition; do not assert R202 original failed run passed. Commercial hold remains. No Codex or additional schedule.
+
 ## 26 November 2026 — R203 architectural depth and fixed-quality evidence (candidate)
 
 - R202 #3202 reconciled head 79736685239a72b8e7f0cbb24bd1f1ecf69a38e4 passed all 13 workflows, visual artifact 15130736026 inspected. Merged at `fbf110af49206be28d63fb7056df747a18a9e11d` with identical tree. Production smoke 45855475153 verifies live R202 and closed Round 2 gate at 16:08:27 UTC; postmerge Full 45855475202 still pending. No commercial release or owner artistic acceptance.
