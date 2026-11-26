@@ -184,6 +184,40 @@ try {
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('[data-ccg-global-search-trigger]').count(), 1);
     assert.equal(await page.locator('.ccg-auth-slot').count(), 1);
+    if (url === '/home.html' && [390, 412, 1440].includes(width)) {
+      // Retain the whole staged homepage, including the below-fold sections.
+      // This runs only after the original loading and interaction assertions.
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.screenshot({ path: path.join(reportDir, `home-${mode}-${width}-full.png`), fullPage: true });
+      if (width < 520) {
+        for (const label of ['archive picks', 'featured videos']) {
+          const controls = page.getByRole('group', { name: label + ' navigation', exact: true });
+          const next = controls.getByRole('button', { name: 'Next ' + label, exact: true });
+          const previous = controls.getByRole('button', { name: 'Previous ' + label, exact: true });
+          const position = controls.locator('.ccg-home-carousel-position');
+          await controls.scrollIntoViewIfNeeded();
+          await page.waitForFunction(label => {
+            const group = [...document.querySelectorAll('.ccg-home-carousel-controls')].find(node => node.getAttribute('aria-label') === label + ' navigation');
+            return /^1 of [2-9]|^1 of [1-9][0-9]/.test(group?.querySelector('.ccg-home-carousel-position')?.textContent || '') &&
+              group?.querySelector('button:last-child')?.getAttribute('aria-disabled') === 'false';
+          }, label, { timeout: 12000 });
+          const initial = await position.innerText();
+          await next.click();
+          await page.waitForFunction(({ label, initial }) => {
+            const group = [...document.querySelectorAll('.ccg-home-carousel-controls')].find(node => node.getAttribute('aria-label') === label + ' navigation');
+            return group?.querySelector('.ccg-home-carousel-position')?.textContent !== initial &&
+              group?.querySelector('button:first-child')?.getAttribute('aria-disabled') === 'false';
+          }, { label, initial }, { timeout: 5000 });
+          await previous.click();
+          await page.waitForFunction(({ label, initial }) => {
+            const group = [...document.querySelectorAll('.ccg-home-carousel-controls')].find(node => node.getAttribute('aria-label') === label + ' navigation');
+            return group?.querySelector('.ccg-home-carousel-position')?.textContent === initial;
+          }, { label, initial }, { timeout: 5000 });
+          assert.equal(await previous.getAttribute('aria-disabled'), 'true');
+          console.log(`Homepage ${label}: real next/previous click and position return passed at ${width}px in ${mode} mode`);
+        }
+      }
+    }
     if (url.includes('/games/')) {
       assert(await page.locator('#gameHeroTitle').innerText());
       assert.equal(await page.locator('#game-video-embed').getAttribute('src'), null, 'Video must remain deferred');
