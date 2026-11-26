@@ -66,6 +66,7 @@ const lostSizzlerPixelAssets=(()=>{
     switchButtonDown:make(selected("switchButtonDown","assets/pixel/visual-overhaul/0x72/button-blue-down.png")),
     sigils:make(selected("sigilSheet","assets/pixel/visual-overhaul/cc0-portal/portal-sheet.png")),
     environmentTiles:make(selected("environmentTileset")),
+    premiumThresholdFurniture:make("assets/pixel/visual-overhaul/r204/threshold-furniture.svg"),
     premiumThresholdMasonry:make("assets/pixel/visual-overhaul/r202/threshold-masonry.svg"),
     premiumThresholdFlagstones:make("assets/pixel/visual-overhaul/r201/threshold-flagstones.svg"),
     floorTiles:[
@@ -1465,6 +1466,29 @@ function dungeonAssetFitRect(image,x,y,width,height,alignBottom=false){
   const scale=Math.min(width/sw,height/sh),w=Math.max(1,Math.round(sw*scale)),h=Math.max(1,Math.round(sh*scale));
   return {x:Math.round(x+(width-w)/2),y:Math.round(y+(alignBottom?height-h:(height-h)/2)),w,h};
 }
+// R204 original transparent, tile-sized props. Geometry remains entirely in
+// the existing world/host owners. Never add furniture from the art renderer.
+function drawDungeonPremiumFurniture(d,q,h){
+  if(Number(run?.floor||1)!==1||dungeonRenderSevere())return false;
+  const room=world.rooms?.[W.roomAt(world,d.x,d.y)];
+  if(room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return false;
+  const art=lostSizzlerPixelAssets.premiumThresholdFurniture;
+  if(!art?.complete||art.naturalWidth!==420||art.naturalHeight!==42)return false;
+  let cell=-1;
+  switch(d.type){
+    case "crate":cell=(h>>>0)%2;break;
+    case "barrel":cell=2+(h>>>0)%2;break;
+    case "bookcase":cell=4;break;
+    case "shelf":cell=5;break;
+    case "table":cell=6;break;
+    case "desk":case "readingDesk":cell=7;break;
+    case "bench":cell=8;break;
+    case "roundChair":cell=9;break;
+    default:return false;
+  }
+  try{ctx.drawImage(art,cell*42,0,42,42,Math.round(q.x),Math.round(q.y),C.tile,C.tile);return true}
+  catch(_){return false}
+}
 function drawFurniture(){
   for(const d of world.decor||[]){
     if(d.destroyed||d.blocking&&!d.structural&&!(host.blockingDecor||[]).some(b=>b.id===d.id))continue;if(!tileInRenderView(d.x,d.y,2)||!visibleTo(focus,d.x,d.y))continue;const q=ws(d.x,d.y),th=W.themeAt(world,d.x,d.y),dark="#241c2c",wood="#6f482b",woodHi="#a66a37",metal="#65707a",glow=th.accent,h=tileHash(d.x,d.y,d.variant||0),pulse=dungeonReducedMotion()?.82:.65+.35*Math.sin(performance.now()/240+(h%19));ctx.save();ctx.globalAlpha=.98;ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.34)";ctx.beginPath();ctx.ellipse(q.x+C.tile/2,q.y+C.tile-4,d.blocking?17:13,4,0,0,Math.PI*2);ctx.fill();
@@ -1474,7 +1498,9 @@ function drawFurniture(){
       :["terminal","console"].includes(d.type)?lostSizzlerPixelAssets.propConsole
       :d.type==="pillar"?lostSizzlerPixelAssets.propPillar:null;
     const fireplaceFrames=lostSizzlerPixelAssets.fireplaceFrames||[],torchSconceFrames=lostSizzlerPixelAssets.torchSconceFrames||[];
-    if(propArt?.complete&&propArt.naturalWidth){
+    const premiumFurniture=drawDungeonPremiumFurniture(d,q,h);
+    if(premiumFurniture){/* Authored silhouette already includes material detail. */}
+    else if(propArt?.complete&&propArt.naturalWidth){
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor="rgba(0,0,0,.52)";ctx.shadowBlur=5;
       if(d.type==="pillar"){
         // The plinth fills the existing blocking tile even though this 16x48
@@ -1553,7 +1579,7 @@ function drawFurniture(){
       ctx.fillStyle=wood;ctx.fillRect(q.x+6,q.y+7,C.tile-12,C.tile-10);ctx.strokeStyle=woodHi;ctx.strokeRect(q.x+6,q.y+7,C.tile-12,C.tile-10);ctx.beginPath();ctx.moveTo(q.x+7,q.y+8);ctx.lineTo(q.x+C.tile-7,q.y+C.tile-8);ctx.stroke()
     }
     // Shared material pass: edge wear, fasteners, scratches and contact shadow.
-    ctx.globalAlpha=.52;ctx.fillStyle="rgba(255,255,255,.15)";ctx.fillRect(q.x+6,q.y+6,Math.max(4,C.tile-12),1);if(h%3===0){ctx.strokeStyle="rgba(10,5,13,.42)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(q.x+8+(h%9),q.y+9);ctx.lineTo(q.x+16+(h%12),q.y+18);ctx.stroke()}if(d.blocking){ctx.fillStyle="rgba(0,0,0,.28)";ctx.fillRect(q.x+4,q.y+C.tile-5,C.tile-8,3);ctx.fillStyle="#c4a35c";ctx.fillRect(q.x+6,q.y+C.tile-7,2,2);ctx.fillRect(q.x+C.tile-8,q.y+C.tile-7,2,2)}const blocker=(host.blockingDecor||[]).find(b=>b.id===d.id);if(blocker&&!blocker.structural&&blocker.hp<blocker.maxHp){ctx.globalAlpha=.9;ctx.strokeStyle="#fff0b2";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(q.x+8,q.y+7);ctx.lineTo(q.x+18,q.y+18);ctx.lineTo(q.x+13,q.y+29);ctx.moveTo(q.x+18,q.y+18);ctx.lineTo(q.x+31,q.y+12);ctx.stroke()}ctx.globalAlpha=1;ctx.restore()
+    ctx.globalAlpha=.52;if(!premiumFurniture){ctx.fillStyle="rgba(255,255,255,.15)";ctx.fillRect(q.x+6,q.y+6,Math.max(4,C.tile-12),1);if(h%3===0){ctx.strokeStyle="rgba(10,5,13,.42)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(q.x+8+(h%9),q.y+9);ctx.lineTo(q.x+16+(h%12),q.y+18);ctx.stroke()}}if(d.blocking){ctx.fillStyle="rgba(0,0,0,.28)";ctx.fillRect(q.x+4,q.y+C.tile-5,C.tile-8,3);ctx.fillStyle="#c4a35c";ctx.fillRect(q.x+6,q.y+C.tile-7,2,2);ctx.fillRect(q.x+C.tile-8,q.y+C.tile-7,2,2)}const blocker=(host.blockingDecor||[]).find(b=>b.id===d.id);if(blocker&&!blocker.structural&&blocker.hp<blocker.maxHp){ctx.globalAlpha=.9;ctx.strokeStyle="#fff0b2";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(q.x+8,q.y+7);ctx.lineTo(q.x+18,q.y+18);ctx.lineTo(q.x+13,q.y+29);ctx.moveTo(q.x+18,q.y+18);ctx.lineTo(q.x+31,q.y+12);ctx.stroke()}ctx.globalAlpha=1;ctx.restore()
   }
 }
 function drawGenerators(){
