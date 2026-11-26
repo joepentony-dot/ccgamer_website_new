@@ -1,5 +1,6 @@
 'use strict';
 const { createHash } = require('node:crypto');
+const { stripApprovedMobileLaunchpad } = require('./home-mobile-launchpad-contract.cjs');
 const { PUBLIC_HEADER_FIRST_PAINT_STYLES, MODE_BODY_BOOTSTRAP, buildModeIdentityMarkup } = require('./normalize-public-header-shell.js');
 const compact = value => String(value).replace(/\s+/g, ' ').trim();
 const digest = value => createHash('sha256').update(compact(value)).digest('hex');
@@ -24,7 +25,7 @@ const REVIEWED_RETRO_SHOP_CSS_TAGS = [
 
 
 function stripApprovedHomeCls(html) {
-  let output = String(html);
+  let output = stripApprovedMobileLaunchpad(html);
   const styles = [...output.matchAll(/<link\b[^>]*data-ccg-public-header-first-paint-style="true"[^>]*>/g)].map(match => match[0]);
   if (styles.length) {
     if (styles.length !== PUBLIC_HEADER_FIRST_PAINT_STYLES.length) throw Error('Incomplete first-paint Home CSS stack');

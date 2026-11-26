@@ -63,6 +63,32 @@
         return configured;
     }
 
+    function attachHomeMedia(root, section, slotSelector) {
+        const slot = document.documentElement.matches('[data-ccg-page="home"]') ? root.querySelector(slotSelector) : null;
+        if (!slot || typeof window.matchMedia !== "function") {
+            root.appendChild(section);
+            return () => {};
+        }
+        const media = window.matchMedia("(max-width: 520px)");
+        const anchor = document.createComment("ccg-home-media-original-position");
+        root.appendChild(anchor);
+        const place = () => {
+            const focused = section.contains(document.activeElement) ? document.activeElement : null;
+            if (media.matches && slot.isConnected) {
+                if (section.parentNode !== slot) {
+                    if (focused) slot.closest("details").open = true;
+                    slot.appendChild(section);
+                }
+            } else if (anchor.isConnected && anchor.nextSibling !== section) {
+                anchor.after(section);
+            }
+            if (focused && document.activeElement !== focused) focused.focus({ preventScroll: true });
+        };
+        place();
+        media.addEventListener("change", place);
+        return () => { media.removeEventListener("change", place); anchor.remove(); };
+    }
+
     function render(items) {
         const root = target();
         if (!root || document.querySelector("[data-ccg-recent-content]")) return;
@@ -111,7 +137,7 @@
             </div>
         `;
 
-        root.appendChild(section);
+        attachHomeMedia(root, section, "[data-ccg-home-video-slot]");
     }
 
     async function init() {

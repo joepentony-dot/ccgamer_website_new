@@ -1,3 +1,8 @@
+## 26 November 2026 — Omega mobile launchpad integrated (BRANCH ONLY)
+
+- Cumulative tested homepage-only CSS committed with exact blob `4a618189829598e625088e9f92368a14ac5f3e0a`; integrate five exact static blocks, responsive media relocation in the two original owners and all-or-nothing guard helper plus regression. Existing #3169 hardware feature and guard remain. In-memory actual hardware-candidate HTML transformation restores original exactly, retains all 109 original href occurrences and 27 script blocks, adds 11 hrefs, rejects 25 malformed/moved/duplicate blocks. Prior isolated Chromium layout/media tests remain fixture evidence only. Cache v277 already advanced from main v276 in this branch. No intro, catalogue, other CSS, backend or Dungeon changes.
+- Require complete current-head CI, actual homepage mobile/desktop C64/Amiga screenshots, live search/play/video/history/counters/support checks, overflow/keyboard and repeated Lighthouse/CLS evidence before any release. R205 parked and Arena website changes held. No Codex, no Work, no new schedule. Do not independently merge stale hardware PRs #3118/#3169.
+
 ## 26 November 2026 — Omega mobile homepage exclusive integration (BRANCH ONLY)
 
 - Owner-approved homepage simplification. R205 #3205 parked open at 63cccdeed99258b30710f81d42822b833a408d18; existing Dungeon and Arena website schedules instructed to remain read-only for website changes, with isolated Arena backend work permitted. No new automation. Base main f1aa562ddcbbce80a3eb9c416298d32a5c1ffd0c.
