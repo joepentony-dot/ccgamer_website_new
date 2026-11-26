@@ -10,6 +10,9 @@
         if (document.documentElement.getAttribute("data-ccg-page") !== "home") {
             return;
         }
+        // A canonical static hardware feature and shop links already exist.
+        // Avoid the old injected banner and its unnecessary config/style request.
+        if (document.querySelector("section.ccg-thea1200-home")) return;
         if (document.querySelector('script[data-ccg-home-affiliate-loader="true"]')) {
             return;
         }

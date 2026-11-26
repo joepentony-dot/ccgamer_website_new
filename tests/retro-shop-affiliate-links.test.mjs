@@ -104,6 +104,7 @@ class TestClock extends Date {
   static now() { return clock; }
 }
 let currentSpotlight = null;
+let canonicalFeature = null;
 const timerQueue = [];
 const listeners = {};
 const element = (tag) => ({
@@ -133,6 +134,7 @@ const documentMock = {
   querySelector(selector) {
     if (selector === "[data-ccg-home-affiliate-spotlight]") return currentSpotlight;
     if (selector === ".home-hero") return hero;
+    if (selector === "section.ccg-thea1200-home") return canonicalFeature;
     return null;
   },
   addEventListener(name, callback) { listeners[name] = callback; }
@@ -183,5 +185,22 @@ assert.ok(!afterLinks.some((link) => String(link.href).includes("B0G1L9Q7WK")), 
 listeners.visibilitychange();
 assert.ok(currentSpotlight?.className.includes("--retro-shop"), "Returning from sleep must retain the shop");
 
-console.log("[retro-shop] Ten original product URLs, 15 Dec handover, home image/More info links, Amazon CTA and disclosures validated.");
+// The static feature is now authoritative; no second advertisement before or
+// after the legacy deadline, including returning from sleep or old DOM state.
+canonicalFeature = element("section");
+clock = Date.parse("2026-12-14T23:59:59.999Z");
+listeners.visibilitychange();
+assert.equal(currentSpotlight, null, "Static THEA1200 feature suppresses duplicate runtime spotlight");
+assert.equal(canonicalFeature.tagName, "section", "Canonical hardware panel remains");
+clock = Date.parse("2026-12-15T00:00:00Z");
+listeners.pageshow();
+assert.equal(currentSpotlight, null, "Legacy shop switch cannot insert another banner on the canonical home");
+const canonicalPanel = home.match(/<section class="ccg-thea1200-home"[\s\S]*?<\/section>/)?.[0];
+assert.ok(canonicalPanel, "Canonical static hardware panel exists");
+assert.equal((home.match(/<section class="ccg-thea1200-home"/g) || []).length, 1);
+assert.ok(canonicalPanel.includes(config.products.thea1200.url.replaceAll("&", "&amp;")), "Exact affiliate URL retained");
+assert.match(canonicalPanel, /As an Amazon Associate I earn from qualifying purchases\./);
+assert.doesNotMatch(canonicalPanel, /MORE FROM AMAZON/);
+assert.match(homeAffiliateLoader, /document\.querySelector\("section\.ccg-thea1200-home"\)\) return;/);
+console.log("[retro-shop] Legacy fallback, canonical single feature, original URLs, disclosures and deadline behaviour validated.");
 
