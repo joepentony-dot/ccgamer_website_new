@@ -1,3 +1,9 @@
+## 26 November 2026 — R199 partial death-cache consumable recovery (dependent preparation)
+
+- R199 prepared from exact R198 draft PR #3195 head `6a11e22f34e626d66b9d1fde5074518e7c8258df`. R195–R198 remain unmerged; development continues within general chat, independent Codex review deferred. No bypass of merge safeguards.
+- Actual R198 `progression.js::recoverDeathCache` allowed only Teleport Spells to partially refill stacks after an atomic inventory insertion failed. With a full three-slot pack, one spare potion space and three cached potions, recovered zero. R199 extends the same existing single-unit recovery path to potion, torch and mapReveal. Unclaimed quantities stay in the cache, single Ward-Break ownership and all other rewards/transaction paths unchanged. Source `d622de570c724bbd0f7ba8ae924308a9762cfb63`, regression `f7407e9fa8f13623c94554cff6cd38b132ac17ea`. Original fails the first potion recovery assertion; patched actual extracted recovery and inventory functions pass 75 isolated assertions, covering four supply types, JSON round-trip retry, capacity, cache completion exactly once, and existing charge limit. Full CI and physical acceptance pending.
+- Candidate V10.42 r199 / 20261126r199. No public release. Reconcile onto current main after predecessor integration and all existing gates. Physical Windows freeze and second-charge acceptance still outstanding; commercial release held.
+
 ## 26 November 2026 — R198 Alchemist fallback feedback (dependent preparation)
 
 - R198 prepared on exact R197 draft head `9cdaeee0388ac8c18b40cdadcf44480c9976a277`; R195–R197 remain unmerged. General chat development continues; no new Codex request, no merge-gate bypass.
