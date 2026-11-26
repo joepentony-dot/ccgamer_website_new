@@ -1,3 +1,14 @@
+## 26 November 2026 — R202 qualified head reconciliation
+
+- R202 exact head `c16b5e65990b56ef890f4ee7d78d0640102456fa` passed all 13 workflows, six Chromium shards and actual before/after visual capture 45838933657 (artifact 15128025539). Floor 1 artwork inspected; medians unchanged (desktop 100.1ms, mobile 50ms), desktop p95 133.4→150ms and mobile p95 66.7→66.7ms. Single sample, no performance improvement claim. Further optimisation and artistic acceptance outstanding. R201 postmerge Full 45837377678 passed all six shards.
+- Normal guarded merge returned HTTP 405 because independent Arena #3201 advanced main to `2f3f992895a32e353d892f666c016cfb7c2608a1`. Preserve all six Arena changes, including both prepended documentation notes, without touching its application code. Reconcile on same R202 branch and require fresh exact-head 13-workflow qualification, visual evidence and current-main check. No force merge, no Codex request, no paid publication.
+
+## 26 November 2026 — R202 original Threshold masonry (candidate)
+
+- R201 #3200 merged at `0095a12ef32a10b9e0ea1a6800265c302719e6c3`, exact head 17faf849f0bf58b5ddb07c9e8bc890f5d19a721f passed all 13 workflows including six Chromium shards, licensed artwork and visual evidence artifact 15121908240; Floor 1 desktop/mobile comparisons inspected. Production smoke 45837377603 confirms R201 and closed member gate at 14:19:13 UTC. Postmerge Full 45837377678 still executing; require green before R202 merge. No claim of final artistic approval.
+- R202 original six-cell 42px wall atlas replaces the old detailed wall bitmap on ordinary Floor 1, including four staggered masonry variants and two damaged variants with existing deterministic 31/23 selection. On successful decode/draw only, bypass redundant generic brick, stain and crack overlays; retain floor palette, themed wall hardware, R127 exposed-edge relief, protected-room guard, unchanged later floors and severe path, CC0 fallback. 408 actual helper assertions passed, renderer syntax and manifest parse passed; new Node contract. No geometry, collision, gameplay, access, audio or other-site changes.
+- Require complete exact-head CI and matching 15-floor desktop/mobile screenshot and RAF evidence; inspect actual visual result before merge, not just screenshot existence. Commercial publication prohibited until complete graphical overhaul and gameplay/audio/physical acceptance and separate owner approval. Candidate V10.42 r202 / 20261126r202. No Codex request or new schedule.
+
 ## 26 November 2026 — Arena live membership and sign-out candidate
 
 - Live restricted HelioHost registration, delivery of one verification email, activation, member sign-in and refresh persistence passed. The account is active and no unused verification token remains. Live release switches were restored off. No scores were submitted.
