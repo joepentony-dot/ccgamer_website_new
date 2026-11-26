@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "c9exmfUeiiM",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Super Trolley C64 – The Jim’ll Fix It Game That Went Horribly Wrong",
+      "description": "Super Trolley (1988) is a Commodore 64 supermarket simulation developed by Icon Design and published by Mastertronic, inspired by Andrew Collett's wish on BBC's Jim'll Fix It. Price goods,…",
+      "url": "/games/super-trolley/",
+      "thumbnail": "https://i.ytimg.com/vi/c9exmfUeiiM/mqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1988,
+      "publisher": "Mastertronic"
+    },
+    {
       "id": "T-WeyFyllec",
       "kind": "game",
       "filter": "c64",
@@ -9024,19 +9037,6 @@
       "platform": "Amiga",
       "year": 1993,
       "publisher": "Psygnosis"
-    },
-    {
-      "id": "9DViytCyeyE",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Super Trolley – The C64 Supermarket Game Born from a Jim’ll Fix It Wish",
-      "description": "Super Trolley is a 1988 Commodore 64 arcade game from Mastertronic that focuses on maze navigation, timing-based movement, and avoiding increasingly complex hazards.",
-      "url": "/games/super-trolley/",
-      "thumbnail": "https://i.ytimg.com/vi/9DViytCyeyE/mqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1988,
-      "publisher": "Mastertronic"
     },
     {
       "id": "6Dne1NUo_ac",
