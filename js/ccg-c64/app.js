@@ -3630,6 +3630,38 @@ const touchDpadDirections = new Map(
     button => [Number(button.dataset.joyMask), button])
 );
 let touchDpadPointerId = null;
+const touchPadModeButton = document.querySelector("[data-touch-pad-mode]");
+const TOUCH_PAD_MODE_KEY = "ccg.emulator.c64.touchPadMode";
+let touchPadMode = "dpad";
+try { if (localStorage.getItem(TOUCH_PAD_MODE_KEY) === "stick") touchPadMode = "stick"; } catch {}
+let touchDpadRect = null;
+
+function renderTouchPadMode() {
+  if (touchDpad?.dataset) touchDpad.dataset.mode = touchPadMode;
+  touchDpad?.setAttribute?.("aria-label", touchPadMode === "stick" ? "Eight-way virtual thumbstick; drag to steer" : "Eight-way touch joystick; slide to change direction");
+  if (touchPadModeButton) {
+    touchPadModeButton.textContent = touchPadMode === "stick" ? "PAD: STICK" : "PAD: D-PAD";
+    touchPadModeButton.setAttribute("aria-pressed", String(touchPadMode === "stick"));
+  }
+}
+
+function renderTouchStick(dx = 0, dy = 0) {
+  const radius = Math.hypot(dx, dy);
+  const scale = radius ? Math.min(1, 0.55 / radius) : 1;
+  touchDpad?.style?.setProperty("--ccg-stick-x", `${dx * scale * 50}%`);
+  touchDpad?.style?.setProperty("--ccg-stick-y", `${dy * scale * 50}%`);
+}
+
+renderTouchPadMode();
+touchPadModeButton?.addEventListener("click", () => {
+  const captured = touchDpadPointerId;
+  setTouchDpadMask(0);
+  resetTouchDpadUi();
+  if (captured !== null) { try { touchDpad.releasePointerCapture(captured); } catch {} }
+  touchPadMode = touchPadMode === "stick" ? "dpad" : "stick";
+  renderTouchPadMode();
+  try { localStorage.setItem(TOUCH_PAD_MODE_KEY, touchPadMode); } catch {}
+});
 
 // Android browsers can offer a brief native long-press haptic while a touch
 // remains on a control, even when the eventual pointerdown is cancelled.
@@ -3641,20 +3673,31 @@ touchDpad?.addEventListener("touchstart", event => {
 
 function resetTouchDpadUi() {
   touchDpadPointerId = null;
+  touchDpadRect = null;
+  renderTouchStick();
   for (const button of touchDpadDirections.values()) {
     button.classList.remove("is-pressed");
     button.setAttribute("aria-pressed", "false");
   }
 }
 
-function touchDpadMaskAt(clientX, clientY) {
+function touchDpadMaskAt(clientX, clientY, captured = false) {
   if (!touchDpad) return 0;
-  const rect = touchDpad.getBoundingClientRect();
-  if (!rect.width || !rect.height ||
-      clientX < rect.left || clientX >= rect.right ||
-      clientY < rect.top || clientY >= rect.bottom) return 0;
-  const col = Math.min(2, Math.floor(3 * (clientX - rect.left) / rect.width));
-  const row = Math.min(2, Math.floor(3 * (clientY - rect.top) / rect.height));
+  const rect = touchDpadRect || touchDpad.getBoundingClientRect();
+  if (!rect.width || !rect.height || !Number.isFinite(clientX) || !Number.isFinite(clientY)) return 0;
+  if (!captured && (clientX < rect.left || clientX >= rect.right ||
+      clientY < rect.top || clientY >= rect.bottom)) return 0;
+  if (touchPadMode === "stick") {
+    const dx = (clientX - rect.left) / rect.width * 2 - 1;
+    const dy = (clientY - rect.top) / rect.height * 2 - 1;
+    const radius = Math.hypot(dx, dy);
+    if (radius < 0.22) { renderTouchStick(); return 0; }
+    renderTouchStick(dx, dy);
+    const sector = (Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) + 8) % 8;
+    return [8, 10, 2, 6, 4, 5, 1, 9][sector];
+  }
+  const col = Math.max(0, Math.min(2, Math.floor(3 * (clientX - rect.left) / rect.width)));
+  const row = Math.max(0, Math.min(2, Math.floor(3 * (clientY - rect.top) / rect.height)));
   return (row === 0 ? 1 : row === 2 ? 2 : 0) |
     (col === 0 ? 4 : col === 2 ? 8 : 0);
 }
@@ -3679,21 +3722,26 @@ function setTouchDpadMask(mask) {
 touchDpad?.addEventListener("pointerdown", event => {
   if (touchDpadPointerId !== null ||
       (event.pointerType === "mouse" && event.button !== 0)) return;
+  const rect = touchDpad.getBoundingClientRect();
+  if (!rect.width || !rect.height || event.clientX < rect.left || event.clientX >= rect.right ||
+      event.clientY < rect.top || event.clientY >= rect.bottom) return;
   event.preventDefault();
+  touchDpadRect = rect;
   touchDpadPointerId = event.pointerId;
+  try { touchDpad.setPointerCapture(event.pointerId); }
+  catch { resetTouchDpadUi(); return; }
   setTouchDpadMask(touchDpadMaskAt(event.clientX, event.clientY));
-  try { touchDpad.setPointerCapture(event.pointerId); } catch {}
 });
 touchDpad?.addEventListener("pointermove", event => {
   if (event.pointerId !== touchDpadPointerId) return;
   event.preventDefault();
-  setTouchDpadMask(touchDpadMaskAt(event.clientX, event.clientY));
+  setTouchDpadMask(touchDpadMaskAt(event.clientX, event.clientY, true));
 });
 const releaseTouchDpad = event => {
   if (event.pointerId !== touchDpadPointerId) return;
   event.preventDefault();
-  touchDpadPointerId = null;
   setTouchDpadMask(0);
+  resetTouchDpadUi();
 };
 for (const name of ["pointerup", "pointercancel", "lostpointercapture"])
   touchDpad?.addEventListener(name, releaseTouchDpad);
