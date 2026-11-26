@@ -181,6 +181,40 @@
         );
     }
 
+    function attachHomeMedia(root, section, slotSelector) {
+        const slot = document.documentElement.matches('[data-ccg-page="home"]') ? root.querySelector(slotSelector) : null;
+        if (!slot || typeof window.matchMedia !== "function") {
+            root.appendChild(section);
+            return () => {};
+        }
+        const media = window.matchMedia("(max-width: 520px)");
+        const anchor = document.createComment("ccg-home-media-original-position");
+        root.appendChild(anchor);
+        const place = () => {
+            const focused = section.contains(document.activeElement) ? document.activeElement : null;
+            if (media.matches && slot.isConnected) {
+                if (section.parentNode !== slot) {
+                    if (focused) slot.closest("details").open = true;
+                    slot.appendChild(section);
+                }
+            } else if (anchor.isConnected && anchor.nextSibling !== section) {
+                anchor.after(section);
+            }
+            if (focused && document.activeElement !== focused) focused.focus({ preventScroll: true });
+        };
+        place();
+        media.addEventListener("change", place);
+        return () => { media.removeEventListener("change", place); anchor.remove(); };
+    }
+
+    let disposeHomePlacement = null;
+
+    function removeHistorySection(section) {
+        if (disposeHomePlacement) disposeHomePlacement();
+        disposeHomePlacement = null;
+        section?.remove();
+    }
+
     function render() {
         if (!isHubPage()) return;
         ensureCss();
@@ -188,11 +222,11 @@
         const target = findInsertionTarget();
         if (!target) return;
 
-        let section = target.querySelector(":scope > [data-ccg-recently-viewed]");
+        let section = target.querySelector(":scope > [data-ccg-recently-viewed]") || target.querySelector("[data-ccg-home-history-slot] > [data-ccg-recently-viewed]");
         const items = safeRead().slice(0, MAX_SHOWN);
 
         if (!items.length) {
-            section?.remove();
+            removeHistorySection(section);
             return;
         }
 
@@ -211,11 +245,11 @@
                 </div>
                 <div class="ccg-recently-viewed__grid"></div>
             `;
-            target.appendChild(section);
+            disposeHomePlacement = attachHomeMedia(target, section, "[data-ccg-home-history-slot]");
 
             section.querySelector(".ccg-recently-viewed__clear")?.addEventListener("click", () => {
                 try { localStorage.removeItem(STORAGE_KEY); } catch (error) {}
-                section.remove();
+                removeHistorySection(section);
             });
         }
 
