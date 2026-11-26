@@ -19,6 +19,21 @@
       "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
     },
     "visualOverhaul": {
+      "r202ThresholdMasonryAtlas": {
+        "asset": "assets/pixel/visual-overhaul/r202/threshold-masonry.svg",
+        "creator": "CCG project original artwork, programmatically authored for R202",
+        "provenance": "Self-contained original SVG pixel masonry, without third-party artwork or reference tracing.",
+        "dimensionsPx": [
+          252,
+          42
+        ],
+        "cells": [
+          6,
+          1
+        ],
+        "tilePx": 42,
+        "scope": "Four normal and two sparsely selected damaged wall variants on ordinary Floor 1 detailed tiles; existing CC0 fallback, theme hardware, stone relief and severe path retained."
+      },
       "r201ThresholdFlagstoneAtlas": {
         "asset": "assets/pixel/visual-overhaul/r201/threshold-flagstones.svg",
         "creator": "CCG project original artwork, programmatically authored for R201",
