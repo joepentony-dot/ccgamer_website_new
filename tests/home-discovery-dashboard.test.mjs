@@ -80,3 +80,21 @@ test("home community rating summary uses genuine 1–10 data and distinguishes e
     assert.match(source, /#ccg-community-game-title/);
     assert.doesNotMatch(source, /\.from\("ratings"\)/);
 });
+
+test("refined homepage keeps all canonical routes and prepaint Pulse below archive discovery", () => {
+    const home = read("home.html");
+    const hero = home.indexOf('class="home-hero home-hero--streamlined"');
+    const archive = home.indexOf('class="home-archive-launchpad"');
+    const pulse = home.indexOf('data-ccg-static-pulse="true"');
+    const videos = home.indexOf('class="home-featured-videos"');
+    const originals = home.indexOf('class="home-mobile-originals"');
+    const community = home.indexOf('id="homeCommunityLatest"');
+    const hardware = home.indexOf('class="ccg-thea1200-home"');
+    const merch = home.indexOf('class="home-merch-promo"');
+    assert.ok(hero < archive && archive < pulse && pulse < videos && videos < originals && originals < community && community < hardware && hardware < merch);
+    assert.match(home, /<\/section>\n<script src="\/js\/ccg-archive-pulse-randomizer\.js"><\/script>/);
+    assert.match(home, /class="home-mobile-originals__links"/);
+    assert.match(home, /href="\/arcade\/c64-dungeon-carnage\/"/);
+    assert.match(home, /href="\/choose-your-own-adventure\/"/);
+    assert.equal((home.match(/https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp/g)||[]).length,1);
+});
