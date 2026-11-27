@@ -54,7 +54,11 @@ assert.doesNotMatch(local,/function collectedName\(i\)\{[^}]*return i\.title\|\|
 assert.match(render,/function groundItemLabel\(i\)/,"ground labels must have a kind-aware owner");
 assert.match(render,/if\(i\.kind==="game"\)return i\.title\|\|"C64 GAME"/,"ground labels may use stored titles only for real game collectibles");
 assert.match(render,/health:"HEALTH POTION"/,"ground health label must be literal");
-assert.match(render,/xpOrb:"\+10 XP"/,"ground XP label must expose its value");
+const xpOwner=local.match(/function pickupXP\(kind\)\{[^\n]+\}/)?.[0];
+const groundOwner=render.match(/function groundItemLabel\(i\)\{[\s\S]*?\n\}/)?.[0];
+assert.ok(xpOwner&&groundOwner,"XP label and reward owners must exist");
+const xpLabel=new Function(xpOwner+"\n"+groundOwner+"\nreturn groundItemLabel({kind:'xpOrb'});")();
+assert.equal(xpLabel,"+500 XP","ground XP label must expose the actual R206 value");
 assert.match(render,/armour:"\+2 ARMOUR"/,"ground armour label must expose its value");
 assert.match(render,/weapon:"FIREARM UPGRADE CACHE"/,"ground weapon caches must identify the evolving firearm upgrade explicitly");
 assert.match(render,/frameArtReady&&!\(customSheet\?\.complete&&customSheet\.naturalWidth>=160\)/,"the Stage-1 CC0 chest frames must own the normal upgraded chest presentation");
@@ -64,7 +68,7 @@ assert.match(render,/V10\.34 and canvas art remain safe/,"loading presentation m
 assert.doesNotMatch(render,/chunky traditional wooden chest body/,"the old inferior wooden chest fallback must not be the normal renderer");
 
 assert.match(render,/function drawPickupGlyph\(i,col\)/,"R54 must keep one renderer-owned pickup illustration boundary");
-for(const token of ["HEALTH POTION","AMMUNITION","BANISHMENT FLASK","BRONZE KEY","FIREARM UPGRADE CACHE","+10 XP"]){
+for(const token of ["HEALTH POTION","AMMUNITION","BANISHMENT FLASK","BRONZE KEY","FIREARM UPGRADE CACHE"]){
   assert.ok(render.includes(token),`pickup renderer/labels must retain ${token}`);
 }
 assert.match(render,/function drawCorridorDetail\(s,x,y,h,th\)/,"corridor detail must be renderer-owned");

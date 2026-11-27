@@ -105,10 +105,10 @@ async function prepareTouchTrapFixture(page){
     let route=null;
     for(let y=2;y<world.map.length-2&&!route;y++){
       for(let x=2;x<world.map[y].length-2&&!route;x++){
-        if(world.map[y]?.[x]!==0||!W.walkable(world.map,x,y,host)||SYS.inSanctuary(world,x,y))continue;
+        if(world.map[y]?.[x]!==0||!W.playerWalkable(world.map,x,y,host)||SYS.inSanctuary(world,x,y))continue;
         for(const dir of dirs){
           const tx=x+dir.dx,ty=y+dir.dy;
-          if(world.map[ty]?.[tx]!==0||!W.walkable(world.map,tx,ty,host)||SYS.inSanctuary(world,tx,ty))continue;
+          if(world.map[ty]?.[tx]!==0||!W.playerWalkable(world.map,tx,ty,host)||SYS.inSanctuary(world,tx,ty))continue;
           if((tx===world.exit?.x&&ty===world.exit?.y)||(x===world.exit?.x&&y===world.exit?.y))continue;
           route={x,y,targetX:tx,targetY:ty,...dir};
           break;
@@ -289,7 +289,7 @@ async function runViewport(viewport){
   assert.equal(fixture.available,true,`live mobile runtime must provide a deterministic walkable trap route: ${JSON.stringify(fixture)}`);
   await touchButton(page,context,`#v104-touch-controls .v104-touch-pad [data-key="${fixture.key}"]`);
   const first=await readPlayerTrapState(page);
-  assert.deepEqual({x:first.x,y:first.y},fixture.target,"real touch movement must step the player onto the active trap tile");
+  assert.deepEqual({x:first.x,y:first.y},fixture.target,`real touch movement must step the player onto the active trap tile: ${JSON.stringify({fixture,first})}`);
   assert.equal(first.health,fixture.before.health-1,"active floor trap reached by touch movement must remove one actual health");
   assert.equal(first.armor,fixture.before.armor,"touch-triggered floor trap damage must preserve armour");
   assert.equal(first.xp,fixture.before.xp,"touch-triggered floor trap damage must not award XP");
