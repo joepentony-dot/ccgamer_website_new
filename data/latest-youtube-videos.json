@@ -2,8 +2,14 @@
   "version": 1,
   "channelId": "UCHROCLVcatA449Gg-PoqlKw",
   "source": "youtube-atom-feed",
-  "syncedAt": "2026-11-26T19:04:03.109Z",
+  "syncedAt": "2026-11-27T19:59:36.272Z",
   "videos": [
+    {
+      "id": "sXeiV3JgKOI",
+      "title": "TOUR DE FRANCE on COMMODORE 64 – 41 YEARS LATER, CAN I FINISH IT? | C64 LIVE",
+      "publishedAt": "2026-11-27T15:17:12.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/sXeiV3JgKOI/mqdefault.jpg"
+    },
     {
       "id": "-aV_RgHDDRk",
       "title": "Remember When Neighbours Hacked a School Using a Commodore 64?! (1990) #Shorts",
@@ -33,12 +39,6 @@
       "title": "Road Rash (Amiga) – The Diablo 1000 Is an Absolute Death Trap! 🏍️ #Shorts",
       "publishedAt": "2026-11-19T18:30:00.000Z",
       "thumbnail": "https://i.ytimg.com/vi/z17fK6ywHpU/mqdefault.jpg"
-    },
-    {
-      "id": "icwCrzfKxhk",
-      "title": "50 Commodore 64 SID Tunes from Zzap!64 (1985–1991)",
-      "publishedAt": "2026-11-17T18:30:34.000Z",
-      "thumbnail": "https://i.ytimg.com/vi/icwCrzfKxhk/mqdefault.jpg"
     }
   ]
 }
