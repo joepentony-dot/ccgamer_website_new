@@ -10,7 +10,7 @@ import { readSierraCrossfireScreenScores } from "./arena/read-sierra-crossfire-s
 import { SierraCrossfireLocalRunObserver } from "./arena/observe-sierra-crossfire-run.mjs";
 import { isSierraOneClickLaunchQuery, SierraOneClickStarter } from "./arena/sierra-one-click-launch.mjs";
 
-const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261125_crossfire_phone_no_flash_v1";
+const STYLE_URL="/resources/css/ccg-high-score-arena-preview.css?ccg_rev=20261127_arena_receipts_v1";
 const GAME_KEY="c64-crossfire-sierra-online";
 const EXPECTED_CATALOG_ID="owner-crt-more-crossfiresierraonline-0c60e852f438";
 
@@ -70,6 +70,7 @@ export async function mountCrossfirePreview({
   section.hidden=Boolean(phoneMedia?.matches);
   section.id="ccg-mobile-arena-panel";
   section.setAttribute("data-ccg-arena-preview","crossfire");
+  if(scoreRequested)section.setAttribute("data-ccg-arena-online","requested");
   section.setAttribute("aria-label","Crossfire High Score Arena preview");
   section.setAttribute("data-ccg-arena-mobile-status","compact");
   const intro=doc.createElement("div");
@@ -121,14 +122,18 @@ export async function mountCrossfirePreview({
   run.append(local,hint);
   const remoteHint=doc.createElement("p");
   remoteHint.className="ccg-arena-preview__submission";
+  remoteHint.setAttribute("role","status");
+  remoteHint.setAttribute("aria-live","polite");
   // Only display a submission status if explicitly requested on the official
   // website for this checksum-verified Sierra cartridge.
   if(scoreRequested){
     remoteHint.textContent="HELIOHOST SUBMISSION · CHECKING CONNECTION";
-    run.append(remoteHint);
   }
   display.append(board,run);
-  section.append(intro,startHint,modes,display);
+  section.append(intro,startHint,modes);
+  // Keep authoritative transport status visible above the board, even on phones.
+  if(scoreRequested)section.append(remoteHint);
+  section.append(display);
   const mobileConsole=stage.closest?.(".ccg-c64-console");
   const mobileToggle=mobileConsole?.querySelector?.("[data-mobile-arena-toggle]");
   const setMobileOpen=requested=>{
@@ -199,7 +204,7 @@ export async function mountCrossfirePreview({
   // login or submission opt-in. The verified Sierra CRT and exact website
   // origin still guard this read-only connection.
   if(websiteOrigin==="https://www.cheekycommodoregamer.co.uk") {
-    void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261124_arena_nonblocking_crossfire_v1").then(mod=>{
+    void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261127_arena_receipts_v1").then(mod=>{
       if(disposed || (typeof isCurrent==="function" && !isCurrent()) ||
          (scoreRequested && scoreGate!=="checking")) {
         finishScoreHandshake("unavailable");

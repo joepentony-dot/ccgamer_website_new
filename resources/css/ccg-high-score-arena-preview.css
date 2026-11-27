@@ -29,6 +29,7 @@
   min-height:44px;box-sizing:border-box;display:inline-flex;align-items:center;
   justify-content:center;text-decoration:none}
 .ccg-arena-preview__modes button[aria-pressed=true]{background:#154b88;border-color:#63bdff;box-shadow:0 0 9px #137bd2}
+.ccg-arena-preview__submission{margin:0 0 8px;padding:8px 10px;border:1px solid #27548c;border-radius:5px;background:#081a3b;color:#c4ebff;font:700 12px/1.4 Arial,sans-serif;overflow-wrap:anywhere}
 .ccg-arena-preview__display{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,33%);gap:12px;min-height:260px}
 .ccg-arena-preview__board{min-height:260px;min-width:0}
 .ccg-arena-preview__run{
@@ -232,9 +233,26 @@
   .ccg-c64-console.is-mobile-playing >
     .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
     :is(.ccg-arena-preview__intro, .ccg-arena-preview__start,
-        .ccg-arena-preview__run,
-        [data-ccg-sierra-member-signin]) {
+        .ccg-arena-preview__run) {
     display: none;
+  }
+
+  /* Scoring runs expose their local score, server status and sign-in.
+     Guests retain the existing leaderboard-only phone view. */
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"][data-ccg-arena-online="requested"].is-mobile-open
+    .ccg-arena-preview__run {
+    display: flex;
+    order: -1;
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 6px;
+  }
+  .ccg-c64-console.is-mobile-playing >
+    .ccg-arena-preview[data-ccg-arena-preview="crossfire"].is-mobile-open
+    .ccg-arena-preview__submission {
+    flex: 0 0 auto;
+    margin: 0;
   }
 
   .ccg-c64-console.is-mobile-playing >
