@@ -231,6 +231,7 @@ const frameEnd = app.indexOf("function powerOff()", frameStart);
 assert(frameStart >= 0 && frameEnd > frameStart, "Frame loop must be present");
 let runs = 0;
 let ticks = 0;
+let audioFlushes = 0;
 const frameContext = vm.createContext({
   machine: { runFrame() { runs++; } }, running: true, paused: false,
   warpLoadActive: true, automaticWarpActive: false, automaticWarpFramesRemaining: 0,
@@ -240,6 +241,7 @@ const frameContext = vm.createContext({
   performance: { now: () => ticks++ * 0.5 },
   pollGamepad() {}, serviceAutoStart() {}, blitMachine() {},
   autoStartSteps: null, requestAnimationFrame: () => 1,
+  sidAudio: { flush() { audioFlushes++; } },
   frameHandle: 0, speedSampleTime: 0, speedSampleFrames: 0,
   emulatorSpeedStatus: { textContent: "", title: "" },
 });
@@ -252,6 +254,7 @@ frameContext.warpLoadActive = false;
 frameContext.lastFrameTime = 1000;
 frameContext.runTick(1020);
 assert.equal(runs - warpRuns, 1, "Normal mode must retain near-50Hz PAL speed");
+assert.equal(audioFlushes, 2, "SID transport must flush once per RAF in warp and normal mode");
 
 
 // The user's gamepad and touch bytes must reach exactly the selected C64 port
@@ -657,6 +660,7 @@ const touchWarpButton = warpButton();
 const pauseWarpButton = { disabled: false, querySelector: () => ({ textContent: "" }) };
 const powerWarpButton = { disabled: false, querySelector: () => ({ textContent: "" }) };
 const audioWarpStates = [];
+const audioSyncStates = [];
 let warpScreenFocus = 0;
 const warpContext = vm.createContext({
   warpLoadButton: mainWarpButton, mobileWarpLoadButton: touchWarpButton,
@@ -670,6 +674,7 @@ const warpContext = vm.createContext({
   vault: { snapshot() { return { allRequiredReady: true }; } },
   machineState: { textContent: "" }, stageNote: { textContent: "" },
   updateMediaControls() {}, updateAudioUi() {},
+  syncAudioState() { audioSyncStates.push(warpContext.warpLoadActive || warpContext.paused); },
   setAudioPaused(value) { audioWarpStates.push(value); },
 });
 vm.runInContext(app.slice(syncWarpStart, syncWarpEnd) +
@@ -694,6 +699,7 @@ assert.equal(warpContext.warpLoadActive, false, "Desktop Warp Load must restore 
 assert.equal(touchWarpButton.textContent, "WARP: OFF", "Mobile button must track desktop switch");
 assert.equal(touchWarpButton.props["aria-pressed"], "false");
 assert.equal(audioWarpStates.at(-1), false, "Normal-speed SID audio must resume");
+assert.equal(audioSyncStates.at(-1), false, "Control sync must propagate resumed audio state");
 warpContext.setRealWarpLoad(true); // Simulate automatic disk/cart fast loading.
 assert.equal(touchWarpButton.textContent, "WARP: ON",
   "Automatic loading must update mobile warp state in real time");

@@ -16,6 +16,7 @@ function runStallWithArena(arenaMounted) {
   let observerFrames = 0;
   let blits = 0;
   let animationCallbacks = 0;
+  let audioFlushes = 0;
   const ctx = vm.createContext({
     machine: { runFrame() { runFrames++; } },
     activeArenaPreview: arenaMounted ? { mounted: true } : null,
@@ -29,12 +30,13 @@ function runStallWithArena(arenaMounted) {
     blitMachine() { blits++; },
     autoStartSteps: null,
     requestAnimationFrame() { animationCallbacks++; return 1; },
+    sidAudio: { flush() { audioFlushes++; } },
     frameHandle: 0, speedSampleTime: 0, speedSampleFrames: 0,
     emulatorSpeedStatus: { textContent: "", title: "" },
   });
   vm.runInContext(frameLoop, ctx);
   ctx.runTick(1250);
-  return { runFrames, observerFrames, blits, animationCallbacks, debt: ctx.frameAccumulator };
+  return { runFrames, observerFrames, blits, animationCallbacks, audioFlushes, debt: ctx.frameAccumulator };
 }
 
 test("Crossfire Arena yields to browser input after at most two PAL frames", () => {
@@ -43,6 +45,7 @@ test("Crossfire Arena yields to browser input after at most two PAL frames", () 
   assert.equal(result.observerFrames, 2, "Arena still observes every executed PAL frame");
   assert.equal(result.blits, 1, "Present the final executed emulated frame");
   assert.equal(result.animationCallbacks, 1, "Continue regular RAF scheduling");
+  assert.equal(result.audioFlushes, 1, "Flush SID transport once, not once per emulated frame");
   assert(result.debt >= 0 && result.debt < 1000 / 50.125,
     "Discard excess catch-up debt without losing fractional PAL timing");
 });
@@ -53,6 +56,7 @@ test("Other C64 titles also yield to the browser after two PAL frames", () => {
   assert.equal(result.observerFrames, 2);
   assert.equal(result.blits, 1);
   assert.equal(result.animationCallbacks, 1);
+  assert.equal(result.audioFlushes, 1);
   assert(result.debt >= 0 && result.debt < 1000 / 50.125);
 });
 
