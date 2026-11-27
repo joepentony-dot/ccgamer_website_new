@@ -17,6 +17,8 @@ export class SierraAutomaticAttempt {
   }
   get enabled(){return this.#transport!==null;}
   get started(){return this.#started;}
+  // A dispatched request is not a confirmed server attempt.
+  get startReceipt(){return this.#startPromise;}
   get finished(){return this.#finished;}
   get stopped(){return this.#stopped;}
 

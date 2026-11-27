@@ -80,11 +80,15 @@ test('actual Sierra HUD F1/gameover drives two authenticated HelioHost POSTs onl
  const ready=await controller.whenHelioHostReady();
  await turn();
  assert.equal(ready,true);
- assert(panel.find(x=>x.tag==='p'&&x.textContent==='SIGNED IN · START A NEW GAME TO REQUEST SCORE'));
+ const liveStatus=panel.children.find(x=>x.attributes.role==='status');
+ assert(liveStatus,'Live status must be a direct panel child');
+ assert.equal(panel.attributes['data-ccg-arena-online'],'requested');
+ assert.equal(liveStatus.textContent,'SIGNED IN · START A NEW GAME TO REQUEST SCORE');
  controller.observe(ram(0,true));
  assert.equal(controller.armFromUserF1(),true);
  controller.observe(ram(0));
  await turn();await turn();
+ assert.equal(liveStatus.textContent,'ONLINE ATTEMPT ACCEPTED · PLAY FOR SCORE');
  controller.observe(ram(10));
  controller.observe(ram(170));
  for(let i=0;i<25;i++)controller.observe(ram(170,true));
@@ -118,6 +122,8 @@ test('regular Sierra game launch renders moderated public scores without member 
  assert.equal(await controller.whenHelioHostReady(),false);
  await turn();await turn();
  const panel=stage.after;
+ assert.equal(panel.attributes['data-ccg-arena-online'],undefined);
+ assert(!panel.children.some(x=>x.attributes.role==='status'));
  assert(panel.find(x=>x.tag==='p'&&x.textContent==='SIERRA ONLINE CRT · SCORE SUBMISSIONS DISABLED'));
  assert(panel.find(x=>x.tag==='span'&&x.textContent==='#1 Approved Player'));
  assert(panel.find(x=>x.tag==='span'&&x.textContent==='Approved Player, 170 points'));
@@ -392,4 +398,11 @@ test('Dropzone captured frames submit only an opted-in completed CRT run to its 
  assert.equal(writes[1].diagnostic.kind,'dropzone-crt-local-final-candidate');
  assert(stage.after.find(el=>el.textContent==='SCORE 0000280 RECEIVED · PENDING REVIEW'));
  player.dispose();
+});
+
+test('phone scoring status and sign-in are not hidden by guest-only presentation',async()=>{
+ const css=await (await import('node:fs/promises')).readFile(new URL('../resources/css/ccg-high-score-arena-preview.css',import.meta.url),'utf8');
+ assert(!css.includes('[data-ccg-sierra-member-signin]) {\n    display: none'));
+ assert(css.includes('[data-ccg-arena-online="requested"].is-mobile-open'));
+ assert(css.includes('.ccg-arena-preview__submission {\n    flex: 0 0 auto;'));
 });

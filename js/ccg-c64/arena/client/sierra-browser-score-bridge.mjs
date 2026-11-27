@@ -133,6 +133,13 @@ export class SierraHelioHostScoreBridge {
   const result=this.#run.observe(observer,final);
   if(!wasStarted && this.#run.started) {
    this.#status('HELIOHOST ATTEMPT REQUESTED');
+   const currentRun=this.#run;
+   void Promise.resolve(currentRun.startReceipt).then(receipt=>{
+    if(this.#closed||this.#run!==currentRun||currentRun.stopped||this.#finished)return;
+    this.#status(receipt?.status==='started'
+      ? 'ONLINE ATTEMPT ACCEPTED · PLAY FOR SCORE'
+      : 'ONLINE ATTEMPT NOT ACCEPTED · LOCAL SCORE ONLY');
+   });
   }
   if(!result || this.#finished)return;
   this.#finished=true;

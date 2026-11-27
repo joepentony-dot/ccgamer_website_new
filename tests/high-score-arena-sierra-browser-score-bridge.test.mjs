@@ -98,6 +98,7 @@ test('one authenticated 170-point run submits ONCE and only pending-review recei
  assert.equal(calls[0][1].board,'alltime');
  assert.equal(calls[1][1].score,170);
  assert.equal(calls[1][1].verified,false);
+ assert(statuses.includes('ONLINE ATTEMPT ACCEPTED · PLAY FOR SCORE'));
  assert(statuses.includes('SCORE 000170 RECEIVED · PENDING REVIEW'));
  assert(models.some(x=>x.board==='alltime'));
  bridge.observe({phase:'completed'},final(170));
@@ -230,4 +231,26 @@ test('a new run on the same cartridge uses a fresh attempt after the prior recei
  await nextTurn();
  assert.deepEqual(calls,[['start',1],['finish',1,170],['start',2],['finish',2,280]]);
  bridge.stop();
+});
+
+test('start receipt distinguishes pending and refused attempts',async()=>{
+ const statuses=[];let resolveStart;
+ const bridge=new SierraHelioHostScoreBridge({enabled:true,origin:CCG_SITE_ORIGIN,onStatus:s=>statuses.push(s),
+  acquire:async()=>({enabled:true,start:()=>new Promise(resolve=>{resolveStart=resolve;})}),
+  readBoard:async()=>({status:'unavailable'})});
+ await bridge.connect();bridge.armed();bridge.observe({phase:'running',lastScore:0});await nextTurn();
+ assert.equal(statuses.at(-1),'HELIOHOST ATTEMPT REQUESTED');
+ assert(!statuses.includes('ONLINE ATTEMPT ACCEPTED · PLAY FOR SCORE'));
+ resolveStart(null);await nextTurn();
+ assert.equal(statuses.at(-1),'ONLINE ATTEMPT NOT ACCEPTED · LOCAL SCORE ONLY');
+ bridge.stop();
+});
+test('late start receipt cannot overwrite invalidated run status',async()=>{
+ const statuses=[];let resolveStart;
+ const bridge=new SierraHelioHostScoreBridge({enabled:true,origin:CCG_SITE_ORIGIN,onStatus:s=>statuses.push(s),
+  acquire:async()=>({enabled:true,start:()=>new Promise(resolve=>{resolveStart=resolve;}),cancel:async()=>true}),
+  readBoard:async()=>({status:'unavailable'})});
+ await bridge.connect();bridge.armed();bridge.observe({phase:'running',lastScore:0});await nextTurn();
+ bridge.observe({phase:'invalid'});resolveStart({status:'started'});await nextTurn();
+ assert.equal(statuses.at(-1),'RUN INVALIDATED · NOT SUBMITTED');bridge.stop();
 });
