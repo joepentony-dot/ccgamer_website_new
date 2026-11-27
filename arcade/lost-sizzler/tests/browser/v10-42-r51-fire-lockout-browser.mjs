@@ -245,10 +245,22 @@ try{
     p1.weapon={...baseWeapon(),name:"TIER 2 · Field Pulse II",displayName:"TIER 2 · Field Pulse II",rating:3};
     p1.weaponLevel=2;p1.mana=120;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);p1.hitStunMs=0;
     fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
-    p1.dir={x:1,y:0};
-    const targetX=Number(p1.x)+1,targetY=Number(p1.y);
-    host.enemies=(host.enemies||[]).filter(e=>!(e?.alive&&Number(e.x)===targetX&&Number(e.y)===targetY));
-    host.generators=(host.generators||[]).filter(g=>!(g?.alive&&Number(g.x)===targetX&&Number(g.y)===targetY));
+    // A generated blocker at the same cell would take the hit before our
+    // fixture (damageFurnitureAt selects the first blocker at that coordinate).
+    // Stage an empty, walkable eastbound pair; do not remove existing props.
+    const objectiveProps=(host.v142BreakableInteractions?.rooms||[]).flatMap(room=>Array.from(room.props?.values?.()||[]));
+    const occupied=(x,y)=>[
+      ...(host.blockingDecor||[]),...(world.decor||[]),...(host.doors||[]),
+      ...(host.enemies||[]),...(host.generators||[]),...(host.items||[]),
+      ...objectiveProps
+    ].some(row=>row&&Number(row.x)===x&&Number(row.y)===y);
+    let lane=null;
+    for(let y=3;y<world.map.length-2&&!lane;y++)for(let x=2;x<(world.map[y]?.length||0)-3;x++){
+      if(W.walkable(world.map,x,y,host)&&W.walkable(world.map,x+1,y,host)&&!occupied(x,y)&&!occupied(x+1,y)){lane={x,y};break}
+    }
+    if(!lane)throw new Error("adjacent furniture contract could not stage an unoccupied eastbound pair");
+    p1.x=p1.rx=lane.x;p1.y=p1.ry=lane.y;p1.dir={x:1,y:0};
+    const targetX=lane.x+1,targetY=lane.y;
     host.blockingDecor=host.blockingDecor||[];
     host.blockingDecor.push({id:"r61-adjacent-firearm-prop",x:targetX,y:targetY,type:"crate",blocking:true,structural:false,hp:2,maxHp:2});
     sync();
@@ -257,27 +269,31 @@ try{
       mana:Number(p1.mana),
       swing:Number(p1._meleeSwingAt||0),
       hud:String(document.getElementById("hud-weapon")?.textContent||""),
-      title:String(document.getElementById("hud-weapon")?.title||"")
+      title:String(document.getElementById("hud-weapon")?.title||""),
+      target:{x:targetX,y:targetY},
+      fixtureCount:host.blockingDecor.filter(d=>d.x===targetX&&d.y===targetY).length
     };
   });
+  assert.equal(adjacentBefore.fixtureCount,1,"adjacent fixture must be the sole blocker at its cell");
   assert.equal(adjacentBefore.hud,"L2 FIELD PULSE","weapon HUD must show compact level plus readable weapon family");
   assert.match(adjacentBefore.title,/Weapon Level 2 · TIER 2 · Field Pulse II/,"weapon HUD title must retain full evolved weapon identity");
-  await page.keyboard.down("Space");
-  try{
-    await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before.swing,adjacentBefore,{timeout:3000});
-  }finally{
-    await page.keyboard.up("Space");
-  }
+  // Exercise a real single key tap, not an indefinite hold whose repeat
+  // cadence can legitimately deliver more than one melee swing.
+  await page.keyboard.press("Space");
+  await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before.swing,adjacentBefore,{timeout:3000});
   const adjacentAfter=await page.evaluate(()=>({
     mana:Number(p1.mana),
     swing:Number(p1._meleeSwingAt||0),
     shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
-    prop:(host.blockingDecor||[]).find(d=>d.id==="r61-adjacent-firearm-prop")||null
+    prop:(host.blockingDecor||[]).find(d=>d.id==="r61-adjacent-firearm-prop")||null,
+    direction:p1._meleeSwingDir,
+    player:{x:p1.x,y:p1.y},
+    blockers:(host.blockingDecor||[]).filter(d=>d.x===p1.x+1&&d.y===p1.y).map(d=>({id:d.id,hp:d.hp,structural:d.structural}))
   }));
   assert.equal(adjacentAfter.mana,adjacentBefore.mana,"adjacent breakable furniture must route ATTACK to melee without consuming firearm ammunition");
   assert.ok(adjacentAfter.swing>adjacentBefore.swing,"adjacent breakable furniture must produce a melee swing");
   assert.equal(adjacentAfter.shots,0,"contextual furniture melee must not spawn a firearm projectile");
-  assert.equal(Number(adjacentAfter.prop?.hp??0),1,"one starter-sword hit must damage the adjacent breakable fixture");
+  assert.equal(Number(adjacentAfter.prop?.hp??0),1,`one starter-sword hit must damage the adjacent breakable fixture: ${JSON.stringify({before:adjacentBefore,after:adjacentAfter})}`);
   await page.evaluate(()=>{host.blockingDecor=(host.blockingDecor||[]).filter(d=>d.id!=="r61-adjacent-firearm-prop")});
 
   const deathBefore=await page.evaluate(()=>{
