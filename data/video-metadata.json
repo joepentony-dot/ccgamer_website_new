@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-11-23T19:12:00.250Z",
+  "updatedAt": "2026-11-26T17:52:56.316Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -1647,6 +1647,15 @@
       "uploadDate": "2023-10-08T21:19:38Z",
       "duration": "PT20M45S",
       "thumbnailUrl": "https://i.ytimg.com/vi/C7_aTXHJ4iI/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "c9exmfUeiiM": {
+      "title": "Super Trolley C64 – The Jim’ll Fix It Game That Went Horribly Wrong",
+      "description": "🕹️ Super Trolley (1988) – Commodore 64 Supermarket Simulation\nReleased in 1988 by Mastertronic and developed by Icon Design, Super Trolley has one of the more unusual development stories in British computer gaming. Born from a childhood wish submitted to the BBC television programme Jim’ll Fix It, eight-year-old Andrew Collett saw his supermarket game idea turned into a commercial release. Unfortunately, the finished Commodore 64 game didn't quite deliver on its promises, eventually receiving a miserable 17% from Zzap!64.\n\n🌐 Full game info, manual & magazine reviews:\n👉 https://www.cheekycommodoregamer.co.uk/games/super-trolley/\n\nArmed with a shopping trolley, you're employed at the Collett Hypermarket, collecting merchandise from the warehouse, replenishing shelves and attempting to work your way up through the ranks to become store manager. With a six-day working week and each shift running from 9am until 5pm, you could spend more than two hours of actual playing time getting through your first week.\n\nThe C64 version suffers from missing gameplay features, repetitive tasks, confusing supermarket layouts and some particularly frustrating programming errors – including being instructed to replenish a cereal department that doesn't exist!\n\nIronically, one of the most entertaining aspects of the £1.99 cassette was Invade-a-Load!, the playable Space Invaders-style loading game accompanied by music from Rob Hubbard.\n\nIn this review, I revisit Super Trolley's extraordinary origins, examine what went wrong with the Commodore 64 conversion and consider whether Andrew's original idea was actually decades ahead of its time, given the popularity of modern games such as Supermarket Simulator.\n\nImagine paying £1.99 to go to work, receiving absolutely no wages and being rewarded with even more work!\n\n💬 Did you spend your pocket money on Super Trolley back in 1988?\n💬 Did anyone ever manage to become the store manager on the Commodore 64 version?\n\n▶️ RELATED PLAYLISTS\nMastertronic Games:\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSew7o2zdiUJMdsIhpJt7hxz1\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n📖 CHAPTERS\n00:00 – 🛒 Introducing Super Trolley\n00:20 – 📺 The Jimmy Savile Story\n02:14 – 🕹️ Commodore 64 Gameplay\n03:49 – 💾 Invade-a-Load! – Better Than the Game?\n04:30 – 🛒 Life on the Supermarket Shop Floor\n05:38 – 💔 Broken Promises & Missing Features\n06:33 – ⏰🐛 Endless Shifts & Game-Breaking Bugs\n07:29 – 📰 Zzap!64’s Brutal Verdict\n08:07 – 🧹 Mundane Jobs That Made Great Games\n08:52 – 🏆 Final Verdict\n\n#SuperTrolley #Commodore64 #C64 #RetroGaming #Mastertronic",
+      "uploadDate": "2026-11-25T18:30:07Z",
+      "duration": "PT10M4S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/c9exmfUeiiM/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
