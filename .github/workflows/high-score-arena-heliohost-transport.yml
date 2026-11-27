@@ -9,6 +9,10 @@ on:
       - "js/ccg-c64/arena/client/auto-run-controller.mjs"
       - "js/ccg-c64/arena-preview.js"
       - "js/ccg-c64/arena/client/sierra-heliohost-attempt.mjs"
+      - "js/ccg-c64/arena/client/website-score-session.mjs"
+      - "js/ccg-c64/arena/games/dropzone/preview.mjs"
+      - "resources/css/ccg-high-score-arena-dropzone.css"
+      - "tests/high-score-arena-website-score-session.test.mjs"
       - "js/ccg-c64/arena/client/sierra-heliohost-board.mjs"
       - "js/ccg-c64/arena/client/sierra-auto-run-controller.mjs"
       - "js/ccg-c64/arena/client/sierra-browser-score-bridge.mjs"
@@ -73,6 +77,7 @@ jobs:
           node --check js/ccg-c64/arena/client/sierra-heliohost-attempt.mjs
           node --check js/ccg-c64/arena/client/sierra-heliohost-board.mjs
           node --test tests/high-score-arena-sierra-heliohost-client.test.mjs
+          node --test tests/high-score-arena-website-score-session.test.mjs
           node --check js/ccg-c64/arena/client/sierra-auto-run-controller.mjs
           node --test tests/high-score-arena-sierra-auto-run.test.mjs
           node --check js/ccg-c64/arena/client/sierra-browser-score-bridge.mjs

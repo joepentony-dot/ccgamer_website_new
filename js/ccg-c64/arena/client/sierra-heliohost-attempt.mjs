@@ -66,6 +66,24 @@ async function readBoundedJSON(response) {
  return result && typeof result==='object' && !Array.isArray(result)?result:null;
 }
 
+/** Explicit capability-selected website session, with no native fallback. */
+export async function acquireWebsiteCrtAttempt({
+ enabled=false,websiteOrigin='',fetchImpl=globalThis.fetch,signal,profile=SIERRA_ATTEMPT_PROFILE,
+ capability=null,credential=null
+}={}) {
+ if(enabled!==true||websiteOrigin!==SITE_ORIGIN||signal?.aborted||
+    (profile!==SIERRA_ATTEMPT_PROFILE&&profile!==DROPZONE_ATTEMPT_PROFILE)||
+    capability?.gameKey!==profile.gameKey||!CSRF.test(capability?.csrf||'')||
+    typeof credential!=='function'||typeof fetchImpl!=='function')return null;
+ try {
+  const token=await credential();
+  if(signal?.aborted||!validBearer(token))return null;
+  return new SierraPendingAttempt({enabled:true,authenticated:true,csrfToken:capability.csrf,
+    fetchImpl,websiteOrigin,profile,credential});
+ }catch{return null;}
+}
+const validBearer=token=>typeof token==='string'&&token.length<=8192&&/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token);
+
 /** Requires a signed-in independent member and server-provided CSRF token. */
 export async function acquireSierraAttempt({
  enabled=false,websiteOrigin='',fetchImpl=globalThis.fetch,signal,profile=SIERRA_ATTEMPT_PROFILE
@@ -88,14 +106,14 @@ export async function acquireSierraAttempt({
 }
 
 export class SierraPendingAttempt {
- #enabled;#csrf;#fetch;#profile;#receipt=null;#used=false;#pending=false;#version=0;
+ #enabled;#csrf;#fetch;#profile;#credential;#receipt=null;#used=false;#pending=false;#version=0;
  constructor({enabled=false,authenticated=false,csrfToken='',
-              websiteOrigin='',fetchImpl=globalThis.fetch,profile=SIERRA_ATTEMPT_PROFILE}={}) {
+              websiteOrigin='',fetchImpl=globalThis.fetch,profile=SIERRA_ATTEMPT_PROFILE,credential=null}={}) {
   this.#enabled=enabled===true&&authenticated===true&&
    websiteOrigin===SITE_ORIGIN&&CSRF.test(csrfToken)&&typeof fetchImpl==='function'&&
    (profile===SIERRA_ATTEMPT_PROFILE||profile===DROPZONE_ATTEMPT_PROFILE);
   this.#profile=profile;
-  this.#csrf=csrfToken;this.#fetch=fetchImpl;
+  this.#csrf=csrfToken;this.#fetch=fetchImpl;this.#credential=credential;
  }
  get enabled(){return this.#enabled;}
  get active(){return this.#receipt!==null;}
@@ -103,14 +121,20 @@ export class SierraPendingAttempt {
   if(!this.#enabled)return null;
   return new SierraPendingAttempt({
    enabled:true,authenticated:true,csrfToken:this.#csrf,
-   websiteOrigin:SITE_ORIGIN,fetchImpl:this.#fetch,profile:this.#profile
+   websiteOrigin:SITE_ORIGIN,fetchImpl:this.#fetch,profile:this.#profile,credential:this.#credential
   });
  }
  async #post(body) {
+  const headers={'Content-Type':'application/json','X-CCG-CSRF':this.#csrf};
+  if(this.#credential!==null){
+   const token=await this.#credential();
+   if(!validBearer(token))return null;
+   headers.Authorization='Bearer '+token;
+  }
   const reply=await this.#fetch(SIERRA_API_ORIGIN+this.#profile.path,{
    method:'POST',mode:'cors',credentials:'include',cache:'no-store',
    redirect:'error',
-   headers:{'Content-Type':'application/json','X-CCG-CSRF':this.#csrf},
+   headers,
    body:JSON.stringify(body)
   });
   return readBoundedJSON(reply);

@@ -168,7 +168,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
     const generation = arenaPreviewGeneration;
     const verifiedMachine = machine;
     try {
-      const module = await import("./arena/games/dropzone/preview.mjs?ccg_rev=20261124_dropzone_public_board_v1");
+      const module = await import("./arena/games/dropzone/preview.mjs?ccg_rev=20261127_arena_unified_v1");
       if (generation !== arenaPreviewGeneration || machine !== verifiedMachine) return;
       const controller = await module.mountDropzoneArenaPreview({
         entry, bytes, stage: screenStage,
@@ -192,7 +192,7 @@ async function mountSelectedArenaPreview(entry, bytes) {
   const generation = arenaPreviewGeneration;
   const verifiedMachine=machine;
   try {
-    const module = await import("./arena-preview.js?ccg_rev=20261125_crossfire_phone_no_flash_v1");
+    const module = await import("./arena-preview.js?ccg_rev=20261127_arena_unified_v1");
     if (generation !== arenaPreviewGeneration) return;
     const f1=KEY_MAP.F1;
     const controller = await module.mountCrossfirePreview({

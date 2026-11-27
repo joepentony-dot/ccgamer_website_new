@@ -88,6 +88,8 @@
     <link rel="stylesheet" href="/resources/css/home-support-panel.css" />
     <link rel="preload" href="/resources/css/retro-shop.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/resources/css/retro-shop.css" /></noscript>
+    <link rel="preload" href="/resources/css/home-thea1200.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/resources/css/home-thea1200.css" /></noscript>
     <link rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/resources/css/home-fourthwall-merch.css" /></noscript>
     <link rel="stylesheet" href="/resources/css/home-c64-emulator-promo.css" />
@@ -120,6 +122,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-responsive-page-polish.css" data-ccg-public-header-first-paint-style="true">
   <link rel="stylesheet" href="/resources/css/ccg-sitewide-layout-optimization.css" data-ccg-public-header-first-paint-style="true">
   <link rel="stylesheet" href="/resources/css/ccg-nav-labelled-bridge.css" data-ccg-public-header-first-paint-style="true">
+    <link rel="stylesheet" href="/resources/css/home-mobile-launchpad.css" />
 </head>
 
 <body class="ccg-body page-home" data-ccg-mode="c64" data-mode="c64" id="top">
@@ -338,10 +341,6 @@
             </div>
 
             <!-- PRIMARY ACTION + OPTIONAL RANDOM DISCOVERY -->
-            <section class="ccg-archive-pulse" data-ccg-archive-pulse="true" data-ccg-static-pulse="true" aria-labelledby="ccg-archive-pulse-title"><div class="ccg-archive-pulse__header"><div><p class="ccg-archive-pulse__kicker">Archive Pulse</p><h2 class="ccg-archive-pulse__title" id="ccg-archive-pulse-title">Something Different Every Visit</h2></div><a class="ccg-archive-pulse__all" href="/games/">Browse all games →</a></div><div class="ccg-archive-pulse__grid"><a class="ccg-archive-pulse__card ccg-archive-pulse__card--has-thumb" href="/games/ace-of-aces/" data-ccg-archive-pulse="game-of-the-day"><img class="ccg-archive-pulse__thumb" src="/resources/images/thumbnails/all/ace_of_aces.jpg" width="96" height="72" loading="lazy" decoding="async" alt=""><span class="ccg-archive-pulse__label">Fresh Game Pick</span><span class="ccg-archive-pulse__name">Ace Of Aces</span><span class="ccg-archive-pulse__meta">1986 · Accolade · strategy</span></a>
-<a class="ccg-archive-pulse__card ccg-archive-pulse__card--has-thumb" href="/games/20-tons/" data-ccg-archive-pulse="archive-pick"><img class="ccg-archive-pulse__thumb" src="/resources/images/thumbnails/all/20_tons_new.png" width="96" height="72" loading="lazy" decoding="async" alt=""><span class="ccg-archive-pulse__label">Archive Pick</span><span class="ccg-archive-pulse__name">20 Tons</span><span class="ccg-archive-pulse__meta">1985 · 64 Tape Computing · arcade</span></a>
-<a class="ccg-archive-pulse__card" href="/retro-specials/zzap64-20-lowest-scoring-commodore-64-games/" data-ccg-archive-pulse="zzap-feature"><span class="ccg-archive-pulse__label">Zzap!64 Feature</span><span class="ccg-archive-pulse__name">Was Zzap!64 Too Harsh? The 20 Lowest-Scoring Commodore 64 Games</span><span class="ccg-archive-pulse__meta">The 20 lowest-scoring Commodore 64 games reviewed by Zzap!64, counting down from 10% to a miserable 3%.</span></a></div></section>
-<script src="/js/ccg-archive-pulse-randomizer.js"></script>
 <section class="home-hero home-hero--streamlined" data-hero-mode="c64">
                 <div class="home-hero__frame">
                     <div class="home-hero__bg home-hero__bg--c64" aria-hidden="true"></div>
@@ -371,6 +370,7 @@
                                     <a href="games/index.html" class="ccg-btn ccg-btn--neon home-hero__cta home-hero__cta--solid">
                                         Browse Games
                                     </a>
+                                    <a href="/emulator/c64/" class="ccg-btn ccg-btn--neon home-hero__cta home-hero__cta--mobile-play" aria-label="Play Commodore 64 games in your browser">Play C64 Games</a>
                                     <button type="button"
                                             class="ccg-btn ccg-btn--neon home-hero__cta home-hero__cta--random"
                                             data-ccg-random-game>
@@ -461,6 +461,9 @@
                         </span>
                     </a>
 
+                    <a href="/games/genres/" class="home-archive-route home-archive-route--mobile-quick"><strong class="home-archive-route__title">Genres</strong></a>
+                    <a href="/games/collections/" class="home-archive-route home-archive-route--mobile-quick"><strong class="home-archive-route__title">Collections</strong></a>
+                    <a href="/music/" class="home-archive-route home-archive-route--mobile-music"><strong class="home-archive-route__title">Music</strong></a>
                     <a href="/choose-your-own-adventure/" class="home-archive-route">
                         <span class="home-archive-route__icon" aria-hidden="true">
                             <svg viewBox="0 0 32 32" focusable="false"><path d="M4 6.5c4-1.5 8-1.5 12 1 4-2.5 8-2.5 12-1V26c-4-1.5-8-1.5-12 1-4-2.5-8-2.5-12-1V6.5Z"></path><path d="M16 7.5V27M8 12h4M20 12h4M8 17h4M20 17h4"></path></svg>
@@ -474,7 +477,7 @@
                     </a>
 
                     <details class="home-archive-more">
-                        <summary class="home-archive-more__toggle">Explore more: genres, publishers, collections, music, Zzap!64 and specials</summary>
+                        <summary class="home-archive-more__toggle">Explore more of the archive</summary>
                         <div class="home-archive-more__grid">
                     <a href="/games/genres/" class="home-archive-route">
                         <span class="home-archive-route__icon" aria-hidden="true">
@@ -551,6 +554,18 @@
                     </details>
                 </nav>
 
+                <section class="ccg-archive-pulse" data-ccg-archive-pulse="true" data-ccg-static-pulse="true" aria-labelledby="ccg-archive-pulse-title"><div class="ccg-archive-pulse__header"><div><p class="ccg-archive-pulse__kicker">Archive Pulse</p><h2 class="ccg-archive-pulse__title" id="ccg-archive-pulse-title">Something Different Every Visit</h2></div><a class="ccg-archive-pulse__all" href="/games/">Browse all games →</a></div><div class="ccg-archive-pulse__grid"><a class="ccg-archive-pulse__card ccg-archive-pulse__card--has-thumb" href="/games/ace-of-aces/" data-ccg-archive-pulse="game-of-the-day"><img class="ccg-archive-pulse__thumb" src="/resources/images/thumbnails/all/ace_of_aces.jpg" width="96" height="72" loading="lazy" decoding="async" alt=""><span class="ccg-archive-pulse__label">Fresh Game Pick</span><span class="ccg-archive-pulse__name">Ace Of Aces</span><span class="ccg-archive-pulse__meta">1986 · Accolade · strategy</span></a>
+<a class="ccg-archive-pulse__card ccg-archive-pulse__card--has-thumb" href="/games/20-tons/" data-ccg-archive-pulse="archive-pick"><img class="ccg-archive-pulse__thumb" src="/resources/images/thumbnails/all/20_tons_new.png" width="96" height="72" loading="lazy" decoding="async" alt=""><span class="ccg-archive-pulse__label">Archive Pick</span><span class="ccg-archive-pulse__name">20 Tons</span><span class="ccg-archive-pulse__meta">1985 · 64 Tape Computing · arcade</span></a>
+<a class="ccg-archive-pulse__card" href="/retro-specials/zzap64-20-lowest-scoring-commodore-64-games/" data-ccg-archive-pulse="zzap-feature"><span class="ccg-archive-pulse__label">Zzap!64 Feature</span><span class="ccg-archive-pulse__name">Was Zzap!64 Too Harsh? The 20 Lowest-Scoring Commodore 64 Games</span><span class="ccg-archive-pulse__meta">The 20 lowest-scoring Commodore 64 games reviewed by Zzap!64, counting down from 10% to a miserable 3%.</span></a></div></section>
+<script src="/js/ccg-archive-pulse-randomizer.js"></script>
+
+                <details class="home-mobile-media" aria-label="Latest uploads and recent games">
+                    <summary>Latest uploads &amp; recent games</summary>
+                    <div data-ccg-home-history-slot></div>
+                    <div data-ccg-home-video-slot></div>
+                    <a class="home-mobile-media__archive" href="/videos/">Browse the video archive →</a>
+                </details>
+
                 <div class="home-featured-videos" aria-labelledby="home-videos-heading">
                     <div class="home-featured-videos__copy">
                         <span class="home-highlight-card__eyebrow">From the channel</span>
@@ -566,6 +581,57 @@
                                 <p class="ccg-card__text">Randomising titles from the games database.</p>
                             </div>
                         </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mobile originals: existing desktop routes remain intact. -->
+            <section class="home-mobile-originals" aria-labelledby="home-mobile-originals-title">
+                <h2 id="home-mobile-originals-title">CCG Originals</h2>
+                <div class="home-mobile-originals__links">
+                    <a href="/arcade/c64-dungeon-carnage/"><strong>Dungeon Carnage</strong><span>Play the dungeon adventure</span></a>
+                    <a href="/choose-your-own-adventure/"><strong>Choose Your Own Adventure</strong><span>Interactive retro gamebook</span></a>
+                </div>
+            </section>
+
+            <div class="ccg-omega-divider" aria-hidden="true">
+                <span class="ccg-omega-core"></span>
+            </div>
+
+            <section class="home-community-latest ccg-chapter" id="homeCommunityLatest" aria-labelledby="home-community-heading">
+                <details class="home-community-disclosure">
+                    <summary class="home-community-disclosure__toggle">
+                        <h2 class="home-community-latest__title" id="home-community-heading">CCG Community</h2>
+                        <span class="home-community-disclosure__hint">Ratings &amp; reviews</span>
+                        <span class="home-community-disclosure__chevron" aria-hidden="true"></span>
+                    </summary>
+                    <div class="home-community-disclosure__body">
+                        <a class="home-community-latest__all" href="/community/latest-comments.html">Latest reviews →</a>
+                        <div class="home-community-latest__card" id="homeCommunityLatestCard" aria-live="polite">
+                            <div class="home-community-latest__copy">
+                                <strong>Rate the games you remember</strong>
+                                <p class="home-community-latest__review">Sign in on any game page to share your score out of 10.</p>
+                                <a class="home-community-latest__game" href="/games/">Find a game to rate →</a>
+                                <a class="home-community-latest__game" href="/community/top-rated.html">Top-rated games →</a>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+            <!-- THEA1200 HOMEPAGE FEATURE: EXPECTED UK DATE AND EXISTING AFFILIATE LINKS -->
+            <section class="ccg-thea1200-home" aria-labelledby="ccg-thea1200-home-title">
+                <a class="ccg-thea1200-home__image-link" href="/thea1200/" aria-label="More information about THEA1200">
+                    <img src="https://m.media-amazon.com/images/I/71y3hzmFtcL._AC_SL1500_.jpg" width="480" height="480" loading="lazy" decoding="async" alt="THEA1200 retro computer package with keyboard, mouse and gamepad" />
+                </a>
+                <div class="ccg-thea1200-home__content">
+                    <p class="ccg-thea1200-home__eyebrow">HARDWARE NEWS</p>
+                    <h2 id="ccg-thea1200-home-title">THEA1200</h2>
+                    <p>Retro Games Ltd announced a <strong>15 December 2026</strong> release target on 19 November. Availability may change.</p>
+                    <p class="ccg-thea1200-home__disclosure">As an Amazon Associate I earn from qualifying purchases. <a href="/affiliate-disclosure.html">Affiliate disclosure</a>.</p>
+                    <div class="ccg-thea1200-home__actions">
+                        <a class="ccg-thea1200-home__button ccg-thea1200-home__button--primary" href="https://www.amazon.co.uk/Retro-Games-THE-A1200/dp/B0G1L9Q7WK?linkCode=ll2&amp;tag=cheekycomm00d-21&amp;linkId=215a465179e39bed0c29211064133c3c&amp;ref_=as_li_ss_tl" target="_blank" rel="sponsored nofollow noopener noreferrer" data-ccg-revenue-link="amazon-associates-2026">View on Amazon</a>
+                        <a class="ccg-thea1200-home__more" href="/thea1200/">More info <span aria-hidden="true">→</span></a>
                     </div>
                 </div>
             </section>
@@ -587,21 +653,21 @@
                 </a>
             </section>
 
-            <div class="ccg-omega-divider" aria-hidden="true">
-                <span class="ccg-omega-core"></span>
-            </div>
-
-            <section class="home-community-latest ccg-chapter" id="homeCommunityLatest" aria-labelledby="home-community-heading">
-                <div class="home-community-latest__header">
-                    <div>
-                        <span class="home-highlight-card__eyebrow">Latest from the CCG Community</span>
-                        <h2 class="home-community-latest__title" id="home-community-heading">The Latest Member Verdict</h2>
+            <!-- Compact mobile equivalent of the three original commercial panels. -->
+            <section class="home-mobile-shop-support" aria-labelledby="home-mobile-shop-support-title">
+                <h2 id="home-mobile-shop-support-title">Shop &amp; Support</h2>
+                <p>Optional support and retro gaming gear. Some links earn a commission which helps support the channel.</p>
+                <details class="home-mobile-shop-support__details">
+                    <summary>Explore shops &amp; ways to support CCG</summary>
+                    <p>The archive is free to everyone. If you'd like to help, you're welcome to chip in. No obligation.</p>
+                    <div class="home-mobile-shop-support__links">
+                        <a href="/retro-shop.html">Amazon Retro Shop</a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="paypal-beer">Buy Joe a Beer</a>
+                        <a href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="patreon">Patreon</a>
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
+                        <a href="/support.html">More support options</a>
                     </div>
-                    <a class="home-community-latest__all" href="/community/latest-comments.html">View all comments →</a>
-                </div>
-                <div class="home-community-latest__card" id="homeCommunityLatestCard" aria-live="polite">
-                    <p class="ccg-community-muted">Checking the latest community review…</p>
-                </div>
+                </details>
             </section>
 
             <!-- CCG RETRO SHOP: NON-INTRUSIVE LINK TO CURATED COLLECTIONS -->

@@ -6,7 +6,7 @@
  * The browser cannot verify honest play or place a score on a public board.
  * No fallback to old Crossfire PRG, Tron, Supabase, or a guessed identity.
  */
-import { acquireSierraAttempt, SIERRA_ATTEMPT_PROFILE } from './sierra-heliohost-attempt.mjs';
+import { acquireSierraAttempt, acquireWebsiteCrtAttempt, SIERRA_ATTEMPT_PROFILE } from './sierra-heliohost-attempt.mjs';
 import { SierraAutomaticAttempt } from './sierra-auto-run-controller.mjs';
 import { readHelioHostSierraBoard } from './sierra-heliohost-board.mjs';
 
@@ -133,6 +133,13 @@ export class SierraHelioHostScoreBridge {
   const result=this.#run.observe(observer,final);
   if(!wasStarted && this.#run.started) {
    this.#status('HELIOHOST ATTEMPT REQUESTED');
+   const currentRun=this.#run;
+   void Promise.resolve(currentRun.startReceipt).then(receipt=>{
+    if(this.#closed||this.#run!==currentRun||currentRun.stopped||this.#finished)return;
+    this.#status(receipt?.status==='started'
+      ? 'ONLINE ATTEMPT ACCEPTED · PLAY FOR SCORE'
+      : 'ONLINE ATTEMPT NOT ACCEPTED · LOCAL SCORE ONLY');
+   });
   }
   if(!result || this.#finished)return;
   this.#finished=true;
@@ -156,4 +163,12 @@ export class SierraHelioHostScoreBridge {
   this.#run?.stop();
   if(!this.#run)this.#transport?.invalidate?.();
  }
+}
+
+
+/** Connect a capability-selected standard member without a second login. */
+export function createWebsiteScoreBridge({capability,credential,...options}={}){
+ return new SierraHelioHostScoreBridge({
+  ...options,acquire:request=>acquireWebsiteCrtAttempt({...request,capability,credential})
+ });
 }

@@ -482,11 +482,13 @@ test("homepage prioritises playable archive discovery before optional merchandis
     const emulator = html.indexOf('class="home-c64-emulator-promo"');
     const merch = html.indexOf('<section class="home-merch-promo"');
     const community = html.indexOf('<section class="home-community-latest');
-    assert.ok(hero >= 0 && hero < discovery && discovery < emulator && emulator < merch && merch < community,
-        "hero and core archive links come before the merchandise CTA, community follows merchandise");
+    assert.ok(hero >= 0 && hero < discovery && discovery < emulator && emulator < community && community < merch,
+        "hero and core archive links come before community ratings, with optional merchandise afterwards");
     assert.equal(html.match(/class="home-merch-promo"/g)?.length, 1, "merchandise CTA exists exactly once");
     assert.equal(html.match(/class="home-c64-emulator-promo"/g)?.length, 1, "emulator CTA stays unique");
-    const merchPanel = html.slice(merch, community);
+    const merchEnd = html.indexOf("</section>", merch);
+    assert.ok(merchEnd > merch, "merchandise panel has a closing section");
+    const merchPanel = html.slice(merch, merchEnd);
     assert.match(merchPanel, /The CCG Merch Shop/);
     assert.match(merchPanel, /EXPLORE MERCH/);
     assert.doesNotMatch(merchPanel, /New CCG Merch Coming Soon/);

@@ -554,12 +554,78 @@ async function assertRetroSpecialsBrowser(sessionId, width) {
 }
 
 async function openMoreWithRealClick(sessionId, width) {
-  await clickElement(sessionId, "[data-ccg-more-toggle]");
-  await waitUntil(
-    sessionId,
-    "document.querySelector('[data-ccg-more-toggle]').getAttribute('aria-expanded') === 'true'",
-    `More expanded state at ${width}px`
-  );
+  // Observe the real browser interaction without changing page state or
+  // substituting a synthetic click. Collect bounded evidence only on failure.
+  await execute(sessionId, `
+    window.__ccgMoreAudit?.stop();
+    const trace = [];
+    const describe = node => node instanceof Element
+      ? { tag: node.tagName, id: node.id, className: String(node.className || '').slice(0, 160) }
+      : null;
+    const snapshot = label => {
+      const header = document.querySelector('[data-ccg-header]');
+      const toggle = document.querySelector('[data-ccg-more-toggle]');
+      const menu = document.querySelector('[data-ccg-more-menu]');
+      const rect = toggle?.getBoundingClientRect();
+      const hit = rect && rect.width > 0 && rect.height > 0
+        ? document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2) : null;
+      trace.push({
+        label, at: Math.round(performance.now()), ready: document.readyState,
+        fonts: document.fonts?.status, fitReady: Boolean(window.CCG_NAV_FIT_READY),
+        controlsBound: header?.dataset.ccgNavFitControlsBound,
+        expanded: toggle?.getAttribute('aria-expanded'), disabled: toggle?.disabled,
+        menuHidden: menu?.hidden, menuLinks: menu?.querySelectorAll('.ccg-nav-fit__link').length,
+        headerOpen: header?.classList.contains('ccg-header--more-open'),
+        hit: describe(hit), hitOwnsToggle: Boolean(toggle?.contains(hit)),
+        rect: rect ? [rect.x, rect.y, rect.width, rect.height] : null
+      });
+      if (trace.length > 60) trace.shift();
+    };
+    const pointer = event => snapshot(event.type + ' target ' + JSON.stringify(describe(event.target)));
+    const fitted = () => snapshot('navigation-fitted');
+    const ready = () => snapshot('navigation-ready');
+    const observer = new MutationObserver(records => {
+      for (const record of records) {
+        const node = record.target;
+        if (node instanceof Element && node.matches('[data-ccg-more-toggle], [data-ccg-more-menu], .ccg-nav__more, .ccg-nav, [data-ccg-header]')) {
+          snapshot('mutation ' + (record.attributeName || record.type) + ' on ' + node.tagName + ' previous=' + record.oldValue);
+        }
+      }
+    });
+    const header = document.querySelector('[data-ccg-header]');
+    if (header) observer.observe(header, { subtree: true, childList: true, attributes: true, attributeOldValue: true, attributeFilter: ['aria-expanded', 'hidden', 'disabled', 'data-state'] });
+    document.addEventListener('pointerdown', pointer, true);
+    document.addEventListener('click', pointer, true);
+    document.addEventListener('ccg:navigation-fitted', fitted);
+    document.addEventListener('ccg:navigation-ready', ready);
+    window.__ccgMoreAudit = { trace, snapshot, stop() {
+      observer.disconnect();
+      document.removeEventListener('pointerdown', pointer, true);
+      document.removeEventListener('click', pointer, true);
+      document.removeEventListener('ccg:navigation-fitted', fitted);
+      document.removeEventListener('ccg:navigation-ready', ready);
+      delete window.__ccgMoreAudit;
+    }};
+    snapshot('before WebDriver click');
+  `);
+  try {
+    await clickElement(sessionId, "[data-ccg-more-toggle]");
+    await waitUntil(
+      sessionId,
+      "document.querySelector('[data-ccg-more-toggle]').getAttribute('aria-expanded') === 'true'",
+      `More expanded state at ${width}px`
+    );
+  } catch (error) {
+    try {
+      const trace = await execute(sessionId, "window.__ccgMoreAudit?.snapshot('failure'); return window.__ccgMoreAudit?.trace || [];");
+      console.error(`More real-click diagnostics at ${width}px: ${JSON.stringify(trace)}`);
+    } catch (diagnosticError) {
+      console.error("More diagnostics unavailable:", diagnosticError.message);
+    }
+    throw error;
+  } finally {
+    await execute(sessionId, "window.__ccgMoreAudit?.stop();").catch(() => {});
+  }
 
   const state = await execute(sessionId, `
     return (function () {

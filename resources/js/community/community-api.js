@@ -164,18 +164,56 @@ export async function getRatingStats(gameSlug) {
   return { count, avg: Math.round(avg * 10) / 10 };
 }
 
+// The current game pages write 1–10 scores to public.ratings, not game_ratings.
+// Read only already-public game keys and scores. No identities or profile fields.
+// Bounded compatibility path until a dedicated aggregate RPC is qualified.
+function aggregatePublicRatings(rows, limit) {
+  const grouped = new Map();
+  for (const row of rows) {
+    const key = String(row?.game_key ?? '').trim();
+    const rating = Number(row?.rating);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(key) || !Number.isInteger(rating) || rating < 1 || rating > 10) {
+      throw Error('Unexpected community rating data');
+    }
+    const item = grouped.get(key) || { game_slug: key, total: 0, rating_count: 0 };
+    item.total += rating;
+    item.rating_count++;
+    grouped.set(key, item);
+  }
+  return [...grouped.values()]
+    .map(({game_slug,total,rating_count}) => ({ game_slug, avg_rating: total / rating_count, rating_count }))
+    .sort((a,b) => b.avg_rating - a.avg_rating || b.rating_count - a.rating_count || a.game_slug.localeCompare(b.game_slug))
+    .slice(0, limit);
+}
+
 export async function listTopRated(limit = 25) {
-  const safeLimit = Math.max(1, Math.min(Number(limit) || 25, 100));
-
-  const { data, error } = await supabase
-    .from('game_rating_stats')
-    .select('game_slug, avg_rating, rating_count')
-    .order('avg_rating', { ascending: false })
-    .order('rating_count', { ascending: false })
-    .limit(safeLimit);
-
-  if (error) cLog('listTopRated error', error);
-  return { data: data ?? [], error };
+  const safeLimit = Math.max(1, Math.min(Math.floor(Number(limit) || 25), 100));
+  const pageSize = 500;
+  const maxRows = 5000;
+  try {
+    const client = await window.ccgSupabase?.getClient();
+    if (!client) throw Error('Community client unavailable');
+    const rows = [];
+    let expected = null;
+    for (let offset = 0; offset < maxRows; offset += pageSize) {
+      const {data,error,count} = await client.from('ratings')
+        .select('game_key,rating', {count: 'exact'})
+        .order('game_key', {ascending:true})
+        .order('rating', {ascending:true})
+        .range(offset,offset + pageSize - 1);
+      if (error) throw error;
+      if (!Array.isArray(data) || !Number.isSafeInteger(count) || count < 0 || count > maxRows) throw Error('Community ranking exceeds verified read budget');
+      if (expected === null) expected = count;
+      if (expected !== count) throw Error('Community rankings changed during read; reload');
+      rows.push(...data);
+      if (rows.length === expected) return {data: aggregatePublicRatings(rows, safeLimit), error:null};
+      if (data.length !== pageSize || rows.length > expected) throw Error('Incomplete community ratings');
+    }
+    throw Error('Incomplete community ratings');
+  } catch(error) {
+    cLog('listTopRated error', error);
+    return {data:[], error};
+  }
 }
 
 export async function listActivity(limit = 50) {

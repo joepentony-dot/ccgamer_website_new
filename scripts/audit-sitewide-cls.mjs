@@ -184,6 +184,58 @@ try {
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('[data-ccg-global-search-trigger]').count(), 1);
     assert.equal(await page.locator('.ccg-auth-slot').count(), 1);
+    if (url === '/home.html' && [390, 412, 1440].includes(width)) {
+      const disclosure = page.locator('#homeCommunityLatest details.home-community-disclosure');
+      const summary = disclosure.locator('summary');
+      const panel = disclosure.locator('.home-community-disclosure__body');
+      assert.equal(await disclosure.getAttribute('open'), null, 'Community must begin collapsed');
+      assert.equal(await panel.isVisible(), false, 'Collapsed community content must be hidden');
+      await summary.scrollIntoViewIfNeeded();
+      await summary.click();
+      assert.equal(await disclosure.evaluate(el => el.open), true);
+      await panel.waitFor({ state: 'visible' });
+      await panel.getByRole('link', { name: 'Latest reviews →', exact: true }).waitFor({ state: 'visible' });
+      await panel.getByRole('link', { name: 'Top-rated games →', exact: true }).waitFor({ state: 'visible' });
+      assert(await panel.evaluate(el => el.scrollWidth <= el.clientWidth + 1), 'Expanded community overflows horizontally');
+      await page.locator('#homeCommunityLatest').screenshot({ path: path.join(reportDir, `home-${mode}-${width}-community-open.png`) });
+      await summary.focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await disclosure.evaluate(el => el.open), false, 'Keyboard must close community');
+      assert.equal(await panel.isVisible(), false);
+      console.log(`Homepage community mouse open/keyboard close and links passed at ${width}px in ${mode} mode`);
+      // Retain the whole staged homepage, including the below-fold sections.
+      // This runs only after the original loading and interaction assertions.
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.screenshot({ path: path.join(reportDir, `home-${mode}-${width}-full.png`), fullPage: true });
+      if (width < 520) {
+        for (const label of ['archive picks', 'featured videos']) {
+          const controls = page.getByRole('group', { name: label + ' navigation', exact: true });
+          const next = controls.getByRole('button', { name: 'Next ' + label, exact: true });
+          const previous = controls.getByRole('button', { name: 'Previous ' + label, exact: true });
+          const position = controls.locator('.ccg-home-carousel-position');
+          await controls.scrollIntoViewIfNeeded();
+          await page.waitForFunction(label => {
+            const group = [...document.querySelectorAll('.ccg-home-carousel-controls')].find(node => node.getAttribute('aria-label') === label + ' navigation');
+            return /^1 of [2-9]|^1 of [1-9][0-9]/.test(group?.querySelector('.ccg-home-carousel-position')?.textContent || '') &&
+              group?.querySelector('button:last-child')?.getAttribute('aria-disabled') === 'false';
+          }, label, { timeout: 12000 });
+          const initial = await position.innerText();
+          await next.click();
+          await page.waitForFunction(({ label, initial }) => {
+            const group = [...document.querySelectorAll('.ccg-home-carousel-controls')].find(node => node.getAttribute('aria-label') === label + ' navigation');
+            return group?.querySelector('.ccg-home-carousel-position')?.textContent !== initial &&
+              group?.querySelector('button:first-child')?.getAttribute('aria-disabled') === 'false';
+          }, { label, initial }, { timeout: 5000 });
+          await previous.click();
+          await page.waitForFunction(({ label, initial }) => {
+            const group = [...document.querySelectorAll('.ccg-home-carousel-controls')].find(node => node.getAttribute('aria-label') === label + ' navigation');
+            return group?.querySelector('.ccg-home-carousel-position')?.textContent === initial;
+          }, { label, initial }, { timeout: 5000 });
+          assert.equal(await previous.getAttribute('aria-disabled'), 'true');
+          console.log(`Homepage ${label}: real next/previous click and position return passed at ${width}px in ${mode} mode`);
+        }
+      }
+    }
     if (url.includes('/games/')) {
       assert(await page.locator('#gameHeroTitle').innerText());
       assert.equal(await page.locator('#game-video-embed').getAttribute('src'), null, 'Video must remain deferred');
