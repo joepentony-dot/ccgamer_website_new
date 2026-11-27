@@ -1,3 +1,8 @@
+## 27 November 2026 — R206 500 XP orb integration (candidate)
+
+- R205 #3205 merged at baadcf295652657167ee72196e16530ac4799765 with identical qualified tree. All 13 exact-head workflows, all six Chromium shards, production smoke 46043271502, full postmerge qualification 46043271639, Pages 46043271589 and live navigation 46043605188 passed. Prior visual evidence assessed; commercial gate remains closed.
+- R206 changes only ordinary XP orb nominal reward from 10 to 500, ground labels/help/collection notification, Banishment Artefact wording, and synchronized build/cache metadata. Existing floor caps, excess discard, ordinary pickup rewards, score and Banishment reward unchanged. 332 source-executed simulated assertions passed, including all 15 floors and duplicate requests. Fresh actual CI/browser checks required. Original R206–R241 art archives still unavailable; no new disconnected art, commercial publication, Codex/Work or competing schedule. Dungeon has exclusive website slot.
+
 ## 27 November 2026 — Master Control handover: Dungeon Carnage exclusive website slot
 
 - Owner explicitly authorised LIFT DUNGEON CARNAGE HOLD. Arena website #3214 merged and deployed; park further Arena website implementation, retain independent HelioHost/backend development and existing release safeguards. Coordination recorded in backend issue #25 comment 7224063607. Homepage #3209 merged. Existing schedules unchanged; no competing website implementation.
