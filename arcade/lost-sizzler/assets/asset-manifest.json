@@ -19,6 +19,21 @@
       "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
     },
     "visualOverhaul": {
+      "r205BiomeFloorAtlas": {
+        "asset": "assets/pixel/visual-overhaul/r205/ironforge-keep-vault-catacomb-floors.svg",
+        "creator": "CCG project original programmatically authored pixel art",
+        "provenance": "Original hand-constructed 42px geometry, shading and wear; no imported art or reference tracing.",
+        "dimensionsPx": [
+          168,
+          168
+        ],
+        "cells": [
+          4,
+          4
+        ],
+        "tilePx": 42,
+        "scope": "Four distinct floor material sets, four variants each: Floors 2–5 only; protected rooms, walls and severe path unchanged."
+      },
       "r204ThresholdFurnitureAtlas": {
         "asset": "assets/pixel/visual-overhaul/r204/threshold-furniture.svg",
         "creator": "CCG project original pixel furniture, authored for R204",
