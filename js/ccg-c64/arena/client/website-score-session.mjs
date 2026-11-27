@@ -94,7 +94,7 @@ export async function watchWebsiteScoreMode({
  const capability=await readWebsiteScoreCapability({origin,gameKey,fetchImpl,signal});
  if(!capability||signal?.aborted)return false;
  onCapability(capability);
- let currentId,revision=0,closed=false;
+ let currentId,revision=0,identityEpoch=0,closed=false;
  const session=()=>getSession({win});
  const refresh=async()=>{
   const rev=++revision;
@@ -104,24 +104,25 @@ export async function watchWebsiteScoreMode({
   const id=UUID.test(identity?.id||'')?identity.id:null;
   if(id===currentId)return;
   currentId=id;
+  const epoch=++identityEpoch;
   const credential=id?createWebsiteScoreCredential({origin,capability,getSession:async()=>{
-   if(closed||signal?.aborted||currentId!==id)return null;
+   if(closed||signal?.aborted||currentId!==id||epoch!==identityEpoch)return null;
    const value=await session();
-   return !closed&&!signal?.aborted&&currentId===id&&value?.id===id?value:null;
+   return !closed&&!signal?.aborted&&currentId===id&&epoch===identityEpoch&&value?.id===id?value:null;
   }}):null;
   onIdentity(credential,capability);
  };
  const changed=event=>{
   const type=event?.detail?.event;
   if(type==='SIGNED_OUT'||(event?.detail?.user?.id&&currentId&&event.detail.user.id!==currentId)){
-   revision++;currentId=null;onIdentity(null,capability);
+   revision++;identityEpoch++;currentId=null;onIdentity(null,capability);
   }
   // Do not call the shared auth client inside its synchronous auth callback.
   win.setTimeout(()=>{if(!closed)void refresh();},0);
  };
  const focus=()=>{if(!closed)void refresh();};
  const close=()=>{
-  closed=true;revision++;currentId=null;
+  closed=true;revision++;identityEpoch++;currentId=null;
   win.removeEventListener('ccg:auth-changed',changed);
   win.removeEventListener('focus',focus);
  };

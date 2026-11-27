@@ -12,7 +12,8 @@ class Element {
  constructor(doc,tag){this.ownerDocument=doc;this.tag=tag;this.textContent='';this.children=[];this.events=new Map();this.attributes={};this.removed=false;this.classList={toggle(){}};}
  setAttribute(a,v){this.attributes[a]=String(v);}
  removeAttribute(a){delete this.attributes[a];}
- append(...items){this.children.push(...items);}
+ append(...items){for(const item of items){item.parentNode=this;this.children.push(item);}}
+ insertBefore(item,before){const i=this.children.indexOf(before);if(i<0)throw Error('missing reference');item.parentNode=this;this.children.splice(i,0,item);}
  replaceChildren(...items){this.children=[...items];}
  insertAdjacentElement(_,node){this.after=node;}
  addEventListener(e,cb){this.events.set(e,cb);}
@@ -405,4 +406,47 @@ test('phone scoring status and sign-in are not hidden by guest-only presentation
  assert(!css.includes('[data-ccg-sierra-member-signin]) {\n    display: none'));
  assert(css.includes('[data-ccg-arena-online="requested"].is-mobile-open'));
  assert(css.includes('.ccg-arena-preview__submission {\n    flex: 0 0 auto;'));
+});
+
+
+test('ordinary verified Sierra launch recognizes standard CCG login without reset or scores URL',async()=>{
+ const doc=fakeDocument(),stage=doc.createElement('div'),requests=[];
+ const user='11111111-1111-4111-8111-111111111111';
+ let session=null;
+ const win=new EventTarget();
+ win.location={origin:ORIGIN};win.setTimeout=setTimeout;
+ win.CCG_SUPABASE_URL='https://lcslgxpgmttaexsorxik.supabase.co';
+ win.ccgSupabase={getClient:async()=>({auth:{getSession:async()=>({data:{session}})}})};
+ doc.defaultView=win;
+ const controller=await mountCrossfirePreview({
+  entry,bytes,stage,doc,subtle,scoreQuery:'?game='+entry.id+'&autoplay=1',websiteOrigin:ORIGIN,
+  scoreFetchImpl:async(url,options)=>{
+   const body=options.body?JSON.parse(options.body):null;requests.push({url,options,body});
+   if(url.includes('/leaderboard'))return reply({ok:true,gameKey:'c64-crossfire-sierra-online',board:'alltime',status:'available',challengeSlug:null,records:[]});
+   if(url.endsWith('/v1/member/csrf'))return reply({csrf:'b'.repeat(64),websiteScores:{version:1,games:['c64-crossfire-sierra-online']}});
+   if(body?.action==='start')return reply({ok:true,status:'started',attemptId:user,nonce:'a'.repeat(64),reviewRequired:true,publicRankingUpdated:false});
+   if(body?.action==='finish')return reply({ok:true,status:'pending-review',scoreReceived:170,reviewRequired:true,publicRankingUpdated:false});
+   throw Error('Unexpected request');
+  }
+ });
+ const panel=stage.after;
+ for(let i=0;i<100&&!panel.find(x=>x.textContent==='SIGN IN TO CCG · PLAY LOCALLY UNTIL SIGNED IN');i++)await turn();
+ const link=panel.find(x=>x.tag==='a'&&x.textContent==='SIGN IN TO CCG');
+ assert(link);assert.equal(link.href,'/auth/login.html');assert.equal(link.target,'_blank');
+ controller.observe(ram(0,true));assert(controller.armFromUserF1());controller.observe(ram(0));
+ session={user:{id:user},access_token:'aaa.bbb.ccc'};
+ win.dispatchEvent(new Event('focus'));
+ for(let i=0;i<100&&!panel.find(x=>x.textContent.includes('CURRENT RUN LOCAL ONLY · START A NEW GAME'));i++)await turn();
+ assert.equal(link.hidden,true);
+ controller.observe(ram(170));for(let i=0;i<25;i++)controller.observe(ram(170,true));
+ await turn();assert.equal(requests.filter(x=>x.body).length,0,'no retroactive start or finish');
+ assert(controller.armFromUserF1());controller.observe(ram(0));await turn();await turn();
+ controller.observe(ram(170));for(let i=0;i<25;i++)controller.observe(ram(170,true));
+ await turn();await turn();
+ const writes=requests.filter(x=>x.body);
+ assert.deepEqual(writes.map(x=>x.body.action),['start','finish']);
+ assert(writes.every(x=>x.options.headers.Authorization==='Bearer aaa.bbb.ccc'));
+ assert(!requests.some(x=>x.url.endsWith('/v1/member/me')));
+ assert(panel.find(x=>x.textContent==='SCORE 000170 RECEIVED · PENDING REVIEW'));
+ controller.dispose();
 });
