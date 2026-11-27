@@ -5,6 +5,13 @@ const local=read("js/game-local-runtime.js"),core=read("js/game-core.js"),render
 const cut=(s,a,b)=>{const i=s.indexOf(a),j=s.indexOf(b,i+1);assert.ok(i>=0&&j>i,a);return s.slice(i,j)};
 const caps=JSON.parse(config.match(/levelCaps:\s*(\[[^\]]+\])/)[1]);
 const source=cut(prog,"  function xpNeed(","  function skillChoices(")+cut(local,"function onCollectRequest(","function requestCollect(")+cut(local,"function collectedName(","function storeConsumable(")+cut(local,"function pickupXP(","function usePotion(")+cut(core,"function itemHelp(","function itemIconSVG(")+cut(render,"function groundItemLabel(","function drawItem(");
+// Non-orb display paths must not require the pickup owner to be installed.
+const helpOnly=new Function("C",cut(core,"function itemHelp(","function itemIconSVG(")+"\nreturn itemHelp;")({player:{torchRadius:4,torchMs:10000,inventorySlots:12},stalker:{}});
+const groundOnly=new Function(cut(render,"function groundItemLabel(","function drawItem(")+"\nreturn groundItemLabel;")();
+assert.match(helpOnly("health"),/Restores 3 HP/);
+assert.match(helpOnly("torch"),/Stored item/);
+assert.equal(groundOnly({kind:"health"}),"HEALTH POTION");
+assert.equal(groundOnly({kind:"game",title:"Test"}),"Test");
 const context=new Function("caps",source+`
 const C={maxFloors:15,levelCaps:caps,player:{torchRadius:4,torchMs:10000,inventorySlots:12},stalker:{}};
 const p1={id:"a",level:1,xp:0,totalXp:0},p2={id:"b",level:1,xp:0,totalXp:0};

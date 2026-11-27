@@ -923,9 +923,10 @@ function drawPickupGlyph(i,col){
   ctx.restore()
 }
 function groundItemLabel(i){
+  if(i.kind==="xpOrb")return `+${pickupXP("xpOrb")} XP`;
   if(i.kind==="loot")return i.loot?.weapon?.displayName||i.loot?.name||"LOOT";
   if(i.kind==="game")return i.title||"C64 GAME";
-  return({health:"HEALTH POTION",mana:"AMMUNITION",ammo:"AMMUNITION",exitSigil:"EXIT SIGIL",key:"MAIN KEY",credits:"GOLD SCORE COIN",xpOrb:`+${pickupXP("xpOrb")} XP`,torch:"TORCH",teleport:"TELEPORT SPELL",banishment:"BANISHMENT FLASK",inventorySlot:"INVENTORY SLOT",armour:"+2 ARMOUR",potion:"POTION",bronze:"BRONZE KEY",weapon:"FIREARM UPGRADE CACHE",rapid:"RAPID FIRE"}[i.kind]||String(i.kind||"ITEM").toUpperCase())
+  return({health:"HEALTH POTION",mana:"AMMUNITION",ammo:"AMMUNITION",exitSigil:"EXIT SIGIL",key:"MAIN KEY",credits:"GOLD SCORE COIN",torch:"TORCH",teleport:"TELEPORT SPELL",banishment:"BANISHMENT FLASK",inventorySlot:"INVENTORY SLOT",armour:"+2 ARMOUR",potion:"POTION",bronze:"BRONZE KEY",weapon:"FIREARM UPGRADE CACHE",rapid:"RAPID FIRE"}[i.kind]||String(i.kind||"ITEM").toUpperCase())
 }
 function drawItem(i){
   if(!i.active||!tileInRenderView(i.x,i.y,2)||!visibleTo(focus,i.x,i.y))return;const s=ws(i.x,i.y),[txt,col]=itemInfo(i),pulse=1+Math.sin(performance.now()/155+i.x)*.08;
