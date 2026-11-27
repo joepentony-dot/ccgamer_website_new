@@ -1,0 +1,42 @@
+name: Sierra Crossfire CRT Score Forensics
+
+on:
+  pull_request:
+    paths:
+      - "scripts/high-score-arena/probe-sierra-crossfire-crt.mjs"
+      - "scripts/high-score-arena/read-sierra-crossfire-screen-score.mjs"
+      - "scripts/high-score-arena/observe-sierra-crossfire-run.mjs"
+      - "tests/high-score-arena-sierra-crt-screen-score.test.mjs"
+      - ".github/workflows/sierra-crossfire-crt-score-probe.yml"
+      - "js/ccg-c64/core/**"
+      - "emulator/c64/media/cartridge-replacements/active.json"
+      - "emulator/c64/media/cartridge-replacements/crossfiresierraonline-0c60e852f438.crt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-sierra-crt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate exact Sierra CRT forensic probe
+        run: |
+          set -euo pipefail
+          node --check scripts/high-score-arena/probe-sierra-crossfire-crt.mjs
+          node --test tests/high-score-arena-sierra-crt-screen-score.test.mjs
+          node scripts/high-score-arena/probe-sierra-crossfire-crt.mjs --output-dir "$RUNNER_TEMP/sierra-crossfire-crt"
+          node scripts/high-score-arena/probe-sierra-crossfire-crt.mjs --hunt-score --full-run --output-dir "$RUNNER_TEMP/sierra-crossfire-crt/hunt"
+      - name: Preserve real frames and RAM captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sierra-crossfire-crt-forensic-evidence
+          path: ${{ runner.temp }}/sierra-crossfire-crt/
+          if-no-files-found: warn
+          retention-days: 7

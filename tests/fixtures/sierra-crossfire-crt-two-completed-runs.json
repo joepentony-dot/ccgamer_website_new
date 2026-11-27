@@ -1,0 +1,90 @@
+{
+  "description": "Original Sierra Crossfire CRT SHA-256 0c60e852f438ab9b6b325a1ecedb69ae1bbff9d1519584e52d6bb31df26c14ab. These are REAL local screen-score transitions, captured from original emulator RAM/video in GitHub Actions run 44342537424. Final signature was held for 25 consecutive PAL frames. No identity/auth/trainer/anti-cheat proof; no public score submission.",
+  "originalMediaSha256": "0c60e852f438ab9b6b325a1ecedb69ae1bbff9d1519584e52d6bb31df26c14ab",
+  "runSessions": [
+    {
+      "name": "up-fire",
+      "source": "hunt/run-up-fire",
+      "scoreTransitions": [
+        {
+          "frame": 1,
+          "score": 0,
+          "ramSha256": "181d23fd7fa1290a27af1ab4d227f3d8c6465382fc567e153c04392e5276f46f"
+        },
+        {
+          "frame": 59,
+          "score": 10,
+          "ramSha256": "82577257a2ff01b4d758247818ed133b6763d46383210f94bdab0e5cb563909f"
+        },
+        {
+          "frame": 117,
+          "score": 30,
+          "ramSha256": "0f6111d813630728908d9c4ba31d9f06600e0193679ab242e4c681f19000822c"
+        },
+        {
+          "frame": 229,
+          "score": 40,
+          "ramSha256": "7e243bde950b8fdfa63e295ed74e5c822c92106e7f190f8be79f6c2ae8ea1483"
+        },
+        {
+          "frame": 548,
+          "score": 80,
+          "ramSha256": "d437d54b613094b6b9bb4267234bb3fcec2987398e85d26abe7bc840d4141283"
+        },
+        {
+          "frame": 660,
+          "score": 160,
+          "ramSha256": "15a1143c96016f3b67e9a0ae1b7a7327e24e37e869bb3f7ba966e946a86f0608"
+        },
+        {
+          "frame": 738,
+          "score": 170,
+          "ramSha256": "51ce221df636a061eefcf8800bf39f7ee22109c5adeaaeb958081b500ddc0eb8"
+        }
+      ],
+      "terminal": {
+        "score": 170,
+        "stableGameOverFrames": 25,
+        "ramSha256": "8e96154475f0bd9f971c2cd362dc81fc0782660a4647e4674e393a6912e56650"
+      }
+    },
+    {
+      "name": "left-fire",
+      "source": "hunt/run-left-fire",
+      "scoreTransitions": [
+        {
+          "frame": 1,
+          "score": 0,
+          "ramSha256": "129ebeb41d708fee82116967e6a4f726d60df576cbb2a7cdcc51a8dd88588120"
+        },
+        {
+          "frame": 26,
+          "score": 10,
+          "ramSha256": "d7b2e74c134f1d5cc33896406460d80aebf5c1e37ebe604ab52e51350a99bbb4"
+        },
+        {
+          "frame": 81,
+          "score": 30,
+          "ramSha256": "3e5601114b3e60220ae4c6fc9340fe9342a311f28b9ba555f440f149d7c5e6aa"
+        },
+        {
+          "frame": 358,
+          "score": 70,
+          "ramSha256": "848d289cc138af705cd9854b0c09106c7f409074649a78513631cee2447f5c29"
+        },
+        {
+          "frame": 739,
+          "score": 150,
+          "ramSha256": "8f215fda66cca52982a8505e0481f03d8b87ab11738feee0e864dc4da6b01379"
+        }
+      ],
+      "terminal": {
+        "score": 150,
+        "stableGameOverFrames": 25,
+        "ramSha256": "4ae86bb7a815feeb1ccd02a8228d9440343bcac6f0bcedb4bebb12c5ea0cffb4"
+      }
+    }
+  ],
+  "runtimeShaVerifiedFromArtifacts": true,
+  "networkSubmissions": 0
+}
