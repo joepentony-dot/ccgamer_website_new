@@ -20,6 +20,7 @@ const app = read("js/ccg-c64/app.js");
 const machine = read("js/ccg-c64/core/machine.js");
 const cia = read("js/ccg-c64/core/cia.js");
 const audioWorklet = read("js/ccg-c64/core/sid/sid-worklet.js");
+const browserAudio = read("js/ccg-c64/core/sid/sid-browser-audio.js");
 const sidWasmBlob = read("js/ccg-c64/core/sid/sid-wasm-blob.js");
 const webglPresenter = read("js/ccg-c64/core/webgl-presenter.js");
 const crtParams = read("js/ccg-c64/core/crt-params.js");
@@ -154,8 +155,8 @@ assert(/const APP_URL = "\/js\/ccg-c64\/app\.js\?ccg_rev=[a-z0-9_]+"/.test(coiBo
   coiBootstrap.includes("await import(APP_URL)"), "COI bootstrap must import the versioned emulator entry");
 assert(coiBootstrap.includes("await startCompatibilityMode(") &&
   machine.includes("this.sidShared = sharedSidAvailable ? new SharedArrayBuffer") &&
-  app.includes('updateAudioUi("SILENT COMPATIBILITY MODE")'),
-  "Browsers without shared memory must still boot C64 video and controls in silent mode");
+  app.includes('SidBrowserAudio') && machine.includes('this.sidMessageSink') && audioWorklet.includes('attachSidReceiver'),
+  "Browsers without shared memory must retain C64 video, controls and fallback SID transport");
 assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
 assert(coiBootstrap.includes("if (isIOSDevice())") &&
   coiBootstrap.indexOf("if (isIOSDevice())") < coiBootstrap.indexOf("navigator.serviceWorker.register("),
@@ -262,7 +263,7 @@ assert(app.includes("packedCatalogueError") &&
 assert(app.includes("directGameKeys") && app.includes("!directGameKeys.has("),
   "Archived game pack must not duplicate already hosted D64/CRT titles");
 assert(app.includes('fetch("/emulator/c64/library.json"'), "Online Library must load from the CCG manifest");
-assert(app.includes('import { C64Machine } from "./core/machine.js?ccg_rev=20261011_ios_silent_fallback_v1"'), "Machine core must be wired into the CCG app");
+assert(app.includes('import { C64Machine } from "./core/machine.js?ccg_rev=20261127_ios_sid_message_candidate_v4"'), "Machine core must be wired into the CCG app");
 assert(app.includes("machine.runFrame()"), "PAL frame execution must be wired");
 assert(app.includes("machine.loadPRG(bytes)"), "Stage 2 quick PRG loading must be wired");
 assert(app.includes('import { KEY_MAP, CHAR_MAP } from "./core/cia.js"'), "C64 keyboard matrix maps must be wired");
@@ -425,12 +426,12 @@ assert(app.includes("const WARP_MAX_FRAMES_PER_TICK = 1024"), "Warp Load must re
 assert(app.includes("performance.now() - start < WARP_FRAME_BUDGET_MS"), "Warp must use as many emulated frames as the device can sustain, not a fixed 4x speed");
 assert(app.includes("frameAccumulator += delta"), "Normal PAL-timed playback must remain unchanged when Warp is off");
 assert(app.includes("WARP SILENT"), "Warp Load must silence SID output while accelerated");
-assert(app.includes("sidNode?.port.postMessage({ type: \"resync\" })"), "SID resync must remain available when Warp Load returns to 1x");
-assert(app.includes("audioWorklet.addModule(SID_WORKLET_URL)"), "SID AudioWorklet module must be loaded");
-assert(app.includes('SID_WORKLET_URL = "/js/ccg-c64/core/sid/sid-worklet.js"'), "The upstream-quality SID worklet path must be active");
-assert(app.includes("shared: machine.sidShared"), "SID worklet must receive the machine SharedArrayBuffer");
-assert(app.includes('engine: "wasm"'), "The upstream reSID WASM engine must be requested");
-assert(app.includes('new AudioWorkletNode(audioContext, "sid-processor"'), "The upstream SID processor name must be used");
+assert(app.includes("sidAudio.resync()") && browserAudio.includes("type: 'resync'"), "SID resync must remain available when Warp Load returns to 1x");
+assert(browserAudio.includes("audioWorklet.addModule(this.workletUrl)"), "SID AudioWorklet module must be loaded");
+assert(app.includes('SID_WORKLET_URL = "/js/ccg-c64/core/sid/sid-worklet.js?ccg_rev='), "The upstream-quality SID worklet path must be active");
+assert(browserAudio.includes("shared: machine.sidShared"), "SID worklet must receive the machine SharedArrayBuffer");
+assert(browserAudio.includes("engine: 'wasm'"), "The upstream reSID WASM engine must be requested");
+assert(browserAudio.includes("new this.browser.AudioWorkletNode(context, 'sid-processor'"), "The upstream SID processor name must be used");
 assert(audioWorklet.includes("registerProcessor('sid-processor'"), "Upstream SID processor must be registered");
 assert(audioWorklet.includes("EVENT_LOOKAHEAD_CYCLES"), "SID timing/lookahead transport must be retained");
 assert(audioWorklet.includes("SIDFilter"), "SID worklet must use the reSID-derived filter/mixer stage");
@@ -444,7 +445,7 @@ assert(app.includes("presentationBuffer()"), "Presented VIC-II buffer must feed 
 assert(crtParams.includes("CRT_PRESETS"), "CRT preset definitions must be bundled");
 assert(app.includes("presetParams(crtMode)"), "CRT presets must reach the presenter");
 assert(!app.includes("frames < 3"), "The old three-frame catch-up cap must not throttle emulation after a stall");
-assert(app.includes('type: "resync"'), "SID must resync after host-side pauses and display transitions");
+assert(browserAudio.includes("type: 'resync'"), "SID must resync after host-side pauses and display transitions");
 assert(headers.includes("/emulator/c64/*"), "Emulator-specific headers are required");
 assert(headers.includes("Cross-Origin-Embedder-Policy: require-corp"), "COEP must be scoped for SharedArrayBuffer");
 assert(emulation.includes('href="/emulator/c64/"'), "Emulation hub must link to the CCG browser emulator");

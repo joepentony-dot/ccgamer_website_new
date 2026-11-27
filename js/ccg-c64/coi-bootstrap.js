@@ -7,7 +7,7 @@ const WORKER_URL = "/emulator/c64/coi-service-worker.js";
 const WORKER_SCOPE = "/emulator/c64/";
 const RELOAD_KEY = "ccg.c64.coi.reloadCount";
 const MAX_RELOADS = 2;
-const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261127_arena_unified_v1";
+const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261127_ios_sid_message_candidate_v4";
 
 const machineState = document.querySelector("[data-machine-state]");
 const stageNote = document.querySelector("[data-stage-note]");
@@ -76,9 +76,9 @@ function startupFailed(error) {
 }
 
 async function startCompatibilityMode(reason) {
-  console.warn("[ccg-c64] Starting without shared SID audio:", reason);
+  console.warn("[ccg-c64] Starting without shared SID transport:", reason);
   setStatus("STARTING C64 IN COMPATIBILITY MODE",
-    "Browser isolation could not be enabled. Games will run without SID sound in this session.");
+    "Browser isolation could not be enabled. The emulator will attempt the compatibility audio path.");
   try {
     await import(APP_URL);
   } catch (error) {
@@ -101,7 +101,7 @@ async function start() {
 
   // iOS service-worker activation and its isolation reload can stall or loop.
   // Keep an already-isolated Safari session above, but boot all other iOS
-  // sessions immediately in silent compatibility mode without reloading.
+  // sessions immediately in compatibility mode without reloading.
   if (isIOSDevice()) {
     await startCompatibilityMode("iOS WebKit does not have an isolated document.");
     return;

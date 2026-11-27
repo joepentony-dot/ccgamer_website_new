@@ -23,6 +23,7 @@
 import { SIDVoice, makeVoiceTrio, computeSyncPulses } from './sid-voice.js';
 import { SIDFilter, SIDExternalFilter, clip16 } from './sid-filter.js';
 import { sidWasmBytes } from './sid-wasm-blob.js';
+import { attachSidReceiver } from './sid-message-bridge.js';
 
 const RING_CAPACITY = 131072;
 // The main thread emits SID writes while it computes a video frame in a burst,
@@ -264,7 +265,13 @@ class SIDProcessor extends AudioWorkletProcessor {
     // here so an engine switch can replay the full file into the target.
     this.regShadow = new Uint8Array(25);
 
+    this.sidLocalRing = null;
+    this.sidMessageReceiver = attachSidReceiver(this, RING_CAPACITY);
     this.port.onmessage = e => {
+      if (e.data?.type === "sid-message-init" || e.data?.type === "sid-message-events") {
+        this.sidMessageReceiver.receive(e.data);
+        return;
+      }
       if (e.data.type === 'init') {
         // 'init' = brand-new machine on the main thread → full reset,
         // currentCycle = 0 to match the freshly-zeroed sidCycleCounter.
@@ -274,6 +281,7 @@ class SIDProcessor extends AudioWorkletProcessor {
         }
         this.sidCtrl = null;
         this.sidRing32 = null;
+        this.sidLocalRing = null;
         this._configureSecond(e.data.secondSid, true);
         this._fullReset(e.data.is8580 ?? false);
         // sidCtrl: [0]=writeIdx, [1]=readIdx, [2]=OSC3, [3]=ENV3.
@@ -287,8 +295,8 @@ class SIDProcessor extends AudioWorkletProcessor {
         this.port.postMessage({
           type: 'diag-init',
           ccBefore, ccAfter: this.currentCycle,
-          wi: Atomics.load(this.sidCtrl, 0),
-          ri: Atomics.load(this.sidCtrl, 1),
+          wi: this._readSidCtrl(0),
+          ri: this._readSidCtrl(1),
           is8580: this.sid.is8580,
         });
       } else if (e.data.type === 'second') {
@@ -577,9 +585,18 @@ class SIDProcessor extends AudioWorkletProcessor {
     this._needCycleSync = true;
   }
 
+  _readSidCtrl(index) {
+    return this.sidLocalRing ? this.sidCtrl[index] : Atomics.load(this.sidCtrl, index);
+  }
+
+  _writeSidCtrl(index, value) {
+    if (this.sidLocalRing) this.sidCtrl[index] = value;
+    else Atomics.store(this.sidCtrl, index, value);
+  }
+
   _drainRing() {
-    let ri = Atomics.load(this.sidCtrl, 1);
-    const wi = Atomics.load(this.sidCtrl, 0);
+    let ri = this._readSidCtrl(1);
+    const wi = this._readSidCtrl(0);
     // Backpressure check: the producer (machine._sidWrite) overwrites the ring
     // unconditionally. If we fell more than RING_CAPACITY events behind, the
     // oldest unread entries have been clobbered — count the loss and resync to
@@ -607,7 +624,7 @@ class SIDProcessor extends AudioWorkletProcessor {
       this.pendCount++;
       ri = (ri + 1) & 0x7FFFFFFF;
     }
-    Atomics.store(this.sidCtrl, 1, ri);
+    this._writeSidCtrl(1, ri);
     if (depth > 0) {
       // Newest stamp handed over, which tracks the producer's clock whether or
       // not the event has been applied yet (the drift figure samples it).
@@ -986,8 +1003,8 @@ class SIDProcessor extends AudioWorkletProcessor {
     // clocked-pipeline value (getOscByte() is pure these days too, but the
     // pipeline tap is the hardware-correct read). In WASM mode the JS chip
     // idles, so the tap freezes — harmless for a debug-only channel.
-    Atomics.store(this.sidCtrl, 2, this.sid.v3.readOsc3());
-    Atomics.store(this.sidCtrl, 3, this.sid.v3.env3);
+    this._writeSidCtrl(2, this.sid.v3.readOsc3());
+    this._writeSidCtrl(3, this.sid.v3.env3);
 
     // Drift observable: one reading of the producer's lead per block, summed so
     // the report can average the burst sawtooth out of it.
@@ -1014,8 +1031,8 @@ class SIDProcessor extends AudioWorkletProcessor {
       this.port.postMessage({
         type: 'diag-period',
         currentCycle: this.currentCycle,
-        wi: Atomics.load(this.sidCtrl, 0),
-        ri: Atomics.load(this.sidCtrl, 1),
+        wi: this._readSidCtrl(0),
+        ri: this._readSidCtrl(1),
         applied: this.diagApplied,
         future: this.diagFuture,
         drained: this.diagDrained,

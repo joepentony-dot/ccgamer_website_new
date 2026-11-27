@@ -435,6 +435,7 @@ export class C64Machine {
     this.sidShared = sharedSidAvailable ? new SharedArrayBuffer(SHARED_BUF_SIZE) : null;
     this.sidCtrl = this.sidShared ? new Int32Array(this.sidShared, 0, 4) : null;
     this.sidRing32 = this.sidShared ? new Uint32Array(this.sidShared, SHARED_HEADER_BYTES) : null;
+    this.sidMessageSink = null;
 
     // Shadow SID voices on the main thread. Same SIDVoice code the
     // worklet uses, clocked in lockstep with the CPU via _runMasterCycle.
@@ -1231,6 +1232,8 @@ export class C64Machine {
       this.sidRing32[off] = this.sidCycleCounter >>> 0;
       this.sidRing32[off + 1] = ((val & 0xFF) << 8) | (reg & 0x1F) | (chipIndex << 5) | (chipIndex ? this.sid2Generation << 16 : 0);
       Atomics.store(this.sidCtrl, 0, (wi + 1) & 0x7FFFFFFF);
+    } else if (this.sidMessageSink) {
+      this.sidMessageSink(this.sidCycleCounter >>> 0, ((val & 0xFF) << 8) | (reg & 0x1F) | (chipIndex << 5) | (chipIndex ? this.sid2Generation << 16 : 0));
     }
 
     // Mirror voice-register writes to the shadow voices. Filter / vol

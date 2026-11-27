@@ -2907,7 +2907,7 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions {
     display: grid;
     order: 1;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     align-items: stretch;
     gap: clamp(0.18rem, 1vw, 0.4rem);
     flex: 0 0 auto;
