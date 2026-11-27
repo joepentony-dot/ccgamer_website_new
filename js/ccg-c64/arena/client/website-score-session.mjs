@@ -62,3 +62,73 @@ export function createWebsiteScoreCredential({origin='',capability,getSession}={
   }catch{return null;}
  };
 }
+
+
+// Load the established website auth scripts only for an advertised game.
+// Reuse the same shared client and storage; never initialize a second client.
+let clientLoad=null;
+async function loadSharedWebsiteClient(win){
+ if(win?.location?.origin!==SITE)return false;
+ if(!win.ccgSupabase?.getClient){
+  if(!clientLoad)clientLoad=(async()=>{
+   if(!win.CCG_SUPABASE_URL)await import('../../../ccg-supabase-config.js');
+   if(!win.ccgSupabase?.getClient)await import('../../../ccg-supabase-client.js');
+  })().catch(()=>{clientLoad=null;});
+  await clientLoad;
+ }
+ return typeof win.ccgSupabase?.getClient==='function'&&win.CCG_SUPABASE_URL?.replace(/\/$/,'')===SOURCE;
+}
+
+/**
+ * Discover and monitor the standard website identity. Callbacks are UI-only;
+ * every actual score operation requires a fresh server-validated bearer.
+ * Returning false leaves the existing controlled pilot interface unchanged.
+ * No normal gameplay, emulator reset or navigation is triggered here.
+ */
+export async function watchWebsiteScoreMode({
+ doc,origin,gameKey,fetchImpl,signal,onCapability=()=>{},onIdentity=()=>{},
+ loadClient=loadSharedWebsiteClient,getSession=standardWebsiteSession
+}={}){
+ const win=doc?.defaultView;
+ if(!win||win.location?.origin!==SITE||origin!==SITE||signal?.aborted)return false;
+ const capability=await readWebsiteScoreCapability({origin,gameKey,fetchImpl,signal});
+ if(!capability||signal?.aborted)return false;
+ onCapability(capability);
+ let currentId,revision=0,closed=false;
+ const session=()=>getSession({win});
+ const refresh=async()=>{
+  const rev=++revision;
+  let identity=null;
+  try{if(await loadClient(win))identity=await session();}catch{}
+  if(closed||signal?.aborted||rev!==revision)return;
+  const id=UUID.test(identity?.id||'')?identity.id:null;
+  if(id===currentId)return;
+  currentId=id;
+  const credential=id?createWebsiteScoreCredential({origin,capability,getSession:async()=>{
+   if(closed||signal?.aborted||currentId!==id)return null;
+   const value=await session();
+   return !closed&&!signal?.aborted&&currentId===id&&value?.id===id?value:null;
+  }}):null;
+  onIdentity(credential,capability);
+ };
+ const changed=event=>{
+  const type=event?.detail?.event;
+  if(type==='SIGNED_OUT'||(event?.detail?.user?.id&&currentId&&event.detail.user.id!==currentId)){
+   revision++;currentId=null;onIdentity(null,capability);
+  }
+  // Do not call the shared auth client inside its synchronous auth callback.
+  win.setTimeout(()=>{if(!closed)void refresh();},0);
+ };
+ const focus=()=>{if(!closed)void refresh();};
+ const close=()=>{
+  closed=true;revision++;currentId=null;
+  win.removeEventListener('ccg:auth-changed',changed);
+  win.removeEventListener('focus',focus);
+ };
+ win.addEventListener('ccg:auth-changed',changed);
+ win.addEventListener('focus',focus);
+ signal?.addEventListener('abort',close,{once:true});
+ if(signal?.aborted){close();return true;}
+ await refresh();
+ return true;
+}

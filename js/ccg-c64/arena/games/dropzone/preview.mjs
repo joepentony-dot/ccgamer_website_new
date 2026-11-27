@@ -5,9 +5,10 @@
  */
 import { renderArenaBoard } from "../../view/arena-board.mjs";
 import { DROPZONE_ATTEMPT_PROFILE } from "../../client/sierra-heliohost-attempt.mjs";
-import { SierraHelioHostScoreBridge, isCrtHelioHostScoreIntent } from "../../client/sierra-browser-score-bridge.mjs";
+import { SierraHelioHostScoreBridge, isCrtHelioHostScoreIntent, createWebsiteScoreBridge } from "../../client/sierra-browser-score-bridge.mjs";
 import { readHelioHostCrtBoard } from "../../client/sierra-heliohost-board.mjs";
 import { DropzoneLocalRunObserver } from "./run-observer.mjs";
+import { watchWebsiteScoreMode } from "../../client/website-score-session.mjs";
 const GAME_KEY = DROPZONE_ATTEMPT_PROFILE.gameKey;
 export const DROPZONE_CRT = Object.freeze({
   id: DROPZONE_ATTEMPT_PROFILE.catalogId,
@@ -18,7 +19,7 @@ export const DROPZONE_CRT = Object.freeze({
   sha256: DROPZONE_ATTEMPT_PROFILE.mediaSha256,
   url: "/emulator/c64/media/cartridge-replacements/dropzone.crt"
 });
-const CSS_URL = "/resources/css/ccg-high-score-arena-dropzone.css?ccg_rev=20261119_dropzone_phone_leaderboard_only_v1";
+const CSS_URL = "/resources/css/ccg-high-score-arena-dropzone.css?ccg_rev=20261127_arena_unified_v1";
 
 export async function verifyDropzoneMedia(entry, bytes, subtle=globalThis.crypto?.subtle) {
   if (!entry || !bytes || !(bytes instanceof Uint8Array) ||
@@ -41,7 +42,7 @@ export async function mountDropzoneArenaPreview({
   if (!stage || !doc?.createElement || !doc.head ||
       !(await verifyDropzoneMedia(entry,bytes,subtle??globalThis.crypto?.subtle)) ||
       !isCurrent()) return null;
-  const scoreRequested=isCrtHelioHostScoreIntent(scoreQuery,websiteOrigin,DROPZONE_ATTEMPT_PROFILE);
+  let scoreRequested=isCrtHelioHostScoreIntent(scoreQuery,websiteOrigin,DROPZONE_ATTEMPT_PROFILE);
   const stylesheet=doc.createElement("link");
   stylesheet.rel="stylesheet";
   stylesheet.href=CSS_URL;
@@ -78,8 +79,9 @@ export async function mountDropzoneArenaPreview({
   const challenge=doc.createElement("button");
   challenge.type="button"; challenge.textContent="CHALLENGE";
   modes.append(alltime,challenge);
+  let signIn=null;
   if(scoreRequested){
-    const signIn=doc.createElement("a");
+    signIn=doc.createElement("a");
     const returnTo="/emulator/c64/?game="+DROPZONE_CRT.id+"&autoplay=1&scores=1";
     signIn.href="/auth/heliohost-score-login.html?returnTo="+encodeURIComponent(returnTo);
     signIn.textContent="SIGN IN FOR SCORES";
@@ -100,6 +102,7 @@ export async function mountDropzoneArenaPreview({
   run.append(score,hint);
   const remoteHint=doc.createElement("p");
   remoteHint.className="ccg-arena-preview__submission";
+  remoteHint.setAttribute("role","status");remoteHint.setAttribute("aria-live","polite");
   if(scoreRequested)run.append(remoteHint);
   display.append(board,run);
   section.append(intro,startHint,modes,display);
@@ -144,13 +147,51 @@ export async function mountDropzoneArenaPreview({
   alltime.addEventListener("click",()=>{mode="alltime";show();});
   challenge.addEventListener("click",()=>{mode="challenge";show();});
   show();
-  const scoreBridge=scoreRequested?new SierraHelioHostScoreBridge({
+  let scoreBridge=scoreRequested?new SierraHelioHostScoreBridge({
     enabled:true,origin:websiteOrigin,fetchImpl:scoreFetchImpl,
     profile:DROPZONE_ATTEMPT_PROFILE,
     onStatus:value=>{if(!disposed)remoteHint.textContent=value;}
   }):null;
-  let onlineRun=false, onlineStartTried=false;
-  if(scoreBridge)void scoreBridge.connect({loadPublicBoard:false});
+  let onlineRun=false, onlineStartTried=false, websiteMode=false;
+  const websiteAbort=new AbortController();
+  const startConnection=async()=>{
+    if(doc.defaultView?.location?.origin===websiteOrigin){
+      const selected=await watchWebsiteScoreMode({
+        doc,origin:websiteOrigin,gameKey:GAME_KEY,fetchImpl:scoreFetchImpl,signal:websiteAbort.signal,
+        onCapability:()=>{
+          if(disposed||websiteAbort.signal.aborted)return;
+          websiteMode=true;scoreRequested=true;scoreBridge?.stop();scoreBridge=null;onlineRun=false;
+          section.setAttribute("data-ccg-arena-online","requested");
+          notice.textContent="DROPZONE CRT · CCG WEBSITE SCORING";
+          if(!signIn){signIn=doc.createElement("a");modes.append(signIn);}
+          signIn.href="/auth/login.html";signIn.target="_blank";signIn.rel="noopener";
+          signIn.textContent="SIGN IN TO CCG";
+          if(remoteHint.parentNode!==run)run.append(remoteHint);
+          remoteHint.textContent="CHECKING CCG WEBSITE LOGIN";
+        },
+        onIdentity:(credential,capability)=>{
+          if(disposed||websiteAbort.signal.aborted)return;
+          scoreBridge?.stop();scoreBridge=null;onlineRun=false;
+          if(!credential){signIn.hidden=false;remoteHint.textContent="SIGN IN TO CCG · PLAY LOCALLY UNTIL SIGNED IN";return;}
+          signIn.hidden=true;
+          const next=createWebsiteScoreBridge({
+            enabled:true,origin:websiteOrigin,fetchImpl:scoreFetchImpl,profile:DROPZONE_ATTEMPT_PROFILE,
+            capability,credential,onStatus:value=>{if(!disposed&&scoreBridge===next)remoteHint.textContent=value;}
+          });
+          scoreBridge=next;
+          void next.connect({loadPublicBoard:false}).then(connected=>{
+            if(disposed||scoreBridge!==next)return;
+            if(!connected)signIn.hidden=false;
+            else if(lastPhase==="active"||lastPhase==="terminal")
+              remoteHint.textContent="CCG SIGNED IN · CURRENT RUN LOCAL ONLY · START A NEW GAME";
+          });
+        }
+      });
+      if(disposed||websiteAbort.signal.aborted||selected)return;
+    }
+    if(scoreBridge)void scoreBridge.connect({loadPublicBoard:false});
+  };
+  void startConnection().catch(()=>{if(!disposed)remoteHint.textContent="SCORE SERVICE UNAVAILABLE · LOCAL PLAY";});
   return Object.freeze({
     observe(ram){
       if(disposed||!isCurrent())return;
@@ -162,9 +203,12 @@ export async function mountDropzoneArenaPreview({
       const update=localRun.observe({
         ram,screenBase,frameBuffer:machine.vic2.frameBuffer
       });
+      // Website mode must see the actual fresh active transition while connected.
+      if(websiteMode&&update.phase==="active"&&lastPhase!=="active"&&!scoreBridge?.connected)
+        onlineStartTried=true;
       if(scoreBridge?.connected){
         if(update.phase==="active"&&update.score===0&&
-           (lastPhase==="inactive"||lastPhase==="completed"||lastScore===0)&&
+           (lastPhase==="inactive"||lastPhase==="completed"||(!websiteMode&&lastScore===0))&&
            !onlineStartTried){
           onlineStartTried=true;
           onlineRun=scoreBridge.armed();
@@ -210,7 +254,7 @@ export async function mountDropzoneArenaPreview({
         :"LOCAL HUD SCORE · NOT VERIFIED FOR SUBMISSION";
     },
     invalidate(){if(!disposed){
-      scoreBridge?.stop();
+      websiteAbort.abort();scoreBridge?.stop();
       localRun.reset();
       lastScore=null;
       lastPhase="inactive";
@@ -220,7 +264,7 @@ export async function mountDropzoneArenaPreview({
     dispose(){
       if(disposed)return;
       disposed=true;
-      boardRequest?.abort();
+      boardRequest?.abort();websiteAbort.abort();
       scoreBridge?.stop();
       setOpen(false);
       mobileToggle?.removeEventListener("click",onToggle);

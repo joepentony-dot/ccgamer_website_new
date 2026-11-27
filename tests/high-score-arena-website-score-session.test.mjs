@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readWebsiteScoreCapability,standardWebsiteSession,createWebsiteScoreCredential} from '../js/ccg-c64/arena/client/website-score-session.mjs';
+import {readWebsiteScoreCapability,standardWebsiteSession,createWebsiteScoreCredential,watchWebsiteScoreMode} from '../js/ccg-c64/arena/client/website-score-session.mjs';
 import {acquireWebsiteCrtAttempt,SIERRA_ATTEMPT_PROFILE,DROPZONE_ATTEMPT_PROFILE} from '../js/ccg-c64/arena/client/sierra-heliohost-attempt.mjs';
 const SITE='https://www.cheekycommodoregamer.co.uk';
 const API='https://api.cheekycommodoregamer.co.uk';
@@ -53,4 +53,28 @@ test('logout and account switch never fall back to native POST',async()=>{
  const t=await acquireWebsiteCrtAttempt({enabled:true,websiteOrigin:SITE,capability,credential,fetchImpl:async()=>{sent++;return reply({});}});
  current=null;assert.equal(await t.start(),null);assert.equal(sent,0);
  current={id:other,token:'ddd.eee.fff'};assert.equal(await t.start(),null);assert.equal(sent,0);
+});
+
+test('advertised mode watches the standard login without navigation or a new password',async()=>{
+ const win=new EventTarget();win.location={origin:SITE};win.setTimeout=setTimeout;
+ const signal=new AbortController();let session=null,credential=null,capabilities=0;
+ const mode=await watchWebsiteScoreMode({doc:{defaultView:win},origin:SITE,gameKey:game,
+  fetchImpl:async()=>reply(available),signal:signal.signal,loadClient:async()=>true,getSession:async()=>session,
+  onCapability:()=>capabilities++,onIdentity:value=>{credential=value;}});
+ assert.equal(mode,true);assert.equal(capabilities,1);assert.equal(credential,null);
+ session={id,token:'aaa.bbb.ccc'};win.dispatchEvent(new Event('focus'));
+ await new Promise(r=>setImmediate(r));assert.equal(await credential(),'aaa.bbb.ccc');
+ const old=credential;session=null;const event=new Event('ccg:auth-changed');
+ event.detail={event:'SIGNED_OUT'};win.dispatchEvent(event);
+ assert.equal(credential,null);assert.equal(await old(),null);
+ signal.abort();
+ session={id:other,token:'ddd.eee.fff'};win.dispatchEvent(new Event('focus'));
+ await new Promise(r=>setImmediate(r));assert.equal(credential,null);
+});
+test('old backend never loads the standard client or starts scoring',async()=>{
+ const win={location:{origin:SITE}};
+ let loaded=0;
+ assert.equal(await watchWebsiteScoreMode({doc:{defaultView:win},origin:SITE,gameKey:game,
+ fetchImpl:async()=>reply({csrf}),loadClient:async()=>{loaded++;return true;}}),false);
+ assert.equal(loaded,0);
 });

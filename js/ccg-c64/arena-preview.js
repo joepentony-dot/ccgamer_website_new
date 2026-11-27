@@ -95,11 +95,10 @@ export async function mountCrossfirePreview({
   const challenge=doc.createElement("button");
   challenge.type="button";challenge.textContent="CHALLENGE";
   modes.append(alltime,challenge);
-  // The existing Supabase website login does NOT create a HelioHost member
-  // session. Provide an isolated, intentional sign-in path for Sierra scores.
-  // The link is available inside the expanded mobile Arena, not over gameplay.
+  // Legacy pilot link remains only until the server advertises unified login.
+  let scoreSignIn=null;
   if(scoreRequested){
-    const scoreSignIn=doc.createElement("a");
+    scoreSignIn=doc.createElement("a");
     scoreSignIn.href="/auth/heliohost-score-login.html?returnTo="+encodeURIComponent(
       "/emulator/c64/?game="+EXPECTED_CATALOG_ID+"&autoplay=1&start=1&scores=1"
     );
@@ -165,7 +164,8 @@ export async function mountCrossfirePreview({
   stage.setAttribute("data-ccg-arena-frame","crossfire");
   stage.insertAdjacentElement("afterend",section);
 
-  let mode="alltime", disposed=false, scoreBridge=null;
+  let mode="alltime", disposed=false, scoreBridge=null, boardBridge=null, websiteMode=false;
+  const websiteAbort=new AbortController();
   let scoreGate=scoreRequested?"checking":"disabled";
   let scoreArmPending=false, resolveScoreReady=null;
   let scoreReadySettled=!scoreRequested;
@@ -191,10 +191,10 @@ export async function mountCrossfirePreview({
     },expected(mode)),{mode});
   };
   alltime.addEventListener("click",()=>{
-    mode="alltime";show();void scoreBridge?.loadBoard("alltime");
+    mode="alltime";show();void (boardBridge??scoreBridge)?.loadBoard("alltime");
   });
   challenge.addEventListener("click",()=>{
-    mode="challenge";show();void scoreBridge?.loadBoard("challenge");
+    mode="challenge";show();void (boardBridge??scoreBridge)?.loadBoard("challenge");
   });
   show();
   // A server score session is opt-in and only belongs to the exact verified
@@ -204,7 +204,7 @@ export async function mountCrossfirePreview({
   // login or submission opt-in. The verified Sierra CRT and exact website
   // origin still guard this read-only connection.
   if(websiteOrigin==="https://www.cheekycommodoregamer.co.uk") {
-    void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261127_arena_receipts_v1").then(mod=>{
+    void import("./arena/client/sierra-browser-score-bridge.mjs?ccg_rev=20261127_arena_unified_v1").then(async mod=>{
       if(disposed || (typeof isCurrent==="function" && !isCurrent()) ||
          (scoreRequested && scoreGate!=="checking")) {
         finishScoreHandshake("unavailable");
@@ -228,18 +228,70 @@ export async function mountCrossfirePreview({
           if(!disposed && mode===view)renderArenaBoard(board,data,{mode});
         }
       });
-      // A normal game launch can display published records without member
-      // cookies. Only scores=1 may start a member handshake or submit a score.
-      if(!scoreRequested) {
-        void scoreBridge.loadBoard("alltime");
-        return;
+      // Public rankings load independently of authentication discovery.
+      boardBridge=scoreBridge;
+      void boardBridge.loadBoard("alltime");
+      if(doc.defaultView?.location?.origin===websiteOrigin){
+        const session=await import("./arena/client/website-score-session.mjs?ccg_rev=20261127_arena_unified_v1");
+        const selected=await session.watchWebsiteScoreMode({
+          doc,origin:websiteOrigin,gameKey:GAME_KEY,fetchImpl:scoreFetchImpl,signal:websiteAbort.signal,
+          onCapability:()=>{
+            if(disposed||websiteAbort.signal.aborted)return;
+            websiteMode=true;scoreRequested=true;scoreArmPending=false;
+            scoreBridge=null;
+            section.setAttribute("data-ccg-arena-online","requested");
+            notice.textContent="SIERRA ONLINE CRT · CCG WEBSITE SCORING";
+            if(!scoreSignIn){
+              scoreSignIn=doc.createElement("a");
+              scoreSignIn.setAttribute("data-ccg-sierra-member-signin","true");
+              modes.append(scoreSignIn);
+            }
+            // Standard website login in another tab; the active game is not reset.
+            scoreSignIn.href="/auth/login.html";
+            scoreSignIn.target="_blank";scoreSignIn.rel="noopener";
+            scoreSignIn.textContent="SIGN IN TO CCG";
+            if(remoteHint.parentNode!==section)section.insertBefore(remoteHint,display);
+            remoteHint.textContent="CHECKING CCG WEBSITE LOGIN";
+          },
+          onIdentity:(credential,capability)=>{
+            if(disposed||websiteAbort.signal.aborted)return;
+            scoreBridge?.stop();scoreBridge=null;scoreArmPending=false;
+            if(!credential){
+              scoreSignIn.hidden=false;
+              remoteHint.textContent="SIGN IN TO CCG · PLAY LOCALLY UNTIL SIGNED IN";
+              finishScoreHandshake("unavailable");
+              return;
+            }
+            scoreSignIn.hidden=true;
+            const next=mod.createWebsiteScoreBridge({
+              capability,credential,enabled:true,origin:websiteOrigin,fetchImpl:scoreFetchImpl,
+              onStatus:value=>{
+                if(disposed||scoreBridge!==next)return;
+                remoteHint.textContent=value;
+                if(value.startsWith("SCORE ")&&value.includes("RECEIVED · PENDING REVIEW"))
+                  hint.textContent="GAME OVER · SCORE SUBMITTED FOR REVIEW";
+              }
+            });
+            scoreBridge=next;
+            void next.connect({loadPublicBoard:false}).then(connected=>{
+              if(disposed||scoreBridge!==next)return;
+              finishScoreHandshake(connected?"ready":"unavailable");
+              if(!connected){scoreSignIn.hidden=false;return;}
+              // Never arm a game already begun before the standard login.
+              if(localRun.phase==="running"||localRun.phase==="armed")
+                remoteHint.textContent="CCG SIGNED IN · CURRENT RUN LOCAL ONLY · START A NEW GAME";
+            });
+          }
+        });
+        if(disposed||websiteAbort.signal.aborted||selected)return;
       }
-      void scoreBridge.connect().then(connected=>{
+      if(!scoreRequested)return;
+      void scoreBridge.connect({loadPublicBoard:false}).then(connected=>{
         if(disposed)return finishScoreHandshake("unavailable");
         finishScoreHandshake(connected?"ready":"unavailable");
         // Manual F1 may have occurred while the dynamic import/authentication
         // was pending. Re-arm only when that SAME genuine game is still at 0.
-        if(connected && scoreArmPending &&
+        if(connected && !websiteMode && scoreArmPending &&
            (localRun.phase==="armed" ||
             (localRun.phase==="running" && localRun.lastScore===0))) {
           scoreBridge.armed();
@@ -322,7 +374,8 @@ export async function mountCrossfirePreview({
     invalidate() {
       if(disposed)return;
       autoStarter?.cancel();
-      scoreBridge?.stop();
+      websiteAbort.abort();
+      scoreBridge?.stop();boardBridge?.stop();
       finishScoreHandshake("unavailable");
       localRun.invalidate();
       syncRunState();
@@ -334,7 +387,8 @@ export async function mountCrossfirePreview({
       if(disposed)return;
       disposed=true;
       autoStarter?.cancel();
-      scoreBridge?.stop();
+      websiteAbort.abort();
+      scoreBridge?.stop();boardBridge?.stop();
       finishScoreHandshake("unavailable");
       phoneMedia?.removeEventListener?.("change",onPhoneChange);
       link.removeEventListener?.("load",onStyleLoad);
