@@ -38,6 +38,9 @@ jobs:
       - name: Verify iPhone Safari startup and privacy fallbacks
         run: node --test tests/ccg-c64-ios-safari.test.mjs
 
+      - name: Verify SID message transport and browser audio recovery
+        run: node --test tests/ccg-c64-sid-message*.test.mjs tests/ccg-c64-sid-browser-audio.test.mjs
+
       - name: Verify iPhone touch selection and desktop Android isolation
         run: node --test tests/ccg-c64-ios-game-selection.test.mjs
 

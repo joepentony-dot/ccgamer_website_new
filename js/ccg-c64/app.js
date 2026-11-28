@@ -1,6 +1,7 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickRomFiles } from "./rom-vault.js";
 import { HOSTED_ROM_VERSION, fetchVerifiedHostedROMs, installHostedROMs } from "./hosted-roms.js";
-import { C64Machine } from "./core/machine.js?ccg_rev=20261011_ios_silent_fallback_v1";
+import { C64Machine } from "./core/machine.js?ccg_rev=20261127_ios_sid_message_candidate_v4";
+import { SidBrowserAudio } from "./core/sid/sid-browser-audio.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
 import { G64, isG64 } from "./core/media/g64.js";
@@ -123,6 +124,7 @@ const joystickPortIndicator = document.querySelector("[data-joystick-port]");
 const emulatorSpeedStatus = document.querySelector("[data-emulator-speed]");
 const audioStatus = document.querySelector("[data-audio-status]");
 const audioButton = document.querySelector("[data-audio-toggle]");
+const mobileAudioButton = document.querySelector("[data-mobile-audio-toggle]");
 const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
@@ -665,11 +667,10 @@ let crtMode = localStorage.getItem("ccg.emulator.c64.crtMode") || "tube";
 if (!CRT_MODES.includes(crtMode)) crtMode = "tube";
 let displayExpanded = ["2x", "expanded"].includes(localStorage.getItem("ccg.emulator.c64.size"));
 
-const SID_WORKLET_URL = "/js/ccg-c64/core/sid/sid-worklet.js";
-let audioContext = null;
-let sidNode = null;
-let masterGain = null;
+const SID_WORKLET_URL = "/js/ccg-c64/core/sid/sid-worklet.js?ccg_rev=20261127_ios_sid_message_candidate_v4";
 let audioMuted = false;
+let audioHeld = false;
+const sidAudio = new SidBrowserAudio({ browser: window, workletUrl: SID_WORKLET_URL, onChange: () => updateAudioUi() });
 
 function applyCrtMode() {
   const strong = crtButton?.querySelector("strong");
@@ -739,100 +740,64 @@ if (screenStage && typeof ResizeObserver !== "undefined") {
 }
 window.addEventListener("resize", fitScreenToStage);
 
-function updateAudioUi(label = null) {
-  if (audioStatus && label) audioStatus.textContent = label;
-  if (audioButton) {
-    audioButton.disabled = !running || !audioContext || !sidNode;
-    const strong = audioButton.querySelector("strong");
-    if (strong) strong.textContent = audioMuted ? "UNMUTE" : "MUTE";
+function updateAudioUi() {
+  const status = sidAudio.status;
+  const label = !sidAudio.supported ? "SOUND UNAVAILABLE" : sidAudio.pending ? "STARTING SOUND" :
+    !sidAudio.ready || sidAudio.needsGesture ? (sidAudio.error ? "RETRY SOUND" : "ENABLE SOUND") :
+    sidAudio.status === "SYNCING SOUND" ? "SYNCING SOUND" : sidAudio.muted ? "UNMUTE" : "MUTE";
+  if (audioStatus) audioStatus.textContent = warpLoadActive && sidAudio.ready && !sidAudio.needsGesture ? "WARP SILENT" : status;
+  for (const button of [audioButton, mobileAudioButton]) {
+    if (!button) continue;
+    button.disabled = !running || !sidAudio.supported || Boolean(sidAudio.pending);
+    const strong = button.querySelector("strong");
+    if (strong) strong.textContent = label; else button.textContent = label;
+    button.setAttribute("aria-label", label);
+    button.title = status;
   }
 }
 
-async function ensureAudioGraph() {
-  if (audioContext && sidNode && masterGain) return true;
-  const Context = window.AudioContext || window.webkitAudioContext;
-  if (!Context || !window.AudioWorkletNode) {
-    updateAudioUi("UNAVAILABLE");
-    return false;
-  }
-
-  audioContext = new Context({ sampleRate: 48000, latencyHint: "interactive" });
-  await audioContext.audioWorklet.addModule(SID_WORKLET_URL);
-  sidNode = new AudioWorkletNode(audioContext, "sid-processor", {
-    outputChannelCount: [2],
-  });
-  masterGain = audioContext.createGain();
-  masterGain.gain.value = 0;
-  sidNode.connect(masterGain);
-  masterGain.connect(audioContext.destination);
-  return true;
+function syncAudioState() {
+  sidAudio.setState({ running, held: audioHeld || paused || warpLoadActive, hidden: document.hidden });
 }
 
 async function wireAudioToMachine() {
   if (!machine) return false;
+  audioHeld = false;
+  syncAudioState();
+  // Compatibility audio must not delay or block the no-reload iPhone boot.
+  // Start preparing the graph now; the game can continue while it loads.
   if (!machine.sidShared) {
-    updateAudioUi("SILENT COMPATIBILITY MODE");
+    void sidAudio.bind(machine);
     return false;
   }
-  try {
-    if (!await ensureAudioGraph()) return false;
-    sidNode.port.postMessage({
-      type: "init",
-      shared: machine.sidShared,
-      is8580: machine.sidIs8580,
-      engine: "wasm",
-    });
-    masterGain.gain.setValueAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime);
-    if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
-    updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE");
-    return true;
-  } catch (error) {
-    console.warn("[ccg-c64] SID audio unavailable:", error);
-    updateAudioUi("AUDIO ERROR");
-    return false;
-  }
+  return sidAudio.bind(machine);
 }
 
-// iOS Safari normally requires a real screen tap before starting or resuming Web Audio.
-// Keep desktop autoplay behaviour, but recover the SID graph on a later gesture.
-document.addEventListener("pointerdown", () => {
-  if (sidNode && machine?.sidShared && audioContext?.state === "suspended") {
-    void audioContext.resume().then(() => updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE")).catch(() => {});
-  }
-}, { passive: true });
-
-function resetAudioForMachine() {
-  if (!sidNode || !machine) return;
-  sidNode.port.postMessage({ type: "reset", is8580: machine.sidIs8580 });
-  if (masterGain && audioContext) {
-    masterGain.gain.setValueAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime);
-  }
+// WebKit activates touch on pointerup; mouse and keyboard use their own
+// trusted events. Do not consume or alter the joystick event itself.
+function resumeAudioOnGesture(event) {
+  if (!event.isTrusted || !running || event.target?.closest?.("[data-audio-toggle], [data-mobile-audio-toggle]")) return;
+  if (event.type === "pointerdown" && event.pointerType !== "mouse") return;
+  if (event.type === "pointerup" && event.pointerType === "mouse") return;
+  sidAudio.resume();
 }
+for (const type of ["pointerdown", "pointerup", "keydown"]) {
+  document.addEventListener(type, resumeAudioOnGesture, { passive: true, capture: true });
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden && running) sidAudio.resume(); });
 
+function resetAudioForMachine() { sidAudio.reset(); syncAudioState(); }
 function setAudioPaused(value) {
-  if (!masterGain || !audioContext) return;
-  if (value) {
-    masterGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.01);
-    return;
-  }
-
-  // C64 READY keeps the SID worklet clock free-running. After a main-thread
-  // pause/stall, resync it to the machine before reopening the output gain.
-  sidNode?.port.postMessage({ type: "resync" });
-  masterGain.gain.setTargetAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime, 0.01);
+  audioHeld = Boolean(value);
+  if (!value) sidAudio.resync();
+  syncAudioState();
 }
-
-function powerOffAudio() {
-  if (masterGain && audioContext) masterGain.gain.setValueAtTime(0, audioContext.currentTime);
-  updateAudioUi("STANDBY");
-}
-
-function toggleAudioMute() {
-  if (!masterGain || !audioContext) return;
-  audioMuted = !audioMuted;
-  const silent = audioMuted || warpLoadActive || paused;
-  masterGain.gain.setTargetAtTime(silent ? 0 : 0.72, audioContext.currentTime, 0.01);
-  updateAudioUi(warpLoadActive ? "WARP SILENT" : (audioMuted ? "MUTED" : "SID ACTIVE"));
+function powerOffAudio() { sidAudio.powerOff(); }
+async function toggleAudioMute() {
+  if (!running || !machine) return;
+  await sidAudio.activate(machine);
+  audioMuted = sidAudio.muted;
+  syncAudioState();
 }
 
 function updateJoystickUi() {
@@ -1541,7 +1506,7 @@ function setControlState(snapshot) {
   if (loadMediaButton) loadMediaButton.disabled = false;
   if (loadDiskButton) loadDiskButton.disabled = false;
   updateMediaControls(snapshot);
-  updateAudioUi();
+  syncAudioState();
 
   if (powerButton) {
     powerButton.querySelector("strong").textContent = running ? "POWER OFF" : "BOOT C64";
@@ -1586,7 +1551,7 @@ function render(snapshot) {
 
   if (!running && machineState) {
     if (snapshot.allRequiredReady && !window.crossOriginIsolated) {
-      machineState.textContent = "ROM BANK READY // SILENT COMPATIBILITY MODE";
+      machineState.textContent = "ROM BANK READY // COMPATIBILITY MODE";
     } else {
       machineState.textContent = snapshot.allRequiredReady
         ? "SYSTEM ROMS READY // LOAD MEDIA OR BOOT"
@@ -1886,6 +1851,7 @@ function frameLoop(now) {
     speedSampleFrames = 0;
   }
 
+  sidAudio.flush();
   frameHandle = requestAnimationFrame(frameLoop);
 }
 
@@ -1940,7 +1906,7 @@ async function powerOn() {
     lastFrameTime = 0;
     if (machineState) machineState.textContent = "C64 CORE RUNNING // VIDEO + INPUT ACTIVE";
     if (inputStatus) inputStatus.textContent = "KEYBOARD READY";
-    if (stageNote) stageNote.textContent = audioReady ? "Machine, video, keyboard/gamepad, touch controls, SID audio, disk, tape, cartridge and Game Vault paths are active." : "Machine, video and input are active. SID audio could not start in this browser session; media and save-state systems remain available.";
+    if (stageNote) stageNote.textContent = audioReady ? "Machine, video, keyboard/gamepad, touch controls, SID audio, disk, tape, cartridge and Game Vault paths are active." : "Machine, video and input are active. Tap ENABLE SOUND or RETRY SOUND to attempt SID audio; media and save-state systems remain available.";
     setControlState(snapshot);
     frameHandle = requestAnimationFrame(frameLoop);
     screen?.focus();
@@ -2178,7 +2144,9 @@ mobileVaultPanel?.addEventListener("click", event => {
 });
 warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
 mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
-audioButton?.addEventListener("click", () => { toggleAudioMute(); screen?.focus(); });
+for (const button of [audioButton, mobileAudioButton]) {
+  button?.addEventListener("click", () => { void toggleAudioMute(); screen?.focus(); });
+}
 crtButton?.addEventListener("click", () => { cycleCrtMode(); screen?.focus(); });
 sizeButton?.addEventListener("click", () => { toggleScreenSize(); screen?.focus(); });
 screen?.addEventListener("pointerdown", () => screen.focus());
@@ -3425,6 +3393,7 @@ async function loadGameVaultSlot() {
   } catch (error) {
     if (stopped && old) {
       machine = old.machine;
+      await wireAudioToMachine();
       mountedDisk = old.mountedDisk;
       mountedTape = old.mountedTape;
       mountedCartridge = old.mountedCartridge;
