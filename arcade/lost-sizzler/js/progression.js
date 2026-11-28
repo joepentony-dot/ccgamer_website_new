@@ -117,7 +117,7 @@ window.CCGProgression=(()=>{
   function colourForRarity(r){return rarityColour[r]||rarityColour.COMMON}
 
   // The XP curve is calibrated around 100 XP ordinary kills, 250 XP named kills,
-  // and 1–10 XP pickups. A first upgrade takes roughly 14 ordinary victories.
+  // and 1–10 XP ordinary pickups, with 500 XP orbs. Floor caps remain authoritative.
   function xpNeed(level){level=Math.max(1,Math.floor(Number(level)||1));return 1000+level*350+level*level*75}
   function floorLevelCap(run){const floor=Math.max(1,Math.min(C.maxFloors,run?.floor||1));return C.levelCaps?.[floor-1]||Math.max(5,floor*3+2)}
   function xpCapacityToCap(player,cap){let level=Math.max(1,player?.level||1),xp=Math.max(0,player?.xp||0),capacity=0;if(level>=cap)return 0;while(level<cap){capacity+=Math.max(0,xpNeed(level)-xp);level++;xp=0}return capacity}

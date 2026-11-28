@@ -1,0 +1,54 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const read=p=>fs.readFileSync(new URL("../"+p,import.meta.url),"utf8");
+const local=read("js/game-local-runtime.js"),core=read("js/game-core.js"),render=read("js/game-render.js"),prog=read("js/progression.js"),config=read("js/config.js");
+const cut=(s,a,b)=>{const i=s.indexOf(a),j=s.indexOf(b,i+1);assert.ok(i>=0&&j>i,a);return s.slice(i,j)};
+const caps=JSON.parse(config.match(/levelCaps:\s*(\[[^\]]+\])/)[1]);
+const source=cut(prog,"  function xpNeed(","  function skillChoices(")+cut(local,"function onCollectRequest(","function requestCollect(")+cut(local,"function collectedName(","function storeConsumable(")+cut(local,"function pickupXP(","function usePotion(")+cut(core,"function itemHelp(","function itemIconSVG(")+cut(render,"function groundItemLabel(","function drawItem(");
+// Non-orb display paths must not require the pickup owner to be installed.
+const helpOnly=new Function("C",cut(core,"function itemHelp(","function itemIconSVG(")+"\nreturn itemHelp;")({player:{torchRadius:4,torchMs:10000,inventorySlots:12},stalker:{}});
+const groundOnly=new Function(cut(render,"function groundItemLabel(","function drawItem(")+"\nreturn groundItemLabel;")();
+assert.match(helpOnly("health"),/Restores 3 HP/);
+assert.match(helpOnly("torch"),/Stored item/);
+assert.equal(groundOnly({kind:"health"}),"HEALTH POTION");
+assert.equal(groundOnly({kind:"game",title:"Test"}),"Test");
+const context=new Function("caps",source+`
+const C={maxFloors:15,levelCaps:caps,player:{torchRadius:4,torchMs:10000,inventorySlots:12},stalker:{}};
+const p1={id:"a",level:1,xp:0,totalXp:0},p2={id:"b",level:1,xp:0,totalXp:0};
+const host={items:[],revision:0};let score=42;
+const run={floor:1,floorXP:0},world={},explored=new Map(),events=[];
+const P={gold:"gold",green:"green",cyan:"cyan",white:"white",pink:"pink"};
+const S={sfx:()=>{}},SYS={updateObjective:()=>{}},PGR={roomCompletion:()=>0,checkAchievements:()=>{}};
+const findLocal=id=>[p1,p2].find(p=>p.id===id),resourcePickupBlock=()=>null,inventoryFullForPickup=()=>false;
+const showToast=(...a)=>events.push(["toast",...a]),sync=()=>{},ring=()=>{},burst=()=>{};
+const floatPickupText=(p,s)=>events.push(["float",p.id,s]),performance={now:()=>1};
+const window={dispatchEvent:e=>events.push(["event",e.detail])},CustomEvent=function(_,o){this.detail=o.detail};
+const updateQuests=()=>{},awardXP=(p,n,r)=>{events.push(["award",p.id,n]);return gainXP(p,run,n,r)};
+return {onCollectRequest,p1,p2,host,events,run,itemHelp,groundItemLabel,score:()=>score,pickupXP,xpNeed,gainXP};
+`)(caps);
+const {p1,p2,host,events,run,pickupXP,xpNeed,gainXP}=context;
+assert.equal(pickupXP("xpOrb"),500);
+const ordinary={carried:1,health:2,mana:3,ammo:3,game:5,credits:1,torch:2,teleport:4,mapReveal:6,magicSack:10,banishment:5,armour:4,potion:2,weapon:5,rapid:4,inventorySlot:10,bronze:3,exitSigil:10,key:6,loot:10};
+for(const [kind,xp] of Object.entries(ordinary))assert.equal(pickupXP(kind),xp,kind);
+assert.equal(context.groundItemLabel({kind:"xpOrb"}),"+500 XP");assert.match(context.itemHelp("xpOrb"),/500 XP.*floor level cap/);
+for(let floor=1;floor<=15;floor++){
+  run.floor=floor;run.floorXP=0;
+  Object.assign(p2,{level:1,xp:0,totalXp:0,pendingLevels:0});
+  const item={id:"orb"+floor,active:true,kind:"xpOrb",x:1,y:1};host.items=[item];events.length=0;
+  const rev=host.revision;
+  context.onCollectRequest({itemId:item.id,collector:"b"});
+  assert.equal(p2.xp,500);assert.equal(p1.xp,0);assert.equal(run.floorXP,500);assert.equal(p2.totalXp,500);assert.equal(item.active,false);
+  assert.equal(host.revision,rev+1);assert.equal(context.score(),42);
+  assert.ok(events.some(x=>x[0]==="event"&&x[1].name==="+500 XP"&&x[1].collector==="b"));
+  assert.ok(events.some(x=>x[0]==="float"&&x[2]==="+500 XP"));
+  assert.ok(events.some(x=>x[0]==="toast"&&x[1]==="+500 XP"&&x[2].includes("floor level cap")));
+  for(let i=0;i<10;i++)context.onCollectRequest({itemId:item.id,collector:i%2?"a":"b"});
+  assert.equal(events.filter(x=>x[0]==="award").length,1);assert.equal(p2.xp,500);assert.equal(host.revision,rev+1);
+  const near={level:caps[floor-1]-1,xp:xpNeed(caps[floor-1]-1)-37,totalXp:0};const limited=gainXP(near,run,500);
+  assert.equal(limited.amount,37);assert.equal(limited.discarded,463);assert.equal(near.level,caps[floor-1]);assert.equal(near.xp,0);
+  const capped=gainXP(near,run,500);assert.equal(capped.amount,0);assert.equal(capped.discarded,500);assert.equal(near.totalXp,37);
+}
+assert.match(local,/this artefact awards a maximum of 10 XP/);
+assert.match(read("index.html"),/The maximum XP from this Banishment Artefact/);
+assert.match(read("../c64-dungeon-carnage/index.html"),/The maximum XP from this Banishment Artefact/);
+console.log("R206 XP orb reward, labels, duplicate collection, all 15 caps, ordinary rewards and artefact wording PASS");
